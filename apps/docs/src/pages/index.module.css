@@ -1,0 +1,14 @@
+.wrapper {
+  cursor: default;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.container {
+  cursor: text;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  cursor: text;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}

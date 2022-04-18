@@ -61,8 +61,8 @@ export const getCharRange = (text: string, offset: number) => {
 /**
  * @zh-CN 获取在Text节点处鼠标点击坐标时的字符索引
  * @param node Text Node
- * @param clientX 
- * @param clientY 
+ * @param x 
+ * @param y 
  * @param start 
  * @param end 
  * @param length 
@@ -71,8 +71,8 @@ export const getCharRange = (text: string, offset: number) => {
  */
 export const getOffset = (
   node: Text,
-  clientX: number,
-  clientY: number,
+  x: number,
+  y: number,
   start: number,
   end: number,
   length: number
@@ -91,14 +91,14 @@ export const getOffset = (
       return start;
     }
 
-    if (clientY < rect.top) {
-      return getOffset(node, clientX, clientY, start, mid, length);
-    } else if (clientY > rect.bottom) {
-      return getOffset(node, clientX, clientY, mid, end, length);
-    } else if (clientX <= rect.left + rect.width) {
-      return getOffset(node, clientX, clientY, start, mid, length);
+    if (y < rect.top) {
+      return getOffset(node, x, y, start, mid, length);
+    } else if (y > rect.bottom) {
+      return getOffset(node, x, y, mid, end, length);
+    } else if (x <= rect.left + rect.width) {
+      return getOffset(node, x, y, start, mid, length);
     }
-    return getOffset(node, clientX, clientY, mid, end, length);
+    return getOffset(node, x, y, mid, end, length);
   }
   const [rStart, rEnd] = getCharRange(node.textContent || "", start);
   try {
@@ -111,11 +111,11 @@ export const getOffset = (
   const rect = rects.find((r) => r.width > 0) || rects[0];
   if (!rect) {
     return rStart;
-  } else if (clientY < rect.top) {
+  } else if (y < rect.top) {
     return rStart;
-  } else if (clientY > rect.bottom) {
+  } else if (y > rect.bottom) {
     return rEnd;
-  } else if (clientX <= rect.left + rect.width / 2) {
+  } else if (x <= rect.left + rect.width / 2) {
     return rStart;
   } else {
     return rEnd;
