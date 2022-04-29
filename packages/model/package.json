@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/selection",
+  "name": "@editablejs/model",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -11,24 +11,21 @@
     "dist/**"
   ],
   "scripts": {
-    "test": "jest --env=jsdom",
+    "test": "jest",
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
     "lint": "eslint src --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@editablejs/grapheme-breaker": "workspace:*",
-    "eventemitter3": "^4.0.7",
-    "is-hotkey": "^0.2.0"
+    "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@types/is-hotkey": "^0.1.7",
-    "@types/jest": "^26.0.22",
-    "jest": "^27.5.1",
-    "scripts": "workspace:*",
     "tsconfig": "workspace:*",
+    "scripts": "workspace:*",
+    "@types/jest": "^26.0.22",
     "tsup": "^5.10.1",
+    "jest": "^27.5.1",
     "typescript": "^4.5.3"
   },
   "jest": {

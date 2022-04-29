@@ -1,4 +1,4 @@
-const withTM = require("next-transpile-modules")(["@editablejs/selection"]);
+const withTM = require("next-transpile-modules")(["@editablejs/core"]);
 
 module.exports = withTM({
   reactStrictMode: true,

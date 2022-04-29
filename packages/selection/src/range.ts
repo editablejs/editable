@@ -1,34 +1,60 @@
 import { IRange, Position, RangeOptions } from "./types";
 
 export default class Range implements IRange {
-  readonly ahchor: Position;
-  readonly focus: Position;
+  private _anchor: Position;
+  private _focus: Position;
 
   constructor(options: RangeOptions) {
-    this.ahchor = options.anchor;
-    this.focus = options.focus;
+    this._anchor = options.anchor;
+    this._focus = options.focus;
+  }
+
+  get anchor() {
+    return this._anchor
+  }
+
+  get focus(){
+    return this._focus
   }
 
   get isCollapsed() { 
-    return this.ahchor.key === this.focus.key && this.ahchor.offset === this.focus.offset
+    return this.anchor.key === this.focus.key && this.anchor.offset === this.focus.offset
   }
 
   get isBackward() { 
-    if(this.ahchor.key === this.focus.key) return this.ahchor.offset > this.focus.offset
-    const ahchorNode = document.querySelector(`[data-key="${this.ahchor.key}"]`)
+    if(this.anchor.key === this.focus.key) return this.anchor.offset > this.focus.offset
+    const anchorNode = document.querySelector(`[data-key="${this.anchor.key}"]`)
     const focusNode = document.querySelector(`[data-key="${this.focus.key}"]`)
-    if(!ahchorNode || !focusNode) return false
-    return ahchorNode.getBoundingClientRect().top > focusNode.getBoundingClientRect().top
+    if(!anchorNode || !focusNode) return false
+    const anchorRects = anchorNode.getClientRects()
+    const lastRect = anchorRects.item(anchorRects.length - 1)
+    if(!lastRect) return false
+    const focusRects = focusNode.getClientRects()
+    const firstRect = focusRects.item(0)
+    if(!firstRect) return false
+    return lastRect.top > firstRect.top
   }
 
   getClientRects(){
     const range = document.createRange();
-    const ahchorNode = document.querySelector(`[data-key="${this.ahchor.key}"]`)?.firstChild
+    const anchorNode = document.querySelector(`[data-key="${this.anchor.key}"]`)?.firstChild
     const focusNode = document.querySelector(`[data-key="${this.focus.key}"]`)?.firstChild
-    if(!ahchorNode || !focusNode) return null
+    if(!anchorNode || !focusNode) return null
     const isBackward = this.isBackward
-    range.setStart(isBackward ? focusNode : ahchorNode, isBackward ? this.focus.offset : this.ahchor.offset);
-    range.setEnd(isBackward ? ahchorNode : focusNode, this.isBackward ? this.ahchor.offset : this.focus.offset);
+    range.setStart(isBackward ? focusNode : anchorNode, isBackward ? this.focus.offset : this.anchor.offset);
+    range.setEnd(isBackward ? anchorNode : focusNode, this.isBackward ? this.anchor.offset : this.focus.offset);
     return range.getClientRects()
+  }
+  
+  clone(): IRange {
+    return new Range({
+      anchor: { ...this.anchor },
+      focus: { ...this.focus }
+    })
+  }
+  
+  collapse(start: boolean): void {
+    if(start) this._focus = { ...this._anchor }
+    else this._anchor = { ...this._focus }
   }
 }
