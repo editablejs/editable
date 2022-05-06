@@ -1,19 +1,17 @@
-import EventEmitter from "eventemitter3";
+import EventEmitter from "@editablejs/event-emitter";
+import { Element, IModel, NodeKey, Text, INode, Op } from '@editablejs/model';
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE } from '@editablejs/constants'
 import type { IInput, IRange, IDrawRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
 import Range from './range'
-import Input, { EVENT_BLUR, EVENT_CHANGE, EVENT_FOCUS, InputEventType } from "./input";
-import Typing, { EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, TypingEventType } from "./typing";
-import { Element, IModel, NodeKey, Text, INode, Op, EVENT_NODE_DID_UPDATE } from '@editablejs/model';
+import Input, { InputEventType } from "./input";
+import Typing, { TypingEventType } from "./typing";
 
 const SELECTION_BLUR_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
 const SELECTION_CARET_COLOR = '#000'
 const SELECTION_CARET_WIDTH = 2
-
-export const EVENT_VALUE_CHANGE = 'onValueChange'
-export const EVENT_SELECTION_CHANGE = 'onSelectionChange'
 
 export type SelectionEventType = typeof EVENT_VALUE_CHANGE | typeof EVENT_SELECTION_CHANGE | 
 TypingEventType | InputEventType
@@ -156,6 +154,12 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       this.emit(EVENT_FOCUS)
       this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
     })
+    this.input.on(EVENT_KEYDOWN, (e: KeyboardEvent) => {
+      this.emit(EVENT_KEYDOWN, e)
+    })
+    this.input.on(EVENT_KEYUP, (e: KeyboardEvent) => {
+      this.emit(EVENT_KEYUP, e)
+    })
   }
   
   getRangeAt = (index: number) => {
@@ -228,7 +232,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.typing.destroy()
     this.input.destroy()
     this.layer.destroy()
-    this.removeAllListeners()
+    this.removeAll()
   }
 }
 

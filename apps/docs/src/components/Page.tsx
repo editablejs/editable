@@ -15,4 +15,10 @@ const PageComponent: React.FC<RenderOptions<NodeData, IElement>> = (props) => {
     </div>
   )
 }
+
+export const renderPage = (options: RenderOptions<NodeData, IElement>) => { 
+  const { node } = options
+  return <PageComponent key={node.getKey()} {...options} />
+}
+
 export default PageComponent

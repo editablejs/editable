@@ -1,13 +1,11 @@
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from '@editablejs/event-emitter';
 import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op } from "./types";
 import Node from './node'
 import Text from './text'
 import Element from './element'
 import ObjectMap from './map';
 import { createDeleteNode, createDeleteText, createInsertNode, createInsertText } from './op';
-
-export const EVENT_NODE_UPDATE = 'onNodeUpdate'
-export const EVENT_NODE_DID_UPDATE = 'onNodeDidUpdate'
+import { EVENT_NODE_UPDATE, EVENT_NODE_DID_UPDATE } from '@editablejs/constants'
 
 export type ModelEventType = typeof EVENT_NODE_UPDATE | typeof EVENT_NODE_DID_UPDATE
 
@@ -25,40 +23,40 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     this.emit(EVENT_NODE_UPDATE, node, ops)
   }
 
-  getNode = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null => {
+  getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null{
     const obj = this.map.get(key)
     if(!obj) return null
     return Element.createNode<T, N>(obj)
   }
 
-  getNext = (key: NodeKey): INode | null => { 
+  getNext(key: NodeKey): INode | null { 
     const obj = this.map.next(key)
     if(!obj) return null
     return Element.createNode(obj)
   }
 
-  getRoots = () => {
+  getRoots(){
     return this.map.roots().map(root => Element.createNode<NodeData, IElement>(root))
   }
 
-  getRootKeys = () => { 
+  getRootKeys(){ 
     return this.map.rootKeys()
   }
 
-  find = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] => { 
+  find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] { 
     return this.map.find(type).map(node => Element.createNode<T, N>(node))
   }
 
-  applyNode = (node: INode, ops: Op[]) => {
+  applyNode(node: INode, ops: Op[]){
     this.map.apply(node)
     this.emit(EVENT_NODE_DID_UPDATE, node, ops)
   }
 
-  applyOps = (...ops: Op[]) => { 
+  applyOps(...ops: Op[]){ 
     // TODO
   }
 
-  insertText = (text: string, key: string, offset?: number ) => {
+  insertText(text: string, key: string, offset?: number ){
     if(!key) {
       const textNode = Text.create({ text })
       this.insertNode(textNode)
@@ -78,7 +76,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     }
   }
 
-  deleteText = (key: NodeKey, offset: number, length: number) => { 
+  deleteText(key: NodeKey, offset: number, length: number){ 
     const node = this.getNode(key)
     if(!node) throw new Error(`No node with key ${key}`);
     if(!Text.isText(node)) throw new Error(`Node with key ${key} is not a text node`);
@@ -99,7 +97,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   //   }
   // }
 
-  insertNode = (node: INode, key?: string, offset?: number, ) => { 
+  insertNode(node: INode, key?: string, offset?: number, ){ 
     if(!key) {
       if(Text.isText(node)) throw new Error('Cannot insert text node without key')
       this.emitUpdate(node, createInsertNode(node, offset || this.map.rootKeys().length, key))
@@ -145,7 +143,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     }
   }
 
-  destroy = () => {
+  destroy(){
     this.map.clear()
   }
 }

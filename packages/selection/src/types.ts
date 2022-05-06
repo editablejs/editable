@@ -1,4 +1,4 @@
-import type EventEmitter from "eventemitter3";
+import type { IEventEmitter } from "@editablejs/event-emitter";
 import type { IModel, NodeKey } from '@editablejs/model';
 
 export interface Position {
@@ -17,7 +17,7 @@ export interface SelectionOptions {
 /**
  * Selection
  */
-export interface ISelection extends EventEmitter {
+export interface ISelection extends IEventEmitter {
   readonly anchor: Position | null;
   readonly focus: Position | null;
   readonly isCollapsed: boolean;
@@ -106,7 +106,7 @@ export interface ILayer {
   destroy(): void
 }
 
-export interface IInput extends EventEmitter {
+export interface IInput extends IEventEmitter {
   
   bindContainers(...containers: HTMLElement[]): void
 
@@ -120,7 +120,7 @@ export interface IInput extends EventEmitter {
 
 }
 
-export interface ITyping extends EventEmitter {
+export interface ITyping extends IEventEmitter {
 
   bindContainers(...containers: HTMLElement[]): void
 

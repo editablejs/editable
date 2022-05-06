@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/core",
+  "name": "@editablejs/event-emitter",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -16,13 +16,6 @@
     "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
     "lint": "eslint src --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
-  },
-  "dependencies": {
-    "@editablejs/selection": "workspace:*",
-    "@editablejs/model": "workspace:*",
-    "@editablejs/event-emitter": "workspace:*",
-    "@editablejs/constants": "workspace:*",
-    "is-hotkey": "^0.2.0"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",

@@ -18,7 +18,8 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.7"
+    "@editablejs/event-emitter": "workspace:*",
+    "@editablejs/constants": "workspace:*"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",

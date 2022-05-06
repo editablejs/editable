@@ -1,4 +1,4 @@
-import type EventEmitter from 'eventemitter3';
+import type { IEventEmitter } from '@editablejs/event-emitter';
 export type NodeData = any
 export type NodeKey = string;
 
@@ -98,7 +98,7 @@ export interface IObjectMap {
   clear(): void;
 }
 
-export interface IModel extends EventEmitter {
+export interface IModel extends IEventEmitter {
 
   getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null;
 

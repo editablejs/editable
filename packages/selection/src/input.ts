@@ -1,11 +1,10 @@
-import { EventEmitter } from "eventemitter3";
+import EventEmitter from "@editablejs/event-emitter";
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP } from '@editablejs/constants'
 import { ILayer } from "./layer";
 import { IInput, IRange } from "./types";
 
-export const EVENT_FOCUS = 'onFocus'
-export const EVENT_BLUR = 'onBlur'
-export const EVENT_CHANGE = 'onChange'
-export type InputEventType = typeof EVENT_FOCUS | typeof EVENT_BLUR | typeof EVENT_CHANGE
+
+export type InputEventType = typeof EVENT_FOCUS | typeof EVENT_BLUR | typeof EVENT_CHANGE | typeof EVENT_KEYDOWN | typeof EVENT_KEYUP
 
 export default class Input extends EventEmitter<InputEventType> implements IInput {
   protected layer: ILayer
@@ -55,6 +54,8 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     textarea.addEventListener('input', this.handleChange)
     textarea.addEventListener('compositionstart', this.handleCompositionStart)
     textarea.addEventListener('compositionend', this.handleCompositionEnd)
+    textarea.addEventListener('keydown', this.handleKeydown)
+    textarea.addEventListener('keyup', this.handleKeyup)
   }
 
   unbindContainersEvents = () => {
@@ -73,6 +74,16 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     textarea.removeEventListener('input', this.handleChange)
     textarea.removeEventListener('compositionstart', this.handleCompositionStart)
     textarea.removeEventListener('compositionend', this.handleCompositionEnd)
+    textarea.removeEventListener('keydown', this.handleKeydown)
+    textarea.removeEventListener('keyup', this.handleKeyup)
+  }
+
+  handleKeydown = (e: KeyboardEvent) => { 
+    this.emit(EVENT_KEYDOWN, e)
+  }
+
+  handleKeyup = (e: KeyboardEvent) => { 
+    this.emit(EVENT_KEYUP, e)
   }
 
   handleContainerMouseDown = () => { 
@@ -133,6 +144,6 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
   destroy = () => { 
     this.layer.clear('input')
     this.unbindEvents()
-    this.removeAllListeners()
+    this.removeAll()
   }
 }

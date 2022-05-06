@@ -1,19 +1,23 @@
 import type { ISelection } from '@editablejs/selection';
-import Selection, { EVENT_VALUE_CHANGE } from '@editablejs/selection';
-import type { IModel, INode, NodeData } from '@editablejs/model'
-import Model, { Element, EVENT_NODE_UPDATE } from '@editablejs/model'
-import type { EditorOptions, IEditor, IEditorState, PluginOptions, PluginRender } from './types';
-import EditorState from './state';
+import Selection from '@editablejs/selection';
+import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE } from '@editablejs/constants';
+import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
+import Model, { Element } from '@editablejs/model'
+import EventEmitter from '@editablejs/event-emitter';
+import type { EditorOptions, IEditor, PluginOptions, PluginRender } from './types';
+import type { ITyping } from './typing/types';
+import Typing from './typing';
 
 type IPluginMap = Map<string, PluginOptions>
 
 const _pluginMap: IPluginMap = new Map();
-class Editor implements IEditor {
+class Editor extends EventEmitter implements IEditor {
 
-  private selection: ISelection;
   private pluginMap: IPluginMap = new Map();
+  protected updateMap: Map<string, (node: INode, ops: Op[]) => void> = new Map();
+  selection: ISelection;
   model: IModel
-  editorState: IEditorState
+  typing: ITyping
 
   static create = (options?: EditorOptions) => {
     return new Editor(options);
@@ -29,6 +33,7 @@ class Editor implements IEditor {
   }
 
   constructor(options?: EditorOptions){
+    super()
     const { enabledPlugins, disabledPlugins } = options ?? {}
     if(enabledPlugins) {
       enabledPlugins.forEach(name => {
@@ -49,14 +54,13 @@ class Editor implements IEditor {
     this.selection = new Selection({
       model: this.model
     });
-    this.editorState = new EditorState({
-      model: this.model,
-      selection: this.selection
-    })
-    this.model.on(EVENT_NODE_UPDATE, this.editorState.emitUpdate)
+    this.typing = new Typing(this)
+    this.model.on(EVENT_NODE_UPDATE, this.emitUpdate)
     this.selection.on(EVENT_VALUE_CHANGE, (value: string) => {
-      this.editorState.insertText(value)
+      this.insertText(value)
     })
+    this.selection.on(EVENT_KEYDOWN, this.typing.emitKeydown)
+    this.selection.on(EVENT_KEYUP, this.typing.emitKeyup)
   }
 
   registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
@@ -81,14 +85,56 @@ class Editor implements IEditor {
     return plugin.render({
       node,
       next,
-      editorState: this.editorState
+      editor: this
     })
   }
 
-  destroy = () => { 
+  onUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: (node: T, ops: Op[]) => void) => {
+    this.updateMap.set(key, callback as ((node: INode) => void));
+  }
+
+  offUpdate = (key: NodeKey) => { 
+    this.updateMap.delete(key);
+  }
+
+  emitUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]) =>{ 
+    const callback = this.updateMap.get(node.getKey())
+    if(callback) {
+      callback(node, ops)
+    }
+  }
+
+  didUpdate = (node: INode, ops: Op[]) =>{
+    this.model.applyNode(node, ops)
+  }
+
+  deleteBackward(){
+    const range = this.selection.getRangeAt(0)
+    if(!range) return
+    if(range.isCollapsed) {
+      const { key, offset } = range.anchor
+      this.model.deleteText(key, offset, 1);
+    }
+  }
+
+  insertText(text: string){ 
+    const range = this.selection.getRangeAt(0)
+    if(!range) return
+    const { key, offset } = range.anchor
+    this.model.insertText(text, key, offset);
+  }
+
+  insertNode(node: INode){
+    const range = this.selection.getRangeAt(0)
+    if(!range) return
+    const { key, offset } = range.anchor
+    this.model.insertNode(node, key, offset)
+  }
+
+  destroy(){ 
+    this.updateMap.clear()
     this.pluginMap.clear()
     this.model.destroy()
-    this.editorState.destroy()
     this.selection.destroy()
   }
 }

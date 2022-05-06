@@ -10,4 +10,9 @@ const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
   )
 }
 
+export const renderText = (options: RenderOptions<NodeData, IText>) => {
+  const { node } = options
+  return <TextComponent key={node.getKey()} {...options}/>
+};
+
 export default TextComponent

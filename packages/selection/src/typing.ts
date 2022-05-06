@@ -1,20 +1,16 @@
-import { EventEmitter } from "eventemitter3"
-import isHotkey from "is-hotkey";
-import { ITyping, Position, TypingOptions } from "../types";
-import { IModel, NodeKey, Text } from '@editablejs/model';
-import { getOffset } from "../text";
+import EventEmitter from "@editablejs/event-emitter"
+import { ITyping, Position, TypingOptions } from "./types";
+import type { IModel } from '@editablejs/model';
+import { NodeKey, Text } from '@editablejs/model';
+import { EVENT_SELECT_START, EVENT_SELECTING, EVENT_SELECT_END, DATA_KEY } from '@editablejs/constants'
+import { getOffset } from "./text";
 
-export const EVENT_SELECT_START = 'onSelectStart'
-export const EVENT_SELECTING = 'onSelecting'
-export const EVENT_SELECT_END = 'onSelectEnd'
+
 
 export type TypingEventType = typeof EVENT_SELECT_START | typeof EVENT_SELECTING | typeof EVENT_SELECT_END
-
 export default class Typing extends EventEmitter<TypingEventType> implements ITyping {
-  
   protected containers: HTMLElement[] = []
   protected model: IModel
-
   constructor(options: TypingOptions) { 
     super()
     const { model } = options
@@ -24,14 +20,13 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
   unbindContainersEvents = () => {
     this.containers.forEach(container => {
       container.removeEventListener('mousedown', this.handleMouseDown);
-      container.removeEventListener('keydown', this.handleKeyDown);
     })
   }
 
   bindContainers = (...containers: HTMLElement[]) => { 
+    this.unbindContainersEvents()
     containers.forEach(container => {
       container.addEventListener('mousedown', this.handleMouseDown);
-      container.addEventListener('keydown', this.handleKeyDown);
     })
   }
 
@@ -43,7 +38,7 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
       targetNode = targetNode.parentNode
     }
     if(targetNode instanceof globalThis.Element) {
-      key = targetNode.getAttribute('data-key')
+      key = targetNode.getAttribute(DATA_KEY)
       if(!key) return
       const node = this.model.getNode(key)
       if(node && Text.isText(node)) {
@@ -89,35 +84,9 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
     document.removeEventListener('mouseup', this.handleMouseUp);
     this.emit(EVENT_SELECT_END, this.getPositionFromEvent(e))
   }
-  
-  handleKeyDown = (e: KeyboardEvent) => {
-    // if(isHotkey('left', e)) {
-    //   if(!this.isCollapsed) {
-    //     // shift 
-    //     if(isHotkey('shift+left', e)) {
-
-    //     }
-    //     // ctrl + shift
-    //     if(isHotkey('mod+shift+left', e)) {
-
-    //     }
-    //     // ctrl
-    //     if(isHotkey('mod+left', e)) {
-
-    //     }
-    //     // other
-
-    //   } else {
-    //     // 从获取当前offset节点的上一个节点
-
-    //     // 否则当前offset往前移
-        
-    //   }
-    // }
-  }
 
   destroy(): void {
     this.unbindContainersEvents()
-    this.removeAllListeners()
+    this.removeAll()
   }
 }
