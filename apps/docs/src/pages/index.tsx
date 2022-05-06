@@ -1,70 +1,86 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Editor from '@editablejs/core';
-import type { RenderOptions, NodeData, IText, IElement, IEditable } from '@editablejs/core'
+import React, { useEffect, useState } from 'react';
+import Editor, { Element, NodeKey, Op } from '@editablejs/core';
+import type { RenderOptions, NodeData, IText, IElement, IEditor } from '@editablejs/core'
+import TextComponent from '../components/Text';
+import ElementComponent from '../components/Element';
+import PageComponent from '../components/Page';
 import styles from './index.module.css'
 
-const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (options) => {
-  const [ node, setNode ] = useState(options.node)
-  const { editorState } = options
-  const key = node.getKey()
+const registerText = (options: RenderOptions<NodeData, IText>) => {
+  const { node } = options
+  return <TextComponent key={node.getKey()} {...options}/>
+};
 
-  useEffect(() => {
-    editorState.onUpdate<NodeData, IText>(key, setNode)
-    return () => {
-      editorState.offUpdate(key)
-    }
-  }, [key, editorState])
-
-  return (
-    <span key={key} data-editable-leaf="true" data-key={key}>{node.getText()}</span>
-  )
+const registerElement = (options: RenderOptions<NodeData, IElement>) => { 
+  const { node } = options
+  return <ElementComponent key={node.getKey()} {...options} />
 }
-const ElementComponent: React.FC<RenderOptions<NodeData, IElement>> = (options) => { 
-  const [ node, setNode ] = useState(options.node)
 
-  const { editorState, next } = options
-  const key = node.getKey()
-
-  useEffect(() => {
-    editorState.onUpdate<NodeData, IElement>(key, setNode)
-
-    return () => {
-      editorState.offUpdate(key)
-    }
-  }, [key, editorState])
-
-  const type = node.getType()
-  return (
-    <div key={key} data-editable-element={type} data-key={key}>
-      {
-        next ? next() : null
-      }
-    </div>
-  )
+const registerPage = (options: RenderOptions<NodeData, IElement>) => { 
+  const { node } = options
+  return <PageComponent key={node.getKey()} {...options} />
 }
-Editor.registerPlugin<NodeData, IText>('text', options => <TextComponent key={options.node.getKey()} {...options}/>)
-Editor.registerPlugin<NodeData, IElement>('paragraph', options => <ElementComponent key={options.node.getKey()} {...options} />)
-Editor.registerPlugin<NodeData, IElement>('root', options => <ElementComponent key={options.node.getKey()} {...options} />)
+
+Editor.registerPlugin<NodeData, IText>('text', registerText)
+Editor.registerPlugin<NodeData, IElement>('paragraph', registerElement)
+Editor.registerPlugin<NodeData, IElement>('page', registerPage)
+
+const defaultValue = {
+  key: 'default',
+  type: 'page',
+  children: [
+    {
+      type: 'paragraph',
+      children: [
+        {
+          type: 'text',
+          text: 'Hello, This is a Paragraph'
+        }
+      ]
+    }
+  ]
+}
 
 export default function Docs() {
-  const conatiner = useRef(null)
-  const [ editor, setEditor ] = useState<IEditable | null>(null)
+  const [ editor, setEditor ] = useState<IEditor | null>(null)
+  const [ pages, setPages ] = useState<Record<NodeKey, { node: IElement, ops: Op[]}>>({})
+
   useEffect(() => {
-    if(!conatiner.current ) return
-    const core = new Editor({
-      container: conatiner.current!,
+    const editor = new Editor()
+    const { model, editorState } = editor
+    const root = Element.create(defaultValue)
+    editorState.onUpdate<NodeData, IElement>(root.getKey(), (node, ops) => {
+      setPages(value => {
+        value[node.getKey()] = { node, ops }
+        return value
+      })
     })
-    setEditor(core)
+    model.insertNode(root)
+    setEditor(editor)
     return () => {
-      core.destroy()
+      editor.destroy()
     }
-  },[])
+  }, [])
+
+  useEffect(() => {
+    if(editor) {
+      const { editorState } = editor
+      Object.keys(pages).forEach(key => {
+        const { node, ops } = pages[key]
+        editorState.didUpdate(node, ops)
+      })
+    }
+  }, [pages, editor])
+  
+
   return (
     <div className={styles.wrapper}>
       <h1>Docs</h1>
-      <div ref={conatiner} className={styles.container}>
+      <div className={styles.container}>
         {
-          editor?.render()
+          Object.keys(pages).map(key => {
+            return editor?.renderPlugin(pages[key].node)
+          })
         }
       </div>
     </div>

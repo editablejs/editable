@@ -1,23 +1,22 @@
 import type { ISelection } from '@editablejs/selection';
-import Selection from '@editablejs/selection';
+import Selection, { EVENT_VALUE_CHANGE } from '@editablejs/selection';
 import type { IModel, INode, NodeData } from '@editablejs/model'
-import Model, { Element } from '@editablejs/model'
-import type { EditableOptions, IEditable, IEditorState, PluginOptions, PluginRender } from './types';
+import Model, { Element, EVENT_NODE_UPDATE } from '@editablejs/model'
+import type { EditorOptions, IEditor, IEditorState, PluginOptions, PluginRender } from './types';
 import EditorState from './state';
 
 type IPluginMap = Map<string, PluginOptions>
 
 const _pluginMap: IPluginMap = new Map();
-class Editable implements IEditable {
+class Editor implements IEditor {
 
   private selection: ISelection;
-  private model: IModel
-  private container: HTMLElement
   private pluginMap: IPluginMap = new Map();
+  model: IModel
   editorState: IEditorState
 
-  static create = (options: EditableOptions) => {
-    return new Editable(options);
+  static create = (options?: EditorOptions) => {
+    return new Editor(options);
   }
   
   static registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
@@ -29,8 +28,8 @@ class Editable implements IEditable {
     _pluginMap.set(type, options as unknown as PluginOptions)
   }
 
-  constructor(options: EditableOptions){
-    const { container, enabledPlugins, disabledPlugins } = options
+  constructor(options?: EditorOptions){
+    const { enabledPlugins, disabledPlugins } = options ?? {}
     if(enabledPlugins) {
       enabledPlugins.forEach(name => {
         const pluginOptions = _pluginMap.get(name)
@@ -38,45 +37,26 @@ class Editable implements IEditable {
           this.registerPlugin(name, pluginOptions)
         }
       })
-    } else  { 
+    } else { 
       _pluginMap.forEach((plugin, name) => { 
         if(!disabledPlugins || disabledPlugins.includes(name)) {
           this.registerPlugin(name, plugin)
         }
       })
     }
-    this.container = container;
+
+    this.model = new Model()
     this.selection = new Selection({
-      container
+      model: this.model
     });
-    this.model = new Model({})
-    this.initContent()
     this.editorState = new EditorState({
       model: this.model,
       selection: this.selection
     })
-    this.model.on('update', this.editorState.emitUpdate)
-    this.selection.on('valueChange', (value: string) => {
+    this.model.on(EVENT_NODE_UPDATE, this.editorState.emitUpdate)
+    this.selection.on(EVENT_VALUE_CHANGE, (value: string) => {
       this.editorState.insertText(value)
     })
-  }
-
-  initContent = () => {
-    const root = Element.create({
-      type: 'root',
-      children: [
-        {
-          type: 'paragraph',
-          children: [
-            {
-              type: 'text',
-              text: 'Hello, This is a Paragraph'
-            }
-          ]
-        }
-      ]
-    })
-    this.model.insertNode(root)
   }
 
   registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
@@ -91,23 +71,17 @@ class Editable implements IEditable {
   renderPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T): any => {
     const plugin = this.pluginMap.get(node.getType())
     if(!plugin) throw new Error(`No plugin registered for type ${node.getType()}`)
-    const next: (() => any) | undefined = Element.isElement(node) ? () => {
-      const children = node.getChildren()
+    const next: ((renderNode: INode) => any) = renderNode => {
+      if(!Element.isElement(renderNode)) return
+      const children = renderNode.getChildren()
       return children.map((child) => {
         return this.renderPlugin(child)
       })
-    } : undefined;
+    };
     return plugin.render({
       node,
       next,
       editorState: this.editorState
-    })
-  }
-
-  render = () => { 
-    const rootNodes = this.model.findNodesByType('root')
-    return rootNodes.map(root => {
-      return this.renderPlugin(root)
     })
   }
 
@@ -119,7 +93,7 @@ class Editable implements IEditable {
   }
 }
 
-export default Editable
+export default Editor
 
 export * from '@editablejs/model'
 export * from './types'

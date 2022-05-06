@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@editablejs/grapheme-breaker": "workspace:*",
+    "@editablejs/model": "workspace:*",
     "eventemitter3": "^4.0.7",
     "is-hotkey": "^0.2.0"
   },

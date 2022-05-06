@@ -1,12 +1,17 @@
 import type EventEmitter from "eventemitter3";
+import type { IModel, NodeKey } from '@editablejs/model';
 
 export interface Position {
-  key: string;
+  key: NodeKey;
   offset: number
 }
 
 export interface SelectionOptions {
-  container: HTMLElement;
+  model: IModel
+  blurColor?: string
+  focusColor?: string
+  caretColor?: string
+  caretWidth?: number
 }
 
 /**
@@ -16,6 +21,7 @@ export interface ISelection extends EventEmitter {
   readonly anchor: Position | null;
   readonly focus: Position | null;
   readonly isCollapsed: boolean;
+  readonly isFocus: boolean;
   
   getRangeAt(index: number): IRange | null;
 
@@ -26,6 +32,12 @@ export interface ISelection extends EventEmitter {
   removeRangeAt(index: number): void;
 
   removeAllRange(): void;
+  
+  applyRange(range: IRange): void;
+
+  drawRanges(...ranges: IRange[]): void
+
+  moveTo(key: NodeKey, offset: number): void
 
   destroy(): void
 }
@@ -36,6 +48,10 @@ export interface IRange {
   readonly isCollapsed: boolean
   readonly isBackward: boolean
 
+  setStart(key: NodeKey, offset: number): void
+
+  setEnd(key: NodeKey, offset: number): void
+
   getClientRects(): DOMRectList | null
 
   clone(): IRange
@@ -43,9 +59,14 @@ export interface IRange {
   collapse(start: boolean): void
 }
 
+export interface IDrawRange extends IRange {
+  color?: string
+  width?: number
+}
+
 export interface RangeOptions { 
   anchor: Position
-  focus: Position
+  focus?: Position
 }
 
 export interface LayerPosition {
@@ -64,7 +85,7 @@ export interface ILayer {
 
   drawRange(range: IRange): void
 
-  createBox(key: string, position: LayerPosition): HTMLDivElement
+  createBox(key: NodeKey, position: LayerPosition): HTMLDivElement
 
   updateBox(box: HTMLDivElement, position: LayerPosition): HTMLDivElement
 
@@ -76,15 +97,36 @@ export interface ILayer {
 
   clear(...keys: string[]): void
 
+  clearCaret(): void
+
+  clearSelection(): void
+
   appendChild(child: HTMLElement): void
 
   destroy(): void
 }
 
 export interface IInput extends EventEmitter {
+  
+  bindContainers(...containers: HTMLElement[]): void
+
+  focus(): void
+
+  blur(): void
 
   render(range: IRange): void
 
   destroy(): void
 
+}
+
+export interface ITyping extends EventEmitter {
+
+  bindContainers(...containers: HTMLElement[]): void
+
+  destroy(): void
+}
+
+export interface TypingOptions {
+  model: IModel
 }

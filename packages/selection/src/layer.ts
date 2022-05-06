@@ -1,9 +1,4 @@
-import type { IRange, ILayer, LayerPosition } from "./types";
-
-interface DrawRange extends IRange {
-  color?: string
-  width?: number
-}
+import type { IDrawRange, ILayer, LayerPosition } from "./types";
 
 const DATA_LAYER_ELEMENT = 'data-layer-element'
 const DATA_CARET_KEY = 'caret'
@@ -53,17 +48,23 @@ export default class SelectionLayer implements ILayer {
     return box
   }
 
-  draw = (...ranges: DrawRange[]) => {
-    ranges.forEach(this.drawRange)
+  draw = (...ranges: IDrawRange[]) => {
+    const range = ranges.find(r => r.isCollapsed)
+    this.clearSelection()
+    if(range) {
+      this.drawRange(range)
+    } else {
+      ranges.forEach(this.drawRange)
+    }
   }
 
-  drawRange = (range: DrawRange) => { 
+  drawRange = (range: IDrawRange) => { 
     const rects = range.getClientRects()
     if(!rects) return
     if(range.isCollapsed) {
       this.drawCaret({...rects[0].toJSON(), width: range.width || 2, color: range.color || '#000'})
     } else {
-      this.drawLines(...Array.from(rects).map(rect => ({ ...rect.toJSON() })))
+      this.drawLines(...Array.from(rects).map(rect => ({ ...rect.toJSON(), color: range.color || 'rgba(0,127,255,0.3)' })))
     }
   }
 
@@ -73,8 +74,7 @@ export default class SelectionLayer implements ILayer {
 
   drawCaret = (position: LayerPosition) => {
     if(this.caretTimer) clearTimeout(this.caretTimer)
-    this.clear(DATA_CARET_KEY, DATA_LINE_KEY)
-    const caret = this.createBox(DATA_CARET_KEY, { ...position, width: Math.max(position.width || 1, 1), color: position.color || '#000' })
+    const caret = this.createBox(DATA_CARET_KEY, { ...position, width: Math.max(position.width || 1, 1) })
     const activeCaret = () => {
       if(this.caretTimer) clearTimeout(this.caretTimer)
       this.caretTimer = setTimeout(() => { 
@@ -92,15 +92,22 @@ export default class SelectionLayer implements ILayer {
   }
 
   drawLines = (...position: LayerPosition[]) => {
-    this.clear(DATA_CARET_KEY, DATA_LINE_KEY)
     position.forEach(pos => { 
-      const line = this.createBox(DATA_LINE_KEY, { ...pos, color: pos.color || 'rgba(0,127,255,0.3)' })
+      const line = this.createBox(DATA_LINE_KEY, Object.assign({}, pos, { color: pos.color }))
       this.appendChild(line)
     })
   }
 
   appendChild = (child: HTMLElement) => { 
     this.body.appendChild(child)
+  }
+
+  clearSelection = () => {
+    this.clear(DATA_CARET_KEY, DATA_LINE_KEY)
+  }
+
+  clearCaret = () => {
+    this.clear(DATA_CARET_KEY)
   }
 
   clear = (...keys: string[]) => {

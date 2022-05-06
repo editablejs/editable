@@ -1,85 +1,70 @@
 import { EventEmitter } from 'eventemitter3';
-import type { IModel, INode, ModelOptions, NodeData, NodeObject } from "./types";
+import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op } from "./types";
 import Node from './node'
 import Text from './text'
 import Element from './element'
+import ObjectMap from './map';
+import { createDeleteNode, createDeleteText, createInsertNode, createInsertText } from './op';
 
-export default class EditableModel extends EventEmitter implements IModel {
-  private nodeMap: Map<string, NodeObject> = new Map();
-  private parentMap: Map<string, string[]> = new Map();
+export const EVENT_NODE_UPDATE = 'onNodeUpdate'
+export const EVENT_NODE_DID_UPDATE = 'onNodeDidUpdate'
+
+export type ModelEventType = typeof EVENT_NODE_UPDATE | typeof EVENT_NODE_DID_UPDATE
+
+export default class Model extends EventEmitter<ModelEventType> implements IModel {
+  
   protected options: ModelOptions
+  protected map: IObjectMap = new ObjectMap()
 
-  constructor(options: ModelOptions) {
+  constructor(options?: ModelOptions) {
     super()
-    this.options = options
+    this.options = options ?? {}
   }
 
-  findNodesByType = <T extends NodeData = NodeData> (type: string): INode[] => {
-    const nodes: INode[] = []
-    this.nodeMap.forEach(value => {
-      if (value.type === type) {
-        this.appendObjectChild(value)
-        nodes.push(Element.createNode<T>(value))
-      }
-    })
-    return nodes
+  protected emitUpdate = (node: INode, ...ops: Op[]) => { 
+    this.emit(EVENT_NODE_UPDATE, node, ops)
   }
 
-  appendObjectChild = (obj: NodeObject) => {
-    if(Element.isElementObject(obj)) {
-      obj.children = []
-      const childrenKeys = this.parentMap.get(obj.key)
-      childrenKeys?.forEach(childKey => {
-        const childObj = this.nodeMap.get(childKey)
-        if(childObj) {
-          obj.children.push(childObj)
-          this.appendObjectChild(childObj)
-        }
-      })
-    }
-  }
-
-  getNodeByKey = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: string): N => {
-    const obj = this.nodeMap.get(key);
-    if(!obj) throw new Error(`Node with key ${key} not found`);
-    this.appendObjectChild(obj)
+  getNode = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null => {
+    const obj = this.map.get(key)
+    if(!obj) return null
     return Element.createNode<T, N>(obj)
   }
 
-  applyNode = (...node: INode[]) => {
-    node.forEach(node => {
-      const key = node.getKey()
-      const parent = node.getParent()
-      if (parent) { 
-        const childKeys = this.parentMap.get(parent)
-        if(!childKeys) {
-          this.parentMap.set(parent, [key])
-        } else if(!childKeys.includes(key)) {
-          childKeys.push(key)
-        }
-      }
-      const hasNode = this.nodeMap.has(key)
-      if(Element.isElement(node)) {
-        const children = node.getChildren()
-        this.parentMap.set(key, [])
-        this.applyNode(...children)
-        this.nodeMap.set(key, node.toJSON(false))
-      } else {
-        this.nodeMap.set(key, node.toJSON())
-      }
-      if (hasNode) {
-        this.emit('update', node)
-      }
-    })
+  getNext = (key: NodeKey): INode | null => { 
+    const obj = this.map.next(key)
+    if(!obj) return null
+    return Element.createNode(obj)
   }
 
-  insertText = (text: string, key?: string, offset?: number ) => {
+  getRoots = () => {
+    return this.map.roots().map(root => Element.createNode<NodeData, IElement>(root))
+  }
+
+  getRootKeys = () => { 
+    return this.map.rootKeys()
+  }
+
+  find = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] => { 
+    return this.map.find(type).map(node => Element.createNode<T, N>(node))
+  }
+
+  applyNode = (node: INode, ops: Op[]) => {
+    this.map.apply(node)
+    this.emit(EVENT_NODE_DID_UPDATE, node, ops)
+  }
+
+  applyOps = (...ops: Op[]) => { 
+    // TODO
+  }
+
+  insertText = (text: string, key: string, offset?: number ) => {
     if(!key) {
       const textNode = Text.create({ text })
-      this.applyNode(textNode)
+      this.insertNode(textNode)
       return 
     }
-    const node = this.getNodeByKey(key)
+    const node = this.getNode(key)
     if(!node) throw new Error(`No node with key ${key}`);
     if(Element.isElement(node)) {
       const size = node.getChildrenSize()
@@ -88,64 +73,80 @@ export default class EditableModel extends EventEmitter implements IModel {
       const textNode = Text.create({ text })
       this.insertNode(textNode, key, offset);
     } else if(Text.isText(node)) {
-      const content = node.getText()
-      if(offset === undefined) offset = content.length
-      if(offset < 0 || offset > content.length) throw new Error(`Offset ${offset} is out of range`);
-      const newContent = content.slice(0, offset) + text + content.slice(offset)
-      node.setText(newContent)
-      this.applyNode(node)
+      node.insert(text, offset)
+      this.emitUpdate(node, createInsertText(key, text, offset ?? node.getText().length))
     }
   }
 
+  deleteText = (key: NodeKey, offset: number, length: number) => { 
+    const node = this.getNode(key)
+    if(!node) throw new Error(`No node with key ${key}`);
+    if(!Text.isText(node)) throw new Error(`Node with key ${key} is not a text node`);
+    const content = node.getText()
+    node.delete(offset, length)
+    this.emitUpdate(node, createDeleteText(key, content.slice(offset, offset + length), offset))
+  }
+
+  // splitNode = (key: NodeKey, offset: number) => { 
+  //   const node = this.getNode(key);
+  //   if(!node) throw new Error(`No node with key ${key}`);
+  //   const parentKey = node.getParent()
+  //   const parent = parentKey ? this.getNode(parentKey) : null
+  //   // split text
+  //   if(Text.isText(node)) {
+  //     if(!parent) throw new Error(`This node ${key} is not in context`);
+  //     const [ left, right ] = node.split(offset)
+  //   }
+  // }
+
   insertNode = (node: INode, key?: string, offset?: number, ) => { 
     if(!key) {
-      this.applyNode(node)
+      if(Text.isText(node)) throw new Error('Cannot insert text node without key')
+      this.emitUpdate(node, createInsertNode(node, offset || this.map.rootKeys().length, key))
       return 
     }
-    const targetNode = this.getNodeByKey(key);
+    const targetNode = this.getNode(key);
     if(!targetNode) throw new Error(`No node with key ${key}`);
     if(Element.isElement(targetNode)) {
       const size = targetNode.getChildrenSize()
       if(offset === undefined) offset = size
       if(size < 0 || size < offset) throw new Error(`No child at offset ${offset}`);
-      targetNode.insertAt(offset, node)
-      this.applyNode(targetNode)
+      // Need to judge isInline or isBlock
+      targetNode.insert(offset, node)
+      this.emitUpdate(node, createInsertNode(node, offset, key))
     } else if(Text.isText(targetNode)) {
-      const parent = targetNode.getParent()
-      if(!parent) throw new Error(`This node ${key} is not in context`)
-      const parentNode = this.getNodeByKey<NodeData, Element>(parent)
-      if(!parentNode) throw new Error(`No node with key ${parent}`);
-      // split text
-      const text = targetNode.getText()
-      const leftText = Text.create({ text: text.slice(0, offset) })
-      const rightText = Text.create({ text: text.slice(offset) })
-      // split element
-      const children = parentNode.getChildren()
-      const index = children.findIndex(child => child.getKey() === key)
-      const leftElement = Element.create({ children: [] })
-      leftElement.insertAt(0, ...[...children.slice(0, index), leftText])
-      const rightElement = Element.create({ children: [] })
-      rightElement.insertAt(0, ...[...children.slice(index + 1), rightText])
-      // combination
-      const rootKey = parentNode.getParent()
-      if(rootKey) {
-        const rootNode = this.getNodeByKey<NodeData, Element>(rootKey)
-        if(!rootNode) throw new Error(`No node with key ${rootKey}`);
-        const children = rootNode.getChildren()
-        const index = children.findIndex(child => child.getKey() === rootKey)
-        const newChildren = [...children.slice(0, index), leftElement, node, rightElement, ...children.slice(index + 1)]
-        rootNode.removeChild(rootKey)
-        rootNode.insertAt(index, ...newChildren)
-        this.applyNode(rootNode)
-      } else {
-        const newChildren = [leftElement, node, rightElement]
-        this.applyNode(...newChildren)
+      const parentKey = targetNode.getParent()
+      if(!parentKey) throw new Error(`This node ${key} is not in context`)
+      const parent = this.getNode<NodeData, Element>(parentKey)
+      if(!parent) throw new Error(`No node with key ${parentKey}`);
+      offset = offset ?? targetNode.getText().length
+      if(Text.isText(node) && targetNode.compare(node)) {
+        const text = node.getText()
+        targetNode.insert(text, offset)
+        this.emitUpdate(targetNode, createInsertText(key, text, offset))
+        return
       }
+      const ops: Op[] = []
+      const children = parent.getChildren()
+      const index = children.findIndex(child => child.getKey() === key)
+      // split text
+      const [ leftText, rightText ] = targetNode.split(offset || 0)
+      if(Text.isText(node)) {
+        parent.removeChild(key)
+        ops.push(createDeleteNode(key))
+        parent.insert(index, leftText, node, rightText)
+        ops.push(createInsertNode(leftText, index, key))
+        ops.push(createInsertNode(node, index + 1, key))
+        ops.push(createInsertNode(rightText, index + 2, key))
+        this.emitUpdate(parent, ...ops)
+        return
+      }
+      // split element
     }
   }
 
   destroy = () => {
-    this.nodeMap.clear()
+    this.map.clear()
   }
 }
 

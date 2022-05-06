@@ -1,12 +1,23 @@
 import EventEmitter from "eventemitter3";
-import isHotkey from 'is-hotkey'
-import type { IInput, IRange, ISelection, Position, SelectionOptions } from "./types";
+import type { IInput, IRange, IDrawRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
-import { getOffset } from "./text";
 import Range from './range'
-import Input from "./input";
-export default class Selection extends EventEmitter implements ISelection {
+import Input, { EVENT_BLUR, EVENT_CHANGE, EVENT_FOCUS, InputEventType } from "./input";
+import Typing, { EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, TypingEventType } from "./typing";
+import { Element, IModel, NodeKey, Text, INode, Op, EVENT_NODE_DID_UPDATE } from '@editablejs/model';
+
+const SELECTION_BLUR_COLOR = 'rgba(136, 136, 136, 0.3)'
+const SELECTION_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
+const SELECTION_CARET_COLOR = '#000'
+const SELECTION_CARET_WIDTH = 2
+
+export const EVENT_VALUE_CHANGE = 'onValueChange'
+export const EVENT_SELECTION_CHANGE = 'onSelectionChange'
+
+export type SelectionEventType = typeof EVENT_VALUE_CHANGE | typeof EVENT_SELECTION_CHANGE | 
+TypingEventType | InputEventType
+export default class Selection extends EventEmitter<SelectionEventType> implements ISelection {
   
   protected options: SelectionOptions;
   protected ranges: IRange[] = [];
@@ -14,18 +25,32 @@ export default class Selection extends EventEmitter implements ISelection {
   protected end: Position | null = null;
   protected layer: ILayer 
   protected input: IInput
+  protected typing: ITyping
+  protected model: IModel
+  private blurColor: string
+  private focusColor: string
+  private caretColor: string
+  private caretWidth: number
+  private _isFoucs = false
 
   constructor(options: SelectionOptions) {
     super();
     this.options = options;
-    const { container } = options
+    const { blurColor, focusColor, caretColor, caretWidth, model } = options
+    this.model = model
+    model.on(EVENT_NODE_DID_UPDATE, this.handeleDidUpdate)
+    this.blurColor = blurColor ?? SELECTION_BLUR_COLOR
+    this.focusColor = focusColor ?? SELECTION_FOCUS_COLOR
+    this.caretColor = caretColor ?? SELECTION_CARET_COLOR
+    this.caretWidth = caretWidth ?? SELECTION_CARET_WIDTH
+    this.typing = new Typing({
+      model
+    })
+    this.bindTyping()
     this.layer = new Layer()
     this.input = new Input(this.layer)
-    this.input.on('change', (value: string) => {
-      this.emit('valueChange', value)
-    })
-    container.addEventListener('mousedown', this.handleMouseDown);
-    container.addEventListener('keydown', this.handleKeyDown);
+    this.bindInput()
+    this.on(EVENT_SELECTION_CHANGE, this.drawRanges)
   }
 
   get anchor() {
@@ -43,6 +68,95 @@ export default class Selection extends EventEmitter implements ISelection {
     startRange.anchor.key === endRange.anchor.key && startRange.anchor.offset === endRange.focus.offset && 
     startRange.focus.key === endRange.focus.key && startRange.focus.offset === endRange.focus.offset;
   }
+
+  get isFocus(){
+    return this._isFoucs
+  }
+
+  handeleDidUpdate = (node: INode, ops: Op[]) => {
+    if(!node.getParent()) this.handleRootUpdate()
+    const lastOp = ops[ops.length - 1]
+    if(!lastOp) return
+    const { type, key, offset, value } = lastOp
+    if(!key) return
+    switch(type) {
+      case 'insertText':
+        if(!offset) return
+        this.applyRange(new Range({
+          anchor: {
+            key,
+            offset: offset + value.length
+          }
+        }))
+        break
+      case 'deleteText':
+        if(!offset) return
+        this.applyRange(new Range({
+          anchor: {
+            key,
+            offset: offset - value.length
+          }
+        }))
+        break
+      case 'insertNode':
+
+        break
+    }
+  }
+
+  handleRootUpdate = () => {
+    const keys = this.model.getRootKeys()
+    const domSelector = keys.map(key => `[data-key="${key}"]`).join(',')
+    const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
+    const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
+    this.typing.bindContainers(...containers)
+    this.input.bindContainers(...containers)
+  }
+
+  bindTyping = () => {
+    this.typing.on(EVENT_SELECT_START, (position: Position) => {
+      this.removeAllRange()
+      this.start = position
+      this.emit(EVENT_SELECT_START, position)
+    })
+    const handleSelecting = (position?: Position) => { 
+      if(!this.start || !position) return
+      this.end = position
+      const range = new Range({
+        anchor: this.start,
+        focus: position
+      })
+      this.removeAllRange()
+      this.addRange(range)
+      return range
+    }
+    this.typing.on(EVENT_SELECTING, (position?: Position) => {
+      const range = handleSelecting(position)
+      if(!range) return
+      this.emit(EVENT_SELECTING, range)
+    })
+    this.typing.on(EVENT_SELECT_END, (position?: Position) => {
+      const range = handleSelecting(position)
+      if(!range) return
+      this.emit(EVENT_SELECT_END, range)
+    })
+  }
+
+  bindInput = () => {
+    this.input.on(EVENT_CHANGE, (value: string) => {
+      this.emit(EVENT_VALUE_CHANGE, value)
+    })
+    this.input.on(EVENT_BLUR, () => {
+      this._isFoucs = false
+      this.emit(EVENT_BLUR)
+      this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+    })
+    this.input.on(EVENT_FOCUS, () => {
+      this._isFoucs = true
+      this.emit(EVENT_FOCUS)
+      this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+    })
+  }
   
   getRangeAt = (index: number) => {
     return this.ranges.at(index) ?? null;
@@ -54,130 +168,71 @@ export default class Selection extends EventEmitter implements ISelection {
 
   addRange = (range: IRange) => {
     this.ranges.push(range);
-    this.emit('onChange');
+    this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
   }
 
   removeRangeAt = (index: number) => { 
     this.ranges.splice(index, 1);
-    this.emit('onChange');
+    this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
   }
 
-  removeAllRange(): void {
+  removeAllRange = (): void => {
+    const isEmit = this.ranges.length > 0
     this.ranges = [];
-    this.emit('onChange');
+    if(isEmit) this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
   }
 
-  getNodeFromEvent = (e: MouseEvent) => {
-    if (!e.target) return
-    let targetNode: Node | null = e.target as Node
-    let key = ''
-    if(targetNode instanceof Text) {
-      targetNode = targetNode.parentNode
-    }
-    if(targetNode instanceof Element) {
-      const editableLeaf = targetNode.getAttribute('data-editable-leaf')
-      if(editableLeaf === 'true' && targetNode.firstChild) {
-        key = targetNode.getAttribute('data-key') ?? ''
-        targetNode = targetNode.firstChild
-      } else return
-    } 
-    if (targetNode instanceof Text) return {
-      node: targetNode,
-      key
-    }
-  }
-
-  getPositionFromEvent = (e: MouseEvent): Position | undefined => { 
-    const result = this.getNodeFromEvent(e)
-    if(!result) return
-    const { key, node } = result
-    const content = node.textContent || ''
-    const offset = getOffset(node, e.clientX, e.clientY, 0, content.length, content.length)
-    return {
-      key,
-      offset
-    }
-  }
-
-  handleMouseDown = (e: MouseEvent) => { 
-    const position = this.getPositionFromEvent(e)
-    if(!position) return
-    this.ranges = []
-    this.start = position
-    this.emit('onSelectStart')
-    if(e.button === 0) {
-      document.addEventListener('mousemove', this.handleMouseMove);
-    }
-    document.addEventListener('mouseup', this.handleMouseUp);
-  }
-
-  handleMouseMove = (e: MouseEvent) => { 
-    // 暂未考虑鼠标移动时，溢出编辑区域外选中内容的情况
-    this.handleLayerDraw(e)
-    this.emit('onSelecting')
-    this.emit('onChange');
-  }
-
-  handleMouseUp = (e: MouseEvent) => { 
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('mouseup', this.handleMouseUp);
-    this.handleLayerDraw(e)
-    if(!this.start || !this.end) { 
-      return
-    }
-    this.ranges.push(new Range({
-      anchor: this.start,
-      focus: this.end
-    }))
-    this.emit('onSelectEnd')
-  }
-
-  handleLayerDraw = (e: MouseEvent) => { 
-    if(!this.start) return
-    const position = e.button === 0 ? this.getPositionFromEvent(e) : this.start
-    if(!position) return
-    this.end = position
-    const range = new Range({
-      anchor: this.start,
-      focus: position
-    })
-    this.layer.draw(range)
-    this.input.render(range)
-  }
-  
-  handleKeyDown = (e: KeyboardEvent) => {
-    if(isHotkey('left', e)) {
-      if(!this.isCollapsed) {
-        // shift 
-        if(isHotkey('shift+left', e)) {
-
-        }
-        // ctrl + shift
-        if(isHotkey('mod+shift+left', e)) {
-
-        }
-        // ctrl
-        if(isHotkey('mod+left', e)) {
-
-        }
-        // other
-
-      } else {
-        // 从获取当前offset节点的上一个节点
-
-        // 否则当前offset往前移
-        
+  applyRange = (range: IRange) => {
+    const check = (key: NodeKey, offset: number) => {
+      const node = this.model.getNode(key)
+      if(!node) throw new Error(`node ${key} not found`)
+      if(Text.isText(node)) {
+        const text = node.getText()
+        if(offset < 0 || offset > text.length) throw new Error(`offset ${offset} out of range`)
+      } else if (Element.isElement(node)){
+        const size = node.getChildrenSize()
+        if(offset < 0 || offset > size) throw new Error(`offset ${offset} out of range`)
       }
     }
+    const { anchor, focus } = range
+    check(anchor.key, anchor.offset)
+    if(!range.isCollapsed) {
+      check(focus.key, focus.offset)
+    }
+    this.removeAllRange()
+    this.addRange(range)
+  }
+
+  drawRanges = (...ranges: IDrawRange[]) => {
+    if(ranges.length === 0) {
+      this.layer.clearSelection()
+      return
+    } else if(!this.isFocus && ranges.find(range => range.isCollapsed)) { 
+      this.layer.clearCaret()
+      return
+    }
+    ranges = ranges.map(range => {
+      range.color = range.isCollapsed ? this.caretColor : (this.isFocus ? this.focusColor : this.blurColor)
+      range.width = range.isCollapsed ? this.caretWidth : undefined
+      return range
+    })
+    this.layer.draw(...ranges)
+    this.input.render(ranges[ranges.length - 1])
+  }
+
+  moveTo(key: NodeKey, offset: number) {
+    
   }
 
   destroy() { 
-    const { container } = this.options
-    container.removeEventListener('mousedown', this.handleMouseDown);
+    this.typing.destroy()
     this.input.destroy()
     this.layer.destroy()
+    this.removeAllListeners()
   }
 }
+
 export {
-  ISelection
+  Range
 }
+export * from './types'

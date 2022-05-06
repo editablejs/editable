@@ -1,3 +1,4 @@
+import { NodeKey } from "@editablejs/model";
 import { IRange, Position, RangeOptions } from "./types";
 
 export default class Range implements IRange {
@@ -6,7 +7,7 @@ export default class Range implements IRange {
 
   constructor(options: RangeOptions) {
     this._anchor = options.anchor;
-    this._focus = options.focus;
+    this._focus = options.focus ?? this._anchor;
   }
 
   get anchor() {
@@ -34,6 +35,20 @@ export default class Range implements IRange {
     if(!firstRect) return false
     return lastRect.top > firstRect.top
   }
+  
+  setStart(key: NodeKey, offset: number): void {
+    this._anchor = {
+      key,
+      offset
+    }
+  }
+
+  setEnd(key: NodeKey, offset: number): void {
+    this._focus = {
+      key,
+      offset
+    }
+  }
 
   getClientRects(){
     const range = document.createRange();
@@ -48,13 +63,13 @@ export default class Range implements IRange {
   
   clone(): IRange {
     return new Range({
-      anchor: { ...this.anchor },
-      focus: { ...this.focus }
+      anchor: Object.assign({}, this.anchor),
+      focus: Object.assign({}, this.focus)
     })
   }
-  
+
   collapse(start: boolean): void {
-    if(start) this._focus = { ...this._anchor }
-    else this._anchor = { ...this._focus }
+    if(start) this._focus = Object.assign({}, this._anchor)
+    else this._anchor = Object.assign({}, this._focus)
   }
 }

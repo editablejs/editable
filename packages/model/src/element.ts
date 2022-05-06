@@ -1,11 +1,13 @@
 
-import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions } from './types';
-import Node from './node';
+import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle, Op } from './types';
+import Node, { NodeOpType } from './node';
 import Text from './text';
 
+export type ElementOpType = NodeOpType | 'insertNode' | 'deleteNode' | 'updateStyle'
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
+  protected style: ElementStyle = new Map()
   
   static create = <T extends NodeData = NodeData>(options: ElementOptions<T>): IElement<T> => {
     return new Element(options)
@@ -23,6 +25,15 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   static isElementObject = (nodeObj: NodeOptions): nodeObj is ElementObject => { 
     return nodeObj.type !== 'text'
+  }
+
+  static createOp = (type: ElementOpType, offset?: number, key?: NodeKey, value?: NodeData): Op => {
+    return {
+      type,
+      key,
+      offset,
+      value
+    }
   }
 
   constructor(options: ElementOptions<T>) { 
@@ -52,14 +63,22 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     this.children.push(this.createChildNode(child.toJSON()))
   }
 
-  removeChild(key: string): void {
+  removeChild(key: NodeKey): void {
     const index = this.children.findIndex(child => child.getKey() === key)
     if(index < 0) throw new Error('Child not found')
     this.children.splice(index, 1)
   }
 
-  insertAt(index: number, ...child: INode[]): void {
+  insert(index: number, ...child: INode[]): void {
     this.children.splice(index, 0, ...child.map(c => this.createChildNode(c.toJSON())))
+  }
+
+  split(offset: number){
+    const size = this.getChildrenSize()
+    if(offset < 0 || size < offset) throw new Error(`No child at offset ${offset}`)
+    const left = this.children.slice(0, offset)
+    const right = this.children.slice(offset)
+    return [left, right]
   }
 
   empty(): void {
