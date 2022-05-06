@@ -45,6 +45,8 @@ export interface IEditor extends IEventEmitter {
 
   deleteBackward(): void
 
+  deleteForward(): void
+
   insertText(text: string): void;
 
   insertNode(node: INode): void

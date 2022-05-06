@@ -92,7 +92,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
         this.applyRange(new Range({
           anchor: {
             key,
-            offset: offset - value.length
+            offset
           }
         }))
         break

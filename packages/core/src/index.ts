@@ -113,6 +113,15 @@ class Editor extends EventEmitter implements IEditor {
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
+      this.model.deleteText(key, offset - 1, 1);
+    }
+  }
+
+  deleteForward(){
+    const range = this.selection.getRangeAt(0)
+    if(!range) return
+    if(range.isCollapsed) {
+      const { key, offset } = range.anchor
       this.model.deleteText(key, offset, 1);
     }
   }
