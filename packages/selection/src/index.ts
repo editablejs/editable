@@ -1,6 +1,6 @@
 import EventEmitter from "@editablejs/event-emitter";
 import { Element, IModel, NodeKey, Text, INode, Op } from '@editablejs/model';
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE } from '@editablejs/constants'
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE, EVENT_NODE_UPDATE } from '@editablejs/constants'
 import type { IInput, IRange, IDrawRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
@@ -36,6 +36,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.options = options;
     const { blurColor, focusColor, caretColor, caretWidth, model } = options
     this.model = model
+    //model.on(EVENT_NODE_UPDATE, this.handelNodeUpdate)
     model.on(EVENT_NODE_DID_UPDATE, this.handeleDidUpdate)
     this.blurColor = blurColor ?? SELECTION_BLUR_COLOR
     this.focusColor = focusColor ?? SELECTION_FOCUS_COLOR
@@ -71,34 +72,45 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     return this._isFoucs
   }
 
-  handeleDidUpdate = (node: INode, ops: Op[]) => {
-    if(!node.getParent()) this.handleRootUpdate()
+  createRangeFromOps(ops: Op[]) { 
     const lastOp = ops[ops.length - 1]
     if(!lastOp) return
     const { type, key, offset, value } = lastOp
     if(!key) return
     switch(type) {
       case 'insertText':
-        if(!offset) return
-        this.applyRange(new Range({
+        if(offset === undefined) return
+        return new Range({
           anchor: {
             key,
             offset: offset + value.length
           }
-        }))
-        break
+        })
       case 'deleteText':
-        if(!offset) return
-        this.applyRange(new Range({
+        if(offset === undefined) return
+        return new Range({
           anchor: {
             key,
             offset
           }
-        }))
-        break
+        })
       case 'insertNode':
 
         break
+    }
+  }
+
+  handelNodeUpdate = (node: INode, ops: Op[]) => { 
+    const range = this.createRangeFromOps(ops)
+    if(!range) return
+    this.ranges = [range]
+  }
+
+  handeleDidUpdate = (node: INode, ops: Op[]) => {
+    if(!node.getParent()) this.handleRootUpdate()
+    const range = this.createRangeFromOps(ops)
+    if(range) { 
+      this.applyRange(range)
     }
   }
 

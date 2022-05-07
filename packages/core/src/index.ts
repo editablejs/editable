@@ -2,7 +2,7 @@ import type { ISelection } from '@editablejs/selection';
 import Selection from '@editablejs/selection';
 import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE } from '@editablejs/constants';
 import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
-import Model, { Element } from '@editablejs/model'
+import Model, { Element, Text } from '@editablejs/model'
 import EventEmitter from '@editablejs/event-emitter';
 import type { EditorOptions, IEditor, PluginOptions, PluginRender } from './types';
 import type { ITyping } from './typing/types';
@@ -113,7 +113,11 @@ class Editor extends EventEmitter implements IEditor {
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
-      this.model.deleteText(key, offset - 1, 1);
+      console.log(range.anchor)
+      const deleteOffset = offset - 1
+      if(deleteOffset >= 0) {
+        this.model.deleteText(key, deleteOffset, 1);
+      }
     }
   }
 
@@ -122,7 +126,12 @@ class Editor extends EventEmitter implements IEditor {
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
-      this.model.deleteText(key, offset, 1);
+      const node = this.model.getNode(key)
+      if(!node) throw new Error(`No node with key ${key}`);
+      if(Text.isText(node)) {
+        const text = node.getText()
+        if(offset + 1 < text.length) this.model.deleteText(key, offset, 1);
+      }
     }
   }
 

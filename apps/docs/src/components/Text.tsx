@@ -6,7 +6,7 @@ const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
   const { node } = useComponent(props)
   const key = node.getKey()
   return (
-    <span key={key} data-editable-leaf="true" data-key={key}>{node.getText()}</span>
+    <span key={key} data-key={key}>{node.getText()}</span>
   )
 }
 

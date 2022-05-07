@@ -5,10 +5,9 @@ const PageComponent: React.FC<RenderOptions<NodeData, IElement>> = (props) => {
   const [ node ] = useState(props.node)
   const { next } = props
   const key = node.getKey()
-  const type = node.getType()
 
   return (
-    <div key={key} data-editable-element={type} data-key={key}>
+    <div key={key} data-key={key}>
       {
         next(node)
       }
