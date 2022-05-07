@@ -1,5 +1,6 @@
 import type { ISelection } from '@editablejs/selection';
 import Selection from '@editablejs/selection';
+import { Log } from '@editablejs/utils';
 import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE } from '@editablejs/constants';
 import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
 import Model, { Element, Text } from '@editablejs/model'
@@ -73,8 +74,9 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   renderPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T): any => {
-    const plugin = this.pluginMap.get(node.getType())
-    if(!plugin) throw new Error(`No plugin registered for type ${node.getType()}`)
+    const type = node.getType()
+    const plugin = this.pluginMap.get(type)
+    if(!plugin) Log.pluginNotFound(type)
     const next: ((renderNode: INode) => any) = renderNode => {
       if(!Element.isElement(renderNode)) return
       const children = renderNode.getChildren()
@@ -127,7 +129,7 @@ class Editor extends EventEmitter implements IEditor {
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
       const node = this.model.getNode(key)
-      if(!node) throw new Error(`No node with key ${key}`);
+      if(!node) Log.nodeNotFound(key)
       if(Text.isText(node)) {
         const text = node.getText()
         if(offset + 1 < text.length) this.model.deleteText(key, offset, 1);

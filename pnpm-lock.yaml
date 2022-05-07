@@ -65,6 +65,7 @@ importers:
       '@editablejs/event-emitter': workspace:*
       '@editablejs/model': workspace:*
       '@editablejs/selection': workspace:*
+      '@editablejs/utils': workspace:*
       '@types/jest': ^26.0.22
       is-hotkey: ^0.2.0
       jest: ^27.5.1
@@ -77,6 +78,7 @@ importers:
       '@editablejs/event-emitter': link:../event-emitter
       '@editablejs/model': link:../model
       '@editablejs/selection': link:../selection
+      '@editablejs/utils': link:../utils
       is-hotkey: 0.2.0
     devDependencies:
       '@types/jest': 26.0.24
@@ -133,6 +135,7 @@ importers:
     specifiers:
       '@editablejs/constants': workspace:*
       '@editablejs/event-emitter': workspace:*
+      '@editablejs/utils': workspace:*
       '@types/jest': ^26.0.22
       jest: ^27.5.1
       scripts: workspace:*
@@ -142,6 +145,7 @@ importers:
     dependencies:
       '@editablejs/constants': link:../constants
       '@editablejs/event-emitter': link:../event-emitter
+      '@editablejs/utils': link:../utils
     devDependencies:
       '@types/jest': 26.0.24
       jest: 27.5.1
@@ -187,6 +191,7 @@ importers:
       '@editablejs/event-emitter': workspace:*
       '@editablejs/grapheme-breaker': workspace:*
       '@editablejs/model': workspace:*
+      '@editablejs/utils': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       jest: ^27.5.1
@@ -199,6 +204,7 @@ importers:
       '@editablejs/event-emitter': link:../event-emitter
       '@editablejs/grapheme-breaker': link:../grapheme-breaker
       '@editablejs/model': link:../model
+      '@editablejs/utils': link:../utils
     devDependencies:
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
@@ -210,6 +216,22 @@ importers:
 
   packages/tsconfig:
     specifiers: {}
+
+  packages/utils:
+    specifiers:
+      '@types/jest': ^26.0.22
+      jest: ^27.5.1
+      scripts: workspace:*
+      tsconfig: workspace:*
+      tsup: ^5.10.1
+      typescript: ^4.5.3
+    devDependencies:
+      '@types/jest': 26.0.24
+      jest: 27.5.1
+      scripts: link:../scripts
+      tsconfig: link:../tsconfig
+      tsup: 5.12.1_typescript@4.6.3
+      typescript: 4.6.3
 
 packages:
 

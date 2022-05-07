@@ -1,4 +1,5 @@
 import EventEmitter from '@editablejs/event-emitter';
+import { Log } from '@editablejs/utils'
 import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op } from "./types";
 import Node from './node'
 import Text from './text'
@@ -63,11 +64,11 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       return 
     }
     const node = this.getNode(key)
-    if(!node) throw new Error(`No node with key ${key}`);
+    if(!node) Log.nodeNotFound(key)
     if(Element.isElement(node)) {
       const size = node.getChildrenSize()
       if(offset === undefined) offset = size
-      if(size < 0 || size < offset) throw new Error(`No child at offset ${offset}`);
+      if(size < 0 || size < offset) Log.offsetOutOfRange(key, offset)
       const textNode = Text.create({ text })
       this.insertNode(textNode, key, offset);
     } else if(Text.isText(node)) {
@@ -78,8 +79,8 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
 
   deleteText(key: NodeKey, offset: number, length: number){ 
     const node = this.getNode(key)
-    if(!node) throw new Error(`No node with key ${key}`);
-    if(!Text.isText(node)) throw new Error(`Node with key ${key} is not a text node`);
+    if(!node) Log.nodeNotFound(key)
+    if(!Text.isText(node)) Log.nodeNotText(key)
     const content = node.getText()
     node.delete(offset, length)
     this.emitUpdate(node, createDeleteText(key, content.slice(offset, offset + length), offset))
@@ -99,24 +100,24 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
 
   insertNode(node: INode, key?: string, offset?: number, ){ 
     if(!key) {
-      if(Text.isText(node)) throw new Error('Cannot insert text node without key')
+      if(Text.isText(node)) Log.cannotInsertText('root')
       this.emitUpdate(node, createInsertNode(node, offset || this.map.rootKeys().length, key))
       return 
     }
     const targetNode = this.getNode(key);
-    if(!targetNode) throw new Error(`No node with key ${key}`);
+    if(!targetNode) Log.nodeNotFound(key)
     if(Element.isElement(targetNode)) {
       const size = targetNode.getChildrenSize()
       if(offset === undefined) offset = size
-      if(size < 0 || size < offset) throw new Error(`No child at offset ${offset}`);
+      if(size < 0 || size < offset) Log.offsetOutOfRange(key, offset)
       // Need to judge isInline or isBlock
       targetNode.insert(offset, node)
       this.emitUpdate(node, createInsertNode(node, offset, key))
     } else if(Text.isText(targetNode)) {
       const parentKey = targetNode.getParent()
-      if(!parentKey) throw new Error(`This node ${key} is not in context`)
+      if(!parentKey) Log.nodeNotInContext(key)
       const parent = this.getNode<NodeData, Element>(parentKey)
-      if(!parent) throw new Error(`No node with key ${parentKey}`);
+      if(!parent) Log.nodeNotFound(parentKey)
       offset = offset ?? targetNode.getText().length
       if(Text.isText(node) && targetNode.compare(node)) {
         const text = node.getText()

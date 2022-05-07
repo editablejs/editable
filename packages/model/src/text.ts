@@ -1,7 +1,10 @@
+
+import { OP_INSERT_TEXT, OP_DELETE_TEXT, OP_UPDATE_FORMAT } from '@editablejs/constants';
+import { Log } from '@editablejs/utils'
 import Node, { NodeOpType } from './node';
 import type { INode, IText, NodeData, NodeKey, NodeOptions, Op, TextFormat, TextObject, TextOptions } from './types';
 
-export type TextOpType = NodeOpType | 'insertText' | 'deleteText' | 'updateFormat'
+export type TextOpType = NodeOpType | typeof OP_INSERT_TEXT | typeof OP_DELETE_TEXT | typeof OP_UPDATE_FORMAT
 export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
   protected text = '';
   protected format: TextFormat = new Map()
@@ -56,14 +59,14 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
   insert(text: string, offset?: number){
     const content = this.getText()
     if(offset === undefined) offset = content.length
-    if(offset < 0 || offset > content.length) throw new Error(`Offset ${offset} is out of range`);
+    if(offset < 0 || offset > content.length) Log.offsetOutOfRange(this.getKey(), offset)
     const newContent = content.slice(0, offset) + text + content.slice(offset)
     this.setText(newContent)
   }
 
   delete(offset: number, length: number){ 
     const content = this.getText()
-    if(offset < 0 || offset > content.length || length > content.length) throw new Error(`Offset ${offset} is out of range`);
+    if(offset < 0 || offset > content.length || length > content.length) Log.offsetOutOfRange(this.getKey(), offset)
     const newContent = content.slice(0, offset) + content.slice(offset + length)
     this.setText(newContent)
   }

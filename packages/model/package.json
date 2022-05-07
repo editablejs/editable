@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@editablejs/event-emitter": "workspace:*",
-    "@editablejs/constants": "workspace:*"
+    "@editablejs/constants": "workspace:*",
+    "@editablejs/utils": "workspace:*"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",

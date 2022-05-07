@@ -21,7 +21,8 @@
     "@editablejs/grapheme-breaker": "workspace:*",
     "@editablejs/model": "workspace:*",
     "@editablejs/event-emitter": "workspace:*",
-    "@editablejs/constants": "workspace:*"
+    "@editablejs/constants": "workspace:*",
+    "@editablejs/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/is-hotkey": "^0.1.7",

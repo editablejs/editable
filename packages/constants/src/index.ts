@@ -13,3 +13,11 @@ export const EVENT_NODE_DID_UPDATE = 'onNodeDidUpdate'
 
 export const DATA_KEY = 'data-key'
 export const DATA_ELEMENT_TYPE = 'data-editable-type'
+
+export const OP_UPDATE_DATA = 'updateData'
+export const OP_UPDATE_FORMAT = 'updateFormat'
+export const OP_UPDATE_STYLE = 'updateStyle'
+export const OP_INSERT_TEXT = 'insertText'
+export const OP_DELETE_TEXT = 'deleteText'
+export const OP_INSERT_NODE = 'insertNode'
+export const OP_DELETE_NODE = 'deleteNode'

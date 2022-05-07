@@ -1,6 +1,8 @@
 import EventEmitter from "@editablejs/event-emitter";
 import { Element, IModel, NodeKey, Text, INode, Op } from '@editablejs/model';
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE, EVENT_NODE_UPDATE } from '@editablejs/constants'
+import { Log } from '@editablejs/utils'
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE, 
+OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY } from '@editablejs/constants'
 import type { IInput, IRange, IDrawRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
@@ -78,7 +80,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const { type, key, offset, value } = lastOp
     if(!key) return
     switch(type) {
-      case 'insertText':
+      case OP_INSERT_TEXT:
         if(offset === undefined) return
         return new Range({
           anchor: {
@@ -86,7 +88,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
             offset: offset + value.length
           }
         })
-      case 'deleteText':
+      case OP_DELETE_TEXT:
         if(offset === undefined) return
         return new Range({
           anchor: {
@@ -94,7 +96,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
             offset
           }
         })
-      case 'insertNode':
+      case OP_INSERT_NODE:
 
         break
     }
@@ -116,7 +118,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
 
   handleRootUpdate = () => {
     const keys = this.model.getRootKeys()
-    const domSelector = keys.map(key => `[data-key="${key}"]`).join(',')
+    const domSelector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
     const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
     const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
     this.typing.bindContainers(...containers)
@@ -201,13 +203,13 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   applyRange = (range: IRange) => {
     const check = (key: NodeKey, offset: number) => {
       const node = this.model.getNode(key)
-      if(!node) throw new Error(`node ${key} not found`)
+      if(!node) Log.nodeNotFound(key)
       if(Text.isText(node)) {
         const text = node.getText()
-        if(offset < 0 || offset > text.length) throw new Error(`offset ${offset} out of range`)
+        if(offset < 0 || offset > text.length) Log.offsetOutOfRange(key, offset)
       } else if (Element.isElement(node)){
         const size = node.getChildrenSize()
-        if(offset < 0 || offset > size) throw new Error(`offset ${offset} out of range`)
+        if(offset < 0 || offset > size) Log.offsetOutOfRange(key, offset)
       }
     }
     const { anchor, focus } = range

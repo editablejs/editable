@@ -1,9 +1,10 @@
-
+import { Log } from '@editablejs/utils'
+import { OP_INSERT_NODE, OP_DELETE_NODE, OP_UPDATE_STYLE } from '@editablejs/constants';
 import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle, Op } from './types';
 import Node, { NodeOpType } from './node';
 import Text from './text';
 
-export type ElementOpType = NodeOpType | 'insertNode' | 'deleteNode' | 'updateStyle'
+export type ElementOpType = NodeOpType | typeof OP_INSERT_NODE | typeof OP_DELETE_NODE | typeof OP_UPDATE_STYLE
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
@@ -65,7 +66,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   removeChild(key: NodeKey): void {
     const index = this.children.findIndex(child => child.getKey() === key)
-    if(index < 0) throw new Error('Child not found')
+    if(index < 0) Log.nodeNotFound(key)
     this.children.splice(index, 1)
   }
 
@@ -75,7 +76,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   split(offset: number){
     const size = this.getChildrenSize()
-    if(offset < 0 || size < offset) throw new Error(`No child at offset ${offset}`)
+    if(offset < 0 || size < offset) Log.offsetOutOfRange(this.getKey(), offset)
     const left = this.children.slice(0, offset)
     const right = this.children.slice(offset)
     return [left, right]
