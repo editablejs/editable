@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import Editor, { Element, NodeKey, Op } from '@editablejs/core';
-import type { NodeData, IElement, IEditor } from '@editablejs/core'
+import Editor, { Element } from '@editablejs/core';
+import type { NodeData, IElement, IEditor, NodeKey, Op } from '@editablejs/core'
 import { renderText } from '../components/Text';
 import { renderElement } from '../components/Element';
 import { renderPage } from '../components/Page';

@@ -1,6 +1,6 @@
 import type { ISelection } from '@editablejs/selection';
 import Selection from '@editablejs/selection';
-import { Log } from '@editablejs/utils';
+import { isServer, Log } from '@editablejs/utils';
 import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE } from '@editablejs/constants';
 import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
 import Model, { Element, Text } from '@editablejs/model'
@@ -159,7 +159,13 @@ class Editor extends EventEmitter implements IEditor {
   }
 }
 
-export default Editor
-
+export default Editor;
+if(!isServer) {
+  window.Editable = {
+    Editor,
+    Element,
+    Text
+  }
+}
 export * from '@editablejs/model'
 export * from './types'

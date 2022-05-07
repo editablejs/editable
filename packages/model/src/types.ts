@@ -1,3 +1,4 @@
+import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT, OP_UPDATE_DATA, OP_UPDATE_FORMAT, OP_UPDATE_STYLE } from '@editablejs/constants';
 import type { IEventEmitter } from '@editablejs/event-emitter';
 export type NodeData = any
 export type NodeKey = string;
@@ -27,6 +28,7 @@ export interface INode<T extends NodeData = NodeData> {
   toJSON(): Readonly<NodeObject<T>>;
 }
 
+export type NodeOpType = typeof OP_UPDATE_DATA
 export interface TextObject<T extends NodeData = NodeData> extends NodeObject<T> {
   text: string
 }
@@ -52,7 +54,7 @@ export interface IText<T extends NodeData = NodeData> extends INode<T> {
 
   toJSON<R extends TextObject<T> = TextObject<T>>(): R;
 }
-
+export type TextOpType = NodeOpType | typeof OP_INSERT_TEXT | typeof OP_DELETE_TEXT | typeof OP_UPDATE_FORMAT
 export interface ElementObject<T extends NodeData = NodeData> extends NodeObject<T> {
   children: NodeObject[]
 }
@@ -81,6 +83,7 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
   toJSON<R extends ElementObject<T> = ElementObject<T>>(includeChild?: boolean): Readonly<R>;
 }
 
+export type ElementOpType = NodeOpType | typeof OP_INSERT_NODE | typeof OP_DELETE_NODE | typeof OP_UPDATE_STYLE
 export interface IObjectMap {
 
   roots(): ElementObject[]

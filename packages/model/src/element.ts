@@ -1,10 +1,7 @@
 import { Log } from '@editablejs/utils'
-import { OP_INSERT_NODE, OP_DELETE_NODE, OP_UPDATE_STYLE } from '@editablejs/constants';
-import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle, Op } from './types';
-import Node, { NodeOpType } from './node';
+import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle, Op, ElementOpType } from './types';
+import Node from './node';
 import Text from './text';
-
-export type ElementOpType = NodeOpType | typeof OP_INSERT_NODE | typeof OP_DELETE_NODE | typeof OP_UPDATE_STYLE
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
@@ -14,7 +11,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return new Element(options)
   }
 
-  static createNode = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(options: NodeOptions<T>): N => { 
+  static from = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(options: NodeOptions<T>): N => { 
     if (Text.isTextObject(options)) return Text.create(options) as unknown as N
     else if(Element.isElementObject(options)) return Element.create(options) as unknown as N
     return Node.create(options) as unknown as N
@@ -45,7 +42,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
   protected createChildNode = (options: NodeOptions<T>): INode => { 
     const parent = this.getKey()
     options.parent = parent
-    return Element.createNode(options)
+    return Element.from(options)
   }
 
   getChildrenSize(): number {

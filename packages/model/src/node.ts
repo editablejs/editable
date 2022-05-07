@@ -1,9 +1,5 @@
-
-import { OP_UPDATE_DATA } from '@editablejs/constants';
 import { generateRandomKey } from './keys';
-import type { INode, NodeData, NodeKey, NodeObject, NodeOptions, Op } from './types';
-
-export type NodeOpType = typeof OP_UPDATE_DATA
+import type { INode, NodeData, NodeKey, NodeObject, NodeOptions, NodeOpType, Op } from './types';
 export default class Node<T extends NodeData = NodeData> implements INode {
   protected parent: NodeKey | null
   protected key: NodeKey;

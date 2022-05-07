@@ -1,10 +1,7 @@
-
-import { OP_INSERT_TEXT, OP_DELETE_TEXT, OP_UPDATE_FORMAT } from '@editablejs/constants';
 import { Log } from '@editablejs/utils'
-import Node, { NodeOpType } from './node';
-import type { INode, IText, NodeData, NodeKey, NodeOptions, Op, TextFormat, TextObject, TextOptions } from './types';
+import Node from './node';
+import type { INode, IText, NodeData, NodeKey, NodeOptions, Op, TextFormat, TextObject, TextOptions, TextOpType } from './types';
 
-export type TextOpType = NodeOpType | typeof OP_INSERT_TEXT | typeof OP_DELETE_TEXT | typeof OP_UPDATE_FORMAT
 export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
   protected text = '';
   protected format: TextFormat = new Map()

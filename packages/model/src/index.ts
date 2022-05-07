@@ -27,17 +27,17 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null{
     const obj = this.map.get(key)
     if(!obj) return null
-    return Element.createNode<T, N>(obj)
+    return Element.from<T, N>(obj)
   }
 
   getNext(key: NodeKey): INode | null { 
     const obj = this.map.next(key)
     if(!obj) return null
-    return Element.createNode(obj)
+    return Element.from(obj)
   }
 
   getRoots(){
-    return this.map.roots().map(root => Element.createNode<NodeData, IElement>(root))
+    return this.map.roots().map(root => Element.from<NodeData, IElement>(root))
   }
 
   getRootKeys(){ 
@@ -45,7 +45,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   }
 
   find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] { 
-    return this.map.find(type).map(node => Element.createNode<T, N>(node))
+    return this.map.find(type).map(node => Element.from<T, N>(node))
   }
 
   applyNode(node: INode, ops: Op[]){
