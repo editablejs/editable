@@ -9,6 +9,6 @@ An experimental rich text editor framework that hopes to replace the native cont
 pnpm install
 
 # start up
-pnpm-dev
+pnpm dev
 
 ````
