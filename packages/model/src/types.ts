@@ -113,8 +113,6 @@ export interface IModel extends IEventEmitter {
 
   find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[]
 
-  applyNode(node: INode, ops: Op[]): void
-
   applyOps(...ops: Op[]): void
 
   insertText(text: string, key: NodeKey, offset?: number ): void;

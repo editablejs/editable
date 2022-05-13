@@ -1,5 +1,5 @@
 import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
-import type { ISelection } from '@editablejs/selection';
+import type { IRange, ISelection } from '@editablejs/selection';
 import type { IEventEmitter } from '@editablejs/event-emitter';
 import type { ITyping } from './typing/types';
 
@@ -23,7 +23,13 @@ export interface EditorOptions {
   disabledPlugins?: string[]
 }
 
+export type CompositionUpdateCallback = (data: { chars: Record<'type' | 'text', string>[], text: string, offset: number } | null) => void
+
+export type NodeUpdateCallback<E extends NodeData = NodeData, T extends INode<E> = INode<E>> = (node: T, ops: Op[]) => void
+
 export interface IEditor extends IEventEmitter {
+
+  readonly isComposition: boolean
 
   model: IModel
 
@@ -35,13 +41,19 @@ export interface IEditor extends IEventEmitter {
 
   renderPlugin<E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T): any
 
-  onUpdate<E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: (node: T, ops: Op[]) => void): void
+  onUpdate<E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: NodeUpdateCallback<E, T>): void
 
   offUpdate(key: NodeKey): void
 
-  emitUpdate<E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]): void
-
   didUpdate(node: INode, ops: Op[]): void
+
+  onCompositionUpdate(key: NodeKey, callback: CompositionUpdateCallback): void
+
+  offCompositionUpdate(key: NodeKey): void
+
+  didCompositionUpdate(textNode: globalThis.Text): void
+
+  getRange(): IRange | null
 
   deleteBackward(): void
 

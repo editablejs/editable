@@ -1,11 +1,11 @@
-import type { ISelection } from '@editablejs/selection';
+import type { IRange, ISelection } from '@editablejs/selection';
 import Selection from '@editablejs/selection';
 import { isServer, Log } from '@editablejs/utils';
-import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE } from '@editablejs/constants';
+import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END } from '@editablejs/constants';
 import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
 import Model, { Element, Text } from '@editablejs/model'
 import EventEmitter from '@editablejs/event-emitter';
-import type { EditorOptions, IEditor, PluginOptions, PluginRender } from './types';
+import type { CompositionUpdateCallback, EditorOptions, IEditor, NodeUpdateCallback, PluginOptions, PluginRender } from './types';
 import type { ITyping } from './typing/types';
 import Typing from './typing';
 
@@ -15,7 +15,10 @@ const _pluginMap: IPluginMap = new Map();
 class Editor extends EventEmitter implements IEditor {
 
   private pluginMap: IPluginMap = new Map();
-  protected updateMap: Map<string, (node: INode, ops: Op[]) => void> = new Map();
+  protected updateMap: Map<string, NodeUpdateCallback> = new Map();
+  protected compositionUpdateMap: Map<string, CompositionUpdateCallback> = new Map();
+  private _isComposition = false
+  private _compositionInfo?: Record<'key' | 'text', string>
   selection: ISelection;
   model: IModel
   typing: ITyping
@@ -58,10 +61,30 @@ class Editor extends EventEmitter implements IEditor {
     this.typing = new Typing(this)
     this.model.on(EVENT_NODE_UPDATE, this.emitUpdate)
     this.selection.on(EVENT_VALUE_CHANGE, (value: string) => {
-      this.insertText(value)
+      if(this.isComposition) {
+        this.emitCompositionUpdate(value)
+      } else {
+        this.insertText(value)
+      }
     })
     this.selection.on(EVENT_KEYDOWN, this.typing.emitKeydown)
     this.selection.on(EVENT_KEYUP, this.typing.emitKeyup)
+    this.selection.on(EVENT_COMPOSITION_START, () => {
+      this._isComposition = true
+    })
+    this.selection.on(EVENT_COMPOSITION_END, (ev: CompositionEvent) => {
+      this._isComposition = false
+      if(this._compositionInfo) { 
+        const callback = this.compositionUpdateMap.get(this._compositionInfo.key)
+        if(callback) callback(null)
+      }
+      this._compositionInfo = undefined
+      this.insertText(ev.data)
+    })
+  }
+
+  get isComposition() {
+    return this._isComposition
   }
 
   registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
@@ -91,31 +114,89 @@ class Editor extends EventEmitter implements IEditor {
     })
   }
 
-  onUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: (node: T, ops: Op[]) => void) => {
-    this.updateMap.set(key, callback as ((node: INode) => void));
+  onUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: NodeUpdateCallback<E, T>) => {
+    this.updateMap.set(key, callback as any);
   }
 
   offUpdate = (key: NodeKey) => { 
     this.updateMap.delete(key);
   }
 
-  emitUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]) =>{ 
-    const callback = this.updateMap.get(node.getKey())
+  private emitUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]) =>{ 
+    const key = node.getKey()
+    const callback = this.updateMap.get(key)
     if(callback) {
       callback(node, ops)
+    }
+    // update composition position
+    if(this._compositionInfo?.key === key) {
+      this.emitCompositionUpdate(this._compositionInfo.text)
     }
   }
 
   didUpdate = (node: INode, ops: Op[]) =>{
-    this.model.applyNode(node, ops)
+    this.selection.applyUpdate(node, ops)
+  }
+
+  onCompositionUpdate = (key: NodeKey, callback: CompositionUpdateCallback) => {
+    this.compositionUpdateMap.set(key, callback);
+  }
+
+  offCompositionUpdate = (key: NodeKey) => { 
+    this.compositionUpdateMap.delete(key);
+  }
+
+  didCompositionUpdate = (textNode: globalThis.Text) => {
+    const range = document.createRange()
+    range.selectNodeContents(textNode)
+    range.collapse(false)
+    const rect = range.getClientRects().item(0)
+    if(!rect) return
+    this.selection.drawByRects(true, rect.toJSON())
+  }
+
+  private emitCompositionUpdate = (text: string) => { 
+    const range = this.getRange()
+    if(!range) return
+    const { key, offset } = range.anchor
+    this._compositionInfo = {
+      key,
+      text
+    }
+    const node = this.model.getNode(key)
+    if(!node || !Text.isText(node)) return
+    const callback = this.compositionUpdateMap.get(key)
+    if(!callback) return
+    const nodeText = node.getText()
+    const chars: Record<'type' | 'text', string>[] = []
+    chars.push({
+      type: 'text',
+      text: nodeText.substring(0, offset)
+    })
+    chars.push({
+      type: 'composition',
+      text
+    })
+    if(offset < nodeText.length) { 
+      chars.push({
+        type: 'text',
+        text: nodeText.substring(offset)
+      })
+    }
+    callback({
+      chars, text, offset
+    })
+  }
+
+  getRange(): IRange | null {
+    return this.selection.getRangeAt(0)
   }
 
   deleteBackward(){
-    const range = this.selection.getRangeAt(0)
+    const range = this.getRange()
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
-      console.log(range.anchor)
       const deleteOffset = offset - 1
       if(deleteOffset >= 0) {
         this.model.deleteText(key, deleteOffset, 1);
@@ -124,7 +205,7 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   deleteForward(){
-    const range = this.selection.getRangeAt(0)
+    const range = this.getRange()
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
@@ -138,14 +219,14 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   insertText(text: string){ 
-    const range = this.selection.getRangeAt(0)
+    const range = this.getRange()
     if(!range) return
     const { key, offset } = range.anchor
     this.model.insertText(text, key, offset);
   }
 
   insertNode(node: INode){
-    const range = this.selection.getRangeAt(0)
+    const range = this.getRange()
     if(!range) return
     const { key, offset } = range.anchor
     this.model.insertNode(node, key, offset)

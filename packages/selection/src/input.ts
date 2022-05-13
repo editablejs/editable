@@ -1,16 +1,16 @@
 import EventEmitter from "@editablejs/event-emitter";
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP } from '@editablejs/constants'
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END } from '@editablejs/constants'
 import { ILayer } from "./layer";
-import { IInput, IRange } from "./types";
+import { DrawRect, IInput } from "./types";
 
 
 export type InputEventType = typeof EVENT_FOCUS | typeof EVENT_BLUR | typeof EVENT_CHANGE | typeof EVENT_KEYDOWN | typeof EVENT_KEYUP
 
 export default class Input extends EventEmitter<InputEventType> implements IInput {
+  protected composing = false
   protected layer: ILayer
   protected textarea: HTMLTextAreaElement
   protected root: HTMLDivElement
-  protected composing = false
   protected containers: HTMLElement[] = []
   private isContainerMouseDown = false
   private _isFocus = false
@@ -22,6 +22,10 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
       this.emit(EVENT_BLUR)
     }
     this._isFocus = value
+  }
+
+  get isComposing(){
+    return this.composing
   }
 
   constructor(layer: ILayer){
@@ -110,16 +114,21 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
   handleChange = (event: Event) => { 
     if(!(event.target instanceof HTMLTextAreaElement)) return
     const value = event.target.value
-    this.textarea.value = ''
+    if(!this.composing) {
+      this.textarea.value = ''
+    }
     this.emit(EVENT_CHANGE, value)
   }
 
-  handleCompositionStart = () => {
+  handleCompositionStart = (ev: CompositionEvent) => {
     this.composing = true
+    this.emit(EVENT_COMPOSITION_START, ev)
   }
 
-  handleCompositionEnd = () => { 
+  handleCompositionEnd = (ev: CompositionEvent) => { 
     this.composing = false
+    this.textarea.value = ''
+    this.emit(EVENT_COMPOSITION_END, ev)
   }
 
   focus = () => {
@@ -132,12 +141,8 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     this.textarea.blur()
   }
 
-  render = (range: IRange): void => {
-    const cloneRange = range.clone()
-    cloneRange.collapse(false)
-    const rects = cloneRange.getClientRects()
-    if(!rects) return
-    this.layer.updateBox(this.root, rects[0])
+  render = (rect: DrawRect): void => {
+    this.layer.updateBox(this.root, rect)
     this.focus()
   } 
 

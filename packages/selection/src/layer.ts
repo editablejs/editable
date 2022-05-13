@@ -1,8 +1,8 @@
-import type { IDrawRange, ILayer, LayerPosition } from "./types";
+import type { ILayer, DrawRect } from "./types";
 
 const DATA_LAYER_ELEMENT = 'data-layer-element'
 const DATA_CARET_KEY = 'caret'
-const DATA_LINE_KEY = 'line'
+const DATA_BLOCK_KEY = 'block'
 
 export default class SelectionLayer implements ILayer {
 
@@ -28,53 +28,33 @@ export default class SelectionLayer implements ILayer {
     return this.body
   }
 
-  createBox = (key: string, position: LayerPosition) => { 
+  createBox = (key: string, position: DrawRect) => { 
     const box = document.createElement('div')
     box.setAttribute(DATA_LAYER_ELEMENT, key)
     return this.updateBox(box, position)
   }
 
-  updateBox = (box: HTMLDivElement, position: LayerPosition) => { 
+  updateBox = (box: HTMLDivElement, rect: DrawRect) => { 
     box.setAttribute('style', `position: absolute;
     top: 0px; 
     left: 0px; 
-    width: ${position.width}px; 
-    transform: translateX(${position.left}px) translateY(${position.top}px);
-    height: ${position.height}px; 
+    width: ${rect.width}px; 
+    transform: translateX(${rect.left}px) translateY(${rect.top}px);
+    height: ${rect.height}px; 
     opacity: 1;
-    background-color: ${position.color || 'rgba(0,127,255,0.3)'};
+    background-color: ${rect.color || 'rgba(0,127,255,0.3)'};
     willChange: transform, height, opacity;
     z-index: 1;`)
     return box
-  }
-
-  draw = (...ranges: IDrawRange[]) => {
-    const range = ranges.find(r => r.isCollapsed)
-    this.clearSelection()
-    if(range) {
-      this.drawRange(range)
-    } else {
-      ranges.forEach(this.drawRange)
-    }
-  }
-
-  drawRange = (range: IDrawRange) => { 
-    const rects = range.getClientRects()
-    if(!rects) return
-    if(range.isCollapsed) {
-      this.drawCaret({...rects[0].toJSON(), width: range.width || 2, color: range.color || '#000'})
-    } else {
-      this.drawLines(...Array.from(rects).map(rect => ({ ...rect.toJSON(), color: range.color || 'rgba(0,127,255,0.3)' })))
-    }
   }
 
   setCaretState = (state: boolean) => { 
     this.caretState = state
   }
 
-  drawCaret = (position: LayerPosition) => {
+  drawCaret = (rect: DrawRect) => {
     if(this.caretTimer) clearTimeout(this.caretTimer)
-    const caret = this.createBox(DATA_CARET_KEY, { ...position, width: Math.max(position.width || 1, 1) })
+    const caret = this.createBox(DATA_CARET_KEY, Object.assign({}, rect, {  width: Math.max(rect.width || 1, 1) }))
     const activeCaret = () => {
       if(this.caretTimer) clearTimeout(this.caretTimer)
       this.caretTimer = setTimeout(() => { 
@@ -91,9 +71,9 @@ export default class SelectionLayer implements ILayer {
     this.appendChild(caret)
   }
 
-  drawLines = (...position: LayerPosition[]) => {
-    position.forEach(pos => { 
-      const line = this.createBox(DATA_LINE_KEY, Object.assign({}, pos, { color: pos.color }))
+  drawBlocks = (...rects: DrawRect[]) => {
+    rects.forEach(rect => { 
+      const line = this.createBox(DATA_BLOCK_KEY, rect)
       this.appendChild(line)
     })
   }
@@ -103,7 +83,7 @@ export default class SelectionLayer implements ILayer {
   }
 
   clearSelection = () => {
-    this.clear(DATA_CARET_KEY, DATA_LINE_KEY)
+    this.clear(DATA_CARET_KEY, DATA_BLOCK_KEY)
   }
 
   clearCaret = () => {

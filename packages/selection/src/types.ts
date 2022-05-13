@@ -1,5 +1,5 @@
 import type { IEventEmitter } from "@editablejs/event-emitter";
-import type { IModel, NodeKey } from '@editablejs/model';
+import type { IModel, INode, NodeKey, Op } from '@editablejs/model';
 
 export interface Position {
   key: NodeKey;
@@ -35,7 +35,11 @@ export interface ISelection extends IEventEmitter {
   
   applyRange(range: IRange): void;
 
-  drawRanges(...ranges: IRange[]): void
+  applyUpdate(node: INode, ops: Op[]): void
+
+  drawByRanges(...ranges: IRange[]): void
+
+  drawByRects(caret: boolean,...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]): void
 
   moveTo(key: NodeKey, offset: number): void
 
@@ -59,39 +63,30 @@ export interface IRange {
   collapse(start: boolean): void
 }
 
-export interface IDrawRange extends IRange {
-  color?: string
-  width?: number
-}
-
 export interface RangeOptions { 
   anchor: Position
   focus?: Position
 }
 
-export interface LayerPosition {
+export interface DrawRect {
   left: number
   top: number
   width: number
   height: number
-  color?: string
+  color: string
 }
 
 export interface ILayer {
 
   getBody(): HTMLElement
 
-  draw(...ranges: IRange[]): void
+  createBox(key: NodeKey, rect: Omit<DrawRect, 'color'>): HTMLDivElement
 
-  drawRange(range: IRange): void
+  updateBox(box: HTMLDivElement, rect: Omit<DrawRect, 'color'>): HTMLDivElement
 
-  createBox(key: NodeKey, position: LayerPosition): HTMLDivElement
-
-  updateBox(box: HTMLDivElement, position: LayerPosition): HTMLDivElement
-
-  drawCaret(position: LayerPosition): void
+  drawCaret(rect: DrawRect): void
   
-  drawLines(...position: LayerPosition[]): void
+  drawBlocks(...rects: DrawRect[]): void
 
   setCaretState(state: boolean): void
 
@@ -107,6 +102,8 @@ export interface ILayer {
 }
 
 export interface IInput extends IEventEmitter {
+
+  readonly isComposing: boolean
   
   bindContainers(...containers: HTMLElement[]): void
 
@@ -114,7 +111,7 @@ export interface IInput extends IEventEmitter {
 
   blur(): void
 
-  render(range: IRange): void
+  render(rect: Omit<DrawRect, 'color'>): void
 
   destroy(): void
 

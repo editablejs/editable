@@ -1,9 +1,9 @@
 import EventEmitter from "@editablejs/event-emitter";
 import { Element, IModel, NodeKey, Text, INode, Op } from '@editablejs/model';
 import { Log } from '@editablejs/utils'
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_NODE_DID_UPDATE, 
-OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY } from '@editablejs/constants'
-import type { IInput, IRange, IDrawRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, 
+OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END, EVENT_NODE_UPDATE } from '@editablejs/constants'
+import type { DrawRect, IInput, IRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
 import Range from './range'
@@ -15,7 +15,7 @@ const SELECTION_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
 const SELECTION_CARET_COLOR = '#000'
 const SELECTION_CARET_WIDTH = 2
 
-export type SelectionEventType = typeof EVENT_VALUE_CHANGE | typeof EVENT_SELECTION_CHANGE | 
+export type SelectionEventType = typeof EVENT_VALUE_CHANGE | typeof EVENT_SELECTION_CHANGE |
 TypingEventType | InputEventType
 export default class Selection extends EventEmitter<SelectionEventType> implements ISelection {
   
@@ -38,8 +38,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.options = options;
     const { blurColor, focusColor, caretColor, caretWidth, model } = options
     this.model = model
-    //model.on(EVENT_NODE_UPDATE, this.handelNodeUpdate)
-    model.on(EVENT_NODE_DID_UPDATE, this.handeleDidUpdate)
+    model.on(EVENT_NODE_UPDATE, (_, ops) => this.silentUpdate(ops))
     this.blurColor = blurColor ?? SELECTION_BLUR_COLOR
     this.focusColor = focusColor ?? SELECTION_FOCUS_COLOR
     this.caretColor = caretColor ?? SELECTION_CARET_COLOR
@@ -51,7 +50,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.layer = new Layer()
     this.input = new Input(this.layer)
     this.bindInput()
-    this.on(EVENT_SELECTION_CHANGE, this.drawRanges)
+    this.on(EVENT_SELECTION_CHANGE, this.drawByRanges)
   }
 
   get anchor() {
@@ -72,57 +71,6 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
 
   get isFocus(){
     return this._isFoucs
-  }
-
-  createRangeFromOps(ops: Op[]) { 
-    const lastOp = ops[ops.length - 1]
-    if(!lastOp) return
-    const { type, key, offset, value } = lastOp
-    if(!key) return
-    switch(type) {
-      case OP_INSERT_TEXT:
-        if(offset === undefined) return
-        return new Range({
-          anchor: {
-            key,
-            offset: offset + value.length
-          }
-        })
-      case OP_DELETE_TEXT:
-        if(offset === undefined) return
-        return new Range({
-          anchor: {
-            key,
-            offset
-          }
-        })
-      case OP_INSERT_NODE:
-
-        break
-    }
-  }
-
-  handelNodeUpdate = (node: INode, ops: Op[]) => { 
-    const range = this.createRangeFromOps(ops)
-    if(!range) return
-    this.ranges = [range]
-  }
-
-  handeleDidUpdate = (node: INode, ops: Op[]) => {
-    if(!node.getParent()) this.handleRootUpdate()
-    const range = this.createRangeFromOps(ops)
-    if(range) { 
-      this.applyRange(range)
-    }
-  }
-
-  handleRootUpdate = () => {
-    const keys = this.model.getRootKeys()
-    const domSelector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
-    const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
-    const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
-    this.typing.bindContainers(...containers)
-    this.input.bindContainers(...containers)
   }
 
   bindTyping = () => {
@@ -155,6 +103,12 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   bindInput = () => {
+    this.input.on(EVENT_COMPOSITION_START, ev => {
+      this.emit(EVENT_COMPOSITION_START, ev)
+    })
+    this.input.on(EVENT_COMPOSITION_END, ev => {
+      this.emit(EVENT_COMPOSITION_END, ev)
+    })
     this.input.on(EVENT_CHANGE, (value: string) => {
       this.emit(EVENT_VALUE_CHANGE, value)
     })
@@ -168,12 +122,63 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       this.emit(EVENT_FOCUS)
       this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
     })
-    this.input.on(EVENT_KEYDOWN, (e: KeyboardEvent) => {
-      this.emit(EVENT_KEYDOWN, e)
+    this.input.on(EVENT_KEYDOWN, ev => {
+      this.emit(EVENT_KEYDOWN, ev)
     })
-    this.input.on(EVENT_KEYUP, (e: KeyboardEvent) => {
-      this.emit(EVENT_KEYUP, e)
+    this.input.on(EVENT_KEYUP, ev => {
+      this.emit(EVENT_KEYUP, ev)
     })
+  }
+
+  createRangeFromOps(ops: Op[]) { 
+    const lastOp = ops[ops.length - 1]
+    if(!lastOp) return
+    const { type, key, offset, value } = lastOp
+    if(!key) return
+    switch(type) {
+      case OP_INSERT_TEXT:
+        if(offset === undefined) return
+        return new Range({
+          anchor: {
+            key,
+            offset: offset + value.length
+          }
+        })
+      case OP_DELETE_TEXT:
+        if(offset === undefined) return
+        return new Range({
+          anchor: {
+            key,
+            offset
+          }
+        })
+      case OP_INSERT_NODE:
+
+        break
+    }
+  }
+
+  silentUpdate = (ops: Op[]) => { 
+    const range = this.createRangeFromOps(ops)
+    if(!range) return
+    this.ranges = [range]
+  }
+
+  applyUpdate = (node: INode, ops: Op[]) => {
+    if(!node.getParent()) this.handleRootUpdate()
+    const range = this.createRangeFromOps(ops)
+    if(range) { 
+      this.applyRange(range)
+    }
+  }
+
+  handleRootUpdate = () => {
+    const keys = this.model.getRootKeys()
+    const domSelector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
+    const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
+    const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
+    this.typing.bindContainers(...containers)
+    this.input.bindContainers(...containers)
   }
   
   getRangeAt = (index: number) => {
@@ -221,7 +226,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.addRange(range)
   }
 
-  drawRanges = (...ranges: IDrawRange[]) => {
+  drawByRanges = (...ranges: IRange[]) => {
     if(ranges.length === 0) {
       this.layer.clearSelection()
       return
@@ -229,13 +234,46 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       this.layer.clearCaret()
       return
     }
-    ranges = ranges.map(range => {
-      range.color = range.isCollapsed ? this.caretColor : (this.isFocus ? this.focusColor : this.blurColor)
-      range.width = range.isCollapsed ? this.caretWidth : undefined
-      return range
-    })
-    this.layer.draw(...ranges)
-    this.input.render(ranges[ranges.length - 1])
+    const collapsedRange = ranges.find(r => r.isCollapsed)
+    if(collapsedRange) {
+      const rects = collapsedRange.getClientRects()
+      if(rects) {
+        const rect = Object.assign({}, rects[0].toJSON(), { width: this.caretWidth, color: this.caretColor })
+        this.drawByRects(true, rect)
+      }
+    } else {
+      const color = this.isFocus ? this.focusColor : this.blurColor
+      const rects: DrawRect[] = []
+      ranges.slice(0, ranges.length - 1).forEach(range => {
+        const rangeRects = range.getClientRects()
+        if(rangeRects) {
+          for(let i = 0; i < rects.length; i++) {
+            const rect = rangeRects[i].toJSON()
+            rects.push(Object.assign({}, rect, { color }))
+          }
+        }
+      })
+      const range = ranges[ranges.length - 1].clone()
+      range.collapse(false)
+      const focusRect = range.getClientRects()
+      if(focusRect) { 
+        const rect = focusRect[0].toJSON()
+        rects.push(Object.assign({}, rect, { color }))
+      }
+      this.drawByRects(false, ...rects)
+    }
+  }
+
+  drawByRects = (caret: boolean,...rects: DrawRect[]) => { 
+    this.layer.clearSelection()
+    const color = this.isFocus ? this.focusColor : this.blurColor
+    if(caret) {
+      const rect = rects[0]
+      this.layer.drawCaret({...rect, width: this.caretWidth, color: rect.color ?? this.caretColor})
+    } else {
+      this.layer.drawBlocks(...Array.from(rects.slice(rects.length - 1)).map(rect => ({ ...rect, color: rect.color ?? color })))
+    }
+    this.input.render(Object.assign({}, rects[rects.length - 1], { width: this.caretWidth }))
   }
 
   moveTo(key: NodeKey, offset: number) {

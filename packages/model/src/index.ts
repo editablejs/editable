@@ -6,9 +6,9 @@ import Text from './text'
 import Element from './element'
 import ObjectMap from './map';
 import { createDeleteNode, createDeleteText, createInsertNode, createInsertText } from './op';
-import { EVENT_NODE_UPDATE, EVENT_NODE_DID_UPDATE } from '@editablejs/constants'
+import { EVENT_NODE_UPDATE } from '@editablejs/constants'
 
-export type ModelEventType = typeof EVENT_NODE_UPDATE | typeof EVENT_NODE_DID_UPDATE
+export type ModelEventType = typeof EVENT_NODE_UPDATE
 
 export default class Model extends EventEmitter<ModelEventType> implements IModel {
   
@@ -21,6 +21,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   }
 
   protected emitUpdate = (node: INode, ...ops: Op[]) => { 
+    this.map.apply(node)
     this.emit(EVENT_NODE_UPDATE, node, ops)
   }
 
@@ -46,11 +47,6 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
 
   find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] { 
     return this.map.find(type).map(node => Element.from<T, N>(node))
-  }
-
-  applyNode(node: INode, ops: Op[]){
-    this.map.apply(node)
-    this.emit(EVENT_NODE_DID_UPDATE, node, ops)
   }
 
   applyOps(...ops: Op[]){ 
