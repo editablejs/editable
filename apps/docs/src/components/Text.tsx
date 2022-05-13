@@ -21,7 +21,7 @@ const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
   }, [key, editor])
 
   useLayoutEffect(() => {
-    const textNode = compositionRef.current?.firstChild
+    const textNode = compositionRef.current?.firstChild as Text
     if(chars && textNode) editor.didCompositionUpdate(textNode)
   }, [chars, editor])
 
