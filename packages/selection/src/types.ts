@@ -84,9 +84,9 @@ export interface ILayer {
 
   getBody(): HTMLElement
 
-  createBox(key: NodeKey, rect: Omit<DrawRect, 'color'>): HTMLDivElement
+  createBox(key: NodeKey, rect: Partial<DrawRect>, styles?: Partial<CSSStyleDeclaration>): HTMLDivElement
 
-  updateBox(box: HTMLDivElement, rect: Omit<DrawRect, 'color'>): HTMLDivElement
+  updateBox(box: HTMLDivElement, rect: Partial<DrawRect>, styles?: Partial<CSSStyleDeclaration>): HTMLDivElement
 
   drawCaret(rect: DrawRect): void
   

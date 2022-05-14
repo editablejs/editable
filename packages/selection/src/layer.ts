@@ -28,23 +28,30 @@ export default class SelectionLayer implements ILayer {
     return this.body
   }
 
-  createBox = (key: string, position: DrawRect) => { 
+  createBox = (key: string, position: DrawRect, styles?: Partial<CSSStyleDeclaration>) => { 
     const box = document.createElement('div')
     box.setAttribute(DATA_LAYER_ELEMENT, key)
-    return this.updateBox(box, position)
+    return this.updateBox(box, position, styles)
   }
 
-  updateBox = (box: HTMLDivElement, rect: DrawRect) => { 
-    box.setAttribute('style', `position: absolute;
-    top: 0px; 
-    left: 0px; 
-    width: ${rect.width}px; 
-    transform: translateX(${rect.left}px) translateY(${rect.top}px);
-    height: ${rect.height}px; 
-    opacity: 1;
-    background-color: ${rect.color || 'rgba(0,127,255,0.3)'};
-    willChange: transform, height, opacity;
-    z-index: 1;`)
+  updateBox = (box: HTMLDivElement, rect: DrawRect, styles?: Partial<CSSStyleDeclaration>) => { 
+    const css = box.style
+    css.position = 'absolute'
+    css.top = '0px'
+    css.left = '0px'
+    css.width = `${rect.width || 0}px`
+    css.height = `${rect.height || 0}px`
+    css.transform = `translateX(${rect.left || 0}px) translateY(${rect.top || 0}px)`
+    css.opacity = '1'
+    css.backgroundColor = `${rect.color || 'transparent'}`
+    css.willChange = 'transform, height, opacity'
+    css.zIndex = '1'
+    if (styles) { 
+      for (const key in styles) { 
+        const val = styles[key]
+        if(val !== undefined) css[key] = val
+      }
+    }
     return box
   }
 
