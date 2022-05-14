@@ -142,7 +142,7 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
   }
 
   render = (rect: DrawRect): void => {
-    this.layer.updateBox(this.root, rect)
+    this.layer.updateBox(this.root, Object.assign({}, rect, { color: 'transparent'}))
     this.focus()
   } 
 

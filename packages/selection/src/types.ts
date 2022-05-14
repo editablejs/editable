@@ -39,7 +39,11 @@ export interface ISelection extends IEventEmitter {
 
   drawByRanges(...ranges: IRange[]): void
 
-  drawByRects(caret: boolean,...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]): void
+  drawCaretByRect(rect: Omit<DrawRect, 'color'> & Record<'color', string | undefined>): void
+ 
+  drawBlocksByRects(...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]): void
+
+  clearSelection(): void
 
   moveTo(key: NodeKey, offset: number): void
 

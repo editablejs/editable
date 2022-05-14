@@ -86,7 +86,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
         anchor: this.start,
         focus: position
       })
-      this.removeAllRange()
+      this.ranges = []
       this.addRange(range)
       return range
     }
@@ -228,52 +228,49 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
 
   drawByRanges = (...ranges: IRange[]) => {
     if(ranges.length === 0) {
-      this.layer.clearSelection()
+      this.clearSelection()
       return
     } else if(!this.isFocus && ranges.find(range => range.isCollapsed)) { 
       this.layer.clearCaret()
       return
     }
+    this.clearSelection()
     const collapsedRange = ranges.find(r => r.isCollapsed)
     if(collapsedRange) {
-      const rects = collapsedRange.getClientRects()
-      if(rects) {
-        const rect = Object.assign({}, rects[0].toJSON(), { width: this.caretWidth, color: this.caretColor })
-        this.drawByRects(true, rect)
+      const rect = collapsedRange.getClientRects()?.item(0)
+      if(rect) {
+        this.drawCaretByRect(rect.toJSON())
       }
     } else {
       const color = this.isFocus ? this.focusColor : this.blurColor
       const rects: DrawRect[] = []
-      ranges.slice(0, ranges.length - 1).forEach(range => {
+      ranges.forEach(range => {
         const rangeRects = range.getClientRects()
         if(rangeRects) {
-          for(let i = 0; i < rects.length; i++) {
-            const rect = rangeRects[i].toJSON()
-            rects.push(Object.assign({}, rect, { color }))
+          for(let i = 0; i < rangeRects.length; i++) {
+            const rect = rangeRects.item(i)
+            if(rect) rects.push(Object.assign({}, rect.toJSON(), { color }))
           }
         }
       })
-      const range = ranges[ranges.length - 1].clone()
-      range.collapse(false)
-      const focusRect = range.getClientRects()
-      if(focusRect) { 
-        const rect = focusRect[0].toJSON()
-        rects.push(Object.assign({}, rect, { color }))
-      }
-      this.drawByRects(false, ...rects)
+      this.drawBlocksByRects(...rects)
     }
   }
 
-  drawByRects = (caret: boolean,...rects: DrawRect[]) => { 
-    this.layer.clearSelection()
+  drawCaretByRect = (rect: Omit<DrawRect, 'color'> & Record<'color', string | undefined>): void => {
+    this.layer.drawCaret({...rect, width: this.caretWidth, color: rect.color ?? this.caretColor})
+    this.input.render(Object.assign({}, rect, { left: rect.left + rect.width,width: this.caretWidth }))
+  }
+
+  drawBlocksByRects = (...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]) => {
     const color = this.isFocus ? this.focusColor : this.blurColor
-    if(caret) {
-      const rect = rects[0]
-      this.layer.drawCaret({...rect, width: this.caretWidth, color: rect.color ?? this.caretColor})
-    } else {
-      this.layer.drawBlocks(...Array.from(rects.slice(rects.length - 1)).map(rect => ({ ...rect, color: rect.color ?? color })))
-    }
-    this.input.render(Object.assign({}, rects[rects.length - 1], { width: this.caretWidth }))
+    this.layer.drawBlocks(...rects.map(rect => ({ ...rect, color: rect.color ?? color })))
+    const rect = rects[rects.length - 1]
+    this.input.render(Object.assign({}, rect, { left: rect.left + rect.width, width: this.caretWidth }))
+  }
+
+  clearSelection = () => { 
+    this.layer.clearSelection()
   }
 
   moveTo(key: NodeKey, offset: number) {

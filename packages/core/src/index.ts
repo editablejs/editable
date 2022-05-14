@@ -152,7 +152,8 @@ class Editor extends EventEmitter implements IEditor {
     range.collapse(false)
     const rect = range.getClientRects().item(0)
     if(!rect) return
-    this.selection.drawByRects(true, rect.toJSON())
+    this.selection.clearSelection()
+    this.selection.drawCaretByRect(rect.toJSON())
   }
 
   private emitCompositionUpdate = (text: string) => { 
