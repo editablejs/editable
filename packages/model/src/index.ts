@@ -1,6 +1,6 @@
 import EventEmitter from '@editablejs/event-emitter';
 import { Log } from '@editablejs/utils'
-import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op } from "./types";
+import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op, NodeObject } from "./types";
 import Node from './node'
 import Text from './text'
 import Element from './element'
@@ -45,8 +45,12 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     return this.map.rootKeys()
   }
 
-  find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[] { 
-    return this.map.find(type).map(node => Element.from<T, N>(node))
+  find(callback: (obj: NodeObject) => boolean): INode[] { 
+    return this.map.find(callback).map(node => Element.from(node))
+  }
+
+  findByType<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: string): N[] { 
+    return this.find(obj => obj.type === type) as N[]
   }
 
   applyOps(...ops: Op[]){ 

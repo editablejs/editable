@@ -90,7 +90,7 @@ export interface IObjectMap {
 
   rootKeys(): string[]
 
-  find<T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(type: string): N[];
+  find(callback: (obj: NodeObject) => boolean): NodeObject[];
   
   get<T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(key: NodeKey): N | null;
 
@@ -111,7 +111,9 @@ export interface IModel extends IEventEmitter {
 
   getRootKeys(): string[]
 
-  find<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[]
+  find(callback: (obj: NodeObject) => boolean): INode[]
+
+  findByType<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[]
 
   applyOps(...ops: Op[]): void
 

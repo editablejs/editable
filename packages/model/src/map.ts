@@ -41,11 +41,11 @@ export default class ObjectMap implements IObjectMap {
     return keys
   }
 
-  find = <T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>> (type: string): N[] => {
-    const nodes: N[] = []
+  find = (callback: (obj: NodeObject) => boolean): NodeObject[] => {
+    const nodes: NodeObject[] = []
     this.nodeMap.forEach(value => {
-      if (value.type === type) {
-        this.append(value)
+      this.append(value)
+      if (callback(value)) {
         nodes.push(value as any)
       }
     })

@@ -6,6 +6,13 @@ import { DrawRect, IInput } from "./types";
 
 export type InputEventType = typeof EVENT_FOCUS | typeof EVENT_BLUR | typeof EVENT_CHANGE | typeof EVENT_KEYDOWN | typeof EVENT_KEYUP
 
+const inputBoxStyle = {
+  opacity: '0',
+  outline: 'none',
+  caretColor: 'transparent',
+  overflow: 'hidden',
+}
+
 export default class Input extends EventEmitter<InputEventType> implements IInput {
   protected composing = false
   protected layer: ILayer
@@ -35,7 +42,7 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     textarea.setAttribute('rows', '1')
     textarea.setAttribute('style', 'font-size: inherit; line-height: 1; padding: 0px; border: none; white-space: nowrap; width: 1em;overflow: auto;resize: vertical;')
     this.textarea = textarea
-    const box = this.layer.createBox('input', { top: 0, left: 0, width: 0, height: 0 })
+    const box = this.layer.createBox('input', { top: 0, left: 0, width: 0, height: 0 }, inputBoxStyle)
     box.appendChild(this.textarea)
     this.root = box
     this.layer.appendChild(box)
@@ -142,12 +149,7 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
   }
 
   render = (rect: DrawRect): void => {
-    this.layer.updateBox(this.root, Object.assign({}, rect, { color: 'transparent', width: 1 }), {
-      opacity: '0',
-      outline: 'none',
-      caretColor: 'transparent',
-      overflow: 'hidden',
-    })
+    this.layer.updateBox(this.root, Object.assign({}, rect, { color: 'transparent', width: 1 }), inputBoxStyle)
     this.focus()
   } 
 

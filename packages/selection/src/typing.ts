@@ -1,10 +1,9 @@
 import EventEmitter from "@editablejs/event-emitter"
-import { ITyping, Position, TypingOptions } from "./types";
-import type { IModel } from '@editablejs/model';
-import { NodeKey, Text } from '@editablejs/model';
+import type { ITyping, Position, TypingOptions } from "./types";
+import { NodeKey, IModel, Element, Text, IElement } from '@editablejs/model';
 import { EVENT_SELECT_START, EVENT_SELECTING, EVENT_SELECT_END, DATA_KEY } from '@editablejs/constants'
 import { getOffset } from "./text";
-
+import { findClosestNodes, isAlignY } from "./utils";
 
 
 export type TypingEventType = typeof EVENT_SELECT_START | typeof EVENT_SELECTING | typeof EVENT_SELECT_END
@@ -30,34 +29,136 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
     })
   }
 
-  getNodeFromEvent = (e: MouseEvent) => {
+  findNodeFromEvent = (e: MouseEvent) => {
     if (!(e.target instanceof Node)) return
     let targetNode: Node | null = e.target
     let key: NodeKey | null = null
     if(targetNode instanceof globalThis.Text) {
       targetNode = targetNode.parentNode
     }
+    let top = e.clientY
+    let left = e.clientX
     if(targetNode instanceof globalThis.Element) {
       key = targetNode.getAttribute(DATA_KEY)
-      if(!key) return
-      const node = this.model.getNode(key)
-      if(node && Text.isText(node)) {
+      const nodes: globalThis.Element[] = []
+      if(!key) {
+        let parent = targetNode.parentNode
+        while(parent && parent instanceof globalThis.Element) {
+          key = parent.getAttribute(DATA_KEY)
+          if(key) {
+            break
+          }
+          parent = parent.parentNode
+        }
+      }
+      if(!key) {
+        const selector = this.model.find(obj => {
+          if(Text.isTextObject(obj)) {
+            return true
+          } else if(Element.isElementObject(obj)) {
+            return obj.children.length === 0
+          }
+          return false
+        }).map(node => `[${DATA_KEY}="${node.getKey()}"]`).join(',')
+        document.querySelectorAll(selector).forEach(node => { 
+          if(node instanceof globalThis.Element) {
+            nodes.push(node)
+          }
+        })
+      } else {
+        const node = this.model.getNode(key)
+        if(!node) return null
+        const keys: NodeKey[] = []
+        if(Text.isText(node)) {
+          keys.push(key)
+        } else if(Element.isElement(node)) {
+          const findKeys = (node: IElement) => {
+            const children = node.getChildren()
+            if(children.length === 0) keys.push(node.getKey())
+            children.forEach(child => { 
+              const childKey = child.getKey()
+              if(Text.isText(child)) {
+                keys.push(childKey)
+              } else if(Element.isElement(child)) {
+                findKeys(child)
+              }
+            })
+          }
+          findKeys(node)
+        }
+        const selector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
+        document.querySelectorAll(selector).forEach(node => {
+          if(node instanceof globalThis.Element) {
+            nodes.push(node)
+          }
+        })
+      }
+      const closestNodes = findClosestNodes(nodes, e.x, e.y)
+      if(!closestNodes) return
+      if(closestNodes instanceof Node) {
+        targetNode = closestNodes
+      } else {
+        const { top: closestTop, left: closestLeft, right: closestRight, below: closestBelow } = closestNodes
+        if(closestLeft && closestBelow) {
+          if(isAlignY(closestBelow.rect, closestLeft.rect)) {
+            targetNode = closestBelow.node
+            top = closestBelow.rect.top
+          } else {
+            targetNode = closestLeft.node
+            left = closestLeft.rect.right
+          }
+        } else if(closestRight && closestBelow) {
+          if(isAlignY(closestBelow.rect, closestRight.rect)) {
+            targetNode = closestBelow.node
+            top = closestBelow.rect.top
+          } else {
+            targetNode = closestRight.node
+            left = closestRight.rect.left
+          }
+        } else if(closestLeft) {
+          targetNode = closestLeft.node
+          left = closestLeft.rect.right
+        } else if(closestRight) {
+          targetNode = closestRight.node
+          left = closestRight.rect.left
+        } else if(closestBelow) {
+          if(left < closestBelow.rect.left) {
+            left = closestBelow.rect.left
+          } else if(left > closestBelow.rect.right) { 
+            left = closestBelow.rect.right
+          }
+          top = closestBelow.rect.top
+          targetNode = closestBelow.node
+        } else if(closestTop) {
+          targetNode = closestTop.node
+          if(left < closestTop.rect.left) {
+            left = closestTop.rect.left
+          } else if(left > closestTop.rect.right) { 
+            left = closestTop.rect.right
+          }
+          top = closestTop.rect.bottom
+        }
+      }
+      if(targetNode && targetNode instanceof globalThis.Element) {
+        key = targetNode.getAttribute(DATA_KEY)
         targetNode = targetNode.firstChild
-      } else return
+      }
     }
     if(!key || !(targetNode instanceof globalThis.Text)) return
     return {
       node: targetNode,
-      key
+      key,
+      top,
+      left
     }
   }
   
   getPositionFromEvent = (e: MouseEvent): Position | undefined => { 
-    const result = this.getNodeFromEvent(e)
+    const result = this.findNodeFromEvent(e)
     if(!result) return
-    const { key, node } = result
+    const { key, node, top, left } = result
     const content = node.textContent || ''
-    const offset = getOffset(node, e.clientX, e.clientY, 0, content.length, content.length)
+    const offset = getOffset(node, left, top, 0, content.length, content.length)
     return {
       key,
       offset
@@ -75,7 +176,6 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
   }
 
   handleMouseMove = (e: MouseEvent) => { 
-    // 暂未考虑鼠标移动时，溢出编辑区域外选中内容的情况
     this.emit(EVENT_SELECTING, this.getPositionFromEvent(e))
   }
 
