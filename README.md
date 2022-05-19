@@ -108,6 +108,7 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 - [x] delete node
 - [ ] Modify node style
 - [ ] Modify node DATA
+- [ ] Grid node type design
 
 ### Core
 
