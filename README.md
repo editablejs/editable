@@ -88,12 +88,12 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 
 ### Selection
 
-- [-] English keyboard input
-- [-] Combination input method input
-- [-] Cursor selection rendering
-- [-] Text input box rendering
-- [-] Drag mouse to select selection and cursor
-- [-] Get all selected content api
+- [x] English keyboard input
+- [x] Combination input method input
+- [x] Cursor selection rendering
+- [x] Text input box rendering
+- [x] Drag mouse to select selection and cursor
+- [x] Get all selected content api
 - [ ] Keyboard switch cursor and selection
 - [ ] Double-click, triple-click to select text
 - [ ] touch to select selection and cursor
@@ -101,25 +101,25 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 
 ### Model
 
-- [-] Insert text
-- [-] delete text
+- [x] Insert text
+- [x] delete text
 - [ ] Modify text format
-- [-] insert node
-- [-] delete node
+- [x] insert node
+- [x] delete node
 - [ ] Modify node style
 - [ ] Modify node DATA
 
 ### Core
 
-- [-] plugin registration
-- [-] Rendering plugin
+- [x] plugin registration
+- [x] Rendering plugin
 - [ ] plugin hook
 - [ ] Non-rendering plugin handling
 - [ ] Design the definition and processing of block and inline types
-- [-] Insert text at cursor
-- [-] Insert node at cursor
-- [-] delete the current selection
-- [-] Delete text before and after the cursor position by pressing backspace & delete
+- [x] Insert text at cursor
+- [x] Insert node at cursor
+- [x] delete the current selection
+- [x] Delete text before and after the cursor position by pressing backspace & delete
 - [ ] carriage return
 
 ### View
