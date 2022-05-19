@@ -15,13 +15,13 @@ pnpm dev
 
 ```
 
-### 目录结构
+## 目录结构
 
 所有源代码都在 packages 里面，apps 目录主要用作文档和测试用例，现在初始开发阶段里面写了一个React渲染编辑器模型、以及模型更新的逻辑，方便可视化测试。
 
 本质上期望 `packages` 中全部使用 `js` 开发，与视图层分离，可以通过 `Dom`、`React`、`Vue` 实现不同的视图层来达到不仅限于某一个前端库使用的目地
 
-#### packages/constants
+### packages/constants
 
 所有需要全局用到的常量都放在这里，统一管理
 
@@ -29,22 +29,22 @@ pnpm dev
 - `DATA_` 开头为DOM节点所需要用到的数据名称定义
 - `OP_` 为将来通过协同编辑器操作的一些操作名称定义
 
-#### packages/utils
+### packages/utils
 
 工具包
 
 - `ua` 提供终端类型判断，比如手机、安卓、iOS等
 - `log` 提供日志输出，定义了一些常见的错误和异常，可以用来抛出异常
 
-#### packages/grapheme-breaker
+### packages/grapheme-breaker
 
 主要对一些 `unicode` 字符进行索引的计算。因为有些字符占位所占的字节数不确定，造成某些字符拆分后的索引不准确，所以需要这个工具包来解决这个问题。
 
-#### packages/event-emitter
+### packages/event-emitter
 
 一个简单的事件处理器，稍微不同的是，绑定的事件在处理中返回 `false` 可以中断后续的事件触发。
 
-#### packages/model
+### packages/model
 
 数据模型，使用 `Map` 结构来存储数据，支持嵌套。
 
@@ -58,7 +58,7 @@ pnpm dev
 - `op` 提供了一些修改模型去生成操作命令的方法
 - `index` 可以转换map数据为 node 对象。并且提供了一些操作map数据的方法。每次操作数据必会触发 `EVENT_NODE_UPDATE` 事件。
 
-#### packages/selection
+### packages/selection
 
 光标与选区的选取、绘制、文本输入事件
 
@@ -71,7 +71,7 @@ pnpm dev
 - `index` 模拟原生 `selection` 的一些方法，以及绘制光标、选区的方法
 
 
-#### packages/core
+### packages/core
 
 主要整合 `model` 和 `selection` 提供操作方法、事件处理等。
 
@@ -79,7 +79,7 @@ pnpm dev
 - `index` 插件注册。处理模型变更 -> 视图渲染 -> 光标选区渲染的逻辑
 
 
-#### apps/docs
+### apps/docs
 
 - `components` 定义了三个不同类型节点的渲染视图、以及注册插件的方法。Text 中还处理了针对组合输入法的渲染逻辑
 - `hooks` 封装编辑器模型变更 -> 视图渲染 -> 光标选区渲染的逻辑处理

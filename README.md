@@ -1,4 +1,5 @@
-[![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg?longCache=true&style=flat-square "简体中文")](README.zh-CN.md)
+[![zh-CN](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg?longCache=true&style=flat-square "zh-CN")](README.zh-CN.md)
+
 # Editable
 
 An experimental rich text editor framework which aims to replace the native `contenteditable` attribute with a self-drawn cursor to provide richer and more stable editing capabilities.
@@ -71,14 +72,12 @@ Cursor and selection selection, drawing, text input events
 - `text` provides methods to find the nearest text index by coordinates
 - `index` simulates some methods of native `selection`, as well as methods for drawing cursor and selection
 
-
 ### packages/core
 
 Mainly integrates `model` and `selection` to provide operation methods, event handling, etc.
 
 - `typing` encapsulates some common event hooks
 - `index` plugin registration. Logic for handling model changes -> view rendering -> cursor selection rendering
-
 
 ### apps/docs
 
