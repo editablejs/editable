@@ -83,3 +83,47 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 
 - `components` defines rendering views for three different types of nodes, and methods for registering plugins. Text also handles rendering logic for combined input methods
 - `hooks` encapsulates editor model changes -> view rendering -> logic processing of cursor selection rendering
+
+## Task
+
+### Selection
+
+- [-] English keyboard input
+- [-] Combination input method input
+- [-] Cursor selection rendering
+- [-] Text input box rendering
+- [-] Drag mouse to select selection and cursor
+- [-] Get all selected content api
+- [ ] Keyboard switch cursor and selection
+- [ ] Double-click, triple-click to select text
+- [ ] touch to select selection and cursor
+- [ ] Full coverage of unit tests
+
+### Model
+
+- [-] Insert text
+- [-] delete text
+- [ ] Modify text format
+- [-] insert node
+- [-] delete node
+- [ ] Modify node style
+- [ ] Modify node DATA
+
+### Core
+
+- [-] plugin registration
+- [-] Rendering plugin
+- [ ] plugin hook
+- [ ] Non-rendering plugin handling
+- [ ] Design the definition and processing of block and inline types
+- [-] Insert text at cursor
+- [-] Insert node at cursor
+- [-] delete the current selection
+- [-] Delete text before and after the cursor position by pressing backspace & delete
+- [ ] carriage return
+
+### View
+
+- [ ] DOM view rendering design
+- [ ] React view rendering design (part)
+- [ ] Vue view rendering design
