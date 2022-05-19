@@ -83,6 +83,19 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     this.children = []
   }
 
+  contains(...keys: NodeKey[]): boolean {
+    if(keys.length === 0) return false
+    for(const child of this.children) {
+      if(keys.includes(child.getKey())) return true
+      if(Element.isElement(child) && child.contains(...keys)) return true
+    }
+    return false
+  }
+
+  indexOf(key: NodeKey): number {
+    return this.children.findIndex(child => child.getKey() === key)
+  }
+
   toJSON<E extends ElementObject<T> = ElementObject<T>>(includeChild: boolean = true): E {
     const json = super.toJSON() as E
     if(includeChild) json.children = this.children.map(child => child.toJSON())

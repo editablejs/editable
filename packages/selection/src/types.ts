@@ -22,6 +22,10 @@ export interface ISelection extends IEventEmitter {
   readonly focus: Position | null;
   readonly isCollapsed: boolean;
   readonly isFocus: boolean;
+
+  getSubRanges(...ranges: IRange[]): IRange[]
+
+  getContents(...ranges: IRange[]): INode[]
   
   getRangeAt(index: number): IRange | null;
 

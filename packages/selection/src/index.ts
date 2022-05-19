@@ -1,5 +1,5 @@
 import EventEmitter from "@editablejs/event-emitter";
-import { Element, IModel, NodeKey, Text, INode, Op } from '@editablejs/model';
+import { Element, IModel, NodeKey, Text, INode, Op, IElement } from '@editablejs/model';
 import { Log } from '@editablejs/utils'
 import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, 
 OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END, EVENT_NODE_UPDATE } from '@editablejs/constants'
@@ -180,6 +180,144 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.typing.bindContainers(...containers)
     this.input.bindContainers(...containers)
   }
+
+  getSubRanges = (...ranges: IRange[]): IRange[] => { 
+    if(ranges.length === 0 && this.ranges.length === 0) return []
+    if(ranges.length === 0) ranges = this.ranges
+    const subRanges: IRange[] = []
+    for(let i = 0; i < ranges.length; i++) {
+      const range = ranges[i]
+      if(range.isCollapsed) {
+        subRanges.push(range)
+        continue
+      }
+      const { anchor, focus } = range
+      const start = this.model.getNode(anchor.key)
+      const end = this.model.getNode(focus.key)
+      if(!start || !end) continue
+      let parentKey = start.getParent()
+      if(!parentKey) continue;
+      let parent = this.model.getNode<any, IElement>(parentKey)
+      if(Text.isText(start)) {
+        // same
+        if(start.getKey() === end.getKey()) {
+          subRanges.push(range)
+          continue
+        }
+        subRanges.push(new Range({
+          anchor: {
+            key: anchor.key,
+            offset: anchor.offset
+          },
+          focus: {
+            key: anchor.key,
+            offset: start.getText().length
+          }
+        }))
+      }
+      let next = this.model.getNext(anchor.key)
+      let finded = false
+      while(parent) {
+        while(next) {
+          const nextKey = next.getKey()
+          if((Text.isText(next) && nextKey !== focus.key) || (Element.isElement(next) && !next.contains(focus.key))) {
+            const offset = parent.indexOf(nextKey)
+            if(offset === -1) continue
+            subRanges.push(new Range({
+              anchor: {
+                key: parentKey,
+                offset
+              },
+              focus: {
+                key: parentKey,
+                offset: offset + 1
+              }
+            }))
+          }
+          else if(Text.isText(next)) {
+            subRanges.push(new Range({
+              anchor: {
+                key: focus.key,
+                offset: 0
+              },
+              focus: {
+                key: focus.key,
+                offset: focus.offset
+              }
+            }))
+            finded = true
+            break
+          } else if(Element.isElement(next)) {
+            const findChildRange = (node: IElement) => {
+              const children = node.getChildren()
+              for(let i = 0; i < children.length; i++) {
+                const child = children[i]
+                const childKey = child.getKey()
+                if(childKey === focus.key) {
+                  subRanges.push(new Range({
+                    anchor: {
+                      key: childKey,
+                      offset: 0
+                    },
+                    focus: {
+                      key: childKey,
+                      offset: focus.offset
+                    }
+                  }))
+                  break
+                } else if(Element.isElement(child) && child.contains(focus.key)) { 
+                  findChildRange(child)
+                  break
+                }
+                subRanges.push(new Range({
+                  anchor: {
+                    key: childKey,
+                    offset: i
+                  },
+                  focus: {
+                    key: childKey,
+                    offset: i + 1
+                  }
+                }))
+              }
+            }
+            findChildRange(next)
+            finded = true
+            break
+          }
+          next = this.model.getNext(next.getKey())
+        }
+        if(finded) break
+        next = this.model.getNext(parentKey)
+        parentKey = parent.getParent()
+        if(!parentKey) break
+        parent = this.model.getNode<any, IElement>(parentKey)
+      }
+    }
+    return subRanges
+  }
+
+  getContents = (...ranges: IRange[]): INode[] => {
+    const contents: INode[] = []
+    const subRanges = this.getSubRanges(...ranges)
+    subRanges.forEach(subRange => {
+      if(!subRange.isCollapsed) {
+        const { anchor, focus } = subRange
+        const start = this.model.getNode(anchor.key)
+        const end = this.model.getNode(focus.key)
+        if(!start || !end) return
+        if(Text.isText(start)) {
+          const text = start.getText()
+          start.setText(text.substring(anchor.offset, focus.offset))
+          contents.push(start)
+        } else if(Element.isElement(start)) {
+          const children = start.getChildren()
+          contents.push(children[anchor.offset])
+        }
+      }
+    })
+    return contents
+  }
   
   getRangeAt = (index: number) => {
     return this.ranges.at(index) ?? null;
@@ -263,6 +401,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   drawBlocksByRects = (...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]) => {
+    if(rects.length === 0) return
     const color = this.isFocus ? this.focusColor : this.blurColor
     this.layer.drawBlocks(...rects.map(rect => ({ ...rect, color: rect.color ?? color })))
     const rect = rects[rects.length - 1]

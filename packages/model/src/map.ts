@@ -6,7 +6,7 @@ export default class ObjectMap implements IObjectMap {
   private nodeMap: Map<string, NodeObject> = new Map();
   private parentMap: Map<string, string[]> = new Map();
 
-  protected append = (obj: NodeObject) => {
+  protected append(obj: NodeObject){
     if(Element.isElementObject(obj)) {
       obj.children = []
       const childrenKeys = this.parentMap.get(obj.key)
@@ -20,7 +20,7 @@ export default class ObjectMap implements IObjectMap {
     }
   }
 
-  roots = () => {
+  roots(){
     const roots: ElementObject[] = []
     this.rootKeys().forEach(key => {
       const obj = this.get<NodeData, ElementObject>(key)
@@ -31,7 +31,7 @@ export default class ObjectMap implements IObjectMap {
     return roots
   }
 
-  rootKeys = () => { 
+  rootKeys(){ 
     const keys: string[] = []
     this.nodeMap.forEach(value => {
       if(!value.parent && Element.isElementObject(value)) {
@@ -41,7 +41,7 @@ export default class ObjectMap implements IObjectMap {
     return keys
   }
 
-  find = (callback: (obj: NodeObject) => boolean): NodeObject[] => {
+  find(callback: (obj: NodeObject) => boolean): NodeObject[]{
     const nodes: NodeObject[] = []
     this.nodeMap.forEach(value => {
       this.append(value)
@@ -52,17 +52,17 @@ export default class ObjectMap implements IObjectMap {
     return nodes
   }
 
-  get = <T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(key: NodeKey): N | null => {
+  get<T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(key: NodeKey): N | null{
     const obj = this.nodeMap.get(key);
     if(!obj) return null
     this.append(obj)
     return obj as any
   }
 
-  next = (key: NodeKey): NodeObject | null => { 
+  next(key: NodeKey): NodeObject | null { 
     const node = this.get(key)
     if(!node) return null
-    const parentKey = this.parentMap.get(key)?.[0]
+    const parentKey = node.parent
     if(!parentKey) {
       const roots = this.roots()
       const index = roots.findIndex(item => item.key === key)
@@ -79,7 +79,7 @@ export default class ObjectMap implements IObjectMap {
     return nextObj as any
   }
 
-  apply = (...nodes: INode[]) => {
+  apply(...nodes: INode[]){
     nodes.forEach(node => {
       const key = node.getKey()
       const parent = node.getParent()
@@ -100,6 +100,36 @@ export default class ObjectMap implements IObjectMap {
         this.nodeMap.set(key, node.toJSON())
       }
     })
+  }
+
+  delete(key: NodeKey){ 
+    const nodeObj = this.get(key)
+    if(!nodeObj) return
+    if(Element.isElementObject(nodeObj)) { 
+      const deleteChildren = (elementObj: ElementObject) => { 
+        elementObj.children.forEach(child => {
+          this.nodeMap.delete(child.key)
+          this.parentMap.delete(child.key)
+          if(Element.isElementObject(child)) {
+            deleteChildren(child)
+          }
+        })
+      }
+      deleteChildren(nodeObj)
+      this.parentMap.delete(key)
+    }
+    this.nodeMap.delete(key)
+    const parentKey = nodeObj.parent
+    if(parentKey) {
+      const childKeys = this.parentMap.get(parentKey)
+      if(childKeys) {
+        const index = childKeys.findIndex(childKey => childKey === key)
+        if(index !== -1) {
+          childKeys.splice(index, 1)
+          this.parentMap.set(parentKey, childKeys)
+        }
+      }
+    }
   }
 
   clear = () => {

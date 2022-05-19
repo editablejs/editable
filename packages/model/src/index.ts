@@ -6,7 +6,7 @@ import Text from './text'
 import Element from './element'
 import ObjectMap from './map';
 import { createDeleteNode, createDeleteText, createInsertNode, createInsertText } from './op';
-import { EVENT_NODE_UPDATE } from '@editablejs/constants'
+import { EVENT_NODE_UPDATE, OP_DELETE_NODE } from '@editablejs/constants'
 
 export type ModelEventType = typeof EVENT_NODE_UPDATE
 
@@ -21,7 +21,12 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   }
 
   protected emitUpdate = (node: INode, ...ops: Op[]) => { 
-    this.map.apply(node)
+    const key = node.getKey()
+    if(ops.find(op => op.type === OP_DELETE_NODE && op.key === key)) {
+      this.map.delete(key)
+    } else {
+      this.map.apply(node)
+    }
     this.emit(EVENT_NODE_UPDATE, node, ops)
   }
 
@@ -57,7 +62,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     // TODO
   }
 
-  insertText(text: string, key: string, offset?: number ){
+  insertText(text: string, key: NodeKey, offset?: number ){
     if(!key) {
       const textNode = Text.create({ text })
       this.insertNode(textNode)
@@ -98,7 +103,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   //   }
   // }
 
-  insertNode(node: INode, key?: string, offset?: number, ){ 
+  insertNode(node: INode, key?: NodeKey, offset?: number, ){ 
     if(!key) {
       if(Text.isText(node)) Log.cannotInsertText('root')
       this.emitUpdate(node, createInsertNode(node, offset || this.map.rootKeys().length, key))
@@ -142,6 +147,14 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       }
       // split element
     }
+  }
+
+  deleteNode(key: NodeKey){
+    const node = this.getNode(key);
+    if(!node) Log.nodeNotFound(key)
+    const ops: Op[] = []
+    ops.push(createDeleteNode(key))
+    this.emitUpdate(node, ...ops)
   }
 
   destroy(){

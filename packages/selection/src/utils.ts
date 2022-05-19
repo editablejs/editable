@@ -55,6 +55,12 @@ export const isBetweenX = (x: number, rect: DOMRect) => {
   return x >= rect.left && x <= rect.right
 }
 
+/**
+ * 判断 y 在 rect 中是否处于 top 与 bottom 之间
+ * @param y 
+ * @param rect 
+ * @returns 
+ */
 export const isBetweenY = (y: number, rect: DOMRect) => { 
   return y >= rect.top && y <= rect.bottom
 }

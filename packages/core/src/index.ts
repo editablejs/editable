@@ -61,6 +61,9 @@ class Editor extends EventEmitter implements IEditor {
     this.typing = new Typing(this)
     this.model.on(EVENT_NODE_UPDATE, this.emitUpdate)
     this.selection.on(EVENT_VALUE_CHANGE, (value: string) => {
+      if(!this.selection.isCollapsed) {
+        this.deleteContents()
+      }
       if(this.isComposition) {
         this.emitCompositionUpdate(value)
       } else {
@@ -215,6 +218,29 @@ class Editor extends EventEmitter implements IEditor {
       if(Text.isText(node)) {
         const text = node.getText()
         if(offset + 1 < text.length) this.model.deleteText(key, offset, 1);
+      }
+    }
+  }
+
+  deleteContents(){
+    const range = this.getRange()
+    if(!range) return
+    if(range.isCollapsed) {
+      this.deleteForward()
+      return
+    }
+    const ranges = this.selection.getSubRanges()
+    for(let i = ranges.length - 1; i >= 0; i--) { 
+      const range = ranges[i]
+      const { anchor, focus } = range
+      const start = this.model.getNode(anchor.key)
+      const end = this.model.getNode(focus.key)
+      if(!start || !end) break
+      if(Text.isText(start)) { 
+        this.model.deleteText(anchor.key, anchor.offset, focus.offset - anchor.offset)
+      } else if(Element.isElement(start)) { 
+        const children = start.getChildren()
+        this.model.deleteNode(children[anchor.offset].getKey())
       }
     }
   }

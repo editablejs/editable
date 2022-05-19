@@ -80,6 +80,10 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   empty(): void;
 
+  contains(...keys: NodeKey[]): boolean
+
+  indexOf(key: NodeKey): number
+
   toJSON<R extends ElementObject<T> = ElementObject<T>>(includeChild?: boolean): Readonly<R>;
 }
 
@@ -97,6 +101,8 @@ export interface IObjectMap {
   next(key: NodeKey): NodeObject | null
 
   apply(...nodes: INode[]): void
+
+  delete(key: NodeKey): void
 
   clear(): void;
 }
@@ -122,6 +128,8 @@ export interface IModel extends IEventEmitter {
   deleteText(key: NodeKey, offset: number, length: number): void
 
   insertNode(node: INode, key?: NodeKey, offset?: number, ): void
+
+  deleteNode(key: NodeKey): void
 
   destroy(): void;
 }

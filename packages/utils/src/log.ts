@@ -8,6 +8,10 @@ export default class Log {
     return Log.throw(`node '${key}' is not a text node`)
   }
 
+  static nodeNotElement = (key: string) => { 
+    return Log.throw(`node '${key}' is not a element node`)
+  }
+
   static nodeNotInContext = (key: string) => { 
     return Log.throw(`node '${key}' is not in context`)
   }
