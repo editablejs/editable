@@ -1,4 +1,4 @@
-describe("core", () => {
+describe("utils", () => {
   it("prints a message", () => {
     console.log('TODO')
   });

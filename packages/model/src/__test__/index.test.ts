@@ -1,6 +1,6 @@
-describe("core", () => {
+describe("main", () => {
   it("prints a message", () => {
-    console.log('TODO')
+    console.log('jest')
   });
 });
 
