@@ -16,13 +16,13 @@ pnpm-dev
 
 ```
 
-### Directory Structure
+## Directory Structure
 
 All source codes are in packages, and the apps directory is mainly used for documentation and test cases. Now, in the initial development phase, a React rendering editor model and the logic of model update are written for visual testing.
 
 Essentially, it is expected that all `packages` will be developed using `js`, which is separated from the view layer. Different view layers can be implemented through `Dom`, `React`, and `Vue` to achieve the purpose not limited to a certain front-end library.
 
-#### packages/constants
+### packages/constants
 
 All constants that need to be used globally are placed here for unified management
 
@@ -30,22 +30,22 @@ All constants that need to be used globally are placed here for unified manageme
 - `DATA_` starts with the definition of the data name that the DOM node needs to use
 - `OP_` is defined for some operation names that will be operated through the co-editor in the future
 
-#### packages/utils
+### packages/utils
 
 Toolkit
 
 - `ua` provides terminal type judgment, such as mobile phone, Android, iOS, etc.
 - `log` provides log output, defines some common errors and exceptions, and can be used to throw exceptions
 
-#### packages/grapheme-breaker
+### packages/grapheme-breaker
 
 Mainly index some `unicode` characters. Because the number of bytes occupied by some characters is uncertain, resulting in inaccurate indexes of some characters after splitting, this toolkit is needed to solve this problem.
 
-#### packages/event-emitter
+### packages/event-emitter
 
 A simple event handler, with a slight difference that the bound event returns `false` in the process to interrupt subsequent event firing.
 
-#### packages/model
+### packages/model
 
 The data model, which uses the `Map` structure to store data, supports nesting.
 
@@ -59,7 +59,7 @@ Each acquired `node` object is a copy, and operations and modifications to it wi
 - `op` provides some methods of modifying the model to generate operation commands
 - `index` can convert map data to node objects. And provides some methods for manipulating map data. Every time data is manipulated, an `EVENT_NODE_UPDATE` event is triggered.
 
-#### packages/selection
+### packages/selection
 
 Cursor and selection selection, drawing, text input events
 
@@ -72,7 +72,7 @@ Cursor and selection selection, drawing, text input events
 - `index` simulates some methods of native `selection`, as well as methods for drawing cursor and selection
 
 
-#### packages/core
+### packages/core
 
 Mainly integrates `model` and `selection` to provide operation methods, event handling, etc.
 
@@ -80,7 +80,7 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 - `index` plugin registration. Logic for handling model changes -> view rendering -> cursor selection rendering
 
 
-#### apps/docs
+### apps/docs
 
 - `components` defines rendering views for three different types of nodes, and methods for registering plugins. Text also handles rendering logic for combined input methods
 - `hooks` encapsulates editor model changes -> view rendering -> logic processing of cursor selection rendering
