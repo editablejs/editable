@@ -13,7 +13,7 @@ Use `nextjs` & `turbo` to build a development environment, use `typescript` for 
 pnpm install
 
 # start up
-pnpm-dev
+pnpm dev
 
 ```
 
