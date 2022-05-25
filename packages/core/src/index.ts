@@ -232,7 +232,8 @@ class Editor extends EventEmitter implements IEditor {
     const ranges = this.selection.getSubRanges()
     for(let i = ranges.length - 1; i >= 0; i--) { 
       const range = ranges[i]
-      const { anchor, focus } = range
+      const anchor = range.isBackward ? range.focus : range.anchor
+      const focus = range.isBackward ? range.anchor : range.focus
       const start = this.model.getNode(anchor.key)
       const end = this.model.getNode(focus.key)
       if(!start || !end) break
