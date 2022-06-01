@@ -1,6 +1,7 @@
 import EventEmitter from "@editablejs/event-emitter";
 import { Element, IModel, NodeKey, Text, INode, Op, IElement } from '@editablejs/model';
 import { Log } from '@editablejs/utils'
+import { nextBreak, previousBreak } from "@editablejs/grapheme-breaker";
 import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, 
 OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END, EVENT_NODE_UPDATE } from '@editablejs/constants'
 import type { DrawRect, IInput, IRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
@@ -9,6 +10,7 @@ import type { ILayer } from "./layer"
 import Range from './range'
 import Input, { InputEventType } from "./input";
 import Typing, { TypingEventType } from "./typing";
+import { assert } from "./utils";
 
 const SELECTION_BLUR_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
@@ -165,7 +167,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   applyUpdate = (node: INode, ops: Op[]) => {
-    if(!node.getParent()) this.handleRootUpdate()
+    if(!node.getParentKey()) this.handleRootUpdate()
     const range = this.createRangeFromOps(ops)
     if(range) { 
       this.applyRange(range)
@@ -195,7 +197,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       const start = this.model.getNode(anchor.key)
       const end = this.model.getNode(focus.key)
       if(!start || !end) continue
-      let parentKey = start.getParent()
+      let parentKey = start.getParentKey()
       if(!parentKey) continue;
       let parent = this.model.getNode<any, IElement>(parentKey)
       if(Text.isText(start)) {
@@ -289,7 +291,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
         }
         if(finded) break
         next = this.model.getNext(parentKey)
-        parentKey = parent.getParent()
+        parentKey = parent.getParentKey()
         if(!parentKey) break
         parent = this.model.getNode<any, IElement>(parentKey)
       }
@@ -412,8 +414,237 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.layer.clearSelection()
   }
 
+  getNodeToForward(key: NodeKey, offset: number): Position {
+    let node = this.model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    let next: INode | null = null
+    const position = {
+      key,
+      offset
+    }
+    // Text
+    if(Text.isText(node)) {
+      const text = node.getText()
+      if(offset < text.length) {
+        const nextOffset = nextBreak(node.getText(), offset)
+        position.offset = nextOffset
+        return position
+      } 
+      // offset out of range
+      else {
+        next = this.model.getNext(key)
+      }
+    } 
+    // Element
+    else if(Element.isElement(node)) {
+      const children = node.getChildren()
+      
+      if(offset < children.length) { 
+        position.offset = offset + 1
+        return position
+      } else {
+        next = this.model.getNext(key)
+      }
+    }
+    let parentNode: IElement | null = null
+    // is null
+    while(!next) {
+      // get parent
+      const parentKey: string | null = node.getParentKey()
+      if(!parentKey) return position
+      parentNode = this.model.getNode(parentKey)
+      if(!parentNode || !Element.isElement(parentNode)) return position
+      node = parentNode
+      next = this.model.getNext(parentKey)
+    }
+    if(!next) return position
+    if(Text.isText(next)) {
+      position.key = next.getKey()
+      position.offset = nextBreak(next.getText(), 0)
+      return position
+    } 
+    if(!parentNode || !Element.isElement(next)) return position
+    const first = next.first()
+    if(!first) { 
+      const offset = parentNode.indexOf(node.getKey())
+      position.key = parentNode.getKey()
+      position.offset = offset
+    } else if(Text.isText(first)) {
+      position.key = first.getKey()
+      position.offset = nextBreak(first.getText(), 0)
+    } else if(Element.isElement(first)) {
+      position.key = first.getKey()
+      position.offset = 0
+    }
+    return position
+  }
+
+  getNodeToBackward(key: NodeKey, offset: number): Position { 
+    let node = this.model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    let prev: INode | null = null
+    const position = {
+      key,
+      offset
+    }
+    // Text
+    if(Text.isText(node)) {
+      const text = node.getText()
+      if(offset > 0 && text.length > 0) {
+        const prevOffset = previousBreak(node.getText(), offset)
+        position.offset = prevOffset
+        return position
+      } 
+      // offset out of range
+      else {
+        prev = this.model.getPrev(key)
+      }
+    } 
+    // Element
+    else if(Element.isElement(node)) {
+      const children = node.getChildren()
+      if(offset > 0 && children.length > 0) { 
+        position.offset = offset - 1
+        return position
+      } else {
+        prev = this.model.getPrev(key)
+      }
+    }
+    let parentNode: IElement | null = null
+    // is null
+    while(!prev) {
+      // get parent
+      const parentKey: string | null = node.getParentKey()
+      if(!parentKey) return position
+      parentNode = this.model.getNode(parentKey)
+      if(!parentNode || !Element.isElement(parentNode)) return position
+      node = parentNode
+      prev = this.model.getPrev(parentKey)
+    }
+    if(!prev) return position
+    if(Text.isText(prev)) {
+      const text = prev.getText()
+      position.key = prev.getKey()
+      position.offset = previousBreak(text, text.length)
+      return position
+    } 
+    if(!parentNode || !Element.isElement(prev)) return position
+    const last = prev.last()
+    if(!last) { 
+      const offset = parentNode.indexOf(node.getKey())
+      position.key = parentNode.getKey()
+      position.offset = offset
+    } else if(Text.isText(last)) {
+      const text = last.getText()
+      position.key = last.getKey()
+      position.offset = previousBreak(text, text.length)
+    } else if(Element.isElement(last)) {
+      position.key = last.getKey()
+      position.offset = last.getChildren().length
+    }
+    return position
+  }
+
   moveTo(key: NodeKey, offset: number) {
-    
+    const node = this.model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    assert(node, offset)
+    const range = Range.create({
+      anchor: { key, offset },
+      focus: { key, offset }
+    })
+    this.removeAllRange()
+    this.addRange(range)
+  }
+
+  moveAnchorTo(key: NodeKey, offset: number) {
+    const node = this.model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    assert(node, offset)
+    const currentRange = this.getRangeAt(0)
+    const range = Range.create({
+      anchor: { key, offset },
+      focus: currentRange ? { ...currentRange.focus } : { key, offset }
+    })
+    this.removeAllRange()
+    this.addRange(range)
+  }
+
+  moveFocusTo(key: NodeKey, offset: number) {
+    const node = this.model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    assert(node, offset)
+    const currentRange = this.getRangeAt(0)
+    const range = Range.create({
+      focus: { key, offset },
+      anchor: currentRange ? { ...currentRange.anchor } : { key, offset }
+    })
+    this.removeAllRange()
+    this.addRange(range)
+  }
+
+  moveToForward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    if(range.isCollapsed) {
+      const { focus } = range
+      const { key, offset } = this.getNodeToForward(focus.key, focus.offset)
+      this.moveTo(key, offset)
+    } else if(range.isBackward) {
+      const { anchor } = range
+      this.moveFocusTo(anchor.key, anchor.offset)
+    } else {
+      const { focus } = range
+      this.moveAnchorTo(focus.key, focus.offset)
+    }
+  }
+
+  moveToBackward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    if(range.isCollapsed) {
+      const { focus } = range
+      const { key, offset } = this.getNodeToBackward(focus.key, focus.offset)
+      this.moveTo(key, offset)
+    } else if(range.isBackward) {
+      const { focus } = range
+      this.moveAnchorTo(focus.key, focus.offset)
+    } else {
+      const { anchor } = range
+      this.moveFocusTo(anchor.key, anchor.offset)
+    }
+  }
+
+  moveAnchorToForward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    const { anchor } = range
+    const { key, offset } = this.getNodeToForward(anchor.key, anchor.offset)
+    this.moveAnchorTo(key, offset)
+  }
+
+  moveFocusToForward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    const { focus } = range
+    const { key, offset } = this.getNodeToForward(focus.key, focus.offset)
+    this.moveFocusTo(key, offset)
+  }
+
+  moveAnchorToBackward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    const { anchor } = range
+    const { key, offset } = this.getNodeToBackward(anchor.key, anchor.offset)
+    this.moveAnchorTo(key, offset)
+  }
+
+  moveFocusToBackward = () => { 
+    const range = this.getRangeAt(0)
+    if(!range) return
+    const { focus } = range
+    const { key, offset } = this.getNodeToBackward(focus.key, focus.offset)
+    this.moveFocusTo(key, offset)
   }
 
   destroy() { 

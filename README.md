@@ -94,7 +94,9 @@ Mainly integrates `model` and `selection` to provide operation methods, event ha
 - [x] Text input box rendering
 - [x] Drag mouse to select selection and cursor
 - [x] Get all selected content api
-- [ ] Keyboard switch cursor and selection
+- [x] Switch cursor and selection by keyboard left and right keys
+- [x] Switch cursor and selection by keyboard Shift+left and right keys
+- [ ] Use the keyboard up and down keys to switch the cursor and selection
 - [ ] Double-click, triple-click to select text
 - [ ] touch to select selection and cursor
 - [ ] Full coverage of unit tests

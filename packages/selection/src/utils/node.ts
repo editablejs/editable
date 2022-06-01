@@ -1,3 +1,4 @@
+
 interface ClosestNode {
   node: Node
   rect: DOMRect
@@ -96,7 +97,7 @@ type ClosestNodes = {
   right: ClosestNode | null
 }
 
-export const findClosestNodes = (nodes: Element[], x: number, y: number): Node | ClosestNodes | null => {
+export const closestNodesByPoint = (nodes: Element[], x: number, y: number): Node | ClosestNodes | null => {
   const closestNodes: ClosestNodes = {
     top: null,
     below: null,

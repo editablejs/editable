@@ -11,6 +11,10 @@ export default class Range implements IRange {
     this._focus = options.focus ?? this._anchor;
   }
 
+  static create(options: RangeOptions) {
+    return new Range(options)
+  }
+
   get anchor() {
     return this._anchor
   }

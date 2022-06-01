@@ -3,7 +3,7 @@ import type { ITyping, Position, TypingOptions } from "./types";
 import { NodeKey, IModel, Element, Text, IElement } from '@editablejs/model';
 import { EVENT_SELECT_START, EVENT_SELECTING, EVENT_SELECT_END, DATA_KEY } from '@editablejs/constants'
 import { getOffset } from "./text";
-import { findClosestNodes, isAlignY } from "./utils";
+import { closestNodesByPoint, isAlignY } from "./utils/";
 
 
 export type TypingEventType = typeof EVENT_SELECT_START | typeof EVENT_SELECTING | typeof EVENT_SELECT_END
@@ -93,7 +93,7 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
           }
         })
       }
-      const closestNodes = findClosestNodes(nodes, e.x, e.y)
+      const closestNodes = closestNodesByPoint(nodes, e.x, e.y)
       if(!closestNodes) return
       if(closestNodes instanceof Node) {
         targetNode = closestNodes

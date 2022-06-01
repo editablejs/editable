@@ -67,6 +67,14 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     this.children.splice(index, 1)
   }
 
+  first(): INode | null {
+    return this.children[0] || null
+  }
+
+  last(): INode | null {
+    return this.children[this.children.length - 1] || null
+  }
+
   insert(index: number, ...child: INode[]): void {
     this.children.splice(index, 0, ...child.map(c => this.createChildNode(c.toJSON())))
   }

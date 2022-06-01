@@ -14,6 +14,8 @@ import Left from './left';
 import Right from './right';
 import Up from './up';
 import Down from './down';
+import ShiftLeft from './shift-left';
+import ShiftRight from './shift-right';
 import { TypingListener } from '../types';
 
 const defaultHandles: TypingListener[] = [
@@ -72,9 +74,19 @@ const defaultHandles: TypingListener[] = [
 		emitName: 'keydown:all',
 	},
 	{
+		name: 'shift-left',
+		handle: ShiftLeft,
+		emitName: 'keydown:shift-left',
+	},
+	{
 		name: 'left',
 		handle: Left,
 		emitName: 'keydown:left',
+	},
+	{
+		name: 'shift-right',
+		handle: ShiftRight,
+		emitName: 'keydown:shift-right',
 	},
 	{
 		name: 'right',

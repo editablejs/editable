@@ -26,7 +26,7 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     this.data = options.data;
   }
 
-  getParent(): string | null {
+  getParentKey(): string | null {
     return this.parent
   }
 
@@ -47,7 +47,7 @@ export default class Node<T extends NodeData = NodeData> implements INode {
   }
 
   compare(node: INode): boolean {
-    let isEqual = this.type === node.getType() && this.parent === node.getParent()
+    let isEqual = this.type === node.getType() && this.parent === node.getParentKey()
     if(!isEqual) return false
     if(typeof this.data === 'object') return JSON.stringify(this.data) === JSON.stringify(node.getData())
     return this.data === node.getData()
@@ -55,7 +55,7 @@ export default class Node<T extends NodeData = NodeData> implements INode {
 
   toJSON(): NodeObject<T> {
     return {
-      parent: this.getParent(),
+      parent: this.getParentKey(),
       key: this.key,
       type: this.getType(),
       data: Object.assign({}, this.data) as T

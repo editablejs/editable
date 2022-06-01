@@ -42,6 +42,12 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     return Element.from(obj)
   }
 
+  getPrev(key: NodeKey): INode | null { 
+    const obj = this.map.prev(key)
+    if(!obj) return null
+    return Element.from(obj)
+  }
+
   getRoots(){
     return this.map.roots().map(root => Element.from<NodeData, IElement>(root))
   }
@@ -94,7 +100,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   // splitNode = (key: NodeKey, offset: number) => { 
   //   const node = this.getNode(key);
   //   if(!node) throw new Error(`No node with key ${key}`);
-  //   const parentKey = node.getParent()
+  //   const parentKey = node.getParentKey()
   //   const parent = parentKey ? this.getNode(parentKey) : null
   //   // split text
   //   if(Text.isText(node)) {
@@ -119,7 +125,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       targetNode.insert(offset, node)
       this.emitUpdate(node, createInsertNode(node, offset, key))
     } else if(Text.isText(targetNode)) {
-      const parentKey = targetNode.getParent()
+      const parentKey = targetNode.getParentKey()
       if(!parentKey) Log.nodeNotInContext(key)
       const parent = this.getNode<NodeData, Element>(parentKey)
       if(!parent) Log.nodeNotFound(parentKey)

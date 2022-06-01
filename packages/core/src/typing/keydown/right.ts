@@ -7,5 +7,9 @@ class Right extends DefaultKeydown {
 		isHotkey('shift+right', event) ||
 		isHotkey('ctrl+e', event) ||
 		isHotkey('ctrl+f', event);
+
+		emit(): boolean | void {
+			this.editor.selection.moveToForward();
+		}
 }
 export default Right;

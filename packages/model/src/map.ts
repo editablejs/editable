@@ -79,10 +79,30 @@ export default class ObjectMap implements IObjectMap {
     return nextObj as any
   }
 
+  prev(key: NodeKey): NodeObject | null { 
+    const node = this.get(key)
+    if(!node) return null
+    const parentKey = node.parent
+    if(!parentKey) {
+      const roots = this.roots()
+      const index = roots.findIndex(item => item.key === key)
+      if(index <= 0) return null
+      return roots[index - 1] as any
+    }
+    const childrenKeys = this.parentMap.get(parentKey)
+    if(!childrenKeys) return null
+    const nodeKey = node.key
+    const index = childrenKeys.findIndex(key => key === nodeKey)
+    if(index <= 0) return null
+    const prevObj = this.nodeMap.get(childrenKeys[index - 1])
+    if(!prevObj) return null
+    return prevObj as any
+  }
+
   apply(...nodes: INode[]){
     nodes.forEach(node => {
       const key = node.getKey()
-      const parent = node.getParent()
+      const parent = node.getParentKey()
       if (parent) { 
         const childKeys = this.parentMap.get(parent)
         if(!childKeys) {

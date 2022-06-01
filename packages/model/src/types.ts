@@ -13,7 +13,7 @@ export interface NodeObject<T extends NodeData = NodeData> {
 export type NodeOptions<T extends NodeData = NodeData> = Partial<NodeObject<T>>
 
 export interface INode<T extends NodeData = NodeData> {
-  getParent(): NodeKey | null
+  getParentKey(): NodeKey | null
 
   getKey(): NodeKey;    
 
@@ -74,6 +74,10 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   removeChild(key: NodeKey): void;
 
+  first(): INode | null
+
+  last(): INode | null
+
   insert(offset: number, ...child: INode[]): void;
 
   split(offset: number): void;
@@ -100,6 +104,8 @@ export interface IObjectMap {
 
   next(key: NodeKey): NodeObject | null
 
+  prev(key: NodeKey): NodeObject | null 
+
   apply(...nodes: INode[]): void
 
   delete(key: NodeKey): void
@@ -112,6 +118,8 @@ export interface IModel extends IEventEmitter {
   getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null;
 
   getNext(key: NodeKey): INode | null
+
+  getPrev(key: NodeKey): INode | null
 
   getRoots(): IElement[]
 

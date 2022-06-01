@@ -136,7 +136,7 @@ describe('selection.getContents', () => {
     }))
     expect(contents.length).toBe(1);
     expect(contents[0].toJSON()).toEqual(Text.create({
-      parent: contents[0].getParent(),
+      parent: contents[0].getParentKey(),
       key: contents[0].getKey(),
       text: 'llo1'
     }).toJSON());
@@ -157,13 +157,13 @@ describe('selection.getContents', () => {
     }))
     expect(contents.length).toBe(3);
     expect(contents[0].toJSON()).toEqual(Text.create({
-      parent: contents[0].getParent(),
+      parent: contents[0].getParentKey(),
       key: contents[0].getKey(),
       text: 'ello123'
     }).toJSON());
-    expect(contents[1].toJSON()).toEqual(Element.create({ ...paragraph2, parent: contents[1].getParent(),}).toJSON());
+    expect(contents[1].toJSON()).toEqual(Element.create({ ...paragraph2, parent: contents[1].getParentKey(),}).toJSON());
     expect(contents[2].toJSON()).toEqual(Text.create({
-      parent: contents[2].getParent(),
+      parent: contents[2].getParentKey(),
       key: contents[2].getKey(),
       text: 'Hello'
     }).toJSON());
