@@ -1,12 +1,12 @@
 import EventEmitter from '@editablejs/event-emitter';
+import { EVENT_NODE_UPDATE, OP_DELETE_NODE } from '@editablejs/constants'
 import { Log } from '@editablejs/utils'
 import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op, NodeObject } from "./types";
 import Node from './node'
 import Text from './text'
 import Element from './element'
 import ObjectMap from './map';
-import { createDeleteNode, createDeleteText, createInsertNode, createInsertText } from './op';
-import { EVENT_NODE_UPDATE, OP_DELETE_NODE } from '@editablejs/constants'
+import diff from './diff';
 
 export type ModelEventType = typeof EVENT_NODE_UPDATE
 
@@ -27,6 +27,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     } else {
       this.map.apply(node)
     }
+    console.log(ops)
     this.emit(EVENT_NODE_UPDATE, node, ops)
   }
 
@@ -64,18 +65,35 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     return this.find(obj => obj.type === type) as N[]
   }
 
+  applyNode(node: INode){ 
+    const key = node.getKey()
+    const parentKey = node.getParentKey()
+    const oldNode = this.getNode(key)
+    if(oldNode) { 
+      const ops = diff([node], [oldNode])
+      this.emitUpdate(node, ...ops)
+    } else if(parentKey) {
+      const parent = this.getNode(parentKey)
+      if(!parent) Log.nodeNotFound(parentKey)
+      if(!Element.isElement(parent)) Log.nodeNotElement(parentKey)
+      const children = parent.getChildren()
+      const ops = diff([...children, node], children)
+      this.emitUpdate(node, ...ops)
+    } else {
+      const roots = this.getRoots()
+      const ops = diff([ ...roots, node ], roots)
+      this.emitUpdate(node, ...ops)
+    }
+  }
+
   applyOps(...ops: Op[]){ 
     // TODO
   }
 
   insertText(text: string, key: NodeKey, offset?: number ){
-    if(!key) {
-      const textNode = Text.create({ text })
-      this.insertNode(textNode)
-      return 
-    }
     const node = this.getNode(key)
     if(!node) Log.nodeNotFound(key)
+    
     if(Element.isElement(node)) {
       const size = node.getChildrenSize()
       if(offset === undefined) offset = size
@@ -84,7 +102,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       this.insertNode(textNode, key, offset);
     } else if(Text.isText(node)) {
       node.insert(text, offset)
-      this.emitUpdate(node, createInsertText(key, text, offset ?? node.getText().length))
+      this.applyNode(node)
     }
   }
 
@@ -92,27 +110,15 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     const node = this.getNode(key)
     if(!node) Log.nodeNotFound(key)
     if(!Text.isText(node)) Log.nodeNotText(key)
-    const content = node.getText()
     node.delete(offset, length)
-    this.emitUpdate(node, createDeleteText(key, content.slice(offset, offset + length), offset))
+    this.applyNode(node)
   }
 
-  // splitNode = (key: NodeKey, offset: number) => { 
-  //   const node = this.getNode(key);
-  //   if(!node) throw new Error(`No node with key ${key}`);
-  //   const parentKey = node.getParentKey()
-  //   const parent = parentKey ? this.getNode(parentKey) : null
-  //   // split text
-  //   if(Text.isText(node)) {
-  //     if(!parent) throw new Error(`This node ${key} is not in context`);
-  //     const [ left, right ] = node.split(offset)
-  //   }
-  // }
-
   insertNode(node: INode, key?: NodeKey, offset?: number, ){ 
+    // insert to roots
     if(!key) {
       if(Text.isText(node)) Log.cannotInsertText('root')
-      this.emitUpdate(node, createInsertNode(node, offset || this.map.rootKeys().length, key))
+      this.applyNode(node)
       return 
     }
     const targetNode = this.getNode(key);
@@ -123,7 +129,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       if(size < 0 || size < offset) Log.offsetOutOfRange(key, offset)
       // Need to judge isInline or isBlock
       targetNode.insert(offset, node)
-      this.emitUpdate(node, createInsertNode(node, offset, key))
+      this.applyNode(targetNode)
     } else if(Text.isText(targetNode)) {
       const parentKey = targetNode.getParentKey()
       if(!parentKey) Log.nodeNotInContext(key)
@@ -133,22 +139,17 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       if(Text.isText(node) && targetNode.compare(node)) {
         const text = node.getText()
         targetNode.insert(text, offset)
-        this.emitUpdate(targetNode, createInsertText(key, text, offset))
+        this.applyNode(targetNode)
         return
       }
-      const ops: Op[] = []
       const children = parent.getChildren()
       const index = children.findIndex(child => child.getKey() === key)
       // split text
       const [ leftText, rightText ] = targetNode.split(offset || 0)
       if(Text.isText(node)) {
         parent.removeChild(key)
-        ops.push(createDeleteNode(key))
         parent.insert(index, leftText, node, rightText)
-        ops.push(createInsertNode(leftText, index, key))
-        ops.push(createInsertNode(node, index + 1, key))
-        ops.push(createInsertNode(rightText, index + 2, key))
-        this.emitUpdate(parent, ...ops)
+        this.applyNode(parent)
         return
       }
       // split element
@@ -158,9 +159,18 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   deleteNode(key: NodeKey){
     const node = this.getNode(key);
     if(!node) Log.nodeNotFound(key)
-    const ops: Op[] = []
-    ops.push(createDeleteNode(key))
-    this.emitUpdate(node, ...ops)
+    const parentKey = node.getParentKey()
+    if(parentKey) {
+      const parent = this.getNode(parentKey)
+      if(!parent) Log.nodeNotFound(parentKey)
+      if(!Element.isElement(parent)) Log.nodeNotElement(parentKey)
+      parent.removeChild(key)
+      this.applyNode(parent)
+    } else {
+      const roots = this.getRoots()
+      const ops = diff(roots.filter(root => root.getKey() !== key), roots)
+      this.emitUpdate(node, ...ops)
+    }
   }
 
   destroy(){

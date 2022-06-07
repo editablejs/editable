@@ -36,6 +36,8 @@ export interface IEditor extends IEventEmitter {
   selection: ISelection
 
   typing: ITyping
+
+  change: IChange
   
   registerPlugin<E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void;
 
@@ -45,7 +47,7 @@ export interface IEditor extends IEventEmitter {
 
   offUpdate(key: NodeKey): void
 
-  didUpdate(node: INode, ops: Op[]): void
+  didUpdate(node: INode): void
 
   onCompositionUpdate(key: NodeKey, callback: CompositionUpdateCallback): void
 
@@ -53,6 +55,10 @@ export interface IEditor extends IEventEmitter {
 
   didCompositionUpdate(textNode: globalThis.Text): void
 
+  destroy(): void
+}
+
+export interface IChange {
   getRange(): IRange | null
 
   deleteBackward(): void
@@ -64,6 +70,4 @@ export interface IEditor extends IEventEmitter {
   insertText(text: string): void;
 
   insertNode(node: INode): void
-
-  destroy(): void
 }

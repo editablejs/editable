@@ -36,10 +36,10 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   constructor(options: ElementOptions<T>) { 
     super(options)
-    this.children = (options.children || []).map(this.createChildNode)
+    this.children = (options.children || []).map(child => this.createChildNode(child))
   }
 
-  protected createChildNode = (options: NodeOptions<T>): INode => { 
+  protected createChildNode(options: NodeOptions<T>): INode { 
     const parent = this.getKey()
     options.parent = parent
     return Element.from(options)

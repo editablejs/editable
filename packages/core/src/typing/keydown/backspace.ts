@@ -5,7 +5,7 @@ class Backspace extends DefaultKeydown implements ITypingHandle {
 	hotkey = 'backspace';
 
 	emit() {
-		this.editor.deleteContents()
+		this.editor.change.deleteContents()
 	}
 }
 

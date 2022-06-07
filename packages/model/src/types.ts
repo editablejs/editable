@@ -153,7 +153,7 @@ export interface ModelOptions {
 
 export interface Op {
   type: string
-  key?: NodeKey
+  key?: NodeKey | null
   offset?: number
   value: any
 }

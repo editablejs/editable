@@ -349,14 +349,9 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const check = (key: NodeKey, offset: number) => {
       const node = this.model.getNode(key)
       if(!node) Log.nodeNotFound(key)
-      if(Text.isText(node)) {
-        const text = node.getText()
-        if(offset < 0 || offset > text.length) Log.offsetOutOfRange(key, offset)
-      } else if (Element.isElement(node)){
-        const size = node.getChildrenSize()
-        if(offset < 0 || offset > size) Log.offsetOutOfRange(key, offset)
-      }
+      assert(node, offset)
     }
+
     const { anchor, focus } = range
     check(anchor.key, anchor.offset)
     if(!range.isCollapsed) {
