@@ -1,9 +1,7 @@
 import { IElement, NodeData, RenderOptions } from "@editablejs/core"
-import React, { useState } from 'react'
+import React from 'react'
 
-const PageComponent: React.FC<RenderOptions<NodeData, IElement>> = (props) => { 
-  const [ node ] = useState(props.node)
-  const { next } = props
+const PageComponent: React.FC<RenderOptions<NodeData, IElement>> = ({ node, next }) => { 
   const key = node.getKey()
 
   return (

@@ -135,11 +135,16 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   createRangeFromOps(ops: Op[]) { 
     const lastOp = ops[ops.length - 1]
     if(!lastOp) return
-    const { type, key, offset, value } = lastOp
-    if(!key) return
+    const { type, offset, value } = lastOp
+    let key = lastOp.key
+    if(!key) {
+      const roots = this.model.getRoots()
+      const root = roots[offset]
+      if(root) key = root.getKey()
+      else return
+    }
     switch(type) {
       case OP_INSERT_TEXT:
-        if(offset === undefined) return
         return new Range({
           anchor: {
             key,
@@ -147,7 +152,6 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           }
         })
       case OP_DELETE_TEXT:
-        if(offset === undefined) return
         return new Range({
           anchor: {
             key,
@@ -155,8 +159,34 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           }
         })
       case OP_INSERT_NODE:
-
-        break
+        let node = this.model.getNode(key)
+        if(!node) Log.nodeNotFound(key)
+        if(Element.isElement(node)) {
+          const children = node.getChildren()
+          const isEnd = offset >= children.length
+          let child: INode = isEnd ? children[children.length - 1] : children[offset]
+          while(child && Element.isElement(child)) {
+            const first = child.first()
+            if(!first) break
+            if(Text.isText(first)) {
+              return new Range({
+                anchor: {
+                  key: first.getKey(),
+                  offset: isEnd ? first.getText().length : 0
+                }
+              }) 
+            } else {
+              node = first
+            }
+          }
+        }
+        
+        return new Range({
+          anchor: {
+            key,
+            offset
+          }
+        })
     }
   }
 
@@ -346,16 +376,16 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   applyRange = (range: IRange) => {
-    const check = (key: NodeKey, offset: number) => {
+    const checkNode = (key: NodeKey, offset: number) => {
       const node = this.model.getNode(key)
       if(!node) Log.nodeNotFound(key)
       assert(node, offset)
     }
 
     const { anchor, focus } = range
-    check(anchor.key, anchor.offset)
+    checkNode(anchor.key, anchor.offset)
     if(!range.isCollapsed) {
-      check(focus.key, focus.offset)
+      checkNode(focus.key, focus.offset)
     }
     this.removeAllRange()
     this.addRange(range)

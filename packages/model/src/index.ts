@@ -21,9 +21,11 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   }
 
   protected emitUpdate = (node: INode, ...ops: Op[]) => { 
-    const key = node.getKey()
-    if(ops.find(op => op.type === OP_DELETE_NODE && op.key === key)) {
-      this.map.delete(key)
+    const deleteRootOp = ops.find(op => op.type === OP_DELETE_NODE && !op.key)
+    if(deleteRootOp) {
+      const roots = this.getRoots()
+      const root = roots[deleteRootOp.offset]
+      if(root) this.map.delete(root.getKey())
     } else {
       this.map.apply(node)
     }
@@ -114,7 +116,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     this.applyNode(node)
   }
 
-  insertNode(node: INode, key?: NodeKey, offset?: number, ){ 
+  insertNode(node: INode, key?: NodeKey, offset?: number){ 
     // insert to roots
     if(!key) {
       if(Text.isText(node)) Log.cannotInsertText('root')
@@ -130,7 +132,8 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       // Need to judge isInline or isBlock
       targetNode.insert(offset, node)
       this.applyNode(targetNode)
-    } else if(Text.isText(targetNode)) {
+    } 
+    else if(Text.isText(targetNode)) {
       const parentKey = targetNode.getParentKey()
       if(!parentKey) Log.nodeNotInContext(key)
       const parent = this.getNode<NodeData, Element>(parentKey)
@@ -142,18 +145,61 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
         this.applyNode(targetNode)
         return
       }
-      const children = parent.getChildren()
-      const index = children.findIndex(child => child.getKey() === key)
-      // split text
-      const [ leftText, rightText ] = targetNode.split(offset || 0)
-      if(Text.isText(node)) {
-        parent.removeChild(key)
-        parent.insert(index, leftText, node, rightText)
-        this.applyNode(parent)
-        return
-      }
-      // split element
+      const changeNode = this.splitNode(key, offset, (left, right) => {
+        return [left, node, right]
+      })
+      this.applyNode(changeNode)
     }
+  }
+
+  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode, rightNodes: INode) => INode[]) {
+    let node = this.getNode(key);
+    if(!node) Log.nodeNotFound(key)
+    while(true) {
+      const nodeKey = node.getKey()
+      const parentKey: string | null = node.getParentKey()
+      if(!parentKey) return node
+      const parent: INode | null = this.getNode(parentKey)
+      if(!parent) Log.nodeNotFound(parentKey)
+      if(!Element.isElement(parent)) Log.nodeNotElement(parentKey)
+      const children = parent.getChildren()
+      const index = children.findIndex(child => child.getKey() === nodeKey)
+      if(Text.isText(node)) {
+        if(offset < 0 || offset > node.getText().length) Log.offsetOutOfRange(nodeKey, offset)
+        const [ leftText, rightText ] = node.split(offset)
+        parent.removeChild(nodeKey)
+        if(callback) {
+          const nodes = callback(
+            leftText,
+            rightText
+          )
+          parent.insert(index, ...nodes)
+          return parent
+        } else {
+          parent.insert(index, leftText, rightText)
+          offset = index + 1
+          node = parent
+        }
+      }
+      else if(Element.isElement(node)) {
+        if(offset < 0 || offset > node.getChildrenSize()) Log.offsetOutOfRange(nodeKey, offset)
+        const [ leftNode, rightNode ] = node.split(offset) 
+        parent.removeChild(nodeKey)
+        if(callback) {
+          const nodes = callback(
+            leftNode,
+            rightNode
+          )
+          parent.insert(index, ...nodes)
+          return parent
+        } else {
+          parent.insert(index, leftNode, rightNode)
+          offset = index + 1
+          node = parent
+        }
+      } else break
+    }
+    return node
   }
 
   deleteNode(key: NodeKey){

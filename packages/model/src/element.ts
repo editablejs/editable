@@ -1,5 +1,5 @@
 import { Log } from '@editablejs/utils'
-import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle, Op, ElementOpType } from './types';
+import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
 import Node from './node';
 import Text from './text';
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
@@ -23,15 +23,6 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   static isElementObject = (nodeObj: NodeOptions): nodeObj is ElementObject => { 
     return nodeObj.type !== 'text'
-  }
-
-  static createOp = (type: ElementOpType, offset?: number, key?: NodeKey, value?: NodeData): Op => {
-    return {
-      type,
-      key,
-      offset,
-      value
-    }
   }
 
   constructor(options: ElementOptions<T>) { 
@@ -83,8 +74,13 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     const size = this.getChildrenSize()
     if(offset < 0 || size < offset) Log.offsetOutOfRange(this.getKey(), offset)
     const left = this.children.slice(0, offset)
+    const json = Object.assign({}, this.toJSON(false), { key: ''})
+    const cloneLeft = Element.create(json)
+    left.forEach(child => cloneLeft.appendChild(child))
     const right = this.children.slice(offset)
-    return [left, right]
+    const cloneRight = Element.create(json)
+    right.forEach(child => cloneRight.appendChild(child))
+    return [cloneLeft, cloneRight]
   }
 
   empty(): void {

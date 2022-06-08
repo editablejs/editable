@@ -1,6 +1,6 @@
 import { Log } from '@editablejs/utils'
 import Node from './node';
-import type { INode, IText, NodeData, NodeKey, NodeOptions, Op, TextFormat, TextObject, TextOptions, TextOpType } from './types';
+import type { INode, IText, NodeData, NodeOptions, TextFormat, TextObject, TextOptions } from './types';
 
 export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
   protected text = '';
@@ -16,15 +16,6 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
 
   static isTextObject = (nodeObj: NodeOptions): nodeObj is TextObject => { 
     return nodeObj.type === 'text'
-  }
-
-  static createOp = (type: TextOpType, offset: number, key?: NodeKey, value?: NodeData): Op => {
-    return {
-      type,
-      key,
-      offset,
-      value
-    }
   }
 
   constructor(options: TextOptions<T>) {

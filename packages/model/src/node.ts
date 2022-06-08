@@ -1,5 +1,5 @@
 import { generateRandomKey } from './keys';
-import type { INode, NodeData, NodeKey, NodeObject, NodeOptions, NodeOpType, Op } from './types';
+import type { INode, NodeData, NodeKey, NodeObject, NodeOptions } from './types';
 export default class Node<T extends NodeData = NodeData> implements INode {
   protected parent: NodeKey | null
   protected key: NodeKey;
@@ -8,15 +8,6 @@ export default class Node<T extends NodeData = NodeData> implements INode {
 
   static create<T extends NodeData = NodeData>(options: NodeOptions<T>): INode {
     return new Node(options)
-  }
-
-  static createOp = (type: NodeOpType, offset: number, key?: NodeKey, value?: NodeData): Op => {
-    return {
-      type,
-      key,
-      offset,
-      value
-    }
   }
 
   constructor(options: NodeOptions<T>) {
