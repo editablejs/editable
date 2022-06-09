@@ -51,7 +51,7 @@ class Change implements IChange {
       return
     }
     const ranges = this.selection.getSubRanges()
-    for(let i = ranges.length - 1; i >= 0; i--) { 
+    for (let i = 0; i < ranges.length; i++) { 
       const range = ranges[i]
       const anchor = range.isBackward ? range.focus : range.anchor
       const focus = range.isBackward ? range.anchor : range.focus

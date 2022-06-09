@@ -64,8 +64,11 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     const json = this.toJSON()
     const leftText = text.slice(0, offset)
     const rightText = text.slice(offset)
-    const left = Text.create(Object.assign({}, json, { text: leftText, key: '' }))
-    const right = Text.create(Object.assign({}, json, { text: rightText, key: '' }))
+    // Cut out one value, keep the key
+    const keepKey = !leftText || !rightText
+    const key = keepKey ? this.key : undefined
+    const left = leftText ? Text.create(Object.assign({}, json, { text: leftText, key })) : null
+    const right = rightText ? Text.create(Object.assign({}, json, { text: rightText, key })) : null
     return [left, right]
   }
 

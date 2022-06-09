@@ -48,7 +48,7 @@ export interface IText<T extends NodeData = NodeData> extends INode<T> {
 
   delete(offset: number, length: number): void
 
-  split(offset: number): IText[]
+  split(offset: number): (IText | null)[]
 
   toJSON<R extends TextObject<T> = TextObject<T>>(): R;
 }
@@ -78,7 +78,7 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   insert(offset: number, ...child: INode[]): void;
 
-  split(offset: number): INode[];
+  split(offset: number): (IElement | null)[];
 
   empty(): void;
 
@@ -138,7 +138,7 @@ export interface IModel extends IEventEmitter {
 
   deleteNode(key: NodeKey): void
 
-  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode, rightNodes: INode) => INode[]): INode
+  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode | null, rightNodes: INode | null) => INode[]): INode
 
   destroy(): void;
 }

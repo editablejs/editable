@@ -146,13 +146,14 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
         return
       }
       const changeNode = this.splitNode(key, offset, (left, right) => {
-        return [left, node, right]
+        const isNode = (node: INode | null): node is INode => node !== null
+        return [left, node, right].filter(isNode) as INode[]
       })
       this.applyNode(changeNode)
     }
   }
 
-  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode, rightNodes: INode) => INode[]) {
+  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode | null, rightNodes: INode | null) => INode[]) {
     let node = this.getNode(key);
     if(!node) Log.nodeNotFound(key)
     while(true) {
@@ -176,7 +177,9 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
           parent.insert(index, ...nodes)
           return parent
         } else {
-          parent.insert(index, leftText, rightText)
+          const nodes: (INode | null)[] = [leftText, rightText]
+          const isNode = (node: INode | null): node is INode => node !== null
+          parent.insert(index, ...nodes.filter<INode>(isNode))
           offset = index + 1
           node = parent
         }
@@ -193,7 +196,9 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
           parent.insert(index, ...nodes)
           return parent
         } else {
-          parent.insert(index, leftNode, rightNode)
+          const isNode = (node: INode | null): node is INode => node !== null
+          const nodes: (INode | null)[] = [leftNode, rightNode]
+          parent.insert(index, ...nodes.filter<INode>(isNode))
           offset = index + 1
           node = parent
         }

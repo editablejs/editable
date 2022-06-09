@@ -74,12 +74,15 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     const size = this.getChildrenSize()
     if(offset < 0 || size < offset) Log.offsetOutOfRange(this.getKey(), offset)
     const left = this.children.slice(0, offset)
-    const json = Object.assign({}, this.toJSON(false), { key: ''})
-    const cloneLeft = Element.create(json)
-    left.forEach(child => cloneLeft.appendChild(child))
     const right = this.children.slice(offset)
-    const cloneRight = Element.create(json)
-    right.forEach(child => cloneRight.appendChild(child))
+    // Cut out one value, keep the key
+    const keepKey = left.length === 0 || right.length === 0
+    const key = keepKey ? this.key : undefined
+    const json = Object.assign({}, this.toJSON(false), { key })
+    const cloneLeft = left.length > 0 ? Element.create(json) : null
+    left.forEach(child => cloneLeft?.appendChild(child))
+    const cloneRight = right.length > 0 ? Element.create(json) : null
+    right.forEach(child => cloneRight?.appendChild(child))
     return [cloneLeft, cloneRight]
   }
 

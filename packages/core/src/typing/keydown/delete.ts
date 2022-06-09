@@ -4,7 +4,7 @@ class Delete extends DefaultKeydown {
 	hotkey = 'delete';
 	
 	emit() {
-		this.editor.deleteForward()
+		this.editor.change.deleteForward()
 	}
 }
 export default Delete;
