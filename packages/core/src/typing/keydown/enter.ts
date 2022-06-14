@@ -1,3 +1,4 @@
+import { INode, Element } from '@editablejs/model';
 import DefaultKeydown from './default';
 
 class Enter extends DefaultKeydown {
@@ -15,8 +16,27 @@ class Enter extends DefaultKeydown {
 			if(!range) return
 		}
 		const { anchor } = range
-		const changeNode = model.splitNode(anchor.key, anchor.offset)
-		model.applyNode(changeNode)
+		let node = model.getNode(anchor.key);
+		if(!node) return
+		let offset = anchor.offset;
+		while(true) {
+			const key = node.getKey()
+			if(!node.getParentKey()) break
+			model.splitNode(key, offset)
+			const parentKey: string | null = node.getParentKey()
+      if(!parentKey) break
+      const parent: INode | null = model.getNode(parentKey)
+      if(!parent) break
+      if(!Element.isElement(parent)) break
+			offset = parent.indexOf(key)
+			if(offset < 0) break
+			offset += 1
+      node = parent
+		}
+		const key = node.getKey()
+		if(key !== anchor.key) { 
+			editor.selection.moveToForward()
+		}
 		e.preventDefault()
 	}
 }

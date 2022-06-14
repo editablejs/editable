@@ -1,26 +1,27 @@
+import { DATA_TYPE_TEXT } from '@editablejs/constants';
 import { Log } from '@editablejs/utils'
 import Node from './node';
 import type { INode, IText, NodeData, NodeOptions, TextFormat, TextObject, TextOptions } from './types';
-
 export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
   protected text = '';
-  protected format: TextFormat = new Map()
+  protected format: TextFormat = {}
 
   static create = <T extends NodeData = NodeData>(options: TextOptions<T>): IText<T> => {
     return new Text(options);
   }
 
   static isText = (node: INode): node is IText => { 
-    return node.getType() === 'text'
+    return node.getType() === DATA_TYPE_TEXT
   }
 
   static isTextObject = (nodeObj: NodeOptions): nodeObj is TextObject => { 
-    return nodeObj.type === 'text'
+    return nodeObj.type === DATA_TYPE_TEXT
   }
 
   constructor(options: TextOptions<T>) {
-    super(Object.assign({}, options, { type: 'text' }));
+    super(Object.assign({}, options, { type: DATA_TYPE_TEXT }));
     this.text = options.text || '';
+    if(options.format) this.setFormat(options.format)
   }
 
   setText(text: string): void {
@@ -67,7 +68,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     // Cut out one value, keep the key
     const keepKey = !leftText || !rightText
     const key = keepKey ? this.key : undefined
-    const left = leftText ? Text.create(Object.assign({}, json, { text: leftText, key })) : null
+    const left = leftText ? Text.create(Object.assign({}, json, { text: leftText })) : null
     const right = rightText ? Text.create(Object.assign({}, json, { text: rightText, key })) : null
     return [left, right]
   }
@@ -75,6 +76,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
   toJSON<E extends TextObject<T> = TextObject<T>>(): E{
     const json = super.toJSON() as E
     json.text = this.text;
+    json.format = this.getFormat()
     return json
   }
 }

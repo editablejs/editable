@@ -20,16 +20,25 @@ class Editor extends EventEmitter implements IEditor {
   protected compositionUpdateMap: Map<string, CompositionUpdateCallback> = new Map();
   private _isComposition = false
   private _compositionInfo?: Record<'key' | 'text', string>
-  private _cacheNodeLastOps: Map<string, Op[]> = new Map()
   selection: ISelection;
   model: IModel
   change: IChange
   typing: ITyping
 
+  /**
+   * 创建编辑器
+   * @param options 
+   * @returns 
+   */
   static create = (options?: EditorOptions) => {
     return new Editor(options);
   }
   
+  /**
+   * 注册插件
+   * @param name 
+   * @param options 
+   */
   static registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
     if(typeof options === 'function') { 
       options = {
@@ -100,13 +109,13 @@ class Editor extends EventEmitter implements IEditor {
     return this._isComposition
   }
 
-  registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
+  registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(name: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
     if(typeof options === 'function') { 
       options = {
         render: options
       }
     }
-    this.pluginMap.set(type, options as unknown as PluginOptions)
+    this.pluginMap.set(name, options as unknown as PluginOptions)
   }
 
   renderPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T): any => {
@@ -136,9 +145,18 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   private emitUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]) =>{ 
+    if(Element.isElement(node)) {
+      const children = node.getChildren()
+      children.forEach(child => {
+        this.emitUpdate(child, ops.filter(op => op.key === child.getKey()))
+      })
+    }
     const key = node.getKey()
-    const callback = this.updateMap.get(key)
-    this._cacheNodeLastOps.set(key, ops)
+    let callback = this.updateMap.get(key)
+    if(callback) {
+      callback(node, ops)
+    }
+    callback = this.updateMap.get('*')
     if(callback) {
       callback(node, ops)
     }
@@ -146,13 +164,6 @@ class Editor extends EventEmitter implements IEditor {
     if(this._compositionInfo?.key === key) {
       this.emitCompositionUpdate(this._compositionInfo.text)
     }
-  }
-
-  didUpdate = (node: INode) =>{
-    const key = node.getKey()
-    const ops = this._cacheNodeLastOps.get(key) ?? []
-    this._cacheNodeLastOps.delete(key)
-    this.selection.applyUpdate(node, ops)
   }
 
   onCompositionUpdate = (key: NodeKey, callback: CompositionUpdateCallback) => {
@@ -174,7 +185,12 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   private emitCompositionUpdate = (text: string) => { 
-    const range = this.change.getRange()
+    const change = this.change
+    if(change.hasCacheFormatting()) {
+      console.log('has cache formatting')
+      change.insertText('')
+    }
+    const range = change.getRange()
     if(!range) return
     const { key, offset } = range.anchor
     this._compositionInfo = {
@@ -223,4 +239,5 @@ if(!isServer) {
   }
 }
 export * from '@editablejs/model'
+export * from '@editablejs/constants'
 export * from './types'

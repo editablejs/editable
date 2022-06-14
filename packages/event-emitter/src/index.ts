@@ -24,15 +24,17 @@ export default class EventEmitter<T extends EventType = EventType> implements IE
 
   emit = (event: string, ...args: any[]) => {
     const listeners = this.listeners.get(event) || [];
-    const r = listeners.some(({ once, fn }) => {
-      const result = fn(...args);
-      if (once) { 
-        this.off(event, fn);
+    let result: any
+    for(let i = 0; i < listeners.length; i++) { 
+      const listener = listeners[i];
+      result = listener.fn(...args);
+      if (listener.once) {
+        listeners.splice(i, 1);
+        i--;
       }
-      if(result === false) return true;
-      return false
-    })
-    if(r) return false;
+      if(typeof result !== 'undefined') break
+    }
+    return result;
   }
 
   size = (event?: T): number => {

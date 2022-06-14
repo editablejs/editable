@@ -97,7 +97,7 @@ type ClosestNodes = {
   right: ClosestNode | null
 }
 
-export const closestNodesByPoint = (nodes: Element[], x: number, y: number): Node | ClosestNodes | null => {
+const closestNodesByPoint = (nodes: Element[], x: number, y: number): Node | ClosestNodes | null => {
   const closestNodes: ClosestNodes = {
     top: null,
     below: null,
@@ -144,3 +144,5 @@ export const closestNodesByPoint = (nodes: Element[], x: number, y: number): Nod
   }
   return closestNodes
 }
+
+export default closestNodesByPoint

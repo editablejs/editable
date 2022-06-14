@@ -42,7 +42,7 @@ pnpm dev
 
 ### packages/event-emitter
 
-一个简单的事件处理器，稍微不同的是，绑定的事件在处理中返回 `false` 可以中断后续的事件触发。
+一个简单的事件处理器，稍微不同的是，绑定的事件在处理中返回非 undefined 可以中断后续的事件触发。
 
 ### packages/model
 

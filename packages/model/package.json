@@ -21,11 +21,13 @@
     "@editablejs/constants": "workspace:*",
     "@editablejs/event-emitter": "workspace:*",
     "@editablejs/utils": "workspace:*",
-    "diff-match-patch": "^1.0.5"
+    "diff-match-patch": "^1.0.5",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.32",
     "@types/jest": "^26.0.22",
+    "@types/lodash": "^4.14.182",
     "jest": "^27.5.1",
     "scripts": "workspace:*",
     "tsconfig": "workspace:*",

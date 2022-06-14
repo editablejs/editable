@@ -10,7 +10,7 @@ export interface IEventEmitter<T extends EventType = EventType> {
 
   once(event: T, listener: EventListener): void;
 
-  emit(event: T, ...args: any[]): boolean | void;
+  emit<R extends any = any>(event: T, ...args: any[]): R;
 
   size(event?: T): number;
 

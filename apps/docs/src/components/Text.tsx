@@ -1,6 +1,7 @@
 import type { IText, NodeData, RenderOptions } from "@editablejs/core"
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useComponent from "../hooks/component"
+import NodeComponent from "./Node"
 
 const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
   const { editor } = props
@@ -34,8 +35,7 @@ const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
       return char.text
     })
   }
-
-  return <span key={key} data-key={key}>{ renderText() }</span>
+  return <NodeComponent node={node} style={node.getFormat()}>{ renderText() }</NodeComponent>
 }
 
 export const renderText = (options: RenderOptions<NodeData, IText>) => {

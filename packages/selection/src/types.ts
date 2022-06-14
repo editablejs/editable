@@ -18,9 +18,21 @@ export interface SelectionOptions {
  * Selection
  */
 export interface ISelection extends IEventEmitter {
+  /**
+   * 锚点，返回当前选区的起始位置
+   */
   readonly anchor: Position | null;
+  /**
+   * 焦点，返回当前选区的终点位置
+   */
   readonly focus: Position | null;
+  /**
+   * 返回当前选区的起始位置和终点位置是否重合
+   */
   readonly isCollapsed: boolean;
+  /**
+   * 返回当前是否聚焦
+   */
   readonly isFocus: boolean;
 
   getSubRanges(...ranges: IRange[]): IRange[]
@@ -39,7 +51,7 @@ export interface ISelection extends IEventEmitter {
   
   applyRange(range: IRange): void;
 
-  applyUpdate(node: INode, ops: Op[]): void
+  applyFromOps(ops: Op[]): void;
 
   drawByRanges(...ranges: IRange[]): void
 
@@ -82,9 +94,11 @@ export interface IRange {
 
   getClientRects(): DOMRectList | null
 
+  collapse(start: boolean): void
+
   clone(): IRange
 
-  collapse(start: boolean): void
+  equal(range: IRange): boolean
 }
 
 export interface RangeOptions { 
@@ -129,7 +143,7 @@ export interface IInput extends IEventEmitter {
 
   readonly isComposing: boolean
   
-  bindContainers(...containers: HTMLElement[]): void
+  updateContainers(containers: Map<string, HTMLElement>): void
 
   focus(): void
 
@@ -142,9 +156,8 @@ export interface IInput extends IEventEmitter {
 }
 
 export interface ITyping extends IEventEmitter {
-
-  bindContainers(...containers: HTMLElement[]): void
-
+  startMutationRoot(): void
+  stopMutationRoot(): void
   destroy(): void
 }
 

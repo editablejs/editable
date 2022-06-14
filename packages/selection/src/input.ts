@@ -18,7 +18,7 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
   protected layer: ILayer
   protected textarea: HTMLTextAreaElement
   protected root: HTMLDivElement
-  protected containers: HTMLElement[] = []
+  protected containers: Map<string, HTMLElement> = new Map()
   private isContainerMouseDown = false
   private _isFocus = false
   private set isFocus(value: boolean){ 
@@ -49,12 +49,27 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     this.bindEvents()
   }
 
-  bindContainers(...containers: HTMLElement[]) { 
-    this.unbindContainersEvents()
-    containers.forEach(container => {
-      container.addEventListener('mousedown', this.handleContainerMouseDown);
+  updateContainers(containers: Map<string, HTMLElement>) { 
+    this.containers.forEach((container, key) => {
+      if(!containers.has(key)) {
+        this.unbindContainer(container)
+        this.containers.delete(key)
+      }
+    })
+
+    containers.forEach((container, key) => {
+      const oldContainer = this.containers.get(key)
+      if(!oldContainer) {
+        this.bindContainer(container)
+        this.containers.set(key, container)
+      } else if(oldContainer !== container) { 
+        this.unbindContainer(oldContainer)
+        this.bindContainer(container)
+        this.containers.set(key, container)
+      }
     })
   }
+
 
   bindEvents = () => {
     document.body.addEventListener('mousedown', this.handleDomMouseDown)
@@ -68,15 +83,22 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     textarea.addEventListener('keydown', this.handleKeydown)
     textarea.addEventListener('keyup', this.handleKeyup)
   }
+  
+  bindContainer = (container: HTMLElement) => { 
+    container.addEventListener('mousedown', this.handleContainerMouseDown);
+  }
 
-  unbindContainersEvents = () => {
-    this.containers.forEach(container => {
-      container.removeEventListener('mousedown', this.handleContainerMouseDown);
-    })
+  unbindContainer = (container: HTMLElement) => {
+    container.removeEventListener('mousedown', this.handleContainerMouseDown);
+  }
+
+  unbindContainers = () => {
+    this.containers.forEach(this.unbindContainer)
+    this.containers.clear()
   }
 
   unbindEvents = () => {
-    this.unbindContainersEvents()
+    this.unbindContainers()
     document.body.removeEventListener('mousedown', this.handleDomMouseDown)
     document.body.removeEventListener('mouseup', this.handleDomMouseUp)
     const textarea = this.textarea
@@ -106,8 +128,8 @@ export default class Input extends EventEmitter<InputEventType> implements IInpu
     this.isContainerMouseDown = false
   }
 
-  handleDomMouseDown = () => {
-    if(!this.isContainerMouseDown) this.isFocus = false
+  handleDomMouseDown = (e: MouseEvent) => {
+    if(!this.isContainerMouseDown && !e.defaultPrevented) this.isFocus = false
   }
 
   handleFocus = () => {

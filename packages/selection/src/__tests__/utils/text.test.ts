@@ -1,4 +1,4 @@
-import { getOffset, getCharRange, getCharFromGraphemeBreaker, getCharOffsetBackward, getCharOffsetForward } from '../text'
+import { getOffset, getCharRange, getCharFromGraphemeBreaker, getCharOffsetBackward, getCharOffsetForward } from '../../utils/text'
 
 
 document.createRange = () => {

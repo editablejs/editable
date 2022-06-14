@@ -1,5 +1,5 @@
 import type { INode, NodeData, RenderOptions } from '@editablejs/core'
-import{ useEffect, useLayoutEffect, useState } from 'react'
+import{ useEffect, useState } from 'react'
 
 const useComponent = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(props: RenderOptions<E, T>) => {
   const [ node, setNode ] = useState(props.node)
@@ -13,9 +13,9 @@ const useComponent = <E extends NodeData = NodeData, T extends INode<E> = INode<
     }
   }, [key, editor])
 
-  useLayoutEffect(() => {
-    editor.didUpdate(node)
-  }, [node, editor])
+  useEffect(() => {
+    setNode(props.node)
+  }, [props.node])
 
   return { node }
 }

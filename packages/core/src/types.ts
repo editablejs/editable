@@ -47,8 +47,6 @@ export interface IEditor extends IEventEmitter {
 
   offUpdate(key: NodeKey): void
 
-  didUpdate(node: INode): void
-
   onCompositionUpdate(key: NodeKey, callback: CompositionUpdateCallback): void
 
   offCompositionUpdate(key: NodeKey): void
@@ -59,6 +57,7 @@ export interface IEditor extends IEventEmitter {
 }
 
 export interface IChange {
+
   getRange(): IRange | null
 
   deleteBackward(): void
@@ -70,4 +69,10 @@ export interface IChange {
   insertText(text: string): void;
 
   insertNode(node: INode): void
+
+  hasCacheFormatting(): boolean
+
+  setFormat(name: string, value: string | number): void
+
+  deleteFormat(name: string): void
 }

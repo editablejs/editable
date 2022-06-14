@@ -18,19 +18,20 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@editablejs/selection": "workspace:*",
-    "@editablejs/model": "workspace:*",
-    "@editablejs/event-emitter": "workspace:*",
     "@editablejs/constants": "workspace:*",
+    "@editablejs/event-emitter": "workspace:*",
+    "@editablejs/model": "workspace:*",
+    "@editablejs/selection": "workspace:*",
     "@editablejs/utils": "workspace:*",
     "is-hotkey": "^0.2.0"
   },
   "devDependencies": {
-    "tsconfig": "workspace:*",
-    "scripts": "workspace:*",
+    "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "tsup": "^5.10.1",
     "jest": "^27.5.1",
+    "scripts": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^5.10.1",
     "typescript": "^4.5.3"
   },
   "jest": {

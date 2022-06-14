@@ -94,4 +94,20 @@ describe("model-diff", () => {
       }
     ])
   });
+  it("Delete Text Node", () => {
+    const oldNode = Text.create({
+      key: 'text3',
+      text: 'aaaaa'
+    })
+    const newNode = Text.create(oldNode.toJSON())
+    newNode.delete(3, 1)
+    expect(diff([newNode], [oldNode])).toEqual([
+      {
+        "key": oldNode.getKey(),
+        "offset": 4,
+        "type": OP_DELETE_TEXT,
+        "value": 'a'
+      }
+    ])
+  });
 });

@@ -5,11 +5,12 @@ import {
 	diff_match_patch,
 	patch_obj,
 } from 'diff-match-patch';
-import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT } from "@editablejs/constants";
-import Text from './text'
-import { INode, IText, Op } from "./types";
-import Element from './element';
 import { Log } from '@editablejs/utils';
+import isEqual from 'lodash/isEqual'
+import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT, OP_UPDATE_DATA, OP_UPDATE_FORMAT, OP_UPDATE_STYLE } from "@editablejs/constants";
+import Text from './text'
+import { IElement, INode, IText, Op } from "./types";
+import Element from './element';
 
 const dmp = new diff_match_patch()
 
@@ -54,15 +55,8 @@ const diffText = (newText: IText, oldText: IText) => {
 
 const handleText = (textNode: IText, oldChildren: INode[]) => {
   const ops: Op[] = [];
-  const oldTextNode = oldChildren.length > 0 && Text.isText(oldChildren[0]) ? oldChildren[0] : null
-  // 都是文本
-  if(oldTextNode) { 
-    const newText = textNode.getText()
-    const oldText = oldTextNode.getText()
-    if(newText !== oldText) {
-      ops.push(...diffText(textNode, oldTextNode))
-    }
-  }
+  const oldTextNode = oldChildren.length > 0 && Text.isText(oldChildren[0]) && oldChildren[0].getKey() === textNode.getKey() ? oldChildren[0] : null
+
   for (let c = oldChildren.length - 1; c >= (oldTextNode ? 1 : 0); c--) {
     const oldChild = oldChildren[c];
     ops.push({
@@ -72,14 +66,63 @@ const handleText = (textNode: IText, oldChildren: INode[]) => {
       value: oldChild.toJSON()
     });
   }
-  if (!oldTextNode)
+  // 都是相同key的文本节点
+  if(oldTextNode) { 
+    ops.push(...handleAttributes(textNode, oldTextNode))
+    const newText = textNode.getText()
+    const oldText = oldTextNode.getText()
+    if(newText !== oldText) {
+      ops.push(...diffText(textNode, oldTextNode))
+    }
+  } else {
     ops.push({
       type: OP_INSERT_NODE,
       key: textNode.getParentKey(),
       offset: 0,
       value: textNode.toJSON()
     });
+  }
   return ops;
+}
+
+const handleAttributes = (newNode: INode, oldNode: INode) => { 
+  const ops: Op[] = [];
+  // Data
+  const newData = newNode.getData()
+  const oldData = oldNode.getData()
+  if(!isEqual(newData, oldData)) {
+    ops.push({
+      type: OP_UPDATE_DATA,
+      key: newNode.getKey(),
+      offset: -1,
+      value: newData
+    })
+  }
+  // Format
+  if(Text.isText(newNode)) {
+    const newFormat = newNode.getFormat()
+    const oldFormat = (oldNode as IText).getFormat()
+    if(!isEqual(newFormat, oldFormat)) {
+      ops.push({
+        type: OP_UPDATE_FORMAT,
+        key: newNode.getKey(),
+        offset: -1,
+        value: newFormat
+      })
+    }
+  } else if (Element.isElement(newNode)) {
+    const newStyle = newNode.getStyle()
+    const oldStyle = (oldNode as IElement).getStyle()
+    if(!isEqual(newStyle, oldStyle)) { 
+      ops.push({
+        type: OP_UPDATE_STYLE,
+        key: newNode.getKey(),
+        offset: -1,
+        value: newStyle
+      })
+    }
+  }
+  return ops
 }
 
 const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
@@ -114,27 +157,13 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
   ) {
     ops.push(...handleText(newChildren[0] as IText, oldChildren))
   } else {
-    // 先找出需要删除的旧节点
-    const newChildrenKeys = newChildren.map((child) => child.getKey());
-    for (let c = oldChildren.length - 1; c >= 0; c--) {
-      const oldChild = oldChildren[c];
-      const oldChildKey = oldChild.getKey();
-      if(!newChildrenKeys.includes(oldChildKey)) {
-        ops.push({
-          type: OP_DELETE_NODE,
-          key: oldChild.getParentKey(),
-          offset: c,
-          value: oldChild.toJSON()
-        });
-        oldChildren.splice(c, 1);
-      }
-    }
-    // 再找出需要插入的新节点
+    // 找出需要插入的新节点
     const oldChildrenKeys = oldChildren.map((child) => child.getKey());
     for (let c = 0; c < newChildren.length; c++) {
       const newChild = newChildren[c];
       const newChildKey = newChild.getKey();
-      if(!oldChildrenKeys.includes(newChildKey)) { 
+      const index = oldChildrenKeys.indexOf(newChildKey);
+      if(index === -1 || newChild.getType() !== oldChildren[index].getType()) { 
         ops.push({
           type: OP_INSERT_NODE,
           key: newChild.getParentKey(),
@@ -143,16 +172,37 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
         });
         oldChildren.splice(c, 0, newChild);
       }
-      // 对比有差异的子节点
+    }
+    // 找出需要删除的旧节点
+    const newChildrenKeys = newChildren.map((child) => child.getKey());
+    for (let c = oldChildren.length - 1; c >= 0; c--) {
+      const oldChild = oldChildren[c];
+      const oldChildKey = oldChild.getKey();
+      if(oldChildrenKeys.indexOf(oldChildKey) === -1) continue
+      const index = newChildrenKeys.indexOf(oldChildKey); 
+      if(index === -1 || oldChild.getType() !== newChildren[index].getType()) {
+        ops.push({
+          type: OP_DELETE_NODE,
+          key: oldChild.getParentKey(),
+          offset: c,
+          value: oldChild.toJSON()
+        });
+      }// 对比有差异的子节点
       else {
+        const newChild = newChildren[index]
+        // 比较文本节点
+        if(Text.isText(newChild)) {
+          ops.push(...handleText(newChild, [oldChild]))
+          continue
+        }
         // 比较属性
-        const oldChild = oldChildren.find((child) => child.getKey() === newChildKey)
+        ops.push(...handleAttributes(newChild, oldChild))
         // 比较子节点
-        if(oldChild && Element.isElement(newChild) && Element.isElement(oldChild)) {
+        if(oldChild && Element.isElement(newChild)) {
           ops.push(
             ...handleChildren(
               newChild.getChildren(),
-              oldChild.getChildren()
+              (oldChild as IElement).getChildren()
             ),
           );
         }

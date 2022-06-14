@@ -1,4 +1,4 @@
-import { DATA_KEY } from "@editablejs/constants";
+import { DATA_KEY, DATA_TYPE, DATA_TYPE_TEXT } from "@editablejs/constants";
 import { NodeKey } from "@editablejs/model";
 import { IRange, Position, RangeOptions } from "./types";
 
@@ -56,13 +56,19 @@ export default class Range implements IRange {
   }
 
   getClientRects(){
+    const _anchor = this.anchor
+    const _focus = this.focus
     const range = document.createRange();
-    const anchorNode = document.querySelector(`[${DATA_KEY}="${this.anchor.key}"]`)?.firstChild
-    const focusNode = document.querySelector(`[${DATA_KEY}="${this.focus.key}"]`)?.firstChild
+    const anchorElement = document.querySelector(`[${DATA_KEY}="${_anchor.key}"]`)
+    const focusElement = document.querySelector(`[${DATA_KEY}="${_focus.key}"]`)
+    if(!anchorElement || !focusElement) return null
+    const type = anchorElement.getAttribute(DATA_TYPE)
+    const anchorNode = type === DATA_TYPE_TEXT ? anchorElement.firstChild : anchorElement
+    const focusNode = type === DATA_TYPE_TEXT ? focusElement.firstChild : focusElement
     if(!anchorNode || !focusNode) return null
     const isBackward = this.isBackward
-    range.setStart(isBackward ? focusNode : anchorNode, isBackward ? this.focus.offset : this.anchor.offset);
-    range.setEnd(isBackward ? anchorNode : focusNode, this.isBackward ? this.anchor.offset : this.focus.offset);
+    range.setStart(isBackward ? focusNode : anchorNode, isBackward ? _focus.offset : _anchor.offset);
+    range.setEnd(isBackward ? anchorNode : focusNode, this.isBackward ? _anchor.offset : _focus.offset);
     return range.getClientRects()
   }
 
@@ -76,5 +82,12 @@ export default class Range implements IRange {
       anchor: Object.assign({}, this.anchor),
       focus: Object.assign({}, this.focus)
     })
+  }
+
+  equal(range: IRange) {
+    const _anchor = this.anchor
+    const _focus = this.focus
+    const { anchor, focus } = range
+    return _anchor.key === anchor.key && _anchor.offset === anchor.offset && _focus.key === focus.key && _focus.offset === focus.offset
   }
 }

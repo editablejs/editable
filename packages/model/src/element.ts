@@ -2,10 +2,11 @@ import { Log } from '@editablejs/utils'
 import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
 import Node from './node';
 import Text from './text';
+import { DATA_TYPE_ELEMENT, DATA_TYPE_TEXT } from '@editablejs/constants';
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
-  protected style: ElementStyle = new Map()
+  protected style: ElementStyle = {}
   
   static create = <T extends NodeData = NodeData>(options: ElementOptions<T>): IElement<T> => {
     return new Element(options)
@@ -18,15 +19,15 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
   }
 
   static isElement = (node: INode): node is IElement => { 
-    return node.getType() !== 'text'
+    return node.getType() !== DATA_TYPE_TEXT
   }
 
   static isElementObject = (nodeObj: NodeOptions): nodeObj is ElementObject => { 
-    return nodeObj.type !== 'text'
+    return nodeObj.type !== DATA_TYPE_TEXT
   }
 
   constructor(options: ElementOptions<T>) { 
-    super(options)
+    super(Object.assign({}, options, { type: options.type ?? DATA_TYPE_ELEMENT }))
     this.children = (options.children || []).map(child => this.createChildNode(child))
   }
 
@@ -35,6 +36,15 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     options.parent = parent
     return Element.from(options)
   }
+
+  getStyle(): ElementStyle {
+    return Object.assign({}, this.style)
+  }
+
+  setStyle(style: ElementStyle) {
+    this.style = Object.assign({}, style);
+  }
+
 
   getChildrenSize(): number {
     return this.children.length
@@ -79,7 +89,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     const keepKey = left.length === 0 || right.length === 0
     const key = keepKey ? this.key : undefined
     const json = Object.assign({}, this.toJSON(false), { key })
-    const cloneLeft = left.length > 0 ? Element.create(json) : null
+    const cloneLeft = left.length > 0 ? Element.create(Object.assign({}, json, { key: this.key })) : null
     left.forEach(child => cloneLeft?.appendChild(child))
     const cloneRight = right.length > 0 ? Element.create(json) : null
     right.forEach(child => cloneRight?.appendChild(child))

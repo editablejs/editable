@@ -1,4 +1,5 @@
 import type { IEventEmitter } from '@editablejs/event-emitter';
+import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT, OP_UPDATE_DATA, OP_UPDATE_FORMAT, OP_UPDATE_STYLE } from '@editablejs/constants';
 export type NodeData = any
 export type NodeKey = string;
 
@@ -14,7 +15,7 @@ export type NodeOptions<T extends NodeData = NodeData> = Partial<NodeObject<T>>
 export interface INode<T extends NodeData = NodeData> {
   getParentKey(): NodeKey | null
 
-  getKey(): NodeKey;    
+  getKey(): NodeKey;   
 
   getType(): string;
 
@@ -27,13 +28,14 @@ export interface INode<T extends NodeData = NodeData> {
   toJSON(): Readonly<NodeObject<T>>;
 }
 
+export type TextFormat = Record<string, string | number>
 export interface TextObject<T extends NodeData = NodeData> extends NodeObject<T> {
   text: string
+
+  format?: TextFormat
 }
 
 export type TextOptions<T extends NodeData = NodeData> = Partial<Omit<TextObject<T>, 'type'>> & Required<Pick<TextObject<T>, 'text'>>
-
-export type TextFormat = Map<string, string | number>
 export interface IText<T extends NodeData = NodeData> extends INode<T> {
 
   getText(): string;
@@ -59,8 +61,12 @@ export interface ElementObject<T extends NodeData = NodeData> extends NodeObject
 
 export type ElementOptions<T extends NodeData = NodeData> = Partial<Omit<ElementObject<T>, 'children'>> & Record<'children', (NodeOptions | ElementOptions | TextOptions)[] | undefined>
 
-export type ElementStyle = Map<string, string | number>
+export type ElementStyle = Record<string, string | number>
 export interface IElement<T extends NodeData = NodeData> extends INode<T> {
+
+  getStyle(): ElementStyle 
+
+  setStyle(style: ElementStyle): void
 
   getChildrenSize(): number;
 
@@ -138,7 +144,7 @@ export interface IModel extends IEventEmitter {
 
   deleteNode(key: NodeKey): void
 
-  splitNode(key: NodeKey, offset: number, callback?: (leftNodes: INode | null, rightNodes: INode | null) => INode[]): INode
+  splitNode(key: NodeKey, offset: number): IElement
 
   destroy(): void;
 }
@@ -152,9 +158,34 @@ export interface ModelOptions {
   isVoid?: (node: INode) => boolean;
 }
 
-export interface Op {
-  type: string
+export interface Op_Node {
   key: NodeKey  | null
   offset: number
-  value: any
 }
+
+export interface Op_Data extends Op_Node { 
+  type: typeof OP_UPDATE_DATA
+  value: NodeData
+}
+
+export interface Op_Element extends Op_Node {
+  type: typeof OP_DELETE_NODE | typeof OP_INSERT_NODE
+  value: NodeObject
+}
+
+export interface Op_Text extends Op_Node { 
+  type: typeof OP_DELETE_TEXT | typeof OP_INSERT_TEXT
+  value: string
+}
+
+export interface Op_Format extends Op_Node { 
+  type: typeof OP_UPDATE_FORMAT
+  value: TextFormat
+}
+
+export interface Op_Style extends Op_Node { 
+  type: typeof OP_UPDATE_STYLE
+  value: ElementStyle
+}
+
+export type Op = Op_Data | Op_Element | Op_Text | Op_Format | Op_Style

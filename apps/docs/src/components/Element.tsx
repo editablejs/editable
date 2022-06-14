@@ -1,20 +1,12 @@
 import { IElement, NodeData, RenderOptions } from "@editablejs/core"
 import React from 'react'
 import useComponent from "../hooks/component"
+import NodeComponent from "./Node"
 
 const ElementComponent: React.FC<RenderOptions<NodeData, IElement>> = (props) => { 
   const { node } = useComponent(props)
-
   const { next } = props
-  const key = node.getKey()
-
-  return (
-    <div key={key} data-key={key}>
-      {
-        next(node)
-      }
-    </div>
-  )
+  return <NodeComponent node={node}>{ next(node) }</NodeComponent>
 }
 
 export const renderElement = (options: RenderOptions<NodeData, IElement>) => { 

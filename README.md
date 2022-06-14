@@ -44,7 +44,7 @@ Mainly index some `unicode` characters. Because the number of bytes occupied by 
 
 ### packages/event-emitter
 
-A simple event handler, with a slight difference that the bound event returns `false` in the process to interrupt subsequent event firing.
+A simple event handler, with a slight difference, the bound event returning non-undefined in processing can interrupt subsequent event firing.
 
 ### packages/model
 

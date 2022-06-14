@@ -1,14 +1,20 @@
-import { IModel, INode, Text, Element } from "@editablejs/model"
+import { EVENT_SELECTION_CHANGE } from "@editablejs/constants"
+import { IModel, INode, Text, Element, TextFormat } from "@editablejs/model"
 import { IRange, ISelection } from "@editablejs/selection"
 import { Log } from "@editablejs/utils"
 import { IChange } from "./types"
 
 class Change implements IChange {
 
+  private _cacheFormat?: TextFormat
+
   model: IModel
   selection: ISelection
 
   constructor(model: IModel, selection: ISelection) {
+    selection.on(EVENT_SELECTION_CHANGE, () => {
+      this._cacheFormat = undefined
+    })
     this.model = model
     this.selection = selection
   }
@@ -22,9 +28,12 @@ class Change implements IChange {
     if(!range) return
     if(range.isCollapsed) {
       const { key, offset } = range.anchor
-      const deleteOffset = offset - 1
-      if(deleteOffset >= 0) {
-        this.model.deleteText(key, deleteOffset, 1);
+      const node = this.model.getNode(key)
+      if(!node) Log.nodeNotFound(key)
+      if(Text.isText(node)) {
+        if(offset > 0) {
+          this.model.deleteText(key, offset - 1, 1);
+        }
       }
     }
   }
@@ -38,7 +47,7 @@ class Change implements IChange {
       if(!node) Log.nodeNotFound(key)
       if(Text.isText(node)) {
         const text = node.getText()
-        if(offset + 1 < text.length) this.model.deleteText(key, offset, 1);
+        if(offset + 1 <= text.length) this.model.deleteText(key, offset, 1);
       }
     }
   }
@@ -47,7 +56,7 @@ class Change implements IChange {
     const range = this.getRange()
     if(!range) return
     if(range.isCollapsed) {
-      this.deleteForward()
+      this.deleteBackward()
       return
     }
     const ranges = this.selection.getSubRanges()
@@ -68,10 +77,16 @@ class Change implements IChange {
   }
 
   insertText(text: string){ 
-    const range = this.getRange()
-    if(!range) return
-    const { key, offset } = range.anchor
-    this.model.insertText(text, key, offset);
+    if(this._cacheFormat) {
+      const node = Text.create({ text, format: this._cacheFormat })
+      this.insertNode(node)
+      this._cacheFormat = undefined
+    } else {
+      const range = this.getRange()
+      if(!range) return
+      const { key, offset } = range.anchor
+      this.model.insertText(text, key, offset);
+    }
   }
 
   insertNode(node: INode){
@@ -79,6 +94,28 @@ class Change implements IChange {
     if(!range) return
     const { key, offset } = range.anchor
     this.model.insertNode(node, key, offset)
+  }
+
+  hasCacheFormatting(){
+    return !!this._cacheFormat
+  }
+
+  setFormat(name: string, value: string | number){
+    const range = this.getRange()
+    if(!range) return
+    if(range.isCollapsed) {
+      const key = range.anchor.key
+      const node = this.model.getNode(key)
+      if(!node) Log.nodeNotFound(key)
+      const format = Text.isText(node) ? node.getFormat() : {}
+      this._cacheFormat = { ...format, [name]: value }
+    } else {
+
+    }
+  }
+
+  deleteFormat(name: string){
+
   }
 }
 

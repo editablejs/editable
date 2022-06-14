@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Editor, { Element } from '@editablejs/core';
 import type { NodeData, IElement, IEditor, NodeKey } from '@editablejs/core'
 import { renderText } from '../components/Text';
@@ -42,23 +42,24 @@ export default function Docs() {
       editor.destroy()
     }
   }, [])
-
-  useLayoutEffect(() => {
-    if(editor) {
-      Object.values(pages).forEach(page => {
-        editor.didUpdate(page)
-      })
-    }
-  }, [pages, editor])
   
+  if(!editor) return <div>Loading</div>
+
+  const toggleBold = (e: React.MouseEvent) => { 
+    e.preventDefault()
+    const { change } = editor
+    change.setFormat('fontWeight', 'bold')
+  }
 
   return (
     <div className={styles.wrapper}>
-      <h1>Docs</h1>
+      <div className={styles.toolbar}>
+        <button onMouseDown={toggleBold}>Bold</button>
+      </div>
       <div className={styles.container}>
         {
           Object.values(pages).map(page => {
-            return editor?.renderPlugin(page)
+            return editor.renderPlugin(page)
           })
         }
       </div>

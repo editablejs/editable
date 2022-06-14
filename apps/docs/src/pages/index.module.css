@@ -4,6 +4,12 @@
   margin: 0 auto;
 }
 
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+
 .container {
   cursor: text;
   white-space: pre-wrap;

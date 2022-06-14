@@ -6,7 +6,7 @@ const DATA_BLOCK_KEY = 'block'
 
 export default class SelectionLayer implements ILayer {
 
-  private caretTimer: NodeJS.Timeout | null = null
+  private caretTimer: number | null = null
   protected root: HTMLElement
   protected body: HTMLElement
   protected shadow: HTMLElement

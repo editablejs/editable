@@ -1,16 +1,14 @@
 import EventEmitter from "@editablejs/event-emitter";
-import { Element, IModel, NodeKey, Text, INode, Op, IElement } from '@editablejs/model';
+import { Element, IModel, NodeKey, Text, INode, Op, IElement, createNode } from '@editablejs/model';
 import { Log } from '@editablejs/utils'
-import { nextBreak, previousBreak } from "@editablejs/grapheme-breaker";
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, 
-OP_INSERT_NODE, OP_DELETE_TEXT, OP_INSERT_TEXT, DATA_KEY, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END, EVENT_NODE_UPDATE } from '@editablejs/constants'
+import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_SELECT_START, EVENT_SELECT_END, EVENT_SELECTING, EVENT_VALUE_CHANGE, EVENT_SELECTION_CHANGE, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END, EVENT_NODE_UPDATE, EVENT_DOM_RENDER, EVENT_ROOT_DOM_RENDER, OP_DELETE_NODE } from '@editablejs/constants'
 import type { DrawRect, IInput, IRange, ISelection, ITyping, Position, SelectionOptions } from "./types";
 import Layer from "./layer";
 import type { ILayer } from "./layer"
 import Range from './range'
 import Input, { InputEventType } from "./input";
 import Typing, { TypingEventType } from "./typing";
-import { assert } from "./utils";
+import { assert, createRangefromOp, getPositionToBackward, getPositionToForward, isRendered } from "./utils";
 
 const SELECTION_BLUR_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
@@ -34,13 +32,14 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   private caretColor: string
   private caretWidth: number
   private _isFoucs = false
+  private _cacheApplyRange?: IRange 
 
   constructor(options: SelectionOptions) {
     super();
     this.options = options;
     const { blurColor, focusColor, caretColor, caretWidth, model } = options
     this.model = model
-    model.on(EVENT_NODE_UPDATE, (_, ops) => this.silentUpdate(ops))
+    model.on(EVENT_NODE_UPDATE, (_, ops) => this.applyFromOps(ops))
     this.blurColor = blurColor ?? SELECTION_BLUR_COLOR
     this.focusColor = focusColor ?? SELECTION_FOCUS_COLOR
     this.caretColor = caretColor ?? SELECTION_CARET_COLOR
@@ -64,11 +63,14 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   get isCollapsed() {
-    const startRange = this.ranges[0];
-    const endRange = this.ranges[this.ranges.length - 1];
-    return startRange && endRange && 
-    startRange.anchor.key === endRange.anchor.key && startRange.anchor.offset === endRange.focus.offset && 
-    startRange.focus.key === endRange.focus.key && startRange.focus.offset === endRange.focus.offset;
+    const ranges = this.ranges
+    if(ranges.length === 0) return true
+    if(ranges.some(range => !range.isCollapsed)) return false
+    const startRange = ranges[0];
+    const endRange = ranges[this.ranges.length - 1];
+    const { anchor: startAnchor } = startRange;
+    const { anchor: endAnchor } = endRange
+    return startAnchor.key === endAnchor.key && startAnchor.offset === endAnchor.offset
   }
 
   get isFocus(){
@@ -76,7 +78,8 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   bindTyping = () => {
-    this.typing.on(EVENT_SELECT_START, (position: Position) => {
+    const typing = this.typing
+    typing.on(EVENT_SELECT_START, (position: Position) => {
       this.removeAllRange()
       this.start = position
       this.emit(EVENT_SELECT_START, position)
@@ -92,131 +95,114 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       this.addRange(range)
       return range
     }
-    this.typing.on(EVENT_SELECTING, (position?: Position) => {
+    typing.on(EVENT_SELECTING, (position?: Position) => {
       const range = handleSelecting(position)
       if(!range) return
       this.emit(EVENT_SELECTING, range)
     })
-    this.typing.on(EVENT_SELECT_END, (position?: Position) => {
+    typing.on(EVENT_SELECT_END, (position?: Position) => {
       const range = handleSelecting(position)
       if(!range) return
       this.emit(EVENT_SELECT_END, range)
     })
+    const applyCacheRange = () => {
+      const range = this._cacheApplyRange
+      if(range && isRendered(this.model, range)) {
+        this.drawByRanges(range)
+        this._cacheApplyRange = undefined
+      }
+    }
+    typing.on(EVENT_DOM_RENDER, () => applyCacheRange())
+    typing.on(EVENT_ROOT_DOM_RENDER, (containers: Map<string, HTMLElement>) => {
+      this.input.updateContainers(containers)
+      applyCacheRange()
+      this.typing.stopMutationRoot()
+    })
   }
 
   bindInput = () => {
-    this.input.on(EVENT_COMPOSITION_START, ev => {
+    const input = this.input
+    input.on(EVENT_COMPOSITION_START, ev => {
       this.emit(EVENT_COMPOSITION_START, ev)
     })
-    this.input.on(EVENT_COMPOSITION_END, ev => {
+    input.on(EVENT_COMPOSITION_END, ev => {
       this.emit(EVENT_COMPOSITION_END, ev)
     })
-    this.input.on(EVENT_CHANGE, (value: string) => {
+    input.on(EVENT_CHANGE, (value: string) => {
       this.emit(EVENT_VALUE_CHANGE, value)
     })
-    this.input.on(EVENT_BLUR, () => {
+    input.on(EVENT_BLUR, () => {
       this._isFoucs = false
       this.emit(EVENT_BLUR)
       this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
     })
-    this.input.on(EVENT_FOCUS, () => {
+    input.on(EVENT_FOCUS, () => {
       this._isFoucs = true
       this.emit(EVENT_FOCUS)
       this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
     })
-    this.input.on(EVENT_KEYDOWN, ev => {
+    input.on(EVENT_KEYDOWN, ev => {
       this.emit(EVENT_KEYDOWN, ev)
     })
-    this.input.on(EVENT_KEYUP, ev => {
+    input.on(EVENT_KEYUP, ev => {
       this.emit(EVENT_KEYUP, ev)
     })
   }
 
-  createRangeFromOps(ops: Op[]) { 
+  applyFromOps = (ops: Op[]) => { 
     const lastOp = ops[ops.length - 1]
     if(!lastOp) return
-    const { type, offset, value } = lastOp
+    const model = this.model
+    const { offset } = lastOp
+    if(ops.some(op => !op.key)) this.typing.startMutationRoot()
     let key = lastOp.key
     if(!key) {
-      const roots = this.model.getRoots()
-      const root = roots[offset]
+      const roots = model.getRoots()
+      const root = offset > roots.length ? roots[offset - 1] : roots[offset]
       if(root) key = root.getKey()
       else return
     }
-    switch(type) {
-      case OP_INSERT_TEXT:
-        return new Range({
-          anchor: {
-            key,
-            offset: offset + value.length
-          }
-        })
-      case OP_DELETE_TEXT:
-        return new Range({
-          anchor: {
-            key,
-            offset
-          }
-        })
-      case OP_INSERT_NODE:
-        let node = this.model.getNode(key)
-        if(!node) Log.nodeNotFound(key)
+    const node = model.getNode(key)
+    if(!node) Log.nodeNotFound(key)
+    const range = createRangefromOp(Object.assign({}, lastOp, { node }))
+    if(!range) return
+    const willDelete = () => {
+      const keys = [range.anchor.key, range.focus.key]
+      const checkNode = (node: INode) => {
+        if(keys.indexOf(node.getKey()) > -1) return true
         if(Element.isElement(node)) {
           const children = node.getChildren()
-          const isEnd = offset >= children.length
-          let child: INode = isEnd ? children[children.length - 1] : children[offset]
-          while(child && Element.isElement(child)) {
-            const first = child.first()
-            if(!first) break
-            if(Text.isText(first)) {
-              return new Range({
-                anchor: {
-                  key: first.getKey(),
-                  offset: isEnd ? first.getText().length : 0
-                }
-              }) 
-            } else {
-              node = first
-            }
+          for(let c = 0; c < children.length; c++) {
+            const child = children[c]
+            if(checkNode(child)) return true
           }
         }
-        
-        return new Range({
-          anchor: {
-            key,
-            offset
-          }
-        })
+        return false
+      }
+      for(let o = 0; o < ops.length; o++){
+        const op = ops[o]
+        if(op.type === OP_DELETE_NODE) {
+          if(op.key && keys.indexOf(op.key) > -1) return true
+          const opNode = createNode(op.value)
+          return checkNode(opNode)
+        }
+      }
+      return false
     }
-  }
-
-  silentUpdate = (ops: Op[]) => { 
-    const range = this.createRangeFromOps(ops)
-    if(!range) return
-    this.ranges = [range]
-  }
-
-  applyUpdate = (node: INode, ops: Op[]) => {
-    if(!node.getParentKey()) this.handleRootUpdate()
-    const range = this.createRangeFromOps(ops)
-    if(range) { 
+    if(!isRendered(this.model, range) || willDelete()) {
+      this._cacheApplyRange = range
+      this.ranges = [range]
+    } else {
+      this._cacheApplyRange = undefined
       this.applyRange(range)
     }
-  }
-
-  handleRootUpdate = () => {
-    const keys = this.model.getRootKeys()
-    const domSelector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
-    const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
-    const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
-    this.typing.bindContainers(...containers)
-    this.input.bindContainers(...containers)
   }
 
   getSubRanges = (...ranges: IRange[]): IRange[] => { 
     if(ranges.length === 0 && this.ranges.length === 0) return []
     if(ranges.length === 0) ranges = this.ranges
     const subRanges: IRange[] = []
+    const model = this.model
     for(let i = 0; i < ranges.length; i++) {
       const range = ranges[i]
       if(range.isCollapsed) {
@@ -224,14 +210,14 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
         continue
       }
       const { anchor, focus } = range
-      const start = this.model.getNode(anchor.key)
-      const end = this.model.getNode(focus.key)
+      const start = model.getNode(anchor.key)
+      const end = model.getNode(focus.key)
       if(!start || !end) continue
       let parentKey = start.getParentKey()
       if(!parentKey) continue;
-      let parent = this.model.getNode<any, IElement>(parentKey)
+      let parent = model.getNode<any, IElement>(parentKey)
       if(Text.isText(start)) {
-        // same
+        // as same
         if(start.getKey() === end.getKey()) {
           subRanges.push(range)
           continue
@@ -247,7 +233,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           }
         }))
       }
-      let next = this.model.getNext(anchor.key)
+      let next = model.getNext(anchor.key)
       let finded = false
       while(parent) {
         while(next) {
@@ -317,26 +303,27 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
             finded = true
             break
           }
-          next = this.model.getNext(next.getKey())
+          next = model.getNext(next.getKey())
         }
         if(finded) break
-        next = this.model.getNext(parentKey)
+        next = model.getNext(parentKey)
         parentKey = parent.getParentKey()
         if(!parentKey) break
-        parent = this.model.getNode<any, IElement>(parentKey)
+        parent = model.getNode<any, IElement>(parentKey)
       }
     }
     return subRanges
   }
 
   getContents = (...ranges: IRange[]): INode[] => {
+    const model = this.model
     const contents: INode[] = []
     const subRanges = this.getSubRanges(...ranges)
     subRanges.forEach(subRange => {
       if(!subRange.isCollapsed) {
         const { anchor, focus } = subRange
-        const start = this.model.getNode(anchor.key)
-        const end = this.model.getNode(focus.key)
+        const start = model.getNode(anchor.key)
+        const end = model.getNode(focus.key)
         if(!start || !end) return
         if(Text.isText(start)) {
           const text = start.getText()
@@ -387,6 +374,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     if(!range.isCollapsed) {
       checkNode(focus.key, focus.offset)
     }
+    if(this.ranges.length === 1 && this.ranges[0].equal(range)) return
     this.removeAllRange()
     this.addRange(range)
   }
@@ -439,137 +427,6 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     this.layer.clearSelection()
   }
 
-  getNodeToForward(key: NodeKey, offset: number): Position {
-    let node = this.model.getNode(key)
-    if(!node) Log.nodeNotFound(key)
-    let next: INode | null = null
-    const position = {
-      key,
-      offset
-    }
-    // Text
-    if(Text.isText(node)) {
-      const text = node.getText()
-      if(offset < text.length) {
-        const nextOffset = nextBreak(node.getText(), offset)
-        position.offset = nextOffset
-        return position
-      } 
-      // offset out of range
-      else {
-        next = this.model.getNext(key)
-      }
-    } 
-    // Element
-    else if(Element.isElement(node)) {
-      const children = node.getChildren()
-      
-      if(offset < children.length) { 
-        position.offset = offset + 1
-        return position
-      } else {
-        next = this.model.getNext(key)
-      }
-    }
-    let parentNode: IElement | null = null
-    // is null
-    while(!next) {
-      // get parent
-      const parentKey: string | null = node.getParentKey()
-      if(!parentKey) return position
-      parentNode = this.model.getNode(parentKey)
-      if(!parentNode || !Element.isElement(parentNode)) return position
-      node = parentNode
-      next = this.model.getNext(parentKey)
-    }
-    if(!next) return position
-    if(Text.isText(next)) {
-      position.key = next.getKey()
-      position.offset = nextBreak(next.getText(), 0)
-      return position
-    } 
-    if(!parentNode || !Element.isElement(next)) return position
-    const first = next.first()
-    if(!first) { 
-      const offset = parentNode.indexOf(node.getKey())
-      position.key = parentNode.getKey()
-      position.offset = offset
-    } else if(Text.isText(first)) {
-      position.key = first.getKey()
-      position.offset = nextBreak(first.getText(), 0)
-    } else if(Element.isElement(first)) {
-      position.key = first.getKey()
-      position.offset = 0
-    }
-    return position
-  }
-
-  getNodeToBackward(key: NodeKey, offset: number): Position { 
-    let node = this.model.getNode(key)
-    if(!node) Log.nodeNotFound(key)
-    let prev: INode | null = null
-    const position = {
-      key,
-      offset
-    }
-    // Text
-    if(Text.isText(node)) {
-      const text = node.getText()
-      if(offset > 0 && text.length > 0) {
-        const prevOffset = previousBreak(node.getText(), offset)
-        position.offset = prevOffset
-        return position
-      } 
-      // offset out of range
-      else {
-        prev = this.model.getPrev(key)
-      }
-    } 
-    // Element
-    else if(Element.isElement(node)) {
-      const children = node.getChildren()
-      if(offset > 0 && children.length > 0) { 
-        position.offset = offset - 1
-        return position
-      } else {
-        prev = this.model.getPrev(key)
-      }
-    }
-    let parentNode: IElement | null = null
-    // is null
-    while(!prev) {
-      // get parent
-      const parentKey: string | null = node.getParentKey()
-      if(!parentKey) return position
-      parentNode = this.model.getNode(parentKey)
-      if(!parentNode || !Element.isElement(parentNode)) return position
-      node = parentNode
-      prev = this.model.getPrev(parentKey)
-    }
-    if(!prev) return position
-    if(Text.isText(prev)) {
-      const text = prev.getText()
-      position.key = prev.getKey()
-      position.offset = previousBreak(text, text.length)
-      return position
-    } 
-    if(!parentNode || !Element.isElement(prev)) return position
-    const last = prev.last()
-    if(!last) { 
-      const offset = parentNode.indexOf(node.getKey())
-      position.key = parentNode.getKey()
-      position.offset = offset
-    } else if(Text.isText(last)) {
-      const text = last.getText()
-      position.key = last.getKey()
-      position.offset = previousBreak(text, text.length)
-    } else if(Element.isElement(last)) {
-      position.key = last.getKey()
-      position.offset = last.getChildren().length
-    }
-    return position
-  }
-
   moveTo(key: NodeKey, offset: number) {
     const node = this.model.getNode(key)
     if(!node) Log.nodeNotFound(key)
@@ -613,7 +470,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     if(!range) return
     if(range.isCollapsed) {
       const { focus } = range
-      const { key, offset } = this.getNodeToForward(focus.key, focus.offset)
+      const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
       this.moveTo(key, offset)
     } else if(range.isBackward) {
       const { anchor } = range
@@ -629,7 +486,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     if(!range) return
     if(range.isCollapsed) {
       const { focus } = range
-      const { key, offset } = this.getNodeToBackward(focus.key, focus.offset)
+      const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
       this.moveTo(key, offset)
     } else if(range.isBackward) {
       const { focus } = range
@@ -644,7 +501,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const range = this.getRangeAt(0)
     if(!range) return
     const { anchor } = range
-    const { key, offset } = this.getNodeToForward(anchor.key, anchor.offset)
+    const { key, offset } = getPositionToForward(this.model, anchor.key, anchor.offset)
     this.moveAnchorTo(key, offset)
   }
 
@@ -652,7 +509,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const range = this.getRangeAt(0)
     if(!range) return
     const { focus } = range
-    const { key, offset } = this.getNodeToForward(focus.key, focus.offset)
+    const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
     this.moveFocusTo(key, offset)
   }
 
@@ -660,7 +517,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const range = this.getRangeAt(0)
     if(!range) return
     const { anchor } = range
-    const { key, offset } = this.getNodeToBackward(anchor.key, anchor.offset)
+    const { key, offset } = getPositionToBackward(this.model, anchor.key, anchor.offset)
     this.moveAnchorTo(key, offset)
   }
 
@@ -668,7 +525,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const range = this.getRangeAt(0)
     if(!range) return
     const { focus } = range
-    const { key, offset } = this.getNodeToBackward(focus.key, focus.offset)
+    const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
     this.moveFocusTo(key, offset)
   }
 

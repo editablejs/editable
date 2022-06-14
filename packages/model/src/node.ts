@@ -1,10 +1,10 @@
 import { generateRandomKey } from './keys';
 import type { INode, NodeData, NodeKey, NodeObject, NodeOptions } from './types';
 export default class Node<T extends NodeData = NodeData> implements INode {
-  protected parent: NodeKey | null
+  protected parent: NodeKey | null;
   protected key: NodeKey;
-  protected type: string
-  protected data: T | undefined
+  protected type: string;
+  protected data?: T;
 
   static create<T extends NodeData = NodeData>(options: NodeOptions<T>): INode {
     return new Node(options)
@@ -49,7 +49,7 @@ export default class Node<T extends NodeData = NodeData> implements INode {
       parent: this.getParentKey(),
       key: this.key,
       type: this.getType(),
-      data: Object.assign({}, this.data) as T
+      data: (this.data ? Object.assign({}, this.data) : this.data) as T
     }
   }
 }
