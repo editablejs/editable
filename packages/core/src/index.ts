@@ -175,7 +175,10 @@ class Editor extends EventEmitter implements IEditor {
 
   onCompositionUpdate = (key: NodeKey, callback: CompositionUpdateCallback) => {
     const cache = this._cacheCompositionUpdate.get(key)
-    if(cache) callback(cache)
+    if(cache) {
+      callback(cache)
+      this._cacheCompositionUpdate.delete(key)
+    }
     this.compositionUpdateMap.set(key, callback);
   }
 
