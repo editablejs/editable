@@ -12,6 +12,12 @@ import Change from './change';
 
 type IPluginMap = Map<string, PluginOptions>
 
+type CompositionUpdateParams = {
+  chars: Record<"type" | "text", string>[];
+  text: string;
+  offset: number;
+}
+
 const _pluginMap: IPluginMap = new Map();
 class Editor extends EventEmitter implements IEditor {
 
@@ -20,6 +26,7 @@ class Editor extends EventEmitter implements IEditor {
   protected compositionUpdateMap: Map<string, CompositionUpdateCallback> = new Map();
   private _isComposition = false
   private _compositionInfo?: Record<'key' | 'text', string>
+  private _cacheCompositionUpdate: Map<string, CompositionUpdateParams> = new Map()
   selection: ISelection;
   model: IModel
   change: IChange
@@ -167,10 +174,13 @@ class Editor extends EventEmitter implements IEditor {
   }
 
   onCompositionUpdate = (key: NodeKey, callback: CompositionUpdateCallback) => {
+    const cache = this._cacheCompositionUpdate.get(key)
+    if(cache) callback(cache)
     this.compositionUpdateMap.set(key, callback);
   }
 
   offCompositionUpdate = (key: NodeKey) => { 
+    this._cacheCompositionUpdate.delete(key)
     this.compositionUpdateMap.delete(key);
   }
 
@@ -187,7 +197,6 @@ class Editor extends EventEmitter implements IEditor {
   private emitCompositionUpdate = (text: string) => { 
     const change = this.change
     if(change.hasCacheFormatting()) {
-      console.log('has cache formatting')
       change.insertText('')
     }
     const range = change.getRange()
@@ -199,8 +208,7 @@ class Editor extends EventEmitter implements IEditor {
     }
     const node = this.model.getNode(key)
     if(!node || !Text.isText(node)) return
-    const callback = this.compositionUpdateMap.get(key)
-    if(!callback) return
+    
     const nodeText = node.getText()
     const chars: Record<'type' | 'text', string>[] = []
     chars.push({
@@ -217,9 +225,16 @@ class Editor extends EventEmitter implements IEditor {
         text: nodeText.substring(offset)
       })
     }
-    callback({
+    const callback = this.compositionUpdateMap.get(key)
+    const params = {
       chars, text, offset
-    })
+    }
+    if(callback) {
+      this._cacheCompositionUpdate.delete(key)
+      callback(params)
+    } else {
+      this._cacheCompositionUpdate.set(key, params)
+    }
   }
 
   destroy(){ 
