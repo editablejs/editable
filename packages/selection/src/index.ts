@@ -198,47 +198,62 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     }
   }
 
+  /**
+   * 按行拆分子范围
+   * @param ranges 
+   * @returns 
+   */
   getSubRanges = (...ranges: IRange[]): IRange[] => { 
-    if(ranges.length === 0 && this.ranges.length === 0) return []
-    if(ranges.length === 0) ranges = this.ranges
+    if(ranges.length === 0) {
+      if(this.ranges.length === 0) return []
+      ranges = this.ranges
+    }
     const subRanges: IRange[] = []
     const model = this.model
     for(let i = 0; i < ranges.length; i++) {
       const range = ranges[i]
+      // anchor 和 focus 同一个节点
       if(range.isCollapsed) {
         subRanges.push(range)
         continue
       }
-      const { anchor, focus } = range
-      const start = model.getNode(anchor.key)
-      const end = model.getNode(focus.key)
+      const { anchor, focus, isBackward } = range
+      const startKey = isBackward ? focus.key : anchor.key
+      const startOffset = isBackward ? focus.offset : anchor.offset
+      // 开始节点
+      const start = model.getNode(startKey)
+      // 结束节点
+      const endKey = isBackward ? anchor.key : focus.key
+      const endOffset = isBackward ? anchor.offset : focus.offset
+      const end = model.getNode(endKey)
       if(!start || !end) continue
       let parentKey = start.getParentKey()
       if(!parentKey) continue;
       let parent = model.getNode<any, IElement>(parentKey)
       if(Text.isText(start)) {
         // as same
-        if(start.getKey() === end.getKey()) {
+        if(startKey === endKey) {
           subRanges.push(range)
           continue
         }
         subRanges.push(new Range({
           anchor: {
-            key: anchor.key,
-            offset: anchor.offset
+            key: startKey,
+            offset: startOffset
           },
           focus: {
-            key: anchor.key,
+            key: startKey,
             offset: start.getText().length
           }
         }))
       }
-      let next = model.getNext(anchor.key)
+      let next = model.getNext(startKey)
       let finded = false
+     
       while(parent) {
         while(next) {
           const nextKey = next.getKey()
-          if((Text.isText(next) && nextKey !== focus.key) || (Element.isElement(next) && !next.contains(focus.key))) {
+          if((Text.isText(next) && nextKey !== endKey) || (Element.isElement(next) && !next.contains(endKey))) {
             const offset = parent.indexOf(nextKey)
             if(offset === -1) continue
             subRanges.push(new Range({
@@ -255,12 +270,12 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           else if(Text.isText(next)) {
             subRanges.push(new Range({
               anchor: {
-                key: focus.key,
+                key: endKey,
                 offset: 0
               },
               focus: {
-                key: focus.key,
-                offset: focus.offset
+                key: endKey,
+                offset: endOffset
               }
             }))
             finded = true
@@ -271,7 +286,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
               for(let i = 0; i < children.length; i++) {
                 const child = children[i]
                 const childKey = child.getKey()
-                if(childKey === focus.key) {
+                if(childKey === endKey) {
                   subRanges.push(new Range({
                     anchor: {
                       key: childKey,
@@ -279,11 +294,11 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
                     },
                     focus: {
                       key: childKey,
-                      offset: focus.offset
+                      offset: endOffset
                     }
                   }))
                   break
-                } else if(Element.isElement(child) && child.contains(focus.key)) { 
+                } else if(Element.isElement(child) && child.contains(endKey)) { 
                   findChildRange(child)
                   break
                 }
@@ -398,11 +413,22 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       const color = this.isFocus ? this.focusColor : this.blurColor
       const rects: DrawRect[] = []
       ranges.forEach(range => {
-        const rangeRects = range.getClientRects()
-        if(rangeRects) {
-          for(let i = 0; i < rangeRects.length; i++) {
-            const rect = rangeRects.item(i)
-            if(rect) rects.push(Object.assign({}, rect.toJSON(), { color }))
+        const subRects = range.getClientRects()
+        if(subRects) {
+          const findSameLocation = (x: number, y: number, width: number) => { 
+            for(let r = 0; r < subRects.length; r++) {
+              const rect = subRects[r]
+              if(rect.x === x && rect.y === y && rect.width !== width) return rect
+            }
+            return null
+          }
+          for(let i = 0; i < subRects.length; i++) {
+            const rect = subRects.item(i)
+            if(rect) {
+              const sameLocation = findSameLocation(rect.x, rect.y, rect.width)
+              if(sameLocation && rect.width > sameLocation.width) continue
+              rects.push(Object.assign({}, rect.toJSON(), { color }))
+            }
           }
         }
       })

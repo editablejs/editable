@@ -147,7 +147,8 @@ export default class Typing extends EventEmitter<TypingEventType> implements ITy
   }
 
   handleMouseMove = (e: MouseEvent) => { 
-    this.emit(EVENT_SELECTING, getPositionFromEvent(this.model, e))
+    const position = getPositionFromEvent(this.model, e)
+    this.emit(EVENT_SELECTING, position)
   }
 
   handleMouseUp = (e: MouseEvent) => { 
