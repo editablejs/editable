@@ -25,6 +25,8 @@ export interface INode<T extends NodeData = NodeData> {
 
   compare(node: INode): boolean
 
+  clone(deep?: boolean): INode<T>
+
   toJSON(): Readonly<NodeObject<T>>;
 }
 
@@ -37,6 +39,8 @@ export interface TextObject<T extends NodeData = NodeData> extends NodeObject<T>
 
 export type TextOptions<T extends NodeData = NodeData> = Partial<Omit<TextObject<T>, 'type'>> & Required<Pick<TextObject<T>, 'text'>>
 export interface IText<T extends NodeData = NodeData> extends INode<T> {
+
+  clone(deep?: boolean): IText<T>
 
   getText(): string;
 
@@ -63,6 +67,8 @@ export type ElementOptions<T extends NodeData = NodeData> = Partial<Omit<Element
 
 export type ElementStyle = Record<string, string | number>
 export interface IElement<T extends NodeData = NodeData> extends INode<T> {
+
+  clone(deep?: boolean): IElement<T>
 
   getStyle(): ElementStyle 
 

@@ -44,6 +44,11 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     return this.data === node.getData()
   }
 
+  clone(deep?: boolean): INode {
+    const json = this.toJSON()
+    return Node.create(deep ? json : Object.assign({}, json, { key: undefined }))
+  }
+
   toJSON(): NodeObject<T> {
     return {
       parent: this.getParentKey(),

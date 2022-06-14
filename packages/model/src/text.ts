@@ -45,6 +45,11 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     return super.compare(node) && JSON.stringify(this.format) === JSON.stringify(node.getFormat())
   }
 
+  clone(deep?: boolean): IText {
+    const json = this.toJSON()
+    return Text.create(deep ? json : Object.assign({}, json, { key: undefined, text: '' }))
+  }
+
   insert(text: string, offset?: number){
     const content = this.getText()
     if(offset === undefined) offset = content.length

@@ -113,6 +113,11 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return this.children.findIndex(child => child.getKey() === key)
   }
 
+  clone(deep?: boolean): IElement {
+    const json = this.toJSON(deep)
+    return Element.create(deep ? json : Object.assign({}, json, { key: undefined, children: [] }))
+  }
+
   toJSON<E extends ElementObject<T> = ElementObject<T>>(includeChild: boolean = true): E {
     const json = super.toJSON() as E
     if(includeChild) json.children = this.children.map(child => child.toJSON())

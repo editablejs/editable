@@ -132,6 +132,10 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       this.applyNode(node)
       return 
     }
+    const nodeKey = node.getKey()
+    if(this.getNode(nodeKey)) {
+      this.deleteNode(nodeKey)
+    }
     const targetNode = this.getNode(key);
     if(!targetNode) Log.nodeNotFound(key)
     const parentKey = targetNode.getParentKey()
