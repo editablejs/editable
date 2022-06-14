@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual';
 import { generateRandomKey } from './keys';
 import type { INode, NodeData, NodeKey, NodeObject, NodeOptions } from './types';
 export default class Node<T extends NodeData = NodeData> implements INode {
@@ -38,10 +39,8 @@ export default class Node<T extends NodeData = NodeData> implements INode {
   }
 
   compare(node: INode): boolean {
-    let isEqual = this.type === node.getType() && this.parent === node.getParentKey()
-    if(!isEqual) return false
-    if(typeof this.data === 'object') return JSON.stringify(this.data) === JSON.stringify(node.getData())
-    return this.data === node.getData()
+    if(this.type !== node.getType() || this.parent !== node.getParentKey()) return false
+    return isEqual(this.data, node.getData())
   }
 
   clone(deep?: boolean): INode {

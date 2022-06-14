@@ -89,7 +89,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       ops = diff([ ...roots, node ], roots)
     }
     if(callback) callback(ops)
-    this.emitUpdate(node, ...ops)
+    if(ops.length > 0) this.emitUpdate(node, ...ops)
   }
 
   applyOps(...ops: Op[]){ 

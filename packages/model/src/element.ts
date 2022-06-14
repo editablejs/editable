@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual';
 import { Log } from '@editablejs/utils'
 import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
 import Node from './node';
@@ -44,7 +45,6 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
   setStyle(style: ElementStyle) {
     this.style = Object.assign({}, style);
   }
-
 
   getChildrenSize(): number {
     return this.children.length
@@ -111,6 +111,20 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   indexOf(key: NodeKey): number {
     return this.children.findIndex(child => child.getKey() === key)
+  }
+
+  compare(node: INode): boolean {
+    if(!Element.isElement(node)) return false
+    if(!super.compare(node)) return false
+    if(!isEqual(this.style, node.getStyle())) return false
+    const children = node.getChildren()
+    if(children.length !== this.children.length) return false 
+    return this.children.every(child => {
+      const key = child.getKey()
+      const index = children.findIndex(c => c.getKey() === key)
+      if(index === -1) return false
+      return child.compare(children[index])
+    })
   }
 
   clone(deep?: boolean): IElement {

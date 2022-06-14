@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual';
 import { DATA_TYPE_TEXT } from '@editablejs/constants';
 import { Log } from '@editablejs/utils'
 import Node from './node';
@@ -42,7 +43,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
 
   compare(node: INode): boolean {
     if(!Text.isText(node)) return false
-    return super.compare(node) && JSON.stringify(this.format) === JSON.stringify(node.getFormat())
+    return super.compare(node) && isEqual(this.format, node.getFormat())
   }
 
   clone(deep?: boolean): IText {
