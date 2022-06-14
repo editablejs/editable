@@ -27,6 +27,8 @@ export interface INode<T extends NodeData = NodeData> {
 
   clone(deep?: boolean): INode<T>
 
+  isEmpty(): boolean
+
   toJSON(): Readonly<NodeObject<T>>;
 }
 
@@ -54,7 +56,7 @@ export interface IText<T extends NodeData = NodeData> extends INode<T> {
 
   delete(offset: number, length: number): void
 
-  split(offset: number): (IText | null)[]
+  split(offset: number): IText[]
 
   toJSON<R extends TextObject<T> = TextObject<T>>(): R;
 }
@@ -90,7 +92,7 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   insert(offset: number, ...child: INode[]): void;
 
-  split(offset: number): (IElement | null)[];
+  split(offset: number): IElement[];
 
   empty(): void;
 
@@ -150,7 +152,7 @@ export interface IModel extends IEventEmitter {
 
   deleteNode(key: NodeKey): void
 
-  splitNode(key: NodeKey, offset: number): IElement
+  splitNode(key: NodeKey, offset: number, callback?: (left: INode, right: INode) => INode[]): IElement
 
   destroy(): void;
 }

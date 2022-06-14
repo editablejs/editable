@@ -85,19 +85,21 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     if(offset < 0 || size < offset) Log.offsetOutOfRange(this.getKey(), offset)
     const left = this.children.slice(0, offset)
     const right = this.children.slice(offset)
-    // Cut out one value, keep the key
-    const keepKey = left.length === 0 || right.length === 0
-    const key = keepKey ? this.key : undefined
-    const json = Object.assign({}, this.toJSON(false), { key })
-    const cloneLeft = left.length > 0 ? Element.create(Object.assign({}, json, { key: this.key })) : null
+    const json = this.toJSON(false)
+    const cloneLeft = Element.create(json)
     left.forEach(child => cloneLeft?.appendChild(child))
-    const cloneRight = right.length > 0 ? Element.create(json) : null
+    const cloneRight = Element.create(Object.assign({}, json, { key: undefined }))
     right.forEach(child => cloneRight?.appendChild(child))
     return [cloneLeft, cloneRight]
   }
 
   empty(): void {
     this.children = []
+  }
+
+  isEmpty(): boolean {
+    if(this.children.length === 0) return true
+    return this.children.every(child => child.isEmpty())
   }
 
   contains(...keys: NodeKey[]): boolean {

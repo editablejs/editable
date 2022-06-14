@@ -48,6 +48,10 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     return Node.create(deep ? json : Object.assign({}, json, { key: undefined }))
   }
 
+  isEmpty(){
+    return true
+  }
+
   toJSON(): NodeObject<T> {
     return {
       parent: this.getParentKey(),

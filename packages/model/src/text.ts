@@ -51,6 +51,10 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     return Text.create(deep ? json : Object.assign({}, json, { key: undefined, text: '' }))
   }
 
+  isEmpty(): boolean {
+    return !this.getText()
+  }
+
   insert(text: string, offset?: number){
     const content = this.getText()
     if(offset === undefined) offset = content.length
@@ -71,11 +75,8 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     const json = this.toJSON()
     const leftText = text.slice(0, offset)
     const rightText = text.slice(offset)
-    // Cut out one value, keep the key
-    const keepKey = !leftText || !rightText
-    const key = keepKey ? this.key : undefined
-    const left = leftText ? Text.create(Object.assign({}, json, { text: leftText })) : null
-    const right = rightText ? Text.create(Object.assign({}, json, { text: rightText, key })) : null
+    const left = Text.create(Object.assign({}, json, { text: leftText }))
+    const right = Text.create(Object.assign({}, json, { text: rightText, key: undefined }))
     return [left, right]
   }
 

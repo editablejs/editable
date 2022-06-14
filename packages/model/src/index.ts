@@ -155,13 +155,13 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
       const size = targetNode.getChildrenSize()
       if(offset === undefined) offset = size
     } else return
-    parent = this.splitNode(key, offset)
+    parent = this.splitNode(key, offset, (left, right) => [left, right].filter(child => !child.isEmpty()))
     const index = parent.indexOf(key)
     parent.insert(index + 1, node)
     this.applyNode(parent)
   }
 
-  splitNode(key: NodeKey, offset: number) {
+  splitNode(key: NodeKey, offset: number, callback: (left: INode, right: INode) => INode[] = (left, right) => [left, right]){
     const node = this.getNode(key);
     if(!node) Log.nodeNotFound(key)
     const parentKey: string | null = node.getParentKey()
@@ -171,20 +171,17 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     if(!Element.isElement(parent)) Log.nodeNotElement(parentKey)
     const children = parent.getChildren()
     const index = children.findIndex(child => child.getKey() === key)
-    const isNode = (node: INode | null): node is INode => node !== null
     if(Text.isText(node)) {
       if(offset < 0 || offset > node.getText().length) Log.offsetOutOfRange(key, offset)
       const [ leftText, rightText ] = node.split(offset)
       parent.removeChild(key)
-      const nodes: (INode | null)[] = [leftText, rightText]
-      parent.insert(index, ...nodes.filter<INode>(isNode)) 
+      parent.insert(index, ...callback(leftText, rightText)) 
     }
     else if(Element.isElement(node)) {
       if(offset < 0 || offset > node.getChildrenSize()) Log.offsetOutOfRange(key, offset)
       const [ leftNode, rightNode ] = node.split(offset) 
       parent.removeChild(key)
-      const nodes: (INode | null)[] = [leftNode, rightNode]
-      parent.insert(index, ...nodes.filter<INode>(isNode))
+      parent.insert(index, ...callback(leftNode, rightNode))
     }
     this.applyNode(parent)
     return this.getNode<any, IElement>(parentKey) ?? Element.create(parent.toJSON())
