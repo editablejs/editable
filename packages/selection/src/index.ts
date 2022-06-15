@@ -199,7 +199,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   /**
-   * 按行拆分子范围
+   * 按节点拆分子范围
    * @param ranges 
    * @returns 
    */
@@ -331,25 +331,65 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   getContents = (...ranges: IRange[]): INode[] => {
+    debugger
     const model = this.model
-    const contents: INode[] = []
     const subRanges = this.getSubRanges(...ranges)
-    subRanges.forEach(subRange => {
-      if(!subRange.isCollapsed) {
-        const { anchor, focus } = subRange
-        const start = model.getNode(anchor.key)
-        const end = model.getNode(focus.key)
-        if(!start || !end) return
-        if(Text.isText(start)) {
-          const text = start.getText()
-          start.setText(text.substring(anchor.offset, focus.offset))
-          contents.push(start)
-        } else if(Element.isElement(start)) {
-          const children = start.getChildren()
-          contents.push(children[anchor.offset])
+    let parentElement: IElement | null = null
+    for(let i = 0; i < subRanges.length; i++) { 
+      const range = subRanges[i]
+      const anchorNode = model.getNode(range.anchor.key)
+      if(!anchorNode) continue
+      const parentKey = anchorNode.getParentKey()
+      if(!parentKey) continue
+      if(!parentElement || !parentElement.contains(parentKey)) {
+        const parent: IElement | null = model.getNode<any, IElement>(parentKey)
+        if(parentElement && Text.isText(anchorNode) && parent?.getType() === parentElement.getType()) {
+          const pKey: string | null = parentElement.getParentKey()
+          parentElement = pKey ? model.getNode<any, IElement>(pKey) : null
+        } else {
+          parentElement = parent
         }
       }
-    })
+    }
+    const contents: INode[] = []
+    const parentMap = new Map<string, IElement>()
+    for(let s = 0; s < subRanges.length; s++) { 
+      const range = subRanges[s]
+      if(range.isCollapsed) continue
+      const { anchor, focus } = range
+      const anchorNode = model.getNode(range.anchor.key)
+      if(!anchorNode) continue
+      let hasClone = false
+      const warpParent = (child: INode) => {
+        let parentKey = child.getParentKey()
+        while(parentKey) {
+          let parentClone = parentMap.get(parentKey)
+          if(!parentClone) {
+            const parent = model.getNode<any, IElement>(parentKey)
+            if(!parent || parentElement?.getType() === parent.getType()) return hasClone ? child : null
+            parentClone = parent.clone()
+            hasClone = true
+            parentMap.set(parentKey, parentClone)
+          } else if(parentClone.hasChild(child.getKey())) { 
+            return null
+          }
+          parentClone.appendChild(child)
+          child = parentClone
+          parentKey = parentClone.getParentKey()
+        }
+        return child
+      }
+      if(Text.isText(anchorNode)) {
+        const text = anchorNode.getText()
+        anchorNode.setText(text.substring(anchor.offset, focus.offset))
+        const newNode = warpParent(anchorNode)
+        if(newNode) contents.push(newNode)
+      } else if(Element.isElement(anchorNode)) {
+        const children = anchorNode.getChildren()
+        const newNode = warpParent(children[anchor.offset])
+        if(newNode) contents.push(newNode)
+      }
+    }
     return contents
   }
   
@@ -415,18 +455,23 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       ranges.forEach(range => {
         const subRects = range.getClientRects()
         if(subRects) {
-          const findSameLocation = (x: number, y: number, width: number) => { 
+          const indexs: number[] = []
+          const findSameLocation = (x: number, y: number, index: number) => { 
             for(let r = 0; r < subRects.length; r++) {
+              if(indexs.indexOf(r) > -1) continue
               const rect = subRects[r]
-              if(rect.x === x && rect.y === y && rect.width !== width) return rect
+              if(rect.x === x && rect.y === y && r !== index) return rect
             }
             return null
           }
           for(let i = 0; i < subRects.length; i++) {
             const rect = subRects.item(i)
             if(rect) {
-              const sameLocation = findSameLocation(rect.x, rect.y, rect.width)
-              if(sameLocation && rect.width > sameLocation.width) continue
+              const sameLocation = findSameLocation(rect.x, rect.y, i)
+              if(sameLocation && rect.width >= sameLocation.width) {
+                indexs.push(i)
+                continue
+              }
               rects.push(Object.assign({}, rect.toJSON(), { color }))
             }
           }
@@ -454,41 +499,29 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   moveTo(key: NodeKey, offset: number) {
-    const node = this.model.getNode(key)
-    if(!node) Log.nodeNotFound(key)
-    assert(node, offset)
     const range = Range.create({
       anchor: { key, offset },
       focus: { key, offset }
     })
-    this.removeAllRange()
-    this.addRange(range)
+    this.applyRange(range)
   }
 
   moveAnchorTo(key: NodeKey, offset: number) {
-    const node = this.model.getNode(key)
-    if(!node) Log.nodeNotFound(key)
-    assert(node, offset)
     const currentRange = this.getRangeAt(0)
     const range = Range.create({
       anchor: { key, offset },
       focus: currentRange ? { ...currentRange.focus } : { key, offset }
     })
-    this.removeAllRange()
-    this.addRange(range)
+    this.applyRange(range)
   }
 
   moveFocusTo(key: NodeKey, offset: number) {
-    const node = this.model.getNode(key)
-    if(!node) Log.nodeNotFound(key)
-    assert(node, offset)
     const currentRange = this.getRangeAt(0)
     const range = Range.create({
       focus: { key, offset },
       anchor: currentRange ? { ...currentRange.anchor } : { key, offset }
     })
-    this.removeAllRange()
-    this.addRange(range)
+    this.applyRange(range)
   }
 
   moveToForward = () => { 
