@@ -48,7 +48,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
 
   clone(deep?: boolean): IText {
     const json = this.toJSON()
-    return Text.create(deep ? json : Object.assign({}, json, { key: undefined, text: '' }))
+    return Text.create(deep ? json : Object.assign({}, json, { text: '' }))
   }
 
   isEmpty(): boolean {

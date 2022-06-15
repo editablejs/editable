@@ -86,6 +86,8 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   removeChild(key: NodeKey): void;
 
+  hasChild(key: NodeKey): boolean
+
   first(): INode | null
 
   last(): INode | null
@@ -97,6 +99,8 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
   empty(): void;
 
   contains(...keys: NodeKey[]): boolean
+
+  filter(callback: (node: INode) => boolean): INode[]
 
   indexOf(key: NodeKey): number
 

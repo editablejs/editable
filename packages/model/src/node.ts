@@ -43,9 +43,9 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     return isEqual(this.data, node.getData())
   }
 
-  clone(deep?: boolean): INode {
+  clone(): INode {
     const json = this.toJSON()
-    return Node.create(deep ? json : Object.assign({}, json, { key: undefined }))
+    return Node.create(json)
   }
 
   isEmpty(){

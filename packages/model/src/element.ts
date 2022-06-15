@@ -1,9 +1,9 @@
 import isEqual from 'lodash/isEqual';
 import { Log } from '@editablejs/utils'
+import { DATA_TYPE_ELEMENT, DATA_TYPE_TEXT } from '@editablejs/constants';
 import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
 import Node from './node';
 import Text from './text';
-import { DATA_TYPE_ELEMENT, DATA_TYPE_TEXT } from '@editablejs/constants';
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
@@ -68,6 +68,10 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     this.children.splice(index, 1)
   }
 
+  hasChild(key: NodeKey): boolean { 
+    return this.children.some(child => child.getKey() === key)
+  }
+
   first(): INode | null {
     return this.children[0] || null
   }
@@ -111,6 +115,19 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return false
   }
 
+  filter(callback: (node: INode) => boolean): INode[] {
+    const nodes: INode[] = []
+    for(const child of this.children) {
+      if(callback(child)) {
+        nodes.push(child)
+      }
+      if(Element.isElement(child)) {
+        nodes.push(...child.filter(callback))
+      }
+    }
+    return nodes
+  }
+
   indexOf(key: NodeKey): number {
     return this.children.findIndex(child => child.getKey() === key)
   }
@@ -131,7 +148,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   clone(deep?: boolean): IElement {
     const json = this.toJSON(deep)
-    return Element.create(deep ? json : Object.assign({}, json, { key: undefined, children: [] }))
+    return Element.create(deep ? json : Object.assign({}, json, { children: [] }))
   }
 
   toJSON<E extends ElementObject<T> = ElementObject<T>>(includeChild: boolean = true): E {
