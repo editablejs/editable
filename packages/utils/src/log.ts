@@ -28,6 +28,10 @@ export default class Log {
     return Log.throw(`plugin '${name}' not found`)
   }
 
+  static nodeAlreadyExists = (key: string) => { 
+    return Log.throw(`Node '${key}' already exists`)
+  }
+
   static throw = (message?: string) => { 
     throw new Error(`[error] ${message}`)
   }

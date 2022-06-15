@@ -1,9 +1,7 @@
 import isEqual from 'lodash/isEqual';
-import { Log } from '@editablejs/utils'
 import { DATA_TYPE_ELEMENT, DATA_TYPE_TEXT } from '@editablejs/constants';
 import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
 import Node from './node';
-import Text from './text';
 export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
   
   protected children: INode[] = []
@@ -13,10 +11,8 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return new Element(options)
   }
 
-  static from = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(options: NodeOptions<T>): N => { 
-    if (Text.isTextObject(options)) return Text.create(options) as unknown as N
-    else if(Element.isElementObject(options)) return Element.create(options) as unknown as N
-    return Node.create(options) as unknown as N
+  static createChildNode<T extends NodeData = NodeData>(options: NodeOptions<T>): INode { 
+    return Node.create(options)
   }
 
   static isElement = (node: INode): node is IElement => { 
@@ -29,13 +25,10 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
 
   constructor(options: ElementOptions<T>) { 
     super(Object.assign({}, options, { type: options.type ?? DATA_TYPE_ELEMENT }))
-    this.children = (options.children || []).map(child => this.createChildNode(child))
-  }
-
-  protected createChildNode(options: NodeOptions<T>): INode { 
-    const parent = this.getKey()
-    options.parent = parent
-    return Element.from(options)
+    this.children = (options.children || []).map(child => {
+      child.parent = this.getKey()
+      return Element.createChildNode(child)
+    })
   }
 
   getStyle(): ElementStyle {
@@ -59,12 +52,12 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
   }
 
   appendChild(child: INode): void {
-    this.children.push(this.createChildNode(child.toJSON()))
+    this.children.push(Element.createChildNode(Object.assign({}, child.toJSON(), { parent: this.getKey()})))
   }
 
   removeChild(key: NodeKey): void {
     const index = this.children.findIndex(child => child.getKey() === key)
-    if(index < 0) Log.nodeNotFound(key)
+    if(index < 0) return
     this.children.splice(index, 1)
   }
 
@@ -72,21 +65,24 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return this.children.some(child => child.getKey() === key)
   }
 
-  first(): INode | null {
-    return this.children[0] || null
+  first<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null {
+    const first = this.children[0]
+    return first ? first as E : null
   }
 
-  last(): INode | null {
-    return this.children[this.children.length - 1] || null
+  last<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null {
+    const last = this.children[this.children.length - 1]
+    return last ? last as E : null
   }
 
   insert(index: number, ...child: INode[]): void {
-    this.children.splice(index, 0, ...child.map(c => this.createChildNode(c.toJSON())))
+    this.children.splice(index, 0, ...child.map(c => Element.createChildNode(Object.assign({}, c.toJSON(), { parent: this.getKey() }))))
   }
 
   split(offset: number){
     const size = this.getChildrenSize()
-    if(offset < 0 || size < offset) Log.offsetOutOfRange(this.getKey(), offset)
+    if(offset < 0) offset = 0;
+    if(offset > size) offset = size
     const left = this.children.slice(0, offset)
     const right = this.children.slice(offset)
     const json = this.toJSON(false)
@@ -115,14 +111,14 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return false
   }
 
-  filter(callback: (node: INode) => boolean): INode[] {
-    const nodes: INode[] = []
+  filter<D extends NodeData = NodeData, E extends INode = INode<D>>(callback: (node: INode) => node is E): E[] {
+    const nodes: E[] = []
     for(const child of this.children) {
       if(callback(child)) {
         nodes.push(child)
       }
       if(Element.isElement(child)) {
-        nodes.push(...child.filter(callback))
+        nodes.push(...child.filter<D, E>(callback))
       }
     }
     return nodes
@@ -146,14 +142,17 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     })
   }
 
-  clone(deep?: boolean): IElement {
+  clone(deep: boolean = false, copyKey: boolean = true): IElement {
     const json = this.toJSON(deep)
-    return Element.create(deep ? json : Object.assign({}, json, { children: [] }))
+    const newJson = Object.assign({}, json, {key: copyKey === false ? undefined : json.key})
+    return Element.create(newJson)
   }
 
   toJSON<E extends ElementObject<T> = ElementObject<T>>(includeChild: boolean = true): E {
     const json = super.toJSON() as E
     if(includeChild) json.children = this.children.map(child => child.toJSON())
+    else json.children = []
+    json.size = this.getChildrenSize()
     return json
   }
 }

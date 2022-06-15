@@ -1,6 +1,5 @@
 import isEqual from 'lodash/isEqual';
 import { DATA_TYPE_TEXT } from '@editablejs/constants';
-import { Log } from '@editablejs/utils'
 import Node from './node';
 import type { INode, IText, NodeData, NodeOptions, TextFormat, TextObject, TextOptions } from './types';
 export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
@@ -46,9 +45,11 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     return super.compare(node) && isEqual(this.format, node.getFormat())
   }
 
-  clone(deep?: boolean): IText {
+  clone(deep: boolean = false, copyKey: boolean = true): IText {
     const json = this.toJSON()
-    return Text.create(deep ? json : Object.assign({}, json, { text: '' }))
+    const newJson = Object.assign({}, json, {key: copyKey === false ? undefined : json.key})
+    if(!deep) newJson.text = ''
+    return Text.create(newJson)
   }
 
   isEmpty(): boolean {
@@ -58,14 +59,17 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
   insert(text: string, offset?: number){
     const content = this.getText()
     if(offset === undefined) offset = content.length
-    if(offset < 0 || offset > content.length) Log.offsetOutOfRange(this.getKey(), offset)
+    if(offset < 0) offset = 0;
+    if(offset > content.length) offset = content.length
     const newContent = content.slice(0, offset) + text + content.slice(offset)
     this.setText(newContent)
   }
 
   delete(offset: number, length: number){ 
     const content = this.getText()
-    if(offset < 0 || offset > content.length || length > content.length) Log.offsetOutOfRange(this.getKey(), offset)
+    if(offset < 0) offset = 0;
+    if(offset > content.length) offset = content.length
+    if(length > content.length) length = content.length
     const newContent = content.slice(0, offset) + content.slice(offset + length)
     this.setText(newContent)
   }

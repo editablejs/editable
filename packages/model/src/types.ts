@@ -25,7 +25,7 @@ export interface INode<T extends NodeData = NodeData> {
 
   compare(node: INode): boolean
 
-  clone(deep?: boolean): INode<T>
+  clone(deep?: boolean, copyKey?: boolean): INode<T>
 
   isEmpty(): boolean
 
@@ -42,7 +42,7 @@ export interface TextObject<T extends NodeData = NodeData> extends NodeObject<T>
 export type TextOptions<T extends NodeData = NodeData> = Partial<Omit<TextObject<T>, 'type'>> & Required<Pick<TextObject<T>, 'text'>>
 export interface IText<T extends NodeData = NodeData> extends INode<T> {
 
-  clone(deep?: boolean): IText<T>
+  clone(deep?: boolean, copyKey?: boolean): IText<T>
 
   getText(): string;
 
@@ -62,15 +62,16 @@ export interface IText<T extends NodeData = NodeData> extends INode<T> {
 }
 
 export interface ElementObject<T extends NodeData = NodeData> extends NodeObject<T> {
+  size: number
   children: NodeObject[]
 }
 
-export type ElementOptions<T extends NodeData = NodeData> = Partial<Omit<ElementObject<T>, 'children'>> & Record<'children', (NodeOptions | ElementOptions | TextOptions)[] | undefined>
+export type ElementOptions<T extends NodeData = NodeData> = Partial<Omit<ElementObject<T>, 'children' | 'size'>> & Record<'children', (NodeOptions | ElementOptions | TextOptions)[] | undefined>
 
 export type ElementStyle = Record<string, string | number>
 export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
-  clone(deep?: boolean): IElement<T>
+  clone(deep?: boolean, copyKey?: boolean): IElement<T>
 
   getStyle(): ElementStyle 
 
@@ -88,9 +89,9 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   hasChild(key: NodeKey): boolean
 
-  first(): INode | null
+  first<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null
 
-  last(): INode | null
+  last<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null
 
   insert(offset: number, ...child: INode[]): void;
 
@@ -100,7 +101,7 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
   contains(...keys: NodeKey[]): boolean
 
-  filter(callback: (node: INode) => boolean): INode[]
+  filter<D extends NodeData = NodeData, E extends INode = INode<D>>(callback: (node: INode) => node is E): E[]
 
   indexOf(key: NodeKey): number
 
@@ -109,11 +110,13 @@ export interface IElement<T extends NodeData = NodeData> extends INode<T> {
 
 export interface IObjectMap {
 
-  roots(): ElementObject[]
+  has(key: NodeKey): boolean
+
+  roots<T extends NodeData = NodeData>(): ElementObject<T>[]
 
   rootKeys(): string[]
 
-  find(callback: (obj: NodeObject) => boolean): NodeObject[];
+  filter<T extends NodeData = NodeData, N extends NodeObject = NodeObject<T>>(callback: (obj: NodeObject) => boolean): N[];
   
   get<T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(key: NodeKey): N | null;
 
@@ -132,17 +135,15 @@ export interface IModel extends IEventEmitter {
 
   getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null;
 
-  getNext(key: NodeKey): INode | null
+  getNext<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null
 
-  getPrev(key: NodeKey): INode | null
+  getPrev<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null
 
-  getRoots(): IElement[]
+  getRoots<T extends NodeData = NodeData>(): IElement<T>[]
 
   getRootKeys(): NodeKey[]
 
-  find(callback: (obj: NodeObject) => boolean): INode[]
-
-  findByType<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: NodeKey): N[]
+  filter<T extends NodeData = NodeData, N extends INode = INode<T>>(callback: (obj: NodeObject<T>) => boolean): N[]
 
   applyNode(node: INode): void
 

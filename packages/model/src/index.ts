@@ -1,7 +1,7 @@
 import EventEmitter from '@editablejs/event-emitter';
 import { EVENT_NODE_UPDATE, OP_DELETE_NODE, OP_DELETE_TEXT } from '@editablejs/constants'
 import { Log } from '@editablejs/utils'
-import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op, NodeObject, NodeOptions, TextOptions, ElementOptions } from "./types";
+import type { IModel, INode, IObjectMap, ModelOptions, NodeData, NodeKey, IElement, Op, NodeObject, NodeOptions } from "./types";
 import Node from './node'
 import Text from './text'
 import Element from './element'
@@ -10,10 +10,13 @@ import diff from './diff';
 
 export type ModelEventType = typeof EVENT_NODE_UPDATE
 
-export const createNode = <T extends NodeData = NodeData>(options: NodeOptions<T>): INode => {
-  if(options.type === 'text') return Text.create(options as TextOptions)
-  else return Element.create(options as ElementOptions)
+export const createNode = <T extends NodeData = NodeData, N extends INode<T> = INode<T>>(options: NodeOptions<T>): N => {
+  if(Text.isTextObject(options)) return Text.create(options) as unknown as N
+  else if(Element.isElementObject(options)) return Element.create(options) as unknown as N
+  return Node.create(options) as unknown as N
 }
+
+Element.createChildNode = createNode
 export default class Model extends EventEmitter<ModelEventType> implements IModel {
   
   protected options: ModelOptions
@@ -40,35 +43,31 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
   getNode<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null{
     const obj = this.map.get(key)
     if(!obj) return null
-    return Element.from<T, N>(obj)
+    return createNode<T, N>(obj)
   }
 
-  getNext(key: NodeKey): INode | null { 
+  getNext<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null { 
     const obj = this.map.next(key)
     if(!obj) return null
-    return Element.from(obj)
+    return createNode<T, N>(obj)
   }
 
-  getPrev(key: NodeKey): INode | null { 
+  getPrev<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(key: NodeKey): N | null { 
     const obj = this.map.prev(key)
     if(!obj) return null
-    return Element.from(obj)
+    return createNode<T, N>(obj)
   }
 
-  getRoots(){
-    return this.map.roots().map(root => Element.from<NodeData, IElement>(root))
+  getRoots<T extends NodeData = NodeData>(){
+    return this.map.roots<T>().map(root => Element.create<T>(root))
   }
 
   getRootKeys(){ 
     return this.map.rootKeys()
   }
 
-  find(callback: (obj: NodeObject) => boolean): INode[] { 
-    return this.map.find(callback).map(node => Element.from(node))
-  }
-
-  findByType<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(type: string): N[] { 
-    return this.find(obj => obj.type === type) as N[]
+  filter<T extends NodeData = NodeData, N extends INode<T> = INode<T>>(callback: (obj: NodeObject<T>) => boolean): N[] { 
+    return this.map.filter<T>(callback).map(obj => createNode<T, N>(obj))
   }
 
   applyNode(node: INode, callback?: (ops: Op[]) => void){ 
@@ -134,7 +133,7 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     }
     const nodeKey = node.getKey()
     if(this.getNode(nodeKey)) {
-      this.deleteNode(nodeKey)
+      Log.nodeAlreadyExists(nodeKey)
     }
     const targetNode = this.getNode(key);
     if(!targetNode) Log.nodeNotFound(key)

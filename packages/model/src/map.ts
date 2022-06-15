@@ -6,18 +6,8 @@ export default class ObjectMap implements IObjectMap {
   private nodeMap: Map<string, NodeObject> = new Map();
   private parentMap: Map<string, string[]> = new Map();
 
-  protected append(obj: NodeObject){
-    if(Element.isElementObject(obj)) {
-      obj.children = []
-      const childrenKeys = this.parentMap.get(obj.key)
-      childrenKeys?.forEach(childKey => {
-        const childObj = this.nodeMap.get(childKey)
-        if(childObj) {
-          obj.children.push(childObj)
-          this.append(childObj)
-        }
-      })
-    }
+  has(key: NodeKey): boolean {
+    return this.nodeMap.has(key)
   }
 
   roots(){
@@ -33,20 +23,20 @@ export default class ObjectMap implements IObjectMap {
 
   rootKeys(){ 
     const keys: string[] = []
-    this.nodeMap.forEach(value => {
-      if(!value.parent && Element.isElementObject(value)) {
-        keys.push(value.key)
+    this.parentMap.forEach((_, parentKey) => {
+      const parent = this.nodeMap.get(parentKey)
+      if(parent && !parent.parent) {
+        keys.push(parentKey)
       }
     })
     return keys
   }
 
-  find(callback: (obj: NodeObject) => boolean): NodeObject[]{
-    const nodes: NodeObject[] = []
-    this.nodeMap.forEach(value => {
-      this.append(value)
+  filter<T extends NodeData = NodeData, N extends NodeObject = NodeObject<T>>(callback: (obj: NodeObject) => boolean): N[]{
+    const nodes: N[] = []
+    this.nodeMap.forEach((value) => {
       if (callback(value)) {
-        nodes.push(value as any)
+        nodes.push(value as N)
       }
     })
     return nodes
@@ -55,8 +45,22 @@ export default class ObjectMap implements IObjectMap {
   get<T extends NodeData = NodeData, N extends NodeObject<T> = NodeObject<T>>(key: NodeKey): N | null{
     const obj = this.nodeMap.get(key);
     if(!obj) return null
-    this.append(obj)
-    return obj as any
+    const append = (obj: NodeObject) => {
+      if(Element.isElementObject(obj)) {
+        obj.children = []
+        const childrenKeys = this.parentMap.get(obj.key)
+        childrenKeys?.forEach(childKey => {
+          const childObj = this.nodeMap.get(childKey)
+          if(childObj) {
+            obj.children.push(childObj)
+            append(childObj)
+          }
+        })
+      }
+    }
+    const nodeObj = Object.assign({}, obj)
+    append(nodeObj)
+    return nodeObj as N
   }
 
   next(key: NodeKey): NodeObject | null { 

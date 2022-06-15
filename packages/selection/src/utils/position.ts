@@ -169,19 +169,22 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
       }
     }
     if(!key) {
-      const selector = model.find(obj => {
+      const nodeArray = model.filter(obj => {
         if(Text.isTextObject(obj)) {
           return true
         } else if(Element.isElementObject(obj)) {
-          return obj.children.length === 0
+          return obj.size === 0
         }
         return false
-      }).map(node => `[${DATA_KEY}="${node.getKey()}"]`).join(',')
-      document.querySelectorAll(selector).forEach(node => { 
-        if(node instanceof globalThis.Element) {
-          nodes.push(node)
-        }
       })
+      if(nodeArray.length > 0) {
+        const selector = nodeArray.map(node => `[${DATA_KEY}="${node.getKey()}"]`).join(',')
+        document.querySelectorAll(selector).forEach(node => { 
+          if(node instanceof globalThis.Element) {
+            nodes.push(node)
+          }
+        })
+      }
     } else {
       const node = model.getNode(key)
       if(!node) return null
@@ -203,12 +206,14 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
         }
         findKeys(node)
       }
-      const selector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
-      document.querySelectorAll(selector).forEach(node => {
-        if(node instanceof globalThis.Element) {
-          nodes.push(node)
-        }
-      })
+      if(keys.length > 0) {
+        const selector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
+        document.querySelectorAll(selector).forEach(node => {
+          if(node instanceof globalThis.Element) {
+            nodes.push(node)
+          }
+        })
+      }
     }
     const closestNodes = closest(nodes, e.x, e.y)
     if(!closestNodes) return
