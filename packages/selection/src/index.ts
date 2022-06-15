@@ -504,6 +504,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       focus: { key, offset }
     })
     this.applyRange(range)
+    return this
   }
 
   moveAnchorTo(key: NodeKey, offset: number) {
@@ -513,6 +514,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       focus: currentRange ? { ...currentRange.focus } : { key, offset }
     })
     this.applyRange(range)
+    return this
   }
 
   moveFocusTo(key: NodeKey, offset: number) {
@@ -522,70 +524,71 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       anchor: currentRange ? { ...currentRange.anchor } : { key, offset }
     })
     this.applyRange(range)
+    return this
   }
 
-  moveToForward = () => { 
+  moveToForward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     if(range.isCollapsed) {
       const { focus } = range
       const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
-      this.moveTo(key, offset)
+      return this.moveTo(key, offset)
     } else if(range.isBackward) {
       const { anchor } = range
-      this.moveFocusTo(anchor.key, anchor.offset)
+      return this.moveFocusTo(anchor.key, anchor.offset)
     } else {
       const { focus } = range
-      this.moveAnchorTo(focus.key, focus.offset)
+      return this.moveAnchorTo(focus.key, focus.offset)
     }
   }
 
-  moveToBackward = () => { 
+  moveToBackward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     if(range.isCollapsed) {
       const { focus } = range
       const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
-      this.moveTo(key, offset)
+      return this.moveTo(key, offset)
     } else if(range.isBackward) {
       const { focus } = range
-      this.moveAnchorTo(focus.key, focus.offset)
+      return this.moveAnchorTo(focus.key, focus.offset)
     } else {
       const { anchor } = range
-      this.moveFocusTo(anchor.key, anchor.offset)
+      return this.moveFocusTo(anchor.key, anchor.offset)
     }
   }
 
-  moveAnchorToForward = () => { 
+  moveAnchorToForward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     const { anchor } = range
     const { key, offset } = getPositionToForward(this.model, anchor.key, anchor.offset)
-    this.moveAnchorTo(key, offset)
+    return this.moveAnchorTo(key, offset)
   }
 
-  moveFocusToForward = () => { 
+  moveFocusToForward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     const { focus } = range
     const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
-    this.moveFocusTo(key, offset)
+    return this.moveFocusTo(key, offset)
   }
 
-  moveAnchorToBackward = () => { 
+  moveAnchorToBackward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     const { anchor } = range
     const { key, offset } = getPositionToBackward(this.model, anchor.key, anchor.offset)
-    this.moveAnchorTo(key, offset)
+    return this.moveAnchorTo(key, offset)
   }
 
-  moveFocusToBackward = () => { 
+  moveFocusToBackward(){ 
     const range = this.getRangeAt(0)
-    if(!range) return
+    if(!range) return this
     const { focus } = range
     const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
-    this.moveFocusTo(key, offset)
+    return this.moveFocusTo(key, offset)
   }
 
   destroy() { 

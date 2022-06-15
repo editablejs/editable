@@ -61,23 +61,23 @@ export interface ISelection extends IEventEmitter {
 
   clearSelection(): void
 
-  moveTo(key: NodeKey, offset: number): void
+  moveTo(key: NodeKey, offset: number): ISelection
 
-  moveAnchorTo(key: NodeKey, offset: number): void
+  moveAnchorTo(key: NodeKey, offset: number): ISelection
 
-  moveFocusTo(key: NodeKey, offset: number): void
+  moveFocusTo(key: NodeKey, offset: number): ISelection
 
-  moveToForward(): void
+  moveToForward(): ISelection
 
-  moveToBackward(): void
+  moveToBackward(): ISelection
 
-  moveAnchorToForward(): void
+  moveAnchorToForward(): ISelection
 
-  moveFocusToForward(): void
+  moveFocusToForward(): ISelection
 
-  moveAnchorToBackward(): void
+  moveAnchorToBackward(): ISelection
 
-  moveFocusToBackward(): void
+  moveFocusToBackward(): ISelection
 
   destroy(): void
 }
