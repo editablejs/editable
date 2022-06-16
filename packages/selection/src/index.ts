@@ -189,11 +189,10 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       }
       return false
     }
-    if(!isRendered(this.model, range) || willDelete()) {
+    if(willDelete()) {
       this._cacheApplyRange = range
       this.ranges = [range]
     } else {
-      this._cacheApplyRange = undefined
       this.applyRange(range)
     }
   }
@@ -428,6 +427,11 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     checkNode(anchor.key, anchor.offset)
     if(!range.isCollapsed) {
       checkNode(focus.key, focus.offset)
+    }
+    if(!isRendered(this.model, range)) {
+      this._cacheApplyRange = range
+    } else {
+      this._cacheApplyRange = undefined
     }
     if(this.ranges.length === 1 && this.ranges[0].equal(range)) return
     this.removeAllRange()
