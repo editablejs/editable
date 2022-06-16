@@ -1,5 +1,5 @@
 import { EVENT_SELECTION_CHANGE } from "@editablejs/constants"
-import { IModel, INode, Text, Element, TextFormat } from "@editablejs/model"
+import { IModel, INode, Text, Element, TextFormat, IText } from "@editablejs/model"
 import { IRange, ISelection } from "@editablejs/selection"
 import { Log } from "@editablejs/utils"
 import { IChange } from "./types"
@@ -112,12 +112,13 @@ class Change implements IChange {
       this._cacheFormat = { ...format, [name]: value }
     } else {
       const subRanges = this.selection.getSubRanges()
+      const changedNodes: IText[] = []
       for (let i = 0; i < subRanges.length; i++) { 
         const range = subRanges[i]
         const { anchor, focus } = range
         const node = model.getNode(anchor.key)
         if(!node) continue
-        if(Text.isText(node)) { 
+        if(Text.isText(node)) {
           const cloneText = node.clone(false, false)
           const text = node.getText()
           const format = node.getFormat()
@@ -125,6 +126,7 @@ class Change implements IChange {
           cloneText.setFormat(Object.assign({}, format, { [name]: value }))
           model.deleteText(anchor.key, anchor.offset, focus.offset - anchor.offset)
           model.insertNode(cloneText, anchor.key, anchor.offset)
+          changedNodes.push(cloneText)
         } else if(Element.isElement(node)) {
           const children = node.getChildren()
           const child = children[anchor.offset]
@@ -135,8 +137,16 @@ class Change implements IChange {
               const format = textNode.getFormat()
               textNode.setFormat(Object.assign({}, format, { [name]: value }))
               model.applyNode(textNode)
+              changedNodes.push(textNode)
             }
           }
+        }
+        if(changedNodes.length > 0) {
+          const start = changedNodes[0]
+          const end = changedNodes[changedNodes.length - 1]
+          range.setStart(start.getKey(), 0)
+          range.setEnd(end.getKey(), end.getText().length)
+          this.selection.applyRange(range)
         }
       }
     }
