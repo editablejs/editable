@@ -1,4 +1,4 @@
-import { OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT } from "@editablejs/constants"
+import { OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT, OP_UPDATE_FORMAT } from "@editablejs/constants"
 import { INode, Op, Text, Element, IText, createNode } from "@editablejs/model"
 import { Log } from "@editablejs/utils"
 import Range from '../range'
@@ -8,6 +8,13 @@ export const createRangefromOp = (op: (Op & Record<'node', INode>)) => {
   let key = node.getKey()
   let offset = op.offset
   switch(type) {
+    case OP_UPDATE_FORMAT:
+      if(!Text.isText(node)) break
+      const text = node.getText()
+      return new Range({
+        anchor: { key, offset: 0 },
+        focus: { key, offset: text.length }
+      })
     case OP_INSERT_TEXT:
       return new Range({
         anchor: {

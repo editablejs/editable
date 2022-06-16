@@ -169,7 +169,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const willDelete = () => {
       const keys = [range.anchor.key, range.focus.key]
       const checkNode = (node: INode) => {
-        if(keys.indexOf(node.getKey()) > -1) return true
+        if(~keys.indexOf(node.getKey())) return true
         if(Element.isElement(node)) {
           const children = node.getChildren()
           for(let c = 0; c < children.length; c++) {
@@ -182,7 +182,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
       for(let o = 0; o < ops.length; o++){
         const op = ops[o]
         if(op.type === OP_DELETE_NODE) {
-          if(op.key && keys.indexOf(op.key) > -1) return true
+          if(op.key && ~keys.indexOf(op.key)) return true
           const opNode = createNode(op.value)
           return checkNode(opNode)
         }
@@ -255,7 +255,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           const nextKey = next.getKey()
           if((Text.isText(next) && nextKey !== endKey) || (Element.isElement(next) && !next.contains(endKey))) {
             const offset = parent.indexOf(nextKey)
-            if(offset === -1) continue
+            if(!~offset) continue
             subRanges.push(new Range({
               anchor: {
                 key: parentKey,
@@ -458,7 +458,7 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           const indexs: number[] = []
           const findSameLocation = (x: number, y: number, index: number) => { 
             for(let r = 0; r < subRects.length; r++) {
-              if(indexs.indexOf(r) > -1) continue
+              if(~indexs.indexOf(r)) continue
               const rect = subRects[r]
               if(rect.x === x && rect.y === y && r !== index) return rect
             }
