@@ -163,7 +163,7 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
       const newChild = newChildren[c];
       const newChildKey = newChild.getKey();
       const index = oldChildrenKeys.indexOf(newChildKey);
-      if(index === -1 || newChild.getType() !== oldChildren[index].getType()) { 
+      if(!~index || newChild.getType() !== oldChildren[index].getType()) { 
         ops.push({
           type: OP_INSERT_NODE,
           key: newChild.getParentKey(),
@@ -178,9 +178,9 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
     for (let c = oldChildren.length - 1; c >= 0; c--) {
       const oldChild = oldChildren[c];
       const oldChildKey = oldChild.getKey();
-      if(oldChildrenKeys.indexOf(oldChildKey) === -1) continue
+      if(!~oldChildrenKeys.indexOf(oldChildKey)) continue
       const index = newChildrenKeys.indexOf(oldChildKey); 
-      if(index === -1 || oldChild.getType() !== newChildren[index].getType()) {
+      if(!~index || oldChild.getType() !== newChildren[index].getType()) {
         ops.push({
           type: OP_DELETE_NODE,
           key: oldChild.getParentKey(),

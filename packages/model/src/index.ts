@@ -141,22 +141,30 @@ export default class Model extends EventEmitter<ModelEventType> implements IMode
     if(!parentKey) Log.nodeNotInContext(key)
     let parent = this.getNode<NodeData, IElement>(parentKey)
     if(!parent) Log.nodeNotFound(parentKey)
+    let length = 0
     if(Text.isText(targetNode)) {
-      offset = offset ?? targetNode.getText().length
+      const text = targetNode.getText()
+      offset = offset ?? text.length
       if(Text.isText(node) && targetNode.compare(node)) {
         const text = node.getText()
         targetNode.insert(text, offset)
         this.applyNode(targetNode)
         return
       }
+      length = text.length
     }
     else if(Element.isElement(targetNode)) {
       const size = targetNode.getChildrenSize()
       if(offset === undefined) offset = size
+      length = size
     } else return
-    parent = this.splitNode(key, offset, (left, right) => [left, right].filter(child => !child.isEmpty()))
-    const index = parent.indexOf(key)
-    parent.insert(index + 1, node)
+    if(offset > 0 && offset < length) {
+      parent = this.splitNode(key, offset, (left, right) => [left, right].filter(child => !child.isEmpty()))
+      const index = parent.indexOf(key)
+      parent.insert(index + 1, node)
+    } else {
+      parent.insert(offset, node)
+    }
     this.applyNode(parent)
   }
 
