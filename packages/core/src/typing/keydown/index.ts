@@ -26,82 +26,82 @@ const defaultHandles: TypingListener[] = [
 	{
 		name: 'enter',
 		handle: Enter,
-		emitName: 'keydown:enter',
+		emitName: 'enter',
 	},
 	{
 		name: 'backspace',
 		handle: Backspace,
-		emitName: 'keydown:backspace',
+		emitName: 'backspace',
 	},
 	{
 		name: 'delete',
 		handle: Delete,
-		emitName: 'keydown:backspace',
+		emitName: 'backspace',
 	},
 	{
 		name: 'tab',
 		handle: Tab,
-		emitName: 'keydown:tab',
+		emitName: 'tab',
 	},
 	{
 		name: 'shift-tab',
 		handle: ShiftTab,
-		emitName: 'keydown:shift-tab',
+		emitName: 'shift-tab',
 	},
 	{
 		name: 'shift-enter',
 		handle: ShiftEnter,
-		emitName: 'keydown:shift-enter',
+		emitName: 'shift-enter',
 	},
 	{
 		name: 'at',
 		handle: At,
-		emitName: 'keydown:at',
+		emitName: 'at',
 	},
 	{
 		name: 'space',
 		handle: Space,
-		emitName: 'keydown:space',
+		emitName: 'space',
 	},
 	{
 		name: 'slash',
 		handle: Slash,
-		emitName: 'keydown:slash',
+		emitName: 'slash',
 	},
 	{
 		name: 'all',
 		handle: All,
-		emitName: 'keydown:all',
+		emitName: 'all',
 	},
 	{
 		name: 'shift-left',
 		handle: ShiftLeft,
-		emitName: 'keydown:shift-left',
+		emitName: 'shift-left',
 	},
 	{
 		name: 'left',
 		handle: Left,
-		emitName: 'keydown:left',
+		emitName: 'left',
 	},
 	{
 		name: 'shift-right',
 		handle: ShiftRight,
-		emitName: 'keydown:shift-right',
+		emitName: 'shift-right',
 	},
 	{
 		name: 'right',
 		handle: Right,
-		emitName: 'keydown:right',
+		emitName: 'right',
 	},
 	{
 		name: 'up',
 		handle: Up,
-		emitName: 'keydown:up',
+		emitName: 'up',
 	},
 	{
 		name: 'down',
 		handle: Down,
-		emitName: 'keydown:down',
+		emitName: 'down',
 	},
 ];
 

@@ -29,7 +29,7 @@ class Enter extends DefaultKeydown {
       if(!parent) break
       if(!Element.isElement(parent)) break
 			offset = parent.indexOf(key)
-			if(offset < 0) break
+			if(!~offset) break
 			offset += 1
       node = parent
 		}

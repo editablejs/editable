@@ -13,22 +13,22 @@ const defaultHandles: TypingListener[] = [
 	{
 		name: 'enter',
 		handle: Enter,
-		emitName: 'keyup:enter',
+		emitName: 'enter:keyup',
 	},
 	{
 		name: 'backspace',
 		handle: Backspace,
-		emitName: 'keyup:backspace',
+		emitName: 'backspace:keyup',
 	},
 	{
 		name: 'tab',
 		handle: Tab,
-		emitName: 'keyup:tab',
+		emitName: 'tab:keyup',
 	},
 	{
 		name: 'space',
 		handle: Space,
-		emitName: 'keyup:space',
+		emitName: 'space:keyup',
 	},
 ];
 
