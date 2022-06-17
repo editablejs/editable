@@ -7,7 +7,8 @@ import { renderPage } from '../components/Page';
 import styles from './index.module.css'
 
 Editor.registerPlugin('text', renderText)
-Editor.registerPlugin('paragraph', renderElement)
+Editor.registerPlugin('element', renderElement)
+Editor.registerPlugin<NodeData, IElement>('paragraph', (options) => renderElement(options, 'p'))
 Editor.registerPlugin('page', renderPage)
 
 const defaultValue = {

@@ -35,7 +35,7 @@ const TextComponent: React.FC<RenderOptions<NodeData, IText>> = (props) => {
       return char.text
     })
   }
-  const noneText = !text && !chars
+  const noneText = node.isEmpty() && !chars
   if(noneText) return <NodeComponent node={node} style={node.getFormat()} dangerouslySetInnerHTML={{__html: '&#xFEFF'}}/>
   return <NodeComponent node={node} style={node.getFormat()}>{ renderText() }</NodeComponent>
 }
