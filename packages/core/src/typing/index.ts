@@ -61,11 +61,9 @@ export default class Typing extends EventEmitter implements ITyping {
 
 	emitKeyboardEvent(type: 'keydown' | 'keyup', event: KeyboardEvent) {
 		//循环事件
-		const result = this.handleListeners
-			.filter(({ handle }) => handle.type === type)
-			.some((listener) => {
+		const result = this.handleListeners.some((listener) => {
 				const { name, handle, emitName, emitParams } = listener;
-				if (name === 'default' || !!!handle.hotkey) return false;
+				if (handle.type !== type || name === 'default' || !!!handle.hotkey) return false;
 				if (
 					typeof handle.hotkey === 'function'
 						? handle.hotkey(event)
@@ -75,11 +73,14 @@ export default class Typing extends EventEmitter implements ITyping {
 					if (typeof emitParams === 'function')
 						params = emitParams(this.editor, event);
 					if (
-						!emitName || this.editor.emit(emitName, ...params) !== false
+						!emitName
 					) {
 						handle.emit(event);
+					} else {
+						this.editor.emit(emitName, ...params)
+						if(!event.defaultPrevented) handle.emit(event)
 					}
-					return true;
+					return event.defaultPrevented;
 				}
 				return false;
 			});
