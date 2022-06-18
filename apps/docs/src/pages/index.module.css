@@ -10,6 +10,10 @@
   margin: 16px 0;
 }
 
+.toolbar .active {
+  color: blue;
+}
+
 .container {
   cursor: text;
   white-space: pre-wrap;
