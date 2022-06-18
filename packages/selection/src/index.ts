@@ -88,7 +88,10 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
         focus: position
       })
       const ranges = self.ranges
-      if(ranges.length === 1 && ranges[0].equal(range)) return
+      if(ranges.length === 1 && ranges[0].equal(range)) {
+        self.input.focus()
+        return
+      }
       self.ranges = []
       self.addRange(range)
       return range
