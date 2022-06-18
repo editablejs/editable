@@ -2,7 +2,7 @@ import { EVENT_SELECTION_CHANGE } from "@editablejs/constants"
 import { IModel, INode, Text, Element, TextFormat, IText } from "@editablejs/model"
 import { IRange, ISelection } from "@editablejs/selection"
 import { Log } from "@editablejs/utils"
-import { IChange } from "./types"
+import { IChange, IState } from "./types"
 
 class Change implements IChange {
 
@@ -21,6 +21,56 @@ class Change implements IChange {
   
   getRange(): IRange | null {
     return this.selection.getRangeAt(0)
+  }
+
+  getCurentState(){
+    const selection = this.selection
+    const contents = selection.getContents()
+    console.log(contents)
+    const data: IState = {
+      types: [],
+      format: new Map(),
+      style: new Map(),
+      keys: [],
+      nodes: []
+    }
+    const getState = (node: INode) => {
+      const key = node.getKey()
+      const type = node.getType()
+      data.keys.push(key)
+      if(!~data.types.indexOf(type)) data.types.push(type)
+      if(Text.isText(node)) {
+        const format = node.getFormat()
+        Object.keys(format).forEach(name => { 
+          const value = format[name]
+          const values = data.format.get(name)
+          if(values) {
+            values.push(value)
+          } else {
+            data.format.set(name, [value])
+          }
+        })
+      } else if(Element.isElement(node)) {
+        const style = node.getStyle()
+        Object.keys(style).forEach(name => { 
+          const value = style[name]
+          const values = data.style.get(name)
+          if(values) {
+            values.push(value)
+          } else {
+            data.style.set(name, [value])
+          }
+        })
+        const children = node.getChildren()
+        children.forEach(getState)
+      }
+      data.nodes.push(node)
+    }
+    for(let i = 0; i < contents.length; i++) {
+      const node = contents[i]
+      getState(node)
+    }
+    return data
   }
 
   deleteBackward(){
@@ -101,17 +151,19 @@ class Change implements IChange {
   }
 
   setFormat(name: string, value: string | number){
-    const range = this.getRange()
+    const self = this
+    const range = self.getRange()
     if(!range) return
-    const model = this.model
+    const model = self.model
+    const selection = self.selection
     if(range.isCollapsed) {
       const key = range.anchor.key
       const node = model.getNode(key)
       if(!node) Log.nodeNotFound(key)
       const format = Text.isText(node) ? node.getFormat() : {}
-      this._cacheFormat = { ...format, [name]: value }
+      self._cacheFormat = { ...format, [name]: value }
     } else {
-      const subRanges = this.selection.getSubRanges()
+      const subRanges = selection.getSubRanges()
       const changedNodes: IText[] = []
       for (let i = 0; i < subRanges.length; i++) { 
         const range = subRanges[i]
@@ -146,14 +198,35 @@ class Change implements IChange {
           const end = changedNodes[changedNodes.length - 1]
           range.setStart(start.getKey(), 0)
           range.setEnd(end.getKey(), end.getText().length)
-          this.selection.applyRange(range)
+          selection.applyRange(range)
         }
       }
     }
   }
 
   deleteFormat(name: string){
+    const self = this
+    const selection = self.selection
+    const model = self.model
+    const contents = selection.getContents()
 
+    const deleteFormat = (node: INode) => {
+      if(Text.isText(node)) {
+        const format = node.getFormat()
+        delete format[name]
+        node.setFormat(format)
+        model.applyNode(node)
+      } else if(Element.isElement(node)) { 
+        const children = node.getChildren()
+        for(let c = 0; c < children.length; c++) {
+          deleteFormat(children[c])
+        }
+      }
+    }
+    for(let i = 0; i < contents.length; i++) {
+      const node = contents[i]
+      deleteFormat(node)
+    }
   }
 }
 

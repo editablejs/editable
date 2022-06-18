@@ -60,6 +60,8 @@ export interface IChange {
 
   getRange(): IRange | null
 
+  getCurentState(): IState
+
   deleteBackward(): void
 
   deleteForward(): void
@@ -75,4 +77,12 @@ export interface IChange {
   setFormat(name: string, value: string | number): void
 
   deleteFormat(name: string): void
+}
+
+export interface IState {
+  types: string[]
+  format: Map<string, (string | number)[]>
+  style: Map<string, (string | number)[]>
+  keys: string[]
+  nodes: INode[]
 }
