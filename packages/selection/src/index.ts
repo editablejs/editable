@@ -78,74 +78,84 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   bindTyping = () => {
-    const typing = this.typing
-    typing.on(EVENT_SELECT_START, (position: Position) => {
-      this.removeAllRange()
-      this.start = position
-      this.emit(EVENT_SELECT_START, position)
-    })
+    const self = this
+    const typing = self.typing
     const handleSelecting = (position?: Position) => { 
-      if(!this.start || !position) return
-      this.end = position
+      if(!self.start || !position) return
+      self.end = position
       const range = new Range({
-        anchor: this.start,
+        anchor: self.start,
         focus: position
       })
-      this.ranges = []
-      this.addRange(range)
+      const ranges = self.ranges
+      if(ranges.length === 1 && ranges[0].equal(range)) return
+      self.ranges = []
+      self.addRange(range)
       return range
     }
+
+    typing.on(EVENT_SELECT_START, (position: Position) => {
+      self.start = position
+      const range = handleSelecting(position)
+      self.emit(EVENT_SELECT_START, position)
+      if(!range) return
+      self.emit(EVENT_SELECTING, range)
+    })
+   
     typing.on(EVENT_SELECTING, (position?: Position) => {
       const range = handleSelecting(position)
       if(!range) return
-      this.emit(EVENT_SELECTING, range)
+      self.emit(EVENT_SELECTING, range)
     })
     typing.on(EVENT_SELECT_END, (position?: Position) => {
       const range = handleSelecting(position)
       if(!range) return
-      this.emit(EVENT_SELECT_END, range)
+      self.emit(EVENT_SELECT_END, range)
     })
     const applyCacheRange = () => {
-      const range = this._cacheApplyRange
-      if(range && isRendered(this.model, range)) {
-        this.drawByRanges(range)
-        this._cacheApplyRange = undefined
+      const range = self._cacheApplyRange
+      if(range && isRendered(self.model, range)) {
+        self.drawByRanges(range)
+        self._cacheApplyRange = undefined
       }
     }
     typing.on(EVENT_DOM_RENDER, () => applyCacheRange())
     typing.on(EVENT_ROOT_DOM_RENDER, (containers: Map<string, HTMLElement>) => {
-      this.input.updateContainers(containers)
+      self.input.updateContainers(containers)
       applyCacheRange()
-      this.typing.stopMutationRoot()
+      self.typing.stopMutationRoot()
     })
   }
 
   bindInput = () => {
-    const input = this.input
+    const self = this
+    const input = self.input
     input.on(EVENT_COMPOSITION_START, ev => {
-      this.emit(EVENT_COMPOSITION_START, ev)
+      self.emit(EVENT_COMPOSITION_START, ev)
     })
     input.on(EVENT_COMPOSITION_END, ev => {
-      this.emit(EVENT_COMPOSITION_END, ev)
+      self.emit(EVENT_COMPOSITION_END, ev)
     })
     input.on(EVENT_CHANGE, (value: string) => {
-      this.emit(EVENT_VALUE_CHANGE, value)
+      self.emit(EVENT_VALUE_CHANGE, value)
     })
     input.on(EVENT_BLUR, () => {
-      this._isFoucs = false
-      this.emit(EVENT_BLUR)
-      this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+      if(!self._isFoucs) return
+      self._isFoucs = false
+      self.emit(EVENT_BLUR)
+      self.drawByRanges(...self.ranges)
     })
     input.on(EVENT_FOCUS, () => {
-      this._isFoucs = true
-      this.emit(EVENT_FOCUS)
-      this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+      if(self._isFoucs) return
+      self._isFoucs = true
+      self.emit(EVENT_FOCUS)
+      self.drawByRanges(...self.ranges)
     })
     input.on(EVENT_KEYDOWN, ev => {
-      this.emit(EVENT_KEYDOWN, ev)
+      self.emit(EVENT_KEYDOWN, ev)
     })
     input.on(EVENT_KEYUP, ev => {
-      this.emit(EVENT_KEYUP, ev)
+      self.emit(EVENT_KEYUP, ev)
     })
   }
 
@@ -330,7 +340,6 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   getContents = (...ranges: IRange[]): INode[] => {
-    debugger
     const model = this.model
     const subRanges = this.getSubRanges(...ranges)
     let parentElement: IElement | null = null
@@ -354,20 +363,19 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     const parentMap = new Map<string, IElement>()
     for(let s = 0; s < subRanges.length; s++) { 
       const range = subRanges[s]
-      if(range.isCollapsed) continue
       const { anchor, focus } = range
       const anchorNode = model.getNode(range.anchor.key)
       if(!anchorNode) continue
-      let hasClone = false
+      let isAdd: boolean | undefined = undefined
       const warpParent = (child: INode) => {
         let parentKey = child.getParentKey()
         while(parentKey) {
           let parentClone = parentMap.get(parentKey)
+          if(isAdd === undefined) isAdd = !parentClone
           if(!parentClone) {
             const parent = model.getNode<any, IElement>(parentKey)
-            if(!parent || parentElement?.getType() === parent.getType()) return hasClone ? child : null
+            if(!parent || parentElement?.getType() === parent.getType()) return isAdd ? child : null
             parentClone = parent.clone()
-            hasClone = true
             parentMap.set(parentKey, parentClone)
           } else if(parentClone.hasChild(child.getKey())) { 
             return null
@@ -401,24 +409,29 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   addRange = (range: IRange) => {
-    this.ranges.push(range);
-    this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+    const self = this
+    self.ranges.push(range);
+    self.emit(EVENT_SELECTION_CHANGE, ...self.ranges);
   }
 
   removeRangeAt = (index: number) => { 
-    this.ranges.splice(index, 1);
-    this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+    const self = this
+    self.ranges.splice(index, 1);
+    self.emit(EVENT_SELECTION_CHANGE, ...self.ranges);
   }
 
   removeAllRange = (): void => {
-    const isEmit = this.ranges.length > 0
-    this.ranges = [];
-    if(isEmit) this.emit(EVENT_SELECTION_CHANGE, ...this.ranges);
+    const self = this
+    const isEmit = self.ranges.length > 0
+    self.ranges = [];
+    if(isEmit) self.emit(EVENT_SELECTION_CHANGE, ...self.ranges);
   }
 
   applyRange = (range: IRange) => {
+    const self = this
+    const model = self.model
     const checkNode = (key: NodeKey, offset: number) => {
-      const node = this.model.getNode(key)
+      const node = model.getNode(key)
       if(!node) Log.nodeNotFound(key)
       assert(node, offset)
     }
@@ -428,33 +441,35 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
     if(!range.isCollapsed) {
       checkNode(focus.key, focus.offset)
     }
-    if(!isRendered(this.model, range)) {
-      this._cacheApplyRange = range
+    if(!isRendered(model, range)) {
+      self._cacheApplyRange = range
     } else {
-      this._cacheApplyRange = undefined
+      self._cacheApplyRange = undefined
     }
-    if(this.ranges.length === 1 && this.ranges[0].equal(range)) return
-    this.removeAllRange()
-    this.addRange(range)
+    const ranges = self.ranges
+    if(ranges.length === 1 && ranges[0].equal(range)) return
+    self.ranges = []
+    self.addRange(range)
   }
 
   drawByRanges = (...ranges: IRange[]) => {
+    const self = this
     if(ranges.length === 0) {
-      this.clearSelection()
+      self.clearSelection()
       return
-    } else if(!this.isFocus && ranges.find(range => range.isCollapsed)) { 
-      this.layer.clearCaret()
+    } else if(!self.isFocus && ranges.find(range => range.isCollapsed)) { 
+      self.layer.clearCaret()
       return
     }
-    this.clearSelection()
+    self.clearSelection()
     const collapsedRange = ranges.find(r => r.isCollapsed)
     if(collapsedRange) {
       const rect = collapsedRange.getClientRects()?.item(0)
       if(rect) {
-        this.drawCaretByRect(rect.toJSON())
+        self.drawCaretByRect(rect.toJSON())
       }
     } else {
-      const color = this.isFocus ? this.focusColor : this.blurColor
+      const color = self.isFocus ? self.focusColor : self.blurColor
       const rects: DrawRect[] = []
       ranges.forEach(range => {
         const subRects = range.getClientRects()
@@ -481,21 +496,23 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
           }
         }
       })
-      this.drawBlocksByRects(...rects)
+      self.drawBlocksByRects(...rects)
     }
   }
 
   drawCaretByRect = (rect: Omit<DrawRect, 'color'> & Record<'color', string | undefined>): void => {
-    this.layer.drawCaret({...rect, width: this.caretWidth, color: rect.color ?? this.caretColor})
-    this.input.render(Object.assign({}, rect, { left: rect.left + rect.width,width: this.caretWidth }))
+    const self = this
+    self.layer.drawCaret({...rect, width: self.caretWidth, color: rect.color ?? self.caretColor})
+    self.input.render(Object.assign({}, rect, { left: rect.left + rect.width,width: self.caretWidth }))
   }
 
   drawBlocksByRects = (...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]) => {
     if(rects.length === 0) return
-    const color = this.isFocus ? this.focusColor : this.blurColor
-    this.layer.drawBlocks(...rects.map(rect => ({ ...rect, color: rect.color ?? color })))
+    const self = this
+    const color = this.isFocus ? self.focusColor : self.blurColor
+    self.layer.drawBlocks(...rects.map(rect => ({ ...rect, color: rect.color ?? color })))
     const rect = rects[rects.length - 1]
-    this.input.render(Object.assign({}, rect, { left: rect.left + rect.width, width: this.caretWidth }))
+    self.input.render(Object.assign({}, rect, { left: rect.left + rect.width, width: self.caretWidth }))
   }
 
   clearSelection = () => { 
@@ -503,103 +520,119 @@ export default class Selection extends EventEmitter<SelectionEventType> implemen
   }
 
   moveTo(key: NodeKey, offset: number) {
+    const self = this
     const range = Range.create({
       anchor: { key, offset },
       focus: { key, offset }
     })
-    this.applyRange(range)
-    return this
+    self.applyRange(range)
+    return self
   }
 
   moveAnchorTo(key: NodeKey, offset: number) {
-    const currentRange = this.getRangeAt(0)
+    const self = this
+    const currentRange = self.getRangeAt(0)
     const range = Range.create({
       anchor: { key, offset },
       focus: currentRange ? { ...currentRange.focus } : { key, offset }
     })
-    this.applyRange(range)
-    return this
+    self.applyRange(range)
+    return self
   }
 
   moveFocusTo(key: NodeKey, offset: number) {
-    const currentRange = this.getRangeAt(0)
+    const self = this
+    const currentRange = self.getRangeAt(0)
     const range = Range.create({
       focus: { key, offset },
       anchor: currentRange ? { ...currentRange.anchor } : { key, offset }
     })
-    this.applyRange(range)
-    return this
+    self.applyRange(range)
+    return self
   }
 
   moveToForward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
+    const { focus } = range
+    const { anchor } = range
+    const focusKey = focus.key
+    const focusOffset = focus.offset
+    const anchorKey = anchor.key
+    const anchorOffset = anchor.offset
     if(range.isCollapsed) {
-      const { focus } = range
-      const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
-      return this.moveTo(key, offset)
+      const { key, offset } = getPositionToForward(self.model, focusKey, focusOffset)
+      return self.moveTo(key, offset)
     } else if(range.isBackward) {
-      const { anchor } = range
-      return this.moveFocusTo(anchor.key, anchor.offset)
+      return self.moveFocusTo(anchorKey, anchorOffset)
     } else {
-      const { focus } = range
-      return this.moveAnchorTo(focus.key, focus.offset)
+      return self.moveAnchorTo(focusKey, focusOffset)
     }
   }
 
   moveToBackward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
+    const { focus } = range
+    const { anchor } = range
+    const focusKey = focus.key
+    const focusOffset = focus.offset
+    const anchorKey = anchor.key
+    const anchorOffset = anchor.offset
     if(range.isCollapsed) {
-      const { focus } = range
-      const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
-      return this.moveTo(key, offset)
+      const { key, offset } = getPositionToBackward(self.model, focusKey, focusOffset)
+      return self.moveTo(key, offset)
     } else if(range.isBackward) {
-      const { focus } = range
-      return this.moveAnchorTo(focus.key, focus.offset)
+      return self.moveAnchorTo(focusKey, focusOffset)
     } else {
-      const { anchor } = range
-      return this.moveFocusTo(anchor.key, anchor.offset)
+      return self.moveFocusTo(anchorKey, anchorOffset)
     }
   }
 
   moveAnchorToForward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
     const { anchor } = range
-    const { key, offset } = getPositionToForward(this.model, anchor.key, anchor.offset)
-    return this.moveAnchorTo(key, offset)
+    const { key, offset } = getPositionToForward(self.model, anchor.key, anchor.offset)
+    return self.moveAnchorTo(key, offset)
   }
 
   moveFocusToForward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
     const { focus } = range
-    const { key, offset } = getPositionToForward(this.model, focus.key, focus.offset)
-    return this.moveFocusTo(key, offset)
+    const { key, offset } = getPositionToForward(self.model, focus.key, focus.offset)
+    return self.moveFocusTo(key, offset)
   }
 
   moveAnchorToBackward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
     const { anchor } = range
-    const { key, offset } = getPositionToBackward(this.model, anchor.key, anchor.offset)
-    return this.moveAnchorTo(key, offset)
+    const { key, offset } = getPositionToBackward(self.model, anchor.key, anchor.offset)
+    return self.moveAnchorTo(key, offset)
   }
 
   moveFocusToBackward(){ 
-    const range = this.getRangeAt(0)
-    if(!range) return this
+    const self = this
+    const range = self.getRangeAt(0)
+    if(!range) return self
     const { focus } = range
-    const { key, offset } = getPositionToBackward(this.model, focus.key, focus.offset)
-    return this.moveFocusTo(key, offset)
+    const { key, offset } = getPositionToBackward(self.model, focus.key, focus.offset)
+    return self.moveFocusTo(key, offset)
   }
 
   destroy() { 
-    this.typing.destroy()
-    this.input.destroy()
-    this.layer.destroy()
-    this.removeAll()
+    const self = this
+    self.typing.destroy()
+    self.input.destroy()
+    self.layer.destroy()
+    self.removeAll()
   }
 }
 
