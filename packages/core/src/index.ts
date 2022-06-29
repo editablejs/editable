@@ -298,6 +298,7 @@ export const createEditable = () => {
   selection.onSelectChange = () => {
     onSelectChange()
     EDITOR_STATE_WEAK_MAP.delete(editor)
+    CACHE_FORMAT_WEAK_MAP.delete(editor)
     editor.onSelectChange()
   }
   
