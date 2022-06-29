@@ -57,6 +57,14 @@ const createShadow = (layer: LayerInterface, container: HTMLElement = document.b
   return body
 }
 
+export const removeLayer = (layer: LayerInterface) => {
+  clearTimeout(CARET_TIMER_WEAK_MAP.get(layer))
+  CARET_TIMER_WEAK_MAP.delete(layer)
+  LAYER_TO_BODY_WEAK_MAP.delete(layer)
+  LAYER_TO_SHADOW_WEAK_MAP.get(layer)?.remove()
+  LAYER_TO_SHADOW_WEAK_MAP.delete(layer)
+}
+
 export const createLayer = () => {
 
   const layer: LayerInterface = {

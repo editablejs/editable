@@ -4,7 +4,7 @@ import { ModelInterface, NodeKey, Text, Element, NodeInterface, ElementInterface
 import { Log } from "@editablejs/utils"
 import closest, { isAlignY } from "./closest"
 import { getOffset } from "./text"
-import { queryElements } from "./dom"
+import { queryElements, queryRootElements } from "./dom"
 import { Position } from "../range"
 
 export const getPositionToForward = (model: ModelInterface, key: NodeKey, offset: number): Position => {
@@ -149,6 +149,7 @@ export const getPositionToBackward = (model: ModelInterface, key: NodeKey, offse
 
 const findNodeFromEvent = (model: ModelInterface, e: MouseEvent) => {
   if (!(e.target instanceof Node)) return
+  const roots = queryRootElements(model.getKey())
   let targetNode: Node | null = e.target
   let key: NodeKey | null = null
   if(targetNode instanceof globalThis.Text) {
@@ -179,7 +180,7 @@ const findNodeFromEvent = (model: ModelInterface, e: MouseEvent) => {
         return false
       })
       if(nodeArray.length > 0) {
-        queryElements(model, ...nodeArray.map(n => n.getKey())).forEach(node => { 
+        queryElements(roots, ...nodeArray.map(n => n.getKey())).forEach(node => { 
           if(node instanceof globalThis.Element) {
             nodes.push(node)
           }
@@ -207,7 +208,7 @@ const findNodeFromEvent = (model: ModelInterface, e: MouseEvent) => {
         findKeys(node)
       }
       if(keys.length > 0) {
-        queryElements(model, ...keys).forEach(node => {
+        queryElements(roots, ...keys).forEach(node => {
           if(node instanceof globalThis.Element) {
             nodes.push(node)
           }
