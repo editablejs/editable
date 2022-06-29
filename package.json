@@ -11,7 +11,18 @@
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
     "eslint": "^7.5.0",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.5.1",
+    "simple-git-hooks": "^2.8.0",
     "turbo": "latest"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*.{css,md,js,jsx,json,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }
