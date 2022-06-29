@@ -1,5 +1,5 @@
 import { createEditable, ElementInterface } from '@editablejs/core';
-import React, { useMemo } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import EditableComponent from '../components/Editable'
 import withBold from '../plugins/Bold';
 import styles from './index.module.css'
@@ -21,12 +21,21 @@ const initialValue = {
 
 export default function Docs() {
   const editable = useMemo(() => withBold(createEditable()), [])
+  const [ activeStatus, setActiveStatus ] = useState<Record<string, boolean>>({})
   const [ value, setValue ] = useState<ElementInterface[]>([])
+
+  useLayoutEffect(() => { 
+    editable.onSelectChange = () => {
+      setActiveStatus({
+        'bold': editable.queryBold()
+      })
+    }
+  }, [editable])
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.toolbar}>
-        <button onMouseDown={editable.toggleBold} className={editable.queryBold() ? styles.active : undefined }>Bold</button>
+        <button onMouseDown={editable.toggleBold} className={activeStatus['bold'] ? styles.active : undefined }>Bold</button>
       </div>
       <div className={styles.container}>
         <EditableComponent editable={editable} value={value} onChange={setValue} initialValue={initialValue} />
