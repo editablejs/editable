@@ -1,8 +1,9 @@
+import React from "react";
 import { EditableInterface } from "@editablejs/core";
 
 interface BoldEditor {
 
-  toggleBold: () => void
+  toggleBold: (e: React.MouseEvent) => void
 
   queryBold: () => boolean
 }
@@ -17,7 +18,8 @@ const withBold = <T extends EditableInterface>(editor: T) => {
     return newEditor.queryFormat((name, value) => name === formatName && value.indexOf(formatValue) > -1)
   }
 
-  newEditor.toggleBold = () => { 
+  newEditor.toggleBold = (e: React.MouseEvent) => { 
+    e.preventDefault()
     if(queryBold()) {
       newEditor.deleteFormat(formatName)
     } else {

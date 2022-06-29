@@ -5,7 +5,6 @@ import Range, { Position } from './range';
 import { SelectionInterface } from './types';
 import { clearRanges, getRanges } from './range-weakmap';
 import { getInputLayer, getLayer } from './draw';
-import { removeLayer } from './layer';
 
 export interface TypingInterface extends ListenMutationInterface {
 
@@ -93,14 +92,19 @@ export const createTyping = (selection: SelectionInterface, model: ModelInterfac
         }
       }
 
+      const destroyLayer = () => {
+        CONTAINERS_LISTEN_WEAK_MAP.delete(typing)
+        getInputLayer(selection).remove()
+        getLayer(selection).remove()
+        removeMutationListen(typing)
+      }
+
       if(IS_LISTEN_MUTATION.get(typing) === false) {
         const containers = CONTAINERS_LISTEN_WEAK_MAP.get(typing) || []
         const isDestroy = containers.every(container => !CONTAINERS_TO_TYPING_WEAK_MAP.has(container) || !container.isConnected)
         if(isDestroy) {
           containers.forEach(removeContainer)
-          CONTAINERS_LISTEN_WEAK_MAP.delete(typing)
-          removeLayer(getLayer(selection))
-          removeMutationListen(typing)
+          destroyLayer()
         }
         return
       }
@@ -135,10 +139,11 @@ export const createTyping = (selection: SelectionInterface, model: ModelInterfac
         removeContainer(container)
       })
       if(containers.length === 0) {
-        removeLayer(getLayer(selection))
-        removeMutationListen(typing)
+        destroyLayer()
+      } else {
+        CONTAINERS_LISTEN_WEAK_MAP.set(typing, containers)
       }
-      CONTAINERS_LISTEN_WEAK_MAP.set(typing, containers)
+      
       if(isChange) typing.onRootRendered(containers)
     },
     startMutation(){

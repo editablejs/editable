@@ -3,6 +3,8 @@ import { SelectionInterface } from "./types"
 export interface InputInterface {
 
   getTextarea(): HTMLTextAreaElement
+
+  remove(): void
   
   updateContainers(containers: HTMLElement[]): void
 
@@ -64,7 +66,11 @@ export const createInput = (selection: SelectionInterface) => {
   }
 
   const handleDomMouseDown = (event: MouseEvent) => {
-    if(!IS_CONTAINER_MOUSE_DOWN.has(input) && !event.defaultPrevented) setFocus(false)
+    if(!IS_CONTAINER_MOUSE_DOWN.get(input) && !event.defaultPrevented) setFocus(false)
+  }
+
+  const handleDomMouseUp = (event: MouseEvent) => {
+    IS_CONTAINER_MOUSE_DOWN.set(input, false)
   }
 
   const handleContainerMouseDown = () => { 
@@ -110,7 +116,7 @@ export const createInput = (selection: SelectionInterface) => {
       const textarea = createTextarea()
       TEXTAREA_WEAK_MAP.set(input, textarea)
       document.body.addEventListener('mousedown', handleDomMouseDown)
-      document.body.addEventListener('mouseup', handleDomMouseDown)
+      document.body.addEventListener('mouseup', handleDomMouseUp)
 
       textarea.addEventListener('blur', handleBlur)
       textarea.addEventListener('input', handleInput)
@@ -120,6 +126,24 @@ export const createInput = (selection: SelectionInterface) => {
       textarea.addEventListener('keyup', handleKeyup)
       
       return textarea
+    },
+
+    remove(){
+      document.body.removeEventListener('mousedown', handleDomMouseDown)
+      document.body.removeEventListener('mouseup', handleDomMouseUp)
+      const textarea = TEXTAREA_WEAK_MAP.get(input)
+      if(textarea) { 
+        textarea.removeEventListener('blur', handleBlur)
+        textarea.removeEventListener('input', handleInput)
+        textarea.removeEventListener('compositionstart', handleCompositionStart)
+        textarea.removeEventListener('compositionend', handleCompositionEnd)
+        textarea.removeEventListener('keydown', handleKeydown)
+        textarea.removeEventListener('keyup', handleKeyup)
+        TEXTAREA_WEAK_MAP.delete(input)
+      }
+      IS_FOCUS_WEAK_MAP.delete(selection)
+      IS_CONTAINER_MOUSE_DOWN.delete(input)
+      IS_COMPOSITON_WEAK_MAP.delete(input)
     },
 
     updateContainers(containers: HTMLElement[]){ 
