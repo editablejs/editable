@@ -21,7 +21,7 @@ const withBold = <T extends EditableInterface>(editor: T) => {
   newEditor.toggleBold = (e: React.MouseEvent) => { 
     e.preventDefault()
     if(queryBold()) {
-      newEditor.deleteFormat(formatName)
+      newEditor.setFormat(formatName)
     } else {
       newEditor.setFormat(formatName, formatValue)
     }

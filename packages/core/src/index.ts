@@ -119,7 +119,7 @@ export const createEditable = () => {
       model.insertNode(node, key, offset)
     },
   
-    setFormat(name: string, value: string | number){
+    setFormat(name: string, value?: string | number){
       const range = editor.getRange()
       if(!range) return
       if(range.isCollapsed) {
@@ -127,7 +127,7 @@ export const createEditable = () => {
         const node = model.getNode(key)
         if(!node) Log.nodeNotFound(key)
         const format = Text.isText(node) ? node.getFormat() : {}
-        CACHE_FORMAT_WEAK_MAP.set(editor, { ...format, [name]: value })
+        CACHE_FORMAT_WEAK_MAP.set(editor, Object.assign({}, format, { [name]: value }))
       } else {
         const subRanges = selection.getSubRanges()
         const changedNodes: TextInterface[] = []
@@ -167,28 +167,6 @@ export const createEditable = () => {
             selection.applyRange(range)
           }
         }
-      }
-    },
-  
-    deleteFormat(name: string){
-      const contents = selection.getContents()
-  
-      const deleteFormat = (node: NodeInterface) => {
-        if(Text.isText(node)) {
-          const format = node.getFormat()
-          delete format[name]
-          node.setFormat(format)
-          model.applyNode(node)
-        } else if(Element.isElement(node)) { 
-          const children = node.getChildren()
-          for(let c = 0; c < children.length; c++) {
-            deleteFormat(children[c])
-          }
-        }
-      }
-      for(let i = 0; i < contents.length; i++) {
-        const node = contents[i]
-        deleteFormat(node)
       }
     },
   

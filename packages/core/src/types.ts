@@ -37,9 +37,7 @@ export interface EditableInterface {
 
   insertNode(node: NodeInterface): void
 
-  setFormat(name: string, value: string | number): void
-
-  deleteFormat(name: string): void
+  setFormat(name: string, value?: string | number): void
 
   queryState(): ActiveState
 
