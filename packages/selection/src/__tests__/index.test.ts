@@ -1,7 +1,7 @@
-import Model, { Text, Element } from '@editablejs/model';
-import Selection, { Range } from '..'
+import { Text, Element, createModel } from '@editablejs/model';
+import { Range, createSelection } from '..'
 
-const model = new Model();
+const model = createModel();
 
 const paragraph1 = {
   key: 'paragraph1',
@@ -54,19 +54,8 @@ model.insertNode(Element.create(testValue));
 
 describe('selection.getSubRanges', () => {
   it("Selection of the same node", () => {
-    const selection = new Selection({
-      model
-    });
-    const ranges = selection.getSubRanges(new Range({
-      anchor: {
-        key: 'text1',
-        offset: 2
-      },
-      focus: { 
-        key: 'text1',
-        offset: 6
-      }
-    }))
+    const selection = createSelection(model);
+    const ranges = selection.getSubRanges(new Range('text1', 2, 'text1', 6))
     expect(ranges.length).toBe(1);
     expect(ranges[0].anchor).toEqual({
       key: 'text1',
@@ -78,19 +67,8 @@ describe('selection.getSubRanges', () => {
     });
   });
   it("Selection of different nodes", () => {
-    const selection = new Selection({
-      model
-    });
-    const ranges = selection.getSubRanges(new Range({
-      anchor: {
-        key: 'text1',
-        offset: 1
-      },
-      focus: { 
-        key: 'text3',
-        offset: 5
-      }
-    }))
+    const selection = createSelection(model)
+    const ranges = selection.getSubRanges(new Range('text1', 1, 'text3', 5))
     expect(ranges.length).toBe(3);
     expect(ranges[0].anchor).toEqual({
       key: 'text1',
@@ -121,19 +99,8 @@ describe('selection.getSubRanges', () => {
 
 describe('selection.getContents', () => {
   it("Selection of the same node", () => {
-    const selection = new Selection({
-      model
-    });
-    const contents = selection.getContents(new Range({
-      anchor: {
-        key: 'text1',
-        offset: 2
-      },
-      focus: { 
-        key: 'text1',
-        offset: 6
-      }
-    }))
+    const selection = createSelection(model)
+    const contents = selection.getContents(new Range('text1', 2, 'text1', 6))
     expect(contents.length).toBe(1);
     expect(contents[0].toJSON()).toEqual(Text.create({
       parent: contents[0].getParentKey(),
@@ -142,19 +109,8 @@ describe('selection.getContents', () => {
     }).toJSON());
   });
   it("Selection of different nodes", () => {
-    const selection = new Selection({
-      model
-    });
-    const contents = selection.getContents(new Range({
-      anchor: {
-        key: 'text1',
-        offset: 1
-      },
-      focus: { 
-        key: 'text3',
-        offset: 5
-      }
-    }))
+    const selection = createSelection(model)
+    const contents = selection.getContents(new Range('text1', 1, 'text3', 5))
     expect(contents.length).toBe(3);
     expect(contents[0].toJSON()).toEqual(Element.create({ ...paragraph1, parent: contents[0].getParentKey(), children: [{  
       parent: contents[0].getParentKey(),

@@ -1,7 +1,7 @@
 import { DATA_EDITOR_KEY, DATA_KEY } from "@editablejs/constants"
 import { NodeInterface, Text, Element, ModelInterface, NodeKey } from "@editablejs/model"
 import { isServer, Log } from "@editablejs/utils"
-import { RangeInterface } from "../types"
+import { RangeInterface } from "../range"
 
 export const isRenderedToDom = (model: ModelInterface, node: NodeInterface, offset: number) => {
   if(isServer) return false

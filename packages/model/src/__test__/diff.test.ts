@@ -1,7 +1,6 @@
 import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT } from '@editablejs/constants'
 import diff from '../diff'
-import Element from '../element'
-import Text from '../text'
+import { Text, TextInterface, Element } from '..'
 
 const paragraph1 = {
   key: 'paragraph1',
@@ -43,17 +42,18 @@ describe("model-diff", () => {
   it("Delete old nodes and add new nodes", () => {
     const newNode = Element.create(paragraph1)
     const oldNode = Element.create(paragraph2)
-    expect(diff([newNode], [oldNode])).toEqual([{
-        "key": null,
-        "offset": 0,
-        "type": OP_DELETE_NODE,
-        "value": oldNode.toJSON(),
-      }, 
+    expect(diff([newNode], [oldNode])).toEqual([
       {
         "key": null,
         "offset": 0,
         "type": OP_INSERT_NODE,
         "value": newNode.toJSON()
+      },
+      {
+        "key": null,
+        "offset": 1,
+        "type": OP_DELETE_NODE,
+        "value": oldNode.toJSON(),
       }
     ])
   });
@@ -76,7 +76,7 @@ describe("model-diff", () => {
   it("Modify the text", () => {
     const oldNode = Element.create(paragraph1)
     const newNode = Element.create(paragraph1);
-    const newText = newNode.first() as Text;
+    const newText = newNode.first<TextInterface>()!
     newText.setText('He456llo')
     const oldText = oldNode.first() as Text;
     expect(diff([newNode], [oldNode])).toEqual([
