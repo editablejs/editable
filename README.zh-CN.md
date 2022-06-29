@@ -36,13 +36,9 @@ pnpm dev
 - `ua` 提供终端类型判断，比如手机、安卓、iOS等
 - `log` 提供日志输出，定义了一些常见的错误和异常，可以用来抛出异常
 
-### packages/grapheme-breaker
+### packages/breaker
 
 主要对一些 `unicode` 字符进行索引的计算。因为有些字符占位所占的字节数不确定，造成某些字符拆分后的索引不准确，所以需要这个工具包来解决这个问题。
-
-### packages/event-emitter
-
-一个简单的事件处理器，稍微不同的是，绑定的事件在处理中返回非 undefined 可以中断后续的事件触发。
 
 ### packages/model
 

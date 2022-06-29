@@ -1,259 +1,373 @@
-import type { ISelection } from '@editablejs/selection';
-import Selection from '@editablejs/selection';
+import type { RangeInterface, SelectionInterface } from '@editablejs/selection';
+import { createSelection } from '@editablejs/selection';
 import { isServer, Log } from '@editablejs/utils';
-import { EVENT_VALUE_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_NODE_UPDATE, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END } from '@editablejs/constants';
-import type { IModel, INode, NodeData, NodeKey, Op } from '@editablejs/model'
-import Model, { Element, Text } from '@editablejs/model'
-import EventEmitter from '@editablejs/event-emitter';
-import type { CompositionUpdateCallback, EditorOptions, IChange, IEditor, NodeUpdateCallback, PluginOptions, PluginRender } from './types';
-import type { ITyping } from './typing/types';
-import Typing from './typing';
-import Change from './change';
+import type { NodeInterface, Op, TextFormat, TextInterface } from '@editablejs/model'
+import { createModel, Element, Text, Node } from '@editablejs/model'
+import { EditableInterface, ActiveState } from './types';
+import { handleCompositionEnd, handleInput, handleKeyDown } from './typing';
 
-type IPluginMap = Map<string, PluginOptions>
+const IS_COMPOSITION_WEAK_MAP = new WeakMap<EditableInterface, boolean>();
+const CACHE_FORMAT_WEAK_MAP = new WeakMap<EditableInterface, TextFormat>();
+const EDITOR_STATE_WEAK_MAP = new WeakMap<EditableInterface, ActiveState>();
 
-type CompositionUpdateParams = {
-  chars: Record<"type" | "text", string>[];
-  text: string;
-  offset: number;
-}
+export const createEditable = () => {
+  const model = createModel()
 
-const _pluginMap: IPluginMap = new Map();
-class Editor extends EventEmitter implements IEditor {
+  const selection = createSelection(model);
 
-  private pluginMap: IPluginMap = new Map();
-  protected updateMap: Map<string, NodeUpdateCallback> = new Map();
-  protected compositionUpdateMap: Map<string, CompositionUpdateCallback> = new Map();
-  private _isComposition = false
-  private _compositionInfo?: Record<'key' | 'text', string>
-  private _cacheCompositionUpdate: Map<string, CompositionUpdateParams> = new Map()
-  selection: ISelection;
-  model: IModel
-  change: IChange
-  typing: ITyping
+  const editor: EditableInterface = { 
+    get isComposition() {
+      return IS_COMPOSITION_WEAK_MAP.get(editor) ?? false
+    },
+  
+    getKey() {
+      return model.getKey()
+    },
 
-  /**
-   * 创建编辑器
-   * @param options 
-   * @returns 
-   */
-  static create = (options?: EditorOptions) => {
-    return new Editor(options);
+    isBlock(node: NodeInterface) {
+      return Element.isElement(node)
+    },
+
+    isInline(node: NodeInterface) {
+      return Text.isText(node)
+    },
+
+    isVoid(node: NodeInterface) {
+      return false
+    },
+  
+    getRange(): RangeInterface | null {
+      return selection.getRangeAt(0)
+    },
+
+    getModel() {
+      return model
+    },
+
+    getSelection(): SelectionInterface {
+      return selection
+    },
+  
+    deleteBackward(){
+      const range = editor.getRange()
+      if(!range) return
+      if(range.isCollapsed) {
+        const { key, offset } = range.anchor
+        const node = model.getNode(key)
+        if(!node) Log.nodeNotFound(key)
+        if(Text.isText(node)) {
+          if(offset > 0) {
+            model.deleteText(key, offset - 1, 1);
+          }
+        }
+      }
+    },
+  
+    deleteForward(){
+      const range = editor.getRange()
+      if(!range) return
+      if(range.isCollapsed) {
+        const { key, offset } = range.anchor
+        const node = model.getNode(key)
+        if(!node) Log.nodeNotFound(key)
+        if(Text.isText(node)) {
+          const text = node.getText()
+          if(offset + 1 <= text.length) model.deleteText(key, offset, 1);
+        }
+      }
+    },
+  
+    deleteContents(){
+      const range = editor.getRange()
+      if(!range || range.isCollapsed) return
+      const ranges = selection.getSubRanges()
+      for (let i = ranges.length - 1; i >= 0; i--) { 
+        const range = ranges[i]
+        const anchor = range.isBackward ? range.focus : range.anchor
+        const focus = range.isBackward ? range.anchor : range.focus
+        const start = model.getNode(anchor.key)
+        const end = model.getNode(focus.key)
+        if(!start || !end) break
+        if(Text.isText(start)) { 
+          model.deleteText(anchor.key, anchor.offset, focus.offset - anchor.offset)
+        } else if(Element.isElement(start)) { 
+          const children = start.getChildren()
+          model.deleteNode(children[anchor.offset].getKey())
+        }
+      }
+    },
+  
+    insertText(text: string){ 
+      if(CACHE_FORMAT_WEAK_MAP.has(editor)) {
+        const node = Text.create({ text, format: CACHE_FORMAT_WEAK_MAP.get(editor) })
+        editor.insertNode(node)
+        CACHE_FORMAT_WEAK_MAP.delete(editor)
+      } else {
+        editor.deleteContents()
+        const range = editor.getRange()
+        if(!range) return
+        const { key, offset } = range.anchor
+        model.insertText(text, key, offset);
+      }
+    },
+  
+    insertNode(node: NodeInterface){
+      editor.deleteContents()
+      const range = editor.getRange()
+      if(!range) return
+      const { key, offset } = range.anchor
+      model.insertNode(node, key, offset)
+    },
+  
+    setFormat(name: string, value: string | number){
+      const range = editor.getRange()
+      if(!range) return
+      if(range.isCollapsed) {
+        const key = range.anchor.key
+        const node = model.getNode(key)
+        if(!node) Log.nodeNotFound(key)
+        const format = Text.isText(node) ? node.getFormat() : {}
+        CACHE_FORMAT_WEAK_MAP.set(editor, { ...format, [name]: value })
+      } else {
+        const subRanges = selection.getSubRanges()
+        const changedNodes: TextInterface[] = []
+        for (let i = 0; i < subRanges.length; i++) { 
+          const range = subRanges[i]
+          const { anchor, focus } = range
+          const node = model.getNode(anchor.key)
+          if(!node) continue
+          if(Text.isText(node)) {
+            const cloneText = node.clone(false, false)
+            const text = node.getText()
+            const format = node.getFormat()
+            cloneText.setText(text.substring(anchor.offset, focus.offset))
+            cloneText.setFormat(Object.assign({}, format, { [name]: value }))
+            model.deleteText(anchor.key, anchor.offset, focus.offset - anchor.offset)
+            model.insertNode(cloneText, anchor.key, anchor.offset)
+            changedNodes.push(cloneText)
+          } else if(Element.isElement(node)) {
+            const children = node.getChildren()
+            const child = children[anchor.offset]
+            if(Element.isElement(child)) {
+              const textNodes = child.matches(Text.isText)
+              for(let t = 0; t < textNodes.length; t++) {
+                const textNode = textNodes[t]
+                const format = textNode.getFormat()
+                textNode.setFormat(Object.assign({}, format, { [name]: value }))
+                model.applyNode(textNode)
+                changedNodes.push(textNode)
+              }
+            }
+          }
+          if(changedNodes.length > 0) {
+            const start = changedNodes[0]
+            const end = changedNodes[changedNodes.length - 1]
+            range.setStart(start.getKey(), 0)
+            range.setEnd(end.getKey(), end.getText().length)
+            selection.applyRange(range)
+          }
+        }
+      }
+    },
+  
+    deleteFormat(name: string){
+      const contents = selection.getContents()
+  
+      const deleteFormat = (node: NodeInterface) => {
+        if(Text.isText(node)) {
+          const format = node.getFormat()
+          delete format[name]
+          node.setFormat(format)
+          model.applyNode(node)
+        } else if(Element.isElement(node)) { 
+          const children = node.getChildren()
+          for(let c = 0; c < children.length; c++) {
+            deleteFormat(children[c])
+          }
+        }
+      }
+      for(let i = 0; i < contents.length; i++) {
+        const node = contents[i]
+        deleteFormat(node)
+      }
+    },
+  
+    queryState(): ActiveState {
+      const state = EDITOR_STATE_WEAK_MAP.get(editor)
+      if(state) return state
+      const contents = selection.getContents()
+      const data: ActiveState = {
+        types: [],
+        format: new Map(),
+        style: new Map(),
+        keys: [],
+        nodes: []
+      }
+      const getState = (node: NodeInterface) => {
+        const key = node.getKey()
+        const type = node.getType()
+        data.keys.push(key)
+        if(~~data.types.indexOf(type)) data.types.push(type)
+        if(Text.isText(node)) {
+          const format = node.getFormat()
+          Object.keys(format).forEach(name => { 
+            const value = format[name]
+            const values = data.format.get(name)
+            if(values) {
+              values.push(value)
+            } else {
+              data.format.set(name, [value])
+            }
+          })
+        } else if(Element.isElement(node)) {
+          const style = node.getStyle()
+          Object.keys(style).forEach(name => { 
+            const value = style[name]
+            const values = data.style.get(name)
+            if(values) {
+              values.push(value)
+            } else {
+              data.style.set(name, [value])
+            }
+          })
+          const children = node.getChildren()
+          children.forEach(getState)
+        }
+        data.nodes.push(node)
+      }
+      for(let i = 0; i < contents.length; i++) {
+        const node = contents[i]
+        getState(node)
+      }
+      EDITOR_STATE_WEAK_MAP.set(editor, data)
+      return data
+    },
+  
+    queryFormat(callback: (name: string, value: (string | number)[]) => boolean): boolean {
+      const state = editor.queryState()
+      const format = state.format
+      for(let [name, values] of format) {
+        if(callback(name, values)) return true
+      }
+      return false
+    },
+  
+    queryStyle(callback: (name: string, value: (string | number)[]) => boolean): boolean {
+      const state = editor.queryState()
+      const style = state.style
+      for(let [name, values] of style) {
+        if(callback(name, values)) return true
+      }
+      return false
+    },
+  
+    queryKey(callback: (key: string) => boolean): boolean {
+      const state = editor.queryState()
+      const keys = state.keys
+      return keys.some(callback)
+    },
+  
+    queryNode(callback: (node: NodeInterface) => boolean): boolean {
+      const state = editor.queryState()
+      const nodes = state.nodes
+      return nodes.some(callback)
+    },
+
+    onChange(node: NodeInterface, ops: Op[]) { },
+
+    onKeydown(event: KeyboardEvent) { },
+
+    onKeyup(event: KeyboardEvent) { },
+
+    onSelectChange() { },
+
+    onInput(event: InputEvent) { },
+
+    onFocus() { },
+
+    onBlur() { },
+
+    onCompositionStart(event: CompositionEvent) { },
+
+    onCompositionEnd(event: CompositionEvent) { },
+
+    onSelectStart() { },
+
+    onSelecting() { },
+
+    onSelectEnd() { },
+  }
+
+  const { isBlock, isInline, isVoid } = model
+  model.isBlock = (node) => {
+    return editor.isBlock(node) || isBlock(node)
+  }
+  model.isInline = (node) => {
+    return editor.isInline(node) || isInline(node)
+  }
+  model.isVoid = (node) => { 
+    return editor.isVoid(node) || isVoid(node)
+  }
+
+  model.onChange = (node, ops) => { 
+    EDITOR_STATE_WEAK_MAP.delete(editor)
+    editor.onChange(node, ops)
+    selection.applyOps(ops)
+  }
+
+  const { onSelectChange, onInput, onKeydown, onKeyup, onCompositionStart, onCompositionEnd } = selection 
+
+  selection.onSelectChange = () => {
+    onSelectChange()
+    EDITOR_STATE_WEAK_MAP.delete(editor)
+    editor.onSelectChange()
   }
   
-  /**
-   * 注册插件
-   * @param name 
-   * @param options 
-   */
-  static registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(type: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
-    if(typeof options === 'function') { 
-      options = {
-        render: options
-      }
-    }
-    _pluginMap.set(type, options as unknown as PluginOptions)
+  selection.onInput = (event) => {
+    onInput(event)
+    editor.onInput(event)
+    if(!event.defaultPrevented && event.data) handleInput(event.data, CACHE_FORMAT_WEAK_MAP.has(editor), editor)
   }
 
-  constructor(options?: EditorOptions){
-    super()
-    const { enabledPlugins, disabledPlugins } = options ?? {}
-    if(enabledPlugins) {
-      enabledPlugins.forEach(name => {
-        const pluginOptions = _pluginMap.get(name)
-        if(pluginOptions) {
-          this.registerPlugin(name, pluginOptions)
-        }
-      })
-    } else { 
-      _pluginMap.forEach((plugin, name) => { 
-        if(!disabledPlugins || disabledPlugins.includes(name)) {
-          this.registerPlugin(name, plugin)
-        }
-      })
-    }
-
-    const model = new Model()
-    const selection = new Selection({
-      model
-    });
-    const change = new Change(model, selection)
-    const typing = new Typing(this)
-    
-    model.on(EVENT_NODE_UPDATE, this.emitUpdate)
-    
-    selection.on(EVENT_VALUE_CHANGE, (value: string) => {
-      if(!selection.isCollapsed) {
-        change.deleteContents()
-      }
-      if(this.isComposition) {
-        this.emitCompositionUpdate(value)
-      } else {
-        change.insertText(value)
-      }
-    })
-    selection.on(EVENT_KEYDOWN, typing.emitKeydown)
-    selection.on(EVENT_KEYUP, typing.emitKeyup)
-    selection.on(EVENT_COMPOSITION_START, () => {
-      this._isComposition = true
-    })
-    selection.on(EVENT_COMPOSITION_END, (ev: CompositionEvent) => {
-      this._isComposition = false
-      if(this._compositionInfo) { 
-        const callback = this.compositionUpdateMap.get(this._compositionInfo.key)
-        if(callback) callback(null)
-      }
-      this._compositionInfo = undefined
-      change.insertText(ev.data)
-    })
-    this.model = model
-    this.selection = selection
-    this.change = change
-    this.typing = typing
-  }
-
-  get isComposition() {
-    return this._isComposition
-  }
-
-  registerPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(name: string, options: PluginOptions<E, T> | PluginRender<E, T>): void => {
-    if(typeof options === 'function') { 
-      options = {
-        render: options
-      }
-    }
-    this.pluginMap.set(name, options as unknown as PluginOptions)
-  }
-
-  renderPlugin = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T): any => {
-    const type = node.getType()
-    const plugin = this.pluginMap.get(type)
-    if(!plugin) Log.pluginNotFound(type)
-    const next: ((renderNode: INode) => any) = renderNode => {
-      if(!Element.isElement(renderNode)) return
-      const children = renderNode.getChildren()
-      return children.map((child) => {
-        return this.renderPlugin(child)
-      })
-    };
-    return plugin.render({
-      node,
-      next,
-      editor: this
-    })
-  }
-
-  onUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(key: NodeKey, callback: NodeUpdateCallback<E, T>) => {
-    this.updateMap.set(key, callback as any);
-  }
-
-  offUpdate = (key: NodeKey) => { 
-    this.updateMap.delete(key);
-  }
-
-  private emitUpdate = <E extends NodeData = NodeData, T extends INode<E> = INode<E>>(node: T, ops: Op[]) =>{ 
-    if(Element.isElement(node)) {
-      const children = node.getChildren()
-      children.forEach(child => {
-        this.emitUpdate(child, ops.filter(op => op.key === child.getKey()))
-      })
-    }
-    const key = node.getKey()
-    let callback = this.updateMap.get(key)
-    if(callback) {
-      callback(node, ops)
-    }
-    callback = this.updateMap.get('*')
-    if(callback) {
-      callback(node, ops)
-    }
-    // update composition position
-    if(this._compositionInfo?.key === key) {
-      this.emitCompositionUpdate(this._compositionInfo.text)
+  selection.onKeydown = (event) => { 
+    editor.onKeydown(event)
+    if(!event.defaultPrevented){
+      onKeydown(event)
+      handleKeyDown(event, editor)
     }
   }
 
-  onCompositionUpdate = (key: NodeKey, callback: CompositionUpdateCallback) => {
-    const cache = this._cacheCompositionUpdate.get(key)
-    if(cache) {
-      callback(cache)
-      this._cacheCompositionUpdate.delete(key)
-    }
-    this.compositionUpdateMap.set(key, callback);
+  selection.onKeyup = (event) => {
+    editor.onKeyup(event)
+    if(!event.defaultPrevented) onKeyup(event)
   }
-
-  offCompositionUpdate = (key: NodeKey) => { 
-    this._cacheCompositionUpdate.delete(key)
-    this.compositionUpdateMap.delete(key);
-  }
-
-  didCompositionUpdate = (textNode: globalThis.Text) => {
-    const range = document.createRange()
-    range.selectNodeContents(textNode)
-    range.collapse(false)
-    const rect = range.getClientRects().item(0)
-    if(!rect) return
-    this.selection.clearSelection()
-    this.selection.drawCaretByRect(rect.toJSON())
-  }
-
-  private emitCompositionUpdate = (text: string) => { 
-    const change = this.change
-    if(change.hasCacheFormatting()) {
-      change.insertText('')
-    }
-    const range = change.getRange()
-    if(!range) return
-    const { key, offset } = range.anchor
-    this._compositionInfo = {
-      key,
-      text
-    }
-    const node = this.model.getNode(key)
-    if(!node || !Text.isText(node)) return
-    
-    const nodeText = node.getText()
-    const chars: Record<'type' | 'text', string>[] = []
-    chars.push({
-      type: 'text',
-      text: nodeText.substring(0, offset)
-    })
-    chars.push({
-      type: 'composition',
-      text
-    })
-    if(offset < nodeText.length) { 
-      chars.push({
-        type: 'text',
-        text: nodeText.substring(offset)
-      })
-    }
-    const callback = this.compositionUpdateMap.get(key)
-    const params = {
-      chars, text, offset
-    }
-    if(callback) {
-      this._cacheCompositionUpdate.delete(key)
-      callback(params)
-    } else {
-      this._cacheCompositionUpdate.set(key, params)
+  
+  selection.onCompositionStart = (event: CompositionEvent) => { 
+    editor.onCompositionStart(event)
+    if(!event.defaultPrevented) {
+      IS_COMPOSITION_WEAK_MAP.set(editor, true)
+      onCompositionStart(event)
     }
   }
 
-  destroy(){ 
-    this.updateMap.clear()
-    this.pluginMap.clear()
-    this.model.destroy()
-    this.selection.destroy()
+  selection.onCompositionEnd = (event: CompositionEvent) => {  
+    editor.onCompositionEnd(event)
+    if(!event.defaultPrevented) {
+      onCompositionEnd(event)
+      IS_COMPOSITION_WEAK_MAP.set(editor, false)
+      handleCompositionEnd(event.data, editor)
+    }
   }
+
+  return editor
 }
 
-export default Editor;
 if(!isServer) {
   window.Editable = {
-    Editor,
+    createEditable,
     Element,
-    Text
+    Text,
+    Node
   }
 }
 export * from '@editablejs/model'

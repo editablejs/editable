@@ -1,6 +1,21 @@
-const withTM = require("next-transpile-modules")(["@editablejs/core"]);
+const withPlugins = require('next-compose-plugins');
+const withTM = require('next-transpile-modules')(['@editablejs/core']);
+const withLess = require('next-with-less');
 
-module.exports = withTM({
-  reactStrictMode: true,
-  css: ['@/src/pages/*.less'],
-});
+const plugins = [
+  [
+    withLess,
+    {
+      lessLoaderOptions: {
+        javascriptEnabled: true,
+      },
+    },
+  ],
+  [
+    withTM,
+    {
+      reactStrictMode: false,
+    },
+  ],
+]
+module.exports = withPlugins(plugins);

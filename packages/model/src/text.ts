@@ -1,24 +1,65 @@
 import isEqual from 'lodash/isEqual';
 import { DATA_TYPE_TEXT } from '@editablejs/constants';
-import Node from './node';
-import type { INode, IText, NodeData, NodeOptions, TextFormat, TextObject, TextOptions } from './types';
-export default class Text<T extends NodeData = NodeData> extends Node<T> implements IText<T> {
+import Node, { NodeData, NodeInterface, NodeObject, NodeOptions } from './node';
+
+export type TextFormat = Record<string, string | number>
+export interface TextObject extends NodeObject {
+  text: string
+  format?: TextFormat
+}
+
+interface CompositionInfo {
+  text: string
+  offset: number
+}
+
+export interface TextData extends NodeData {
+  composition: CompositionInfo
+} 
+
+export type TextOptions = Partial<Omit<TextObject, 'type'>> & Required<Pick<TextObject, 'text'>>
+export interface TextInterface extends Node {
+
+  clone(deep?: boolean, copyKey?: boolean): TextInterface
+
+  getText(): string;
+
+  setText(text: string): void
+
+  setComposition(info?: CompositionInfo): void
+
+  getComposition(): CompositionInfo | null
+
+  getFormat(): TextFormat;
+
+  setFormat(format: TextFormat): void
+
+  insert(text: string, offset?: number): void
+
+  delete(offset: number, length: number): void
+
+  split(offset: number): TextInterface[]
+
+  toJSON<R extends TextObject = TextObject>(): R;
+}
+
+export default class Text extends Node implements TextInterface {
   protected text = '';
   protected format: TextFormat = {}
 
-  static create = <T extends NodeData = NodeData>(options: TextOptions<T>): IText<T> => {
+  static create = (options: TextOptions): TextInterface => {
     return new Text(options);
   }
 
-  static isText = (node: INode): node is IText => { 
-    return node.getType() === DATA_TYPE_TEXT
+  static isText = (node: NodeInterface): node is TextInterface => { 
+    return node instanceof Text
   }
 
   static isTextObject = (nodeObj: NodeOptions): nodeObj is TextObject => { 
-    return nodeObj.type === DATA_TYPE_TEXT
+    return nodeObj.type === DATA_TYPE_TEXT || (!nodeObj.hasOwnProperty('type') && nodeObj.hasOwnProperty('text') && typeof (nodeObj as TextOptions).text === 'string')
   }
 
-  constructor(options: TextOptions<T>) {
+  constructor(options: TextOptions) {
     super(Object.assign({}, options, { type: DATA_TYPE_TEXT }));
     this.text = options.text || '';
     if(options.format) this.setFormat(options.format)
@@ -32,6 +73,14 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     return this.text;
   }
 
+  setComposition(info?: CompositionInfo) {
+    this.setData(info ? { composition: info } : {})
+  }
+
+  getComposition() {
+    return this.getData<TextData | null>()?.composition ?? null
+  }
+
   getFormat(): TextFormat {
     return Object.assign({}, this.format)
   }
@@ -40,12 +89,12 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     this.format = Object.assign({}, format);
   }
 
-  compare(node: INode): boolean {
+  compare(node: NodeInterface): boolean {
     if(!Text.isText(node)) return false
     return super.compare(node) && isEqual(this.format, node.getFormat())
   }
 
-  clone(deep: boolean = false, copyKey: boolean = true): IText {
+  clone(deep: boolean = false, copyKey: boolean = true): TextInterface {
     const json = this.toJSON()
     const newJson = Object.assign({}, json, {key: copyKey === false ? undefined : json.key})
     if(!deep) newJson.text = ''
@@ -53,7 +102,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
   }
 
   isEmpty(): boolean {
-    return !this.getText()
+    return !this.getText() && !this.getComposition()
   }
 
   insert(text: string, offset?: number){
@@ -84,7 +133,7 @@ export default class Text<T extends NodeData = NodeData> extends Node<T> impleme
     return [left, right]
   }
 
-  toJSON<E extends TextObject<T> = TextObject<T>>(): E{
+  toJSON<E extends TextObject = TextObject>(): E{
     const json = super.toJSON() as E
     json.text = this.text;
     json.format = this.getFormat()

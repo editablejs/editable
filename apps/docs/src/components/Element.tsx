@@ -1,18 +1,16 @@
-import { IElement, NodeData, RenderOptions } from "@editablejs/core"
+import { ElementInterface } from "@editablejs/core"
 import React from 'react'
-import useComponent from "../hooks/component"
+import { useEditableStatic } from "../hooks/use-editable-static"
 import NodeComponent from "./Node"
 
-type ElementProps = RenderOptions<NodeData, IElement> & Record<'tagName', string>
-
-const ElementComponent: React.FC<ElementProps> = (props) => { 
-  const { node } = useComponent(props)
-  const { next, tagName } = props
-  return <NodeComponent tagName={tagName} node={node}>{ node.getChildrenSize() === 0 ? <br /> : next(node) }</NodeComponent>
+interface ElementProps {
+  node: ElementInterface
+  name?: string
 }
 
-export const renderElement = (options: RenderOptions<NodeData, IElement>, tagName = 'div') => { 
-  const { node } = options
-  return <ElementComponent tagName={tagName} key={node.getKey()} {...options} />
+const ElementComponent: React.FC<ElementProps & React.HTMLAttributes<HTMLElement>> = ({ node, name, children, ...props }) => { 
+  const editor = useEditableStatic()
+  return <NodeComponent name={name} node={node} editorKey={!node.getParentKey() ? editor.getKey() : undefined} {...props}>{ node.getChildrenSize() === 0 ? <br /> : children }</NodeComponent>
 }
+
 export default ElementComponent

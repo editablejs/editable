@@ -8,13 +8,14 @@ import {
 import { Log } from '@editablejs/utils';
 import isEqual from 'lodash/isEqual'
 import { OP_DELETE_NODE, OP_DELETE_TEXT, OP_INSERT_NODE, OP_INSERT_TEXT, OP_UPDATE_DATA, OP_UPDATE_FORMAT, OP_UPDATE_STYLE } from "@editablejs/constants";
-import Text from './text'
-import { IElement, INode, IText, Op } from "./types";
-import Element from './element';
+import Text, { TextInterface } from './text'
+import Element, { ElementInterface } from './element';
+import { NodeInterface } from './node';
+import { Op } from './op'
 
 const dmp = new diff_match_patch()
 
-const diffText = (newText: IText, oldText: IText) => {
+const diffText = (newText: TextInterface, oldText: TextInterface) => {
   const ops: Op[] = [];
   const key1 = newText.getKey()
   const key2 = oldText.getKey()
@@ -53,7 +54,7 @@ const diffText = (newText: IText, oldText: IText) => {
   return ops
 }
 
-const handleText = (textNode: IText, oldChildren: INode[]) => {
+const handleText = (textNode: TextInterface, oldChildren: NodeInterface[]) => {
   const ops: Op[] = [];
   const oldTextNode = oldChildren.length > 0 && Text.isText(oldChildren[0]) && oldChildren[0].getKey() === textNode.getKey() ? oldChildren[0] : null
 
@@ -85,7 +86,7 @@ const handleText = (textNode: IText, oldChildren: INode[]) => {
   return ops;
 }
 
-const handleAttributes = (newNode: INode, oldNode: INode) => { 
+const handleAttributes = (newNode: NodeInterface, oldNode: NodeInterface) => { 
   const ops: Op[] = [];
   // Data
   const newData = newNode.getData()
@@ -101,7 +102,7 @@ const handleAttributes = (newNode: INode, oldNode: INode) => {
   // Format
   if(Text.isText(newNode)) {
     const newFormat = newNode.getFormat()
-    const oldFormat = (oldNode as IText).getFormat()
+    const oldFormat = (oldNode as TextInterface).getFormat()
     if(!isEqual(newFormat, oldFormat)) {
       ops.push({
         type: OP_UPDATE_FORMAT,
@@ -112,7 +113,7 @@ const handleAttributes = (newNode: INode, oldNode: INode) => {
     }
   } else if (Element.isElement(newNode)) {
     const newStyle = newNode.getStyle()
-    const oldStyle = (oldNode as IElement).getStyle()
+    const oldStyle = (oldNode as ElementInterface).getStyle()
     if(!isEqual(newStyle, oldStyle)) { 
       ops.push({
         type: OP_UPDATE_STYLE,
@@ -125,7 +126,7 @@ const handleAttributes = (newNode: INode, oldNode: INode) => {
   return ops
 }
 
-const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
+const handleChildren = (newChildren: NodeInterface[], oldChildren: NodeInterface[]) => {
   const ops: Op[] = [];
   // 旧节点没有子节点数据
   if(oldChildren.length === 0) {
@@ -155,7 +156,7 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
     newChildren.length === 1 &&
     Text.isText(newChildren[0])
   ) {
-    ops.push(...handleText(newChildren[0] as IText, oldChildren))
+    ops.push(...handleText(newChildren[0] as TextInterface, oldChildren))
   } else {
     // 找出需要插入的新节点
     const oldChildrenKeys = oldChildren.map((child) => child.getKey());
@@ -163,7 +164,7 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
       const newChild = newChildren[c];
       const newChildKey = newChild.getKey();
       const index = oldChildrenKeys.indexOf(newChildKey);
-      if(!~index || newChild.getType() !== oldChildren[index].getType()) { 
+      if(~~index || newChild.getType() !== oldChildren[index].getType()) { 
         ops.push({
           type: OP_INSERT_NODE,
           key: newChild.getParentKey(),
@@ -178,9 +179,9 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
     for (let c = oldChildren.length - 1; c >= 0; c--) {
       const oldChild = oldChildren[c];
       const oldChildKey = oldChild.getKey();
-      if(!~oldChildrenKeys.indexOf(oldChildKey)) continue
+      if(~~oldChildrenKeys.indexOf(oldChildKey)) continue
       const index = newChildrenKeys.indexOf(oldChildKey); 
-      if(!~index || oldChild.getType() !== newChildren[index].getType()) {
+      if(~~index || oldChild.getType() !== newChildren[index].getType()) {
         ops.push({
           type: OP_DELETE_NODE,
           key: oldChild.getParentKey(),
@@ -202,7 +203,7 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
           ops.push(
             ...handleChildren(
               newChild.getChildren(),
-              (oldChild as IElement).getChildren()
+              (oldChild as ElementInterface).getChildren()
             ),
           );
         }
@@ -212,7 +213,7 @@ const handleChildren = (newChildren: INode[], oldChildren: INode[]) => {
   return ops
 }
 
-const diff = (newNodes: INode[], oldNodes: INode[]) => {
+const diff = (newNodes: NodeInterface[], oldNodes: NodeInterface[]) => {
   // check parentKey
   const newLength = newNodes.length;
   const oldLength = oldNodes.length;

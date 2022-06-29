@@ -19,10 +19,9 @@
   },
   "dependencies": {
     "@editablejs/constants": "workspace:*",
-    "@editablejs/event-emitter": "workspace:*",
-    "@editablejs/model": "workspace:*",
     "@editablejs/selection": "workspace:*",
     "@editablejs/utils": "workspace:*",
+    "@editablejs/model": "workspace:*",
     "is-hotkey": "^0.2.0"
   },
   "devDependencies": {

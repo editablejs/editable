@@ -1,17 +1,50 @@
 import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 import { generateRandomKey } from './keys';
-import type { INode, NodeData, NodeKey, NodeObject, NodeOptions } from './types';
-export default class Node<T extends NodeData = NodeData> implements INode {
+
+export type NodeData = any
+export type NodeKey = string;
+
+export interface NodeObject {
+  key: NodeKey
+  parent: NodeKey | null
+  type: string
+  data: NodeData
+}
+
+export type NodeOptions = Partial<NodeObject>
+
+export interface NodeInterface {
+  getParentKey(): NodeKey | null
+
+  getKey(): NodeKey;   
+
+  getType(): string;
+
+  getData<T extends NodeData = NodeData>(): T;
+
+  setData<T extends NodeData = NodeData>(data: T): void
+
+  compare(node: NodeInterface): boolean
+
+  clone(deep?: boolean, copyKey?: boolean): NodeInterface
+
+  isEmpty(): boolean
+
+  toJSON(): Readonly<NodeObject>;
+}
+
+export default class Node implements NodeInterface {
   protected parent: NodeKey | null;
   protected key: NodeKey;
   protected type: string;
-  protected data?: T;
+  protected data?: NodeData;
 
-  static create<T extends NodeData = NodeData>(options: NodeOptions<T>): INode {
+  static create(options: NodeOptions): NodeInterface {
     return new Node(options)
   }
 
-  constructor(options: NodeOptions<T>) {
+  constructor(options: NodeOptions) {
     this.parent = options.parent || null
     this.key = options.key || generateRandomKey();
     this.type = options.type || 'node'
@@ -30,20 +63,20 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     return this.type
   }
 
-  getData(): T {
+  getData<T extends NodeData = NodeData>(): T {
     return this.data as T;
   }
 
-  setData(data: T): void {
+  setData<T extends NodeData = NodeData>(data: T): void {
     this.data = data;
   }
 
-  compare(node: INode): boolean {
+  compare(node: NodeInterface): boolean {
     if(this.type !== node.getType() || this.parent !== node.getParentKey()) return false
     return isEqual(this.data, node.getData())
   }
 
-  clone(deep: boolean = false, copyKey: boolean = true): INode {
+  clone(deep: boolean = false, copyKey: boolean = true): NodeInterface {
     const json = this.toJSON()
     return Node.create(Object.assign({}, json, { key: copyKey === false ? undefined : json.key }))
   }
@@ -52,12 +85,12 @@ export default class Node<T extends NodeData = NodeData> implements INode {
     return true
   }
 
-  toJSON(): NodeObject<T> {
+  toJSON(): NodeObject {
     return {
       parent: this.getParentKey(),
       key: this.key,
       type: this.getType(),
-      data: (this.data ? Object.assign({}, this.data) : this.data) as T
+      data: (this.data ? cloneDeep(this.data) : this.data)
     }
   }
 }

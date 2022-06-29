@@ -1,15 +1,16 @@
 import { DATA_KEY } from "@editablejs/constants"
-import { nextBreak, previousBreak } from "@editablejs/grapheme-breaker"
-import { IModel, NodeKey, Text, Element, INode, IElement } from "@editablejs/model"
+import { nextBreak, previousBreak } from "../../../breaker/dist"
+import { ModelInterface, NodeKey, Text, Element, NodeInterface, ElementInterface } from "@editablejs/model"
 import { Log } from "@editablejs/utils"
-import { Position } from "../types"
 import closest, { isAlignY } from "./closest"
 import { getOffset } from "./text"
+import { queryElements } from "./dom"
+import { Position } from "../range"
 
-export const getPositionToForward = (model: IModel, key: NodeKey, offset: number): Position => {
+export const getPositionToForward = (model: ModelInterface, key: NodeKey, offset: number): Position => {
   let node = model.getNode(key)
   if(!node) Log.nodeNotFound(key)
-  let next: INode | null = null
+  let next: NodeInterface | null = null
   const position = {
     key,
     offset
@@ -38,7 +39,7 @@ export const getPositionToForward = (model: IModel, key: NodeKey, offset: number
       next = model.getNext(key)
     }
   }
-  let parentNode: IElement | null = null
+  let parentNode: ElementInterface | null = null
   // is null
   while(!next) {
     // get parent
@@ -74,10 +75,10 @@ export const getPositionToForward = (model: IModel, key: NodeKey, offset: number
   return position
 }
 
-export const getPositionToBackward = (model: IModel, key: NodeKey, offset: number): Position => { 
+export const getPositionToBackward = (model: ModelInterface, key: NodeKey, offset: number): Position => { 
   let node = model.getNode(key)
   if(!node) Log.nodeNotFound(key)
-  let prev: INode | null = null
+  let prev: NodeInterface | null = null
   const position = {
     key,
     offset
@@ -105,7 +106,7 @@ export const getPositionToBackward = (model: IModel, key: NodeKey, offset: numbe
       prev = model.getPrev(key)
     }
   }
-  let parentNode: IElement | null = null
+  let parentNode: ElementInterface | null = null
   // is null
   while(!prev) {
     // get parent
@@ -146,7 +147,7 @@ export const getPositionToBackward = (model: IModel, key: NodeKey, offset: numbe
   return position
 }
 
-const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
+const findNodeFromEvent = (model: ModelInterface, e: MouseEvent) => {
   if (!(e.target instanceof Node)) return
   let targetNode: Node | null = e.target
   let key: NodeKey | null = null
@@ -169,7 +170,7 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
       }
     }
     if(!key) {
-      const nodeArray = model.filter(obj => {
+      const nodeArray = model.matches(obj => {
         if(Text.isTextObject(obj)) {
           return true
         } else if(Element.isElementObject(obj)) {
@@ -178,8 +179,7 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
         return false
       })
       if(nodeArray.length > 0) {
-        const selector = nodeArray.map(node => `[${DATA_KEY}="${node.getKey()}"]`).join(',')
-        document.querySelectorAll(selector).forEach(node => { 
+        queryElements(model, ...nodeArray.map(n => n.getKey())).forEach(node => { 
           if(node instanceof globalThis.Element) {
             nodes.push(node)
           }
@@ -192,7 +192,7 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
       if(Text.isText(node)) {
         keys.push(key)
       } else if(Element.isElement(node)) {
-        const findKeys = (node: IElement) => {
+        const findKeys = (node: ElementInterface) => {
           const children = node.getChildren()
           if(children.length === 0) keys.push(node.getKey())
           children.forEach(child => { 
@@ -207,8 +207,7 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
         findKeys(node)
       }
       if(keys.length > 0) {
-        const selector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
-        document.querySelectorAll(selector).forEach(node => {
+        queryElements(model, ...keys).forEach(node => {
           if(node instanceof globalThis.Element) {
             nodes.push(node)
           }
@@ -275,7 +274,7 @@ const findNodeFromEvent = (model: IModel, e: MouseEvent) => {
   }
 }
 
-export const getPositionFromEvent = (model: IModel, e: MouseEvent): Position | undefined => { 
+export const getPositionFromEvent = (model: ModelInterface, e: MouseEvent): Position | undefined => { 
   const result = findNodeFromEvent(model, e)
   if(!result) return
   const { key, node, top, left } = result

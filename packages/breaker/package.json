@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/event-emitter",
+  "name": "@editablejs/breaker",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -17,12 +17,19 @@
     "lint": "eslint src --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "dependencies": {
+    "tiny-inflate": "^1.0.3",
+    "unicode-trie": "^2.0.0"
+  },
   "devDependencies": {
-    "tsconfig": "workspace:*",
-    "scripts": "workspace:*",
     "@types/jest": "^26.0.22",
-    "tsup": "^5.10.1",
+    "@types/node-fetch": "^2.6.1",
+    "@types/unicode-trie": "^2.0.0",
     "jest": "^27.5.1",
+    "node-fetch": "^2.6.7",
+    "scripts": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^5.10.1",
     "typescript": "^4.5.3"
   },
   "jest": {

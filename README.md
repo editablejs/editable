@@ -38,13 +38,9 @@ Toolkit
 - `ua` provides terminal type judgment, such as mobile phone, Android, iOS, etc.
 - `log` provides log output, defines some common errors and exceptions, and can be used to throw exceptions
 
-### packages/grapheme-breaker
+### packages/breaker
 
 Mainly index some `unicode` characters. Because the number of bytes occupied by some characters is uncertain, resulting in inaccurate indexes of some characters after splitting, this toolkit is needed to solve this problem.
-
-### packages/event-emitter
-
-A simple event handler, with a slight difference, the bound event returning non-undefined in processing can interrupt subsequent event firing.
 
 ### packages/model
 

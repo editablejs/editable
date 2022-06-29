@@ -11,7 +11,7 @@ test page
 https://taisukef.github.io/grapheme-breaker-mjs/  
 
 ```typescript
-import { breaks } from '@editablejs/grapheme-breaker';
+import { breaks } from '@editablejs/breaker';
 
 console.log(breaks('😜🇺🇸👍')) // => [ '😜', '🇺🇸', '👍' ]
 ```
@@ -20,12 +20,12 @@ console.log(breaks('😜🇺🇸👍')) // => [ '😜', '🇺🇸', '👍' ]
 
 You can install via npm
 
-    npm i @editablejs/grapheme-breaker
+    npm i @editablejs/breaker
 
 ## Example
 
 ```typescript
-import { breaks, countBreaks, nextBreak, previousBreak } from '@editablejs/grapheme-breaker'
+import { breaks, countBreaks, nextBreak, previousBreak } from '@editablejs/breaker'
 
 // break a string into an array of grapheme clusters
 

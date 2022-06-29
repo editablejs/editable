@@ -1,29 +1,83 @@
 import isEqual from 'lodash/isEqual';
 import { DATA_TYPE_ELEMENT, DATA_TYPE_TEXT } from '@editablejs/constants';
-import type { IElement, NodeData, ElementObject, ElementOptions, INode, NodeOptions, NodeKey, ElementStyle } from './types';
-import Node from './node';
-export default class Element<T extends NodeData = NodeData> extends Node<T> implements IElement<T> {
+import Node, { NodeInterface, NodeKey, NodeObject, NodeOptions } from './node';
+import { TextOptions } from './text';
+
+export interface ElementObject extends NodeObject {
+  size: number
+  children: NodeObject[]
+}
+
+export type ElementOptions = Partial<Omit<ElementObject, 'children' | 'size'>> & Record<'children', (NodeOptions | ElementOptions | TextOptions)[] | undefined>
+
+export type ElementStyle = Record<string, string | number>
+
+export interface ElementInterface extends NodeInterface {
+
+  clone(deep?: boolean, copyKey?: boolean): ElementInterface
+
+  getStyle(): ElementStyle 
+
+  setStyle(style: ElementStyle): void
+
+  getChildrenSize(): number;
+
+  getChildrenKeys(): NodeKey[];
+
+  getChildren(): NodeInterface[];
+
+  appendChild(child: NodeInterface): void;
+
+  removeChild(key: NodeKey): void;
+
+  hasChild(key: NodeKey): boolean
+
+  first<E extends NodeInterface = NodeInterface>(): E | null
+
+  last<E extends NodeInterface = NodeInterface>(): E | null
+
+  insert(offset: number, ...child: NodeInterface[]): void;
+
+  split(offset: number): ElementInterface[];
+
+  empty(): void;
+
+  contains(...keys: NodeKey[]): boolean
+
+  matches<T extends NodeInterface = NodeInterface>(callback: (node: NodeInterface) => node is T): T[]
+
+  indexOf(key: NodeKey): number
+
+  toJSON<R extends ElementObject = ElementObject>(includeChild?: boolean): Readonly<R>;
+}
+
+
+export default class Element extends Node implements ElementInterface {
   
-  protected children: INode[] = []
+  protected children: NodeInterface[] = []
   protected style: ElementStyle = {}
   
-  static create = <T extends NodeData = NodeData>(options: ElementOptions<T>): IElement<T> => {
+  static create = (options: ElementOptions): ElementInterface => {
     return new Element(options)
   }
 
-  static createChildNode<T extends NodeData = NodeData>(options: NodeOptions<T>): INode { 
+  static createChildNode(options: NodeOptions): NodeInterface { 
     return Node.create(options)
   }
 
-  static isElement = (node: INode): node is IElement => { 
-    return node.getType() !== DATA_TYPE_TEXT
+  static isRoot = (node: NodeInterface): node is ElementInterface => { 
+    return !node.getParentKey()
+  }
+
+  static isElement = (node: NodeInterface): node is ElementInterface => { 
+    return node instanceof Element
   }
 
   static isElementObject = (nodeObj: NodeOptions): nodeObj is ElementObject => { 
     return nodeObj.type !== DATA_TYPE_TEXT
   }
 
-  constructor(options: ElementOptions<T>) { 
+  constructor(options: ElementOptions) { 
     super(Object.assign({}, options, { type: options.type ?? DATA_TYPE_ELEMENT }))
     this.children = (options.children || []).map(child => {
       child.parent = this.getKey()
@@ -47,11 +101,11 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return this.children.map(child => child.getKey())
   }
 
-  getChildren(): INode[] {
+  getChildren(): NodeInterface[] {
     return this.children
   }
 
-  appendChild(child: INode): void {
+  appendChild(child: NodeInterface): void {
     this.children.push(Element.createChildNode(Object.assign({}, child.toJSON(), { parent: this.getKey()})))
   }
 
@@ -65,17 +119,17 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return this.children.some(child => child.getKey() === key)
   }
 
-  first<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null {
+  first<E extends NodeInterface = NodeInterface>(): E | null {
     const first = this.children[0]
     return first ? first as E : null
   }
 
-  last<D extends NodeData = NodeData, E extends INode = INode<D>>(): E | null {
+  last<E extends NodeInterface = NodeInterface>(): E | null {
     const last = this.children[this.children.length - 1]
     return last ? last as E : null
   }
 
-  insert(index: number, ...child: INode[]): void {
+  insert(index: number, ...child: NodeInterface[]): void {
     this.children.splice(index, 0, ...child.map(c => Element.createChildNode(Object.assign({}, c.toJSON(), { parent: this.getKey() }))))
   }
 
@@ -111,14 +165,14 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return false
   }
 
-  filter<D extends NodeData = NodeData, E extends INode = INode<D>>(callback: (node: INode) => node is E): E[] {
-    const nodes: E[] = []
+  matches<T extends NodeInterface = NodeInterface>(callback: (node: NodeInterface) => node is T): T[] {
+    const nodes: T[] = []
     for(const child of this.children) {
       if(callback(child)) {
         nodes.push(child)
       }
       if(Element.isElement(child)) {
-        nodes.push(...child.filter<D, E>(callback))
+        nodes.push(...child.matches<T>(callback))
       }
     }
     return nodes
@@ -128,7 +182,7 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     return this.children.findIndex(child => child.getKey() === key)
   }
 
-  compare(node: INode): boolean {
+  compare(node: NodeInterface): boolean {
     if(!Element.isElement(node)) return false
     if(!super.compare(node)) return false
     if(!isEqual(this.style, node.getStyle())) return false
@@ -142,13 +196,13 @@ export default class Element<T extends NodeData = NodeData> extends Node<T> impl
     })
   }
 
-  clone(deep: boolean = false, copyKey: boolean = true): IElement {
+  clone(deep: boolean = false, copyKey: boolean = true): ElementInterface {
     const json = this.toJSON(deep)
     const newJson = Object.assign({}, json, {key: copyKey === false ? undefined : json.key})
     return Element.create(newJson)
   }
 
-  toJSON<E extends ElementObject<T> = ElementObject<T>>(includeChild: boolean = true): E {
+  toJSON<E extends ElementObject = ElementObject>(includeChild: boolean = true): E {
     const json = super.toJSON() as E
     if(includeChild) json.children = this.children.map(child => child.toJSON())
     else json.children = []

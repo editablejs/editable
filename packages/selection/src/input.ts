@@ -1,183 +1,165 @@
-import EventEmitter from "@editablejs/event-emitter";
-import { EVENT_FOCUS, EVENT_BLUR, EVENT_CHANGE, EVENT_KEYDOWN, EVENT_KEYUP, EVENT_COMPOSITION_START, EVENT_COMPOSITION_END } from '@editablejs/constants'
-import { ILayer } from "./layer";
-import { DrawRect, IInput } from "./types";
+import { SelectionInterface } from "./types"
 
+export interface InputInterface {
 
-export type InputEventType = typeof EVENT_FOCUS | typeof EVENT_BLUR | typeof EVENT_CHANGE | typeof EVENT_KEYDOWN | typeof EVENT_KEYUP
+  getTextarea(): HTMLTextAreaElement
+  
+  updateContainers(containers: HTMLElement[]): void
 
-const inputBoxStyle = {
+  focus(): void
+
+  blur(): void
+  
+  onKeydown(event: KeyboardEvent): void
+
+  onKeyup(event: KeyboardEvent): void
+
+  onCompositionStart(event: CompositionEvent): void
+
+  onCompositionEnd(event: CompositionEvent): void
+
+  onInput(event: InputEvent): void
+
+  onFocus(): void
+
+  onBlur(): void
+}
+
+export const INPUT_BOX_STYLE = {
   opacity: '0',
   outline: 'none',
   caretColor: 'transparent',
   overflow: 'hidden',
 }
 
-export default class Input extends EventEmitter<InputEventType> implements IInput {
-  protected composing = false
-  protected layer: ILayer
-  protected textarea: HTMLTextAreaElement
-  protected root: HTMLDivElement
-  protected containers: Map<string, HTMLElement> = new Map()
-  private isContainerMouseDown = false
-  private _isFocus = false
-  private set isFocus(value: boolean){ 
-    if(this._isFocus === value) return
-    if(value) {
-      this.emit(EVENT_FOCUS)
+
+const INPUT_WEAK_MAP = new WeakMap<SelectionInterface, InputInterface>();
+const IS_FOCUS_WEAK_MAP = new WeakMap<SelectionInterface, boolean>();
+const TEXTAREA_WEAK_MAP = new WeakMap<InputInterface, HTMLTextAreaElement>()
+const CONTAINERS_WEAK_MAP = new WeakMap<InputInterface, HTMLElement[]>()
+const IS_CONTAINER_MOUSE_DOWN = new WeakMap<InputInterface, boolean>()
+const IS_COMPOSITON_WEAK_MAP = new WeakMap<InputInterface, boolean>()
+
+export const isFocus = (selection: SelectionInterface) => {
+  return IS_FOCUS_WEAK_MAP.get(selection) ?? false
+}
+
+const createTextarea = () => {
+  const textarea = document.createElement('textarea')
+  textarea.setAttribute('rows', '1')
+  textarea.setAttribute('style', 'font-size: inherit; line-height: 1; padding: 0px; border: none; white-space: nowrap; width: 1em;overflow: auto;resize: vertical;')
+  return textarea
+}
+
+export const createInput = (selection: SelectionInterface) => {
+
+  const setFocus = (focus: boolean) => {
+    if(IS_FOCUS_WEAK_MAP.get(selection) === focus) return
+    IS_FOCUS_WEAK_MAP.set(selection, focus)
+    if(focus) {
+      input.onFocus()
     } else {
-      this.emit(EVENT_BLUR)
+      input.onBlur()
     }
-    this._isFocus = value
   }
 
-  get isComposing(){
-    return this.composing
+  const handleDomMouseDown = (event: MouseEvent) => {
+    if(!IS_CONTAINER_MOUSE_DOWN.has(input) && !event.defaultPrevented) setFocus(false)
   }
 
-  constructor(layer: ILayer){
-    super()
-    this.layer = layer
-    const textarea = document.createElement('textarea')
-    textarea.setAttribute('rows', '1')
-    textarea.setAttribute('style', 'font-size: inherit; line-height: 1; padding: 0px; border: none; white-space: nowrap; width: 1em;overflow: auto;resize: vertical;')
-    this.textarea = textarea
-    const box = this.layer.createBox('input', { top: 0, left: 0, width: 0, height: 0 }, inputBoxStyle)
-    box.appendChild(this.textarea)
-    this.root = box
-    this.layer.appendChild(box)
-    this.bindEvents()
+  const handleContainerMouseDown = () => { 
+    IS_CONTAINER_MOUSE_DOWN.set(input, true)
+    setFocus(true)
   }
 
-  updateContainers(containers: Map<string, HTMLElement>) { 
-    this.containers.forEach((container, key) => {
-      if(!containers.has(key)) {
-        this.unbindContainer(container)
-        this.containers.delete(key)
-      }
-    })
-
-    containers.forEach((container, key) => {
-      const oldContainer = this.containers.get(key)
-      if(!oldContainer) {
-        this.bindContainer(container)
-        this.containers.set(key, container)
-      } else if(oldContainer !== container) { 
-        this.unbindContainer(oldContainer)
-        this.bindContainer(container)
-        this.containers.set(key, container)
-      }
-    })
+  const handleKeydown = (event: KeyboardEvent) => { 
+    selection.onKeydown(event)
   }
 
-
-  bindEvents = () => {
-    document.body.addEventListener('mousedown', this.handleDomMouseDown)
-    document.body.addEventListener('mouseup', this.handleDomMouseUp)
-    const textarea = this.textarea
-    // textarea.addEventListener('focus', this.handleFocus)
-    textarea.addEventListener('blur', this.handleBlur)
-    textarea.addEventListener('input', this.handleChange)
-    textarea.addEventListener('compositionstart', this.handleCompositionStart)
-    textarea.addEventListener('compositionend', this.handleCompositionEnd)
-    textarea.addEventListener('keydown', this.handleKeydown)
-    textarea.addEventListener('keyup', this.handleKeyup)
-  }
-  
-  bindContainer = (container: HTMLElement) => { 
-    container.addEventListener('mousedown', this.handleContainerMouseDown);
+  const handleKeyup = (event: KeyboardEvent) => { 
+    selection.onKeyup(event)
   }
 
-  unbindContainer = (container: HTMLElement) => {
-    container.removeEventListener('mousedown', this.handleContainerMouseDown);
+  const handleBlur = () => {
+    if(!IS_CONTAINER_MOUSE_DOWN.has(input)) setFocus(false)
   }
 
-  unbindContainers = () => {
-    this.containers.forEach(this.unbindContainer)
-    this.containers.clear()
-  }
-
-  unbindEvents = () => {
-    this.unbindContainers()
-    document.body.removeEventListener('mousedown', this.handleDomMouseDown)
-    document.body.removeEventListener('mouseup', this.handleDomMouseUp)
-    const textarea = this.textarea
-    // textarea.removeEventListener('focus', this.handleFocus)
-    textarea.removeEventListener('blur', this.handleBlur)
-    textarea.removeEventListener('input', this.handleChange)
-    textarea.removeEventListener('compositionstart', this.handleCompositionStart)
-    textarea.removeEventListener('compositionend', this.handleCompositionEnd)
-    textarea.removeEventListener('keydown', this.handleKeydown)
-    textarea.removeEventListener('keyup', this.handleKeyup)
-  }
-
-  handleKeydown = (e: KeyboardEvent) => { 
-    this.emit(EVENT_KEYDOWN, e)
-  }
-
-  handleKeyup = (e: KeyboardEvent) => { 
-    this.emit(EVENT_KEYUP, e)
-  }
-
-  handleContainerMouseDown = () => { 
-    this.isContainerMouseDown = true
-    this.isFocus = true
-  }
-
-  handleDomMouseUp = () => {
-    this.isContainerMouseDown = false
-  }
-
-  handleDomMouseDown = (e: MouseEvent) => {
-    if(!this.isContainerMouseDown && !e.defaultPrevented) this.isFocus = false
-  }
-
-  handleFocus = () => {
-    this.isFocus = true
-  }
-
-  handleBlur = () => {
-    if(!this.isContainerMouseDown) this.isFocus = false
-  }
-
-  handleChange = (event: Event) => { 
+  const handleInput = (event: Event) => { 
     if(!(event.target instanceof HTMLTextAreaElement)) return
     const value = event.target.value
-    if(!this.composing) {
-      this.textarea.value = ''
+    if(!IS_COMPOSITON_WEAK_MAP.has(input)) {
+      input.getTextarea().value = ''
     }
-    this.emit(EVENT_CHANGE, value)
+    selection.onInput(new InputEvent('input', { ...event, data: value }))
   }
 
-  handleCompositionStart = (ev: CompositionEvent) => {
-    this.composing = true
-    this.emit(EVENT_COMPOSITION_START, ev)
+  const handleCompositionStart = (ev: CompositionEvent) => {
+    IS_COMPOSITON_WEAK_MAP.set(input, true)
+    selection.onCompositionStart(ev)
   }
 
-  handleCompositionEnd = (ev: CompositionEvent) => { 
-    this.composing = false
-    this.textarea.value = ''
-    this.emit(EVENT_COMPOSITION_END, ev)
+  const handleCompositionEnd = (ev: CompositionEvent) => { 
+    IS_COMPOSITON_WEAK_MAP.set(input, false)
+    input.getTextarea().value = ''
+    selection.onCompositionEnd(ev)
   }
 
-  focus = () => {
-    this.textarea.focus({
-      preventScroll: true
-    })
-  }
+  const input: InputInterface = {
+    getTextarea(){
+      if(TEXTAREA_WEAK_MAP.has(input)) return TEXTAREA_WEAK_MAP.get(input)!
+      const textarea = createTextarea()
+      TEXTAREA_WEAK_MAP.set(input, textarea)
+      document.body.addEventListener('mousedown', handleDomMouseDown)
+      document.body.addEventListener('mouseup', handleDomMouseDown)
 
-  blur = () => {
-    this.textarea.blur()
-  }
+      textarea.addEventListener('blur', handleBlur)
+      textarea.addEventListener('input', handleInput)
+      textarea.addEventListener('compositionstart', handleCompositionStart)
+      textarea.addEventListener('compositionend', handleCompositionEnd)
+      textarea.addEventListener('keydown', handleKeydown)
+      textarea.addEventListener('keyup', handleKeyup)
+      
+      return textarea
+    },
 
-  render = (rect: DrawRect): void => {
-    this.layer.updateBox(this.root, Object.assign({}, rect, { color: 'transparent', width: 1 }), inputBoxStyle)
-    this.focus()
-  } 
+    updateContainers(containers: HTMLElement[]){ 
+      const oldContainers = CONTAINERS_WEAK_MAP.get(input)
+      oldContainers?.forEach(container => {
+        container.removeEventListener('mousedown', handleContainerMouseDown);
+      })
+      containers.forEach(container => {
+        container.addEventListener('mousedown', handleContainerMouseDown);
+      })
+    },
 
-  destroy = () => { 
-    this.layer.clear('input')
-    this.unbindEvents()
-    this.removeAll()
+    onKeydown(event: KeyboardEvent){},
+
+    onKeyup(event: KeyboardEvent){},
+
+    onCompositionStart(event: CompositionEvent){},
+
+    onCompositionEnd(event: CompositionEvent){},
+
+    onInput(event: Event){},
+
+    onFocus(){
+      selection.onFocus()
+    },
+
+    onBlur(){
+      selection.onBlur()
+    },
+
+    focus(){
+      input.getTextarea().focus({
+        preventScroll: true
+      })
+    },
+  
+    blur(){
+      input.getTextarea().blur()
+    }
   }
+  INPUT_WEAK_MAP.set(selection, input)
+  return input
 }

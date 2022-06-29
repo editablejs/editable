@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@editablejs/constants": "workspace:*",
-    "@editablejs/event-emitter": "workspace:*",
     "@editablejs/utils": "workspace:*",
     "diff-match-patch": "^1.0.5",
     "lodash": "^4.17.21"

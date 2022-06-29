@@ -1,165 +1,141 @@
-import EventEmitter from "@editablejs/event-emitter"
-import { IModel } from '@editablejs/model';
-import { EVENT_SELECT_START, EVENT_SELECTING, EVENT_SELECT_END, DATA_KEY, EVENT_DOM_RENDER, EVENT_ROOT_DOM_RENDER } from '@editablejs/constants'
-import type { ITyping, TypingOptions } from "./types";
-import {  getPositionFromEvent } from "./utils";
+import { ModelInterface } from '@editablejs/model';
+import { getPositionFromEvent, queryElements } from "./utils";
+import { addMutationListen, createMutation, ListenMutationInterface, MutationInterface, removeMutationListen } from "./mutation";
+import Range, { Position } from './range';
+import { SelectionInterface } from './types';
+import { clearRanges, getRanges } from './range-weakmap';
+import { getInputLayer } from './draw';
 
+export interface TypingInterface extends ListenMutationInterface {
 
-export type TypingEventType = typeof EVENT_SELECT_START | typeof EVENT_SELECTING | typeof EVENT_SELECT_END
-export default class Typing extends EventEmitter<TypingEventType> implements ITyping {
-  protected containers: Map<string, HTMLElement> = new Map()
-  protected model: IModel
-  protected mutationMap = new Map<HTMLElement, MutationObserver>()
-  protected mutationRoot?: MutationObserver
-  constructor(options: TypingOptions) { 
-    super()
-    const { model } = options
-    this.model = model
-    const mutation = new MutationObserver((mutations: MutationRecord[]) => {
-      const keys = this.model.getRootKeys()
-      // let hasRendered = false
+  onContainerRendered(container: HTMLElement): void
 
-      // const hasRenderedFromElement = (element: HTMLElement, callback: (key: string) => boolean = (key => keys.includes(key))) => { 
-      //   const key = element.getAttribute(DATA_KEY)
-      //   if(key && callback(key)) {
-      //     hasRendered = true
-      //     return true
-      //   }
-      //   return false
-      // }
+  onRootRendered(containers: HTMLElement[]): void
 
-      // const hasRenderedFromChild = (element: HTMLElement, callback?: (key: string) => boolean): boolean => { 
-      //   if(hasRendered || hasRenderedFromElement(element, callback)) return true
-      //   for(let c = 0; c < element.children.length; c++) {
-      //     const child = element.children[c]
-      //     if(child instanceof HTMLElement) {
-      //       hasRenderedFromChild(child, callback)
-      //     }
-      //     if(hasRendered) return true
-      //   }
-      //   return false
-      // }
+  onMouseDown(event: MouseEvent, position?: Position): void
 
-      // for(let i = 0; i < mutations.length; i++) { 
-      //   const { addedNodes, removedNodes } = mutations[i]
-      //   for(let a = 0; a < addedNodes.length; a++) { 
-      //     const addedNode = addedNodes[a]
-      //     if(addedNode instanceof HTMLElement) { 
-      //       if(hasRenderedFromChild(addedNode)) {
-      //         hasRendered = true
-      //         break
-      //       }
-      //     }
-      //     for(let r = 0; r < removedNodes.length; r++) { 
-      //       const removedNode = removedNodes[r]
-      //       if(removedNode instanceof HTMLElement) { 
-      //         if(hasRenderedFromChild(removedNode, this.containers.has)) {
-      //           hasRendered = true
-      //           break
-      //         }
-      //       }
-      //     }
-      //     if(hasRendered) break
-      //   }
-      //   if(hasRendered) this.updateContainers(keys)
-      // }
-      this.updateContainers(keys)
-    })
-    this.mutationRoot = mutation
+  onMouseMove(event: MouseEvent, position?: Position): void
+
+  onMouseUp(event: MouseEvent, position?: Position): void
+
+  startMutation(): void
+  
+  stopMutation(): void
+}
+
+const CONTAINERS_TO_TYPING_WEAK_MAP = new WeakMap<HTMLElement, TypingInterface>()
+const CONATINER_TO_MUTATION_MAP = new Map<HTMLElement, MutationInterface>()
+const CONTAINERS_LISTEN_WEAK_MAP = new WeakMap<ListenMutationInterface, HTMLElement[]>()
+
+const TYPING_WEAK_MAP = new WeakMap<SelectionInterface, TypingInterface>();
+
+const SELECT_START_POSITION_WEAKMAP = new WeakMap<SelectionInterface, Position>()
+const SELECT_END_POSITION_WEAKMAP = new WeakMap<SelectionInterface, Position>()
+
+const handleSelecting = (selection: SelectionInterface, position?: Position) => { 
+  if(!SELECT_START_POSITION_WEAKMAP.has(selection) || !position) return
+  SELECT_END_POSITION_WEAKMAP.set(selection, position)
+  const anchor = SELECT_START_POSITION_WEAKMAP.get(selection)!
+  const { key: anchorKey, offset: anchorOffset } = anchor
+  const { key: focusKey, offset: focusOffset } = position
+  const range = new Range(anchorKey, anchorOffset, focusKey, focusOffset)
+  const ranges = getRanges(selection)
+  if(ranges.length === 1 && ranges[0].equal(range)) {
+    getInputLayer(selection)?.focus()
+    return
   }
+  clearRanges(selection)
+  selection.addRange(range)
+  return range
+}
 
-  startMutationRoot = () => {
-    this.mutationRoot?.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-  }
+export const createTyping = (selection: SelectionInterface, model: ModelInterface) => {
 
-  stopMutationRoot = () => {
-    this.mutationRoot?.disconnect()
-  }
-
-  updateContainers = (keys: string[]) => { 
-    let isChange = false
-    const domSelector = keys.map(key => `[${DATA_KEY}="${key}"]`).join(',')
-    const containerList = keys.length > 0 ? document.querySelectorAll(domSelector) : []
-    const containers: HTMLElement[] = Array.from(containerList) as HTMLElement[]
-    this.containers.forEach((container, key) => {
-      if(!containers.includes(container)) { 
-        this.unbindContainer(container)
-        this.containers.delete(key)
-        isChange = true
-      }
-    })
-    containers.forEach(container => {
-      const key = container.getAttribute(DATA_KEY)
-      if(!key) return
-      const oldContainer = this.containers.get(key)
-      if(!oldContainer) { 
-        this.containers.set(key, container)
-        this.bindContainer(container)
-        isChange = true
-      } else if(oldContainer !== container) {
-        this.containers.set(key, container)
-        this.unbindContainer(oldContainer)
-        this.bindContainer(container)
-        isChange = true
-      }
-    })
-    if(isChange) this.emit(EVENT_ROOT_DOM_RENDER, this.containers)
-  }
-
-  bindContainer = (container: HTMLElement) => {
-    container.addEventListener('mousedown', this.handleMouseDown);
-    const mutation = new MutationObserver((mutations: MutationRecord[]) => {
-      this.emit(EVENT_DOM_RENDER, mutations)
-    })
-    mutation.observe(container, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    })
-    this.mutationMap.set(container, mutation)
-  }
-
-  unbindContainer = (container: HTMLElement): void => {
-    container.removeEventListener('mousedown', this.handleMouseDown);
-    const observer = this.mutationMap.get(container)
-    if(observer) {
-      observer.disconnect()
-      this.mutationMap.delete(container)
+  const handleMouseDown = (event: MouseEvent) => {
+    const position = getPositionFromEvent(model, event)
+    if(position) {
+      SELECT_START_POSITION_WEAKMAP.set(selection, position)
+      const range = handleSelecting(selection, position)
+      if(range) selection.onSelectStart()
     }
-  }
-
-  unbindContainers = () => {
-    this.containers.forEach(this.unbindContainer)
-    this.containers.clear()
+    else SELECT_START_POSITION_WEAKMAP.delete(selection)
+    if(event.button === 0) {
+      document.addEventListener('mousemove', handleMouseMove);
+    }
+    document.addEventListener('mouseup', handleMouseUp);
   }
   
-  handleMouseDown = (e: MouseEvent) => { 
-    const position = getPositionFromEvent(this.model, e)
-    if(!position) return
-    this.emit(EVENT_SELECT_START, position)
-    if(e.button === 0) {
-      document.addEventListener('mousemove', this.handleMouseMove);
-    }
-    document.addEventListener('mouseup', this.handleMouseUp);
+  const handleMouseMove = (event: MouseEvent) => { 
+    const position = getPositionFromEvent(model, event)
+    const range = handleSelecting(selection, position)
+    if(range) selection.onSelecting()
+  }
+  
+  const handleMouseUp = (event: MouseEvent) => { 
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    const range = handleSelecting(selection, getPositionFromEvent(model, event))
+    if(range) selection.onSelectEnd()
   }
 
-  handleMouseMove = (e: MouseEvent) => { 
-    const position = getPositionFromEvent(this.model, e)
-    this.emit(EVENT_SELECTING, position)
+  const typing: TypingInterface = {
+    mutation(){
+      const keys = model.getRootKeys()
+      const containers: HTMLElement[] = queryElements(model, ...keys)
+      const removeContainer = (container: HTMLElement) => {
+        container.removeEventListener('mousedown', handleMouseDown);
+        const observer = CONATINER_TO_MUTATION_MAP.get(container)
+        if(observer) {
+          observer.disconnect()
+          CONATINER_TO_MUTATION_MAP.delete(container)
+        }
+      }
+      let isChange = false
+      for(let i = 0; i < containers.length; i++) {
+        const container = containers[i]
+        const has = CONTAINERS_TO_TYPING_WEAK_MAP.has(container)
+        if(!has) {
+          isChange = true
+          container.addEventListener('mousedown', handleMouseDown);
+          const mutation = createMutation(() => {
+            if(CONTAINERS_TO_TYPING_WEAK_MAP.has(container)) typing.onContainerRendered(container)
+            else removeContainer(container)
+          })
+          mutation.observe(container, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+          })
+          CONATINER_TO_MUTATION_MAP.set(container, mutation)
+          CONTAINERS_TO_TYPING_WEAK_MAP.set(container, typing)
+        }
+      }
+      const oldContainers = CONTAINERS_LISTEN_WEAK_MAP.get(typing)
+      oldContainers?.forEach(container => {
+        if(CONTAINERS_TO_TYPING_WEAK_MAP.has(container)) return
+        isChange = true
+        removeContainer(container)
+      })
+      CONTAINERS_LISTEN_WEAK_MAP.set(typing, containers)
+      if(isChange) typing.onRootRendered(containers)
+    },
+    startMutation(){
+      addMutationListen(typing)
+    },
+    stopMutation() {
+      removeMutationListen(typing)
+    },
+    onContainerRendered(container: HTMLElement){},
+
+    onRootRendered(containers: HTMLElement[]){},
+
+    onMouseDown(event: MouseEvent, position?: Position){},
+
+    onMouseMove(event: MouseEvent, position?: Position){},
+
+    onMouseUp(event: MouseEvent, position?: Position){}
   }
 
-  handleMouseUp = (e: MouseEvent) => { 
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('mouseup', this.handleMouseUp);
-    this.emit(EVENT_SELECT_END, getPositionFromEvent(this.model, e))
-  }
-
-  destroy(): void {
-    this.stopMutationRoot()
-    this.unbindContainers()
-    this.removeAll()
-  }
+  TYPING_WEAK_MAP.set(selection, typing)
+  return typing
 }

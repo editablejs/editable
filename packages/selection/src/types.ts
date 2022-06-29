@@ -1,23 +1,10 @@
-import type { IEventEmitter } from "@editablejs/event-emitter";
-import type { IModel, INode, NodeKey, Op } from '@editablejs/model';
-
-export interface Position {
-  key: NodeKey;
-  offset: number
-}
-
-export interface SelectionOptions {
-  model: IModel
-  blurColor?: string
-  focusColor?: string
-  caretColor?: string
-  caretWidth?: number
-}
+import type { NodeInterface, NodeKey, Op } from '@editablejs/model';
+import { Position, RangeInterface } from "./range";
 
 /**
  * Selection
  */
-export interface ISelection extends IEventEmitter {
+ export interface SelectionInterface {
   /**
    * 锚点，返回当前选区的起始位置
    */
@@ -35,132 +22,64 @@ export interface ISelection extends IEventEmitter {
    */
   readonly isFocus: boolean;
 
-  getSubRanges(...ranges: IRange[]): IRange[]
+  onKeydown(event: KeyboardEvent): void
 
-  getContents(...ranges: IRange[]): INode[]
+  onKeyup(event: KeyboardEvent): void
+
+  onCompositionStart(event: CompositionEvent): void
+
+  onCompositionEnd(event: CompositionEvent): void
+
+  onInput(event: InputEvent): void
+
+  onFocus(): void
+
+  onBlur(): void
+
+  getSubRanges(...ranges: RangeInterface[]): RangeInterface[]
+
+  getContents(...ranges: RangeInterface[]): NodeInterface[]
   
-  getRangeAt(index: number): IRange | null;
+  getRangeAt(index: number): RangeInterface | null;
 
   getRangeCount(): number;
 
-  addRange(range: IRange): void;
+  addRange(range: RangeInterface): void;
 
   removeRangeAt(index: number): void;
 
   removeAllRange(): void;
+
+  onSelectStart(): void
+
+  onSelecting(): void
+
+  onSelectEnd(): void
+
+  onSelectChange(): void
   
-  applyRange(range: IRange): void;
+  applyRange(range: RangeInterface): void;
 
-  applyFromOps(ops: Op[]): void;
+  applyOps(ops: Op[]): void;
 
-  drawByRanges(...ranges: IRange[]): void
+  moveTo(key: NodeKey, offset: number): SelectionInterface
 
-  drawCaretByRect(rect: Omit<DrawRect, 'color'> & Record<'color', string | undefined>): void
- 
-  drawBlocksByRects(...rects: (Omit<DrawRect, 'color'> & Record<'color', string | undefined>)[]): void
+  moveAnchorTo(key: NodeKey, offset: number): SelectionInterface
 
-  clearSelection(): void
+  moveFocusTo(key: NodeKey, offset: number): SelectionInterface
 
-  moveTo(key: NodeKey, offset: number): ISelection
+  moveToForward(): SelectionInterface
 
-  moveAnchorTo(key: NodeKey, offset: number): ISelection
+  moveToBackward(): SelectionInterface
 
-  moveFocusTo(key: NodeKey, offset: number): ISelection
+  moveAnchorToForward(): SelectionInterface
 
-  moveToForward(): ISelection
+  moveFocusToForward(): SelectionInterface
 
-  moveToBackward(): ISelection
+  moveAnchorToBackward(): SelectionInterface
 
-  moveAnchorToForward(): ISelection
-
-  moveFocusToForward(): ISelection
-
-  moveAnchorToBackward(): ISelection
-
-  moveFocusToBackward(): ISelection
-
-  destroy(): void
+  moveFocusToBackward(): SelectionInterface
 }
 
-export interface IRange {
-  readonly anchor: Position
-  readonly focus: Position
-  readonly isCollapsed: boolean
-  readonly isBackward: boolean
 
-  setStart(key: NodeKey, offset: number): void
 
-  setEnd(key: NodeKey, offset: number): void
-
-  getClientRects(): DOMRectList | null
-
-  collapse(start: boolean): void
-
-  clone(): IRange
-
-  equal(range: IRange): boolean
-}
-
-export interface RangeOptions { 
-  anchor: Position
-  focus?: Position
-}
-
-export interface DrawRect {
-  left: number
-  top: number
-  width: number
-  height: number
-  color: string
-}
-
-export interface ILayer {
-
-  getBody(): HTMLElement
-
-  createBox(key: NodeKey, rect: Partial<DrawRect>, styles?: Partial<CSSStyleDeclaration>): HTMLDivElement
-
-  updateBox(box: HTMLDivElement, rect: Partial<DrawRect>, styles?: Partial<CSSStyleDeclaration>): HTMLDivElement
-
-  drawCaret(rect: DrawRect): void
-  
-  drawBlocks(...rects: DrawRect[]): void
-
-  setCaretState(state: boolean): void
-
-  clear(...keys: string[]): void
-
-  clearCaret(): void
-
-  clearSelection(): void
-
-  appendChild(child: HTMLElement): void
-
-  destroy(): void
-}
-
-export interface IInput extends IEventEmitter {
-
-  readonly isComposing: boolean
-  
-  updateContainers(containers: Map<string, HTMLElement>): void
-
-  focus(): void
-
-  blur(): void
-
-  render(rect: Omit<DrawRect, 'color'>): void
-
-  destroy(): void
-
-}
-
-export interface ITyping extends IEventEmitter {
-  startMutationRoot(): void
-  stopMutationRoot(): void
-  destroy(): void
-}
-
-export interface TypingOptions {
-  model: IModel
-}
