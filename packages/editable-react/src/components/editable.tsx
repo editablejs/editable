@@ -222,8 +222,9 @@ export const Editable = (props: EditableProps) => {
     IS_FOCUSED.set(editor, focus)
     if(focus) {
       if(onFocus) onFocus()
-    } else {
-      if(onBlur) onBlur()
+      ReactEditor.focus(editor)
+    } else if(onBlur) {
+      onBlur()
     }
     if(!focus) setCaretRect(null)
     else {
@@ -332,6 +333,18 @@ export const Editable = (props: EditableProps) => {
         maybeHistoryEditor.undo()
       }
 
+      return
+    }
+
+    if (Hotkeys.isExtendForward(nativeEvent)) {
+      event.preventDefault()
+      Transforms.move(editor, { edge: 'focus' })
+      return
+    }
+
+    if (Hotkeys.isExtendBackward(nativeEvent)) {
+      event.preventDefault()
+      Transforms.move(editor, { edge: 'focus', reverse: true })
       return
     }
 
