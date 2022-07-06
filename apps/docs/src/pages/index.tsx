@@ -1,44 +1,26 @@
-import { createEditable, ElementInterface } from '@editablejs/core';
-import React, { useLayoutEffect, useMemo } from 'react';
-import EditableComponent from '../components/Editable'
-import withBold from '../plugins/Bold';
+import { Slate, Editable, withReact } from '@editablejs/editable-react';
+import { createEditor } from 'slate';
+import React, { useState } from 'react';
 import styles from './index.module.css'
-import { useState } from 'react';
 
-const initialValue = {
-  type: 'root',
-  children: [
-    {
-      type: 'paragraph',
-      children: [
-        {
-          text: 'Hello, This is a Paragraph'
-        }
-      ]
-    }
-  ]
-}
+const initialValue = [
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: 'Hello, This is a Paragraph'
+      }
+    ]
+  }
+]
 
 export default function Docs() {
-  const editable = useMemo(() => withBold(createEditable()), [])
-  const [ activeStatus, setActiveStatus ] = useState<Record<string, boolean>>({})
-  const [ value, setValue ] = useState<ElementInterface[]>([])
-
-  useLayoutEffect(() => { 
-    editable.onSelectChange = () => {
-      setActiveStatus({
-        'bold': editable.queryBold()
-      })
-    }
-  }, [editable])
+  const [ editor ] = useState(() => withReact(createEditor()))
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.toolbar}>
-        <button onMouseDown={editable.toggleBold} className={activeStatus['bold'] ? styles.active : undefined }>Bold</button>
-      </div>
       <div className={styles.container}>
-        <EditableComponent editable={editable} value={value} onChange={setValue} initialValue={initialValue} />
+        <Slate editor={editor} value={initialValue}><Editable  /></Slate>
       </div>
     </div>
   );

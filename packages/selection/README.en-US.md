@@ -1,2 +1,0 @@
-# `@editablejs/selection`
-

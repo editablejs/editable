@@ -1,0 +1,51 @@
+{
+  "name": "@editablejs/editable-react",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
+    "lint": "eslint src --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "direction": "^1.0.3",
+    "is-hotkey": "^0.1.6",
+    "is-plain-object": "^5.0.0",
+    "lodash": "^4.17.4",
+    "scroll-into-view-if-needed": "^2.2.20",
+    "@editablejs/editable-breaker": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/is-hotkey": "^0.1.7",
+    "@types/jest": "^26.0.22",
+    "@types/lodash": "^4.14.149",
+    "@types/react": "^17.x",
+    "@types/react-dom": "^17.x",
+    "jest": "^27.5.1",
+    "scripts": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.1.2",
+    "typescript": "^4.5.3",
+    "react": "^17.x",
+    "react-dom": "^17.x",
+    "slate": "^0.81.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "slate": ">=0.81.0"
+  },
+  "jest": {
+    "preset": "scripts/jest/node"
+  }
+}
