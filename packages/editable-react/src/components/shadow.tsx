@@ -9,13 +9,14 @@ export interface DrawRect {
   height: number
   color?: string
   children?: React.ReactNode
+  style?: React.CSSProperties
 }
 
 export function ShadowContent({ root, children }: { root: ShadowRoot, children: React.ReactNode }) {
   return ReactDOM.createPortal(children, root);
 }
 
-export const ShadowBox: React.FC<{ rect: DrawRect} & React.HTMLAttributes<HTMLDivElement>> = ({ children, rect, style, ...props }) => (
+export const ShadowBox: React.FC<{ rect: DrawRect }> = ({ children, rect }) => (
   <div style={{ 
     position: 'absolute', 
     top: 0, left: 0, 
@@ -24,8 +25,8 @@ export const ShadowBox: React.FC<{ rect: DrawRect} & React.HTMLAttributes<HTMLDi
     opacity: 1,
     backgroundColor: `${rect.color || 'transparent'}`,
     zIndex: 1,
-    ...style
-  }} {...props}>{ children }</div>
+    ...rect.style
+  }}>{ children }</div>
 )
 
 interface ShadowProps {
@@ -54,8 +55,8 @@ const Shadow: React.FC<ShadowProps> = ({ caretRects, boxRects, children }) => {
     if(!root || !shadow) return
     ReactDOM.render(<ShadowContent root={root} >
       <div style={{ pointerEvents: 'none' }}>
-        {caretRects.map((rect) => <ShadowBox rect={Object.assign({}, rect, {width: Math.max(rect.width || 1, 1)})} style={{ willChange: 'opacity, transform' }}/>)}
-        {boxRects.map((rect) => <ShadowBox rect={rect} style={{ willChange: 'transform' }} />)}
+        {caretRects.map((rect) => <ShadowBox rect={Object.assign({}, rect, { width: Math.max(rect.width || 1, 1), style: { willChange: 'opacity, transform', ...rect.style }})}/>)}
+        {boxRects.map((rect) => <ShadowBox rect={Object.assign({}, rect, { style: { willChange: 'transform', ...rect.style }})} />)}
         { children }
       </div>
       </ShadowContent>, shadow)

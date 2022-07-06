@@ -147,7 +147,7 @@ export const Editable = (props: EditableProps) => {
   const editor = useSlate()
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [currentSelection, setCurrentSelection] = useState<BaseSelection>()
-
+  const caretTimer = useRef<number>()
   const ref = useRef<HTMLDivElement>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
@@ -618,6 +618,25 @@ export const Editable = (props: EditableProps) => {
     setTextareaRect(caretRect)
   }
 
+  useEffect(() => {
+    const clearActive = () => clearTimeout(caretTimer.current)
+    const activeCaret = () => {
+      clearActive()
+      caretTimer.current = setTimeout(() => { 
+        setCaretRect(rect => {
+          if(rect) {
+            const currentState = rect.style?.opacity === '1'
+            return {...rect, style: {...rect.style, opacity: currentState ? '0' : '1'}}
+          }
+          return rect
+        })
+        activeCaret()
+      }, 530)
+    }
+    activeCaret()
+    return () => clearActive()
+  },[])
+
   const drawBoxs = (range: DOMRange) => { 
     if(range.collapsed) return setBoxRects([])
     const rects = range.getClientRects()
@@ -684,7 +703,7 @@ export const Editable = (props: EditableProps) => {
         </Component>
         <Shadow caretRects={caretRect ? [caretRect] : []} boxRects={boxRects}>
           {
-            <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1 })} style={{ opacity:0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}}>
+            <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1, style: { opacity:0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}})}>
               <textarea 
               ref={textareaRef}
               rows={1} 
