@@ -609,12 +609,12 @@ export const ReactEditor = {
     const { selection } = editor
     if(!at && selection) at = selection
     if(!at) return null
-    const endPoint = Range.end(at)
-    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
+    const startPoint = Range.start(at)
+    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
     const currentRect = currentDomRange.getClientRects()[0]
 
     let blockEntry = Editor.above(editor, {
-      at,
+      at: startPoint,
       match: n => Editor.isBlock(editor, n),
     })
     let top = currentRect.top
@@ -652,12 +652,12 @@ export const ReactEditor = {
     const { selection } = editor
     if(!at && selection) at = selection
     if(!at) return null
-    const endPoint = Range.end(at)
-    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
+    const startPoint = Range.start(at)
+    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
     const currentRect = currentDomRange.getClientRects()[0]
 
     let blockEntry = Editor.above(editor, {
-      at,
+      at: startPoint,
       match: n => Editor.isBlock(editor, n),
     })
     let bottom = currentRect.bottom

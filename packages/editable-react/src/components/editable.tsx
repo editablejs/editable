@@ -348,10 +348,28 @@ export const Editable = (props: EditableProps) => {
       return
     }
 
-    // COMPAT: Certain browsers don't handle the selection updates
-    // properly. In Chrome, the selection isn't properly extended.
-    // And in Firefox, the selection isn't properly collapsed.
-    // (2017/10/17)
+    if (Hotkeys.isExtendUp(nativeEvent)) {
+      event.preventDefault()
+      const { selection } = editor
+      const point = ReactEditor.findPreviousLinePoint(editor)
+      if(point && selection) Transforms.select(editor, {
+        anchor: selection.anchor,
+        focus: point
+      })
+      return
+    }
+
+    if (Hotkeys.isExtendDown(nativeEvent)) {
+      event.preventDefault()
+      const { selection } = editor
+      const point = ReactEditor.findNextLinePoint(editor)
+      if(point && selection) Transforms.select(editor, {
+        anchor: selection.anchor,
+        focus: point
+      })
+      return
+    }
+
     if (Hotkeys.isMoveUp(nativeEvent)) {
       event.preventDefault()
       const point = ReactEditor.findPreviousLinePoint(editor)
