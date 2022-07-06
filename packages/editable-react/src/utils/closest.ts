@@ -76,7 +76,7 @@ export const getMinXInRect = (x: number, rect: DOMRect) => {
   return Math.min(Math.abs(x - rect.left), Math.abs(x - rect.right))
 }
 
-export const isCloserY = (x: number, rect: DOMRect, node: Node, closestNode: ClosestNode, preceding = true) => {
+export const isClosestY = (x: number, rect: DOMRect, node: Node, closestNode: ClosestNode, preceding = true) => {
   if (isAlignY(rect, closestNode.rect)) {
     const topBetween = isBetweenX(x, closestNode.rect)
     const isBetween = isBetweenX(x, rect)
@@ -97,8 +97,8 @@ type ClosestNodes = {
   right: ClosestNode | null
 }
 
-const findCloset = (nodes: Element[], x: number, y: number): Element | ClosestNodes | null => {
-  const closestNodes: ClosestNodes = {
+const findClosestNode = (nodes: Element[], x: number, y: number): Element | ClosestNodes | null => {
+  const closerNode: ClosestNodes = {
     top: null,
     below: null,
     left: null,
@@ -115,8 +115,8 @@ const findCloset = (nodes: Element[], x: number, y: number): Element | ClosestNo
       }
       // 点击位置在区域 top上方
       else if (y < rect.top) {
-        if (!closestNodes.below || isCloserY(x, rect, child, closestNodes.below, false)) {
-          closestNodes.below = {
+        if (!closerNode.below || isClosestY(x, rect, child, closerNode.below, false)) {
+          closerNode.below = {
             rect,
             node: child
           }
@@ -124,26 +124,26 @@ const findCloset = (nodes: Element[], x: number, y: number): Element | ClosestNo
       } 
       // 点击区域在 bottom 上方
       else if(y > rect.bottom) {
-        if (!closestNodes.top || isCloserY(x, rect, child, closestNodes.top)) {
-          closestNodes.top = {
+        if (!closerNode.top || isClosestY(x, rect, child, closerNode.top)) {
+          closerNode.top = {
             rect,
             node: child
           }
         }
-      } else if(isBetweenY(y, rect) && x > rect.left && (!closestNodes.left || isPrecedingX(rect, child, closestNodes.left))) {
-        closestNodes.left = {
+      } else if(isBetweenY(y, rect) && x > rect.left && (!closerNode.left || isPrecedingX(rect, child, closerNode.left))) {
+        closerNode.left = {
           rect,
           node: child
         }
-      } else if(isBetweenY(y, rect) && x < rect.right && (!closestNodes.right || isFollowingX(rect, child, closestNodes.right))) {
-        closestNodes.right = {
+      } else if(isBetweenY(y, rect) && x < rect.right && (!closerNode.right || isFollowingX(rect, child, closerNode.right))) {
+        closerNode.right = {
           rect,
           node: child
         }
       }
     }
   }
-  return closestNodes
+  return closerNode
 }
 
-export default findCloset
+export default findClosestNode

@@ -55,8 +55,8 @@ const Shadow: React.FC<ShadowProps> = ({ caretRects, boxRects, children }) => {
     if(!root || !shadow) return
     ReactDOM.render(<ShadowContent root={root} >
       <div style={{ pointerEvents: 'none' }}>
-        {caretRects.map((rect) => <ShadowBox rect={Object.assign({}, rect, { width: Math.max(rect.width || 1, 1), style: { willChange: 'opacity, transform', ...rect.style }})}/>)}
-        {boxRects.map((rect) => <ShadowBox rect={Object.assign({}, rect, { style: { willChange: 'transform', ...rect.style }})} />)}
+        {caretRects.map((rect, index) => <ShadowBox key={index} rect={Object.assign({}, rect, { width: Math.max(rect.width || 1, 1), style: { willChange: 'opacity, transform', ...rect.style }})}/>)}
+        {boxRects.map((rect, index) => <ShadowBox key={index} rect={Object.assign({}, rect, { style: { willChange: 'transform', ...rect.style }})} />)}
         { children }
       </div>
       </ShadowContent>, shadow)

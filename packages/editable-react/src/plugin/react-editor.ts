@@ -9,6 +9,7 @@ import {
   Range,
   Scrubber,
   Transforms,
+  Location
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -39,7 +40,7 @@ import {
   isDOMText,
 } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
-import findCloset, { isAlignY } from '../utils/closest'
+import findClosestNode, { isAlignY } from '../utils/closest'
 import { getOffset } from '../utils/string'
 import { countBreaks } from '@editablejs/editable-breaker'
 
@@ -475,31 +476,22 @@ export const ReactEditor = {
     })
     return range
   },
-  /**
-   * Get the target point from a DOM `event`.
-   */
 
-  findEventPoint(editor: ReactEditor, event: any): Point | null {
-    if ('nativeEvent' in event) {
-      event = event.nativeEvent
-    }
+  findLowestDOMElements(editor: ReactEditor, node: Node) {
+    const domNode = ReactEditor.toDOMNode(editor, node)
+    if(Editor.isVoid(editor, node)) return [domNode]
+    const nodes = domNode.querySelectorAll('[data-slate-string], [data-slate-composition], [data-slate-zero-width]')
+    return Array.from(nodes)
+  },
 
-    const { clientX: x, clientY: y, target } = event
-
-    if (x == null || y == null) {
-      throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
-    }
-    const domEl = isDOMElement(target) ? target : target.parentElement
+  findClosestPoint(editor: ReactEditor, domNode: DOMNode, x: number, y: number): Point | null { 
+    const domEl = isDOMElement(domNode) ? domNode : domNode.parentElement
+    if(!domEl) return null
     const elements: DOMElement[] = []
-    let element: DOMElement = domEl.hasAttribute('data-slate-node') ? domEl : domEl.closest(`[data-slate-node]`)
+    let element: DOMElement | null = domEl.hasAttribute('data-slate-node') ? domEl : domEl.closest(`[data-slate-node]`)
 
     const addToElements = (node: Node) => {
-      const domNode = ReactEditor.toDOMNode(editor, node)
-      if(Text.isText(node)) {
-        const stringNode = domNode.querySelectorAll('[data-slate-string], [data-slate-composition], [data-slate-zero-width]')
-        elements.push(...Array.from(stringNode))
-      }
-      else if(Editor.isVoid(editor, node)) elements.push(domNode)
+      elements.push(...ReactEditor.findLowestDOMElements(editor, node))
     }
     
     if(!element) {
@@ -519,7 +511,7 @@ export const ReactEditor = {
       }
     }
     let top = y, left = x
-    const nodes = findCloset(elements, x, y)
+    const nodes = findClosestNode(elements, x, y)
     if(!nodes) return null
     let offsetNode: DOMElement | null = null
     if(isDOMNode(nodes)) {
@@ -596,6 +588,108 @@ export const ReactEditor = {
       return point
     }
     return null
+  },
+  /**
+   * Get the target point from a DOM `event`.
+   */
+  findEventPoint(editor: ReactEditor, event: any): Point | null {
+    if ('nativeEvent' in event) {
+      event = event.nativeEvent
+    }
+
+    const { clientX: x, clientY: y, target } = event
+
+    if (x == null || y == null) {
+      throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
+    }
+    return ReactEditor.findClosestPoint(editor, target, x, y)
+  },
+
+  findPreviousLinePoint(editor: ReactEditor, at?: Range): Point | null { 
+    const { selection } = editor
+    if(!at && selection) at = selection
+    if(!at) return null
+    const endPoint = Range.end(at)
+    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
+    const currentRect = currentDomRange.getClientRects()[0]
+
+    let blockEntry = Editor.above(editor, {
+      at,
+      match: n => Editor.isBlock(editor, n),
+    })
+    let top = currentRect.top
+    let isFind = false
+    let domBlock: DOMElement | null = null
+    while(blockEntry && !isFind) {
+      const [block, path] = blockEntry
+      domBlock = ReactEditor.toDOMNode(editor, block)
+      const lowestElements = ReactEditor.findLowestDOMElements(editor, block)
+      for(let l = lowestElements.length - 1; l >=0 && !isFind; l--) {
+        const lowestElement = lowestElements[l]
+        const rects = lowestElement.getClientRects()
+        for(let i = 0; i < rects.length; i++) {
+          const rect = rects[i]
+          if(rect.height === 0) continue
+          if (rect.bottom <= top) {
+            isFind = true
+            top = rect.bottom - rect.height / 2;
+            break
+          }
+        }
+      }
+      if(!isFind) {
+        blockEntry = Editor.previous(editor, {
+          at: path,
+          match: n => Editor.isBlock(editor, n),
+        })
+      }
+    }
+    if(!domBlock ) return null
+    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? currentRect.x : 0, top)
+  },
+
+  findNextLinePoint(editor: ReactEditor, at?: Range): Point | null { 
+    const { selection } = editor
+    if(!at && selection) at = selection
+    if(!at) return null
+    const endPoint = Range.end(at)
+    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
+    const currentRect = currentDomRange.getClientRects()[0]
+
+    let blockEntry = Editor.above(editor, {
+      at,
+      match: n => Editor.isBlock(editor, n),
+    })
+    let bottom = currentRect.bottom
+    let isFind = false
+    let domBlock: DOMElement | null = null
+    while(blockEntry && !isFind) {
+      const [block, path] = blockEntry
+      domBlock = ReactEditor.toDOMNode(editor, block)
+      const lowestElements = ReactEditor.findLowestDOMElements(editor, block)
+      for(let l = 0; l < lowestElements.length && !isFind; l++) {
+        const lowestElement = lowestElements[l]
+        const rects = lowestElement.getClientRects()
+        for(let i = 0; i < rects.length; i++) {
+          const rect = rects[i]
+          if(rect.height === 0) continue
+          if (rect.top >= bottom) {
+            isFind = true
+            bottom = rect.top + rect.height / 2;
+            break
+          }
+        }
+      }
+      if(!isFind) {
+        blockEntry = Editor.next(editor, {
+          at: path,
+          match: n => Editor.isBlock(editor, n),
+        })
+      }
+    }
+    if(!domBlock ) return null
+    
+    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? currentRect.x : 99999, bottom)
   },
 
   /**

@@ -6,8 +6,9 @@ import { IS_APPLE } from './environment'
  */
 
 const HOTKEYS: Record<string, string | string[]> = {
-  bold: 'mod+b',
   compose: ['down', 'left', 'right', 'up', 'backspace', 'enter'],
+  moveUp: 'up',
+  moveDown: 'down',
   moveBackward: 'left',
   moveForward: 'right',
   moveWordBackward: 'ctrl+left',
@@ -16,7 +17,6 @@ const HOTKEYS: Record<string, string | string[]> = {
   deleteForward: 'shift?+delete',
   extendBackward: 'shift+left',
   extendForward: 'shift+right',
-  italic: 'mod+i',
   insertSoftBreak: 'shift+enter',
   splitBlock: 'enter',
   undo: 'mod+z',
@@ -70,7 +70,8 @@ const create = (key: string) => {
  */
 
 export default {
-  isBold: create('bold'),
+  isMoveUp: create('moveUp'),
+  isMoveDown: create('moveDown'),
   isCompose: create('compose'),
   isMoveBackward: create('moveBackward'),
   isMoveForward: create('moveForward'),
@@ -84,7 +85,6 @@ export default {
   isExtendForward: create('extendForward'),
   isExtendLineBackward: create('extendLineBackward'),
   isExtendLineForward: create('extendLineForward'),
-  isItalic: create('italic'),
   isMoveLineBackward: create('moveLineBackward'),
   isMoveLineForward: create('moveLineForward'),
   isMoveWordBackward: create('moveWordBackward'),

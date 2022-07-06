@@ -352,15 +352,17 @@ export const Editable = (props: EditableProps) => {
     // properly. In Chrome, the selection isn't properly extended.
     // And in Firefox, the selection isn't properly collapsed.
     // (2017/10/17)
-    if (Hotkeys.isMoveLineBackward(nativeEvent)) {
+    if (Hotkeys.isMoveUp(nativeEvent)) {
       event.preventDefault()
-      Transforms.move(editor, { unit: 'line', reverse: true })
+      const point = ReactEditor.findPreviousLinePoint(editor)
+      if(point) Transforms.select(editor, point)
       return
     }
 
-    if (Hotkeys.isMoveLineForward(nativeEvent)) {
+    if (Hotkeys.isMoveDown(nativeEvent)) {
       event.preventDefault()
-      Transforms.move(editor, { unit: 'line' })
+      const point = ReactEditor.findNextLinePoint(editor)
+      if(point) Transforms.select(editor, point)
       return
     }
 
