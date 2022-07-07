@@ -41,7 +41,7 @@ import {
 } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
 import findClosestNode, { isAlignY } from '../utils/closest'
-import { getOffset } from '../utils/string'
+import { getTextOffset } from '../utils/string'
 import { countBreaks } from '@editablejs/editable-breaker'
 
 /**
@@ -574,7 +574,7 @@ export const ReactEditor = {
         const textNode = isDOMText(offsetNode) ? offsetNode : offsetNode.firstChild
         if(!isDOMText(textNode)) return null
         const content = textNode.textContent ?? ''
-        const offset = getOffset(textNode, left, top, 0, content.length, content.length)
+        const offset = getTextOffset(textNode, left, top, 0, content.length, content.length)
         return {
           path: ReactEditor.findPath(editor, node),
           offset: startOffset + offset

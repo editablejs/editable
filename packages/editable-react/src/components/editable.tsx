@@ -38,6 +38,8 @@ import {
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { SlateSelectorContext } from '../hooks/use-slate-selector'
+import { getWordOffsetBackward, getWordOffsetForward, getWordRange } from '../utils/string'
+import useMultipleClick from '../hooks/use-multiple-click'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -227,9 +229,6 @@ export const Editable = (props: EditableProps) => {
       onBlur()
     }
     if(!focus) setCaretRect(null)
-    else {
-      setCurrentSelection(selection => selection ? ({ ...selection }) : null)
-    }
     setBoxRects(rects => {
       return rects.map(rect => {
         rect.color = focus ? drawStyle.focusBgColor : drawStyle.blurBgColor
@@ -263,6 +262,7 @@ export const Editable = (props: EditableProps) => {
     const range: Range = { anchor, focus: point }
     if(editor.selection && Range.equals(range, editor.selection)) {
       ReactEditor.focus(editor)
+      if(!caretRect) setCurrentSelection(selection => selection ? ({ ...selection }) : null)
       return
     }
     Transforms.select(editor, range)
@@ -271,6 +271,7 @@ export const Editable = (props: EditableProps) => {
 
   const handleRootMouseDown = (event: MouseEvent) => {
     isRootMouseDown.current = true
+    if(isDoubleClickRef.current) return
     changeFocus(true)
     const point = ReactEditor.findEventPoint(editor, event)
     if(point) {
@@ -350,7 +351,6 @@ export const Editable = (props: EditableProps) => {
 
     if (Hotkeys.isExtendUp(nativeEvent)) {
       event.preventDefault()
-      const { selection } = editor
       const point = ReactEditor.findPreviousLinePoint(editor)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
@@ -361,7 +361,6 @@ export const Editable = (props: EditableProps) => {
 
     if (Hotkeys.isExtendDown(nativeEvent)) {
       event.preventDefault()
-      const { selection } = editor
       const point = ReactEditor.findNextLinePoint(editor)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
@@ -400,6 +399,50 @@ export const Editable = (props: EditableProps) => {
       return
     }
 
+    if (Hotkeys.isMoveWordBackward(nativeEvent)) {
+      event.preventDefault()
+
+      if (selection && Range.isExpanded(selection)) {
+        Transforms.collapse(editor, { edge: 'focus' })
+      }
+      if(selection) {
+        const { focus } = selection
+        const { path: focusPath, offset: focusOffset } = focus
+        const focusNode = Node.get(editor, focusPath)
+        if(Text.isText(focusNode)) {
+          const offset = getWordOffsetBackward(focusNode.text, focusOffset)
+          if(offset !== focus.offset) {
+            Transforms.select(editor, {path: focusPath, offset })
+            return
+          }
+        }
+      }
+      Transforms.move(editor, { unit: 'word', reverse: !isRTL })
+      return
+    }
+
+    if (Hotkeys.isMoveWordForward(nativeEvent)) {
+      event.preventDefault()
+
+      if (selection && Range.isExpanded(selection)) {
+        Transforms.collapse(editor, { edge: 'focus' })
+      }
+      if(selection) {
+        const { focus } = selection
+        const { path: focusPath, offset: focusOffset } = focus
+        const focusNode = Node.get(editor, focusPath)
+        if(Text.isText(focusNode)) {
+          const offset = getWordOffsetForward(focusNode.text, focusOffset)
+          if(offset !== focus.offset) {
+            Transforms.select(editor, {path: focusPath, offset })
+            return
+          }
+        }
+      }
+      Transforms.move(editor, { unit: 'word', reverse: isRTL })
+      return
+    }
+
     // COMPAT: If a void node is selected, or a zero-width text node
     // adjacent to an inline is selected, we need to handle these
     // hotkeys manually because browsers won't be able to skip over
@@ -426,28 +469,6 @@ export const Editable = (props: EditableProps) => {
         Transforms.collapse(editor, { edge: 'end' })
       }
 
-      return
-    }
-
-    if (Hotkeys.isMoveWordBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-
-      Transforms.move(editor, { unit: 'word', reverse: !isRTL })
-      return
-    }
-
-    if (Hotkeys.isMoveWordForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-
-      Transforms.move(editor, { unit: 'word', reverse: isRTL })
       return
     }
 
@@ -535,6 +556,51 @@ export const Editable = (props: EditableProps) => {
       return
     }
   }
+
+  const isDoubleClickRef = useRef(false)
+
+  const [ handleMultipleClick ] = useMultipleClick({
+    onClick: () => {
+      isDoubleClickRef.current = false
+    },
+    onMultipleClick: (event, count) => {
+      event.preventDefault()
+      const { selection } = editor
+      if(!selection) return
+      const { focus } = selection
+      const { path: focusPath, offset: focusOffset } = focus
+      const focusNode = Node.get(editor, focusPath)
+      if(count === 2) {
+        if(Text.isText(focusNode)) {
+          const [startOffset, endOffset] = getWordRange(focusNode.text, focusOffset)
+          Transforms.select(editor, {
+            anchor: {path: focusPath, offset: startOffset},
+            focus: {path: focusPath, offset: endOffset}
+          })
+          isDoubleClickRef.current = true
+          setTimeout(() => {
+            isDoubleClickRef.current = false
+          }, 500);
+          return
+        }
+      } else if(count === 3) {
+        let blockPath = focusPath
+        if (!Editor.isBlock(editor, focusNode)) {
+          const block = Editor.above(editor, {
+            match: n => Editor.isBlock(editor, n),
+            at: focusPath,
+          })
+
+          blockPath = block?.[1] ?? focusPath.slice(0, 1)
+        }
+
+        const range = Editor.range(editor, blockPath)
+        Transforms.select(editor, range)
+        isDoubleClickRef.current = false
+        return false
+      }
+    }
+  })
 
   const handleKeyup = (event: React.KeyboardEvent) => { 
     if(onKeyup) onKeyup(event)
@@ -685,7 +751,7 @@ export const Editable = (props: EditableProps) => {
         return null
       }
       for(let i = 0; i < rects.length; i++) {
-        const rect = rects.item(i)
+        const rect = rects[i]
         if(rect) {
           const sameLocation = findSameLocation(rect.x, rect.y, i)
           if(sameLocation && rect.width >= sameLocation.width) {
@@ -724,6 +790,7 @@ export const Editable = (props: EditableProps) => {
             // Allow for passed-in styles to override anything.
             ...style,
           }}
+          onClick={handleMultipleClick}
         >
           <Children
             decorations={decorations}
