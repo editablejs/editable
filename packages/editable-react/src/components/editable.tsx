@@ -10,6 +10,7 @@ import {
   Transforms,
   Point,
   BaseSelection,
+  Path,
 } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
@@ -150,6 +151,7 @@ export const Editable = (props: EditableProps) => {
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [currentSelection, setCurrentSelection] = useState<BaseSelection>()
   const caretTimer = useRef<number>()
+  const isShiftPressed = useRef(false)
   const ref = useRef<HTMLDivElement>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
@@ -178,13 +180,11 @@ export const Editable = (props: EditableProps) => {
     }
   })
 
-  // The autoFocus TextareaHTMLAttribute doesn't do anything on a div, so it
-  // needs to be manually focused.
   useEffect(() => {
-    if (ref.current && autoFocus) {
-      ref.current.focus()
+    if (autoFocus) {
+      ReactEditor.focus(editor)
     }
-  }, [autoFocus])
+  }, [editor, autoFocus])
 
   const decorations = decorate([editor, []])
 
@@ -241,6 +241,19 @@ export const Editable = (props: EditableProps) => {
     if(!isRootMouseDown.current && !event.defaultPrevented) changeFocus(false)
   }
 
+  const handleSelecting = (point: Point | null) => { 
+    if(!startPointRef.current || !point) return
+    const anchor = startPointRef.current
+    const range: Range = { anchor, focus: point }
+    if(editor.selection && Range.equals(range, editor.selection)) {
+      ReactEditor.focus(editor)
+      if(!caretRect) setCurrentSelection(selection => selection ? ({ ...selection }) : null)
+      return
+    }
+    Transforms.select(editor, range)
+    return range
+  }
+
   const handleDocumentMouseUp = (event: MouseEvent) => {
     isRootMouseDown.current = false
     document.removeEventListener('mousemove', handleDocumentMouseMove);
@@ -256,26 +269,16 @@ export const Editable = (props: EditableProps) => {
     if(range && onSelecting) onSelecting()
   }
 
-  const handleSelecting = (point: Point | null) => { 
-    if(!startPointRef.current || !point) return
-    const anchor = startPointRef.current
-    const range: Range = { anchor, focus: point }
-    if(editor.selection && Range.equals(range, editor.selection)) {
-      ReactEditor.focus(editor)
-      if(!caretRect) setCurrentSelection(selection => selection ? ({ ...selection }) : null)
-      return
-    }
-    Transforms.select(editor, range)
-    return range
-  }
-
   const handleRootMouseDown = (event: MouseEvent) => {
     isRootMouseDown.current = true
     if(isDoubleClickRef.current) return
     changeFocus(true)
     const point = ReactEditor.findEventPoint(editor, event)
     if(point) {
-      startPointRef.current = point
+      console.log(isShiftPressed.current)
+      if(!isShiftPressed.current) {
+        startPointRef.current = point
+      }
       const range = handleSelecting(point)
       if(range && onSelectStart) onSelectStart()
     }
@@ -335,6 +338,10 @@ export const Editable = (props: EditableProps) => {
       }
 
       return
+    }
+
+    if(Hotkeys.isShift(nativeEvent)) {
+      isShiftPressed.current = true
     }
 
     if (Hotkeys.isExtendForward(nativeEvent)) {
@@ -407,14 +414,17 @@ export const Editable = (props: EditableProps) => {
       }
       if(selection) {
         const { focus } = selection
-        const { path: focusPath, offset: focusOffset } = focus
-        const focusNode = Node.get(editor, focusPath)
-        if(Text.isText(focusNode)) {
-          const offset = getWordOffsetBackward(focusNode.text, focusOffset)
-          if(offset !== focus.offset) {
-            Transforms.select(editor, {path: focusPath, offset })
-            return
-          }
+        const { path: focusPath } = focus
+        if(Editor.isStart(editor, focus, focusPath)) {
+          Transforms.move(editor, { reverse: !isRTL })
+          return
+        }
+        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        if(text) {
+          const wordOffset = getWordOffsetBackward(text, offset)
+          const newPoint = ReactEditor.findPointOnLine(editor, focusPath, wordOffset)
+          Transforms.select(editor, newPoint)
+          return
         }
       }
       Transforms.move(editor, { unit: 'word', reverse: !isRTL })
@@ -429,14 +439,16 @@ export const Editable = (props: EditableProps) => {
       }
       if(selection) {
         const { focus } = selection
-        const { path: focusPath, offset: focusOffset } = focus
-        const focusNode = Node.get(editor, focusPath)
-        if(Text.isText(focusNode)) {
-          const offset = getWordOffsetForward(focusNode.text, focusOffset)
-          if(offset !== focus.offset) {
-            Transforms.select(editor, {path: focusPath, offset })
-            return
-          }
+        const { path: focusPath } = focus
+        if(Editor.isEnd(editor, focus, focusPath)) {
+          Transforms.move(editor, { reverse: isRTL })
+          return
+        }
+        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        if(text) {
+          const wordOffset = getWordOffsetForward(text, offset)
+          Transforms.select(editor, ReactEditor.findPointOnLine(editor, focusPath, wordOffset))
+          return
         }
       }
       Transforms.move(editor, { unit: 'word', reverse: isRTL })
@@ -568,14 +580,15 @@ export const Editable = (props: EditableProps) => {
       const { selection } = editor
       if(!selection) return
       const { focus } = selection
-      const { path: focusPath, offset: focusOffset } = focus
+      const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
       if(count === 2) {
-        if(Text.isText(focusNode)) {
-          const [startOffset, endOffset] = getWordRange(focusNode.text, focusOffset)
+        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        if(text) {
+          const [startOffset, endOffset] = getWordRange(text, offset)
           Transforms.select(editor, {
-            anchor: {path: focusPath, offset: startOffset},
-            focus: {path: focusPath, offset: endOffset}
+            anchor: ReactEditor.findPointOnLine(editor, focusPath, startOffset),
+            focus: ReactEditor.findPointOnLine(editor, focusPath, endOffset)
           })
           isDoubleClickRef.current = true
           setTimeout(() => {
@@ -604,6 +617,9 @@ export const Editable = (props: EditableProps) => {
 
   const handleKeyup = (event: React.KeyboardEvent) => { 
     if(onKeyup) onKeyup(event)
+    if(event.key.toLowerCase() === 'shift') {
+      isShiftPressed.current = false
+    }
   }
 
   const handleBlur = () => {

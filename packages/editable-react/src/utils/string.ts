@@ -109,7 +109,7 @@ export const getWordBackward = (text: string, offset: number) => {
 }
 
 export const getWordOffsetBackward = (text: string, offset: number) => {  
-  return offset - (getWordBackward(text, offset).length || 1)
+  return offset - getWordBackward(text, offset).length
 }
 
 export const getWordForward = (text: string, offset: number) => { 
@@ -130,7 +130,7 @@ export const getWordForward = (text: string, offset: number) => {
 }
 
 export const getWordOffsetForward = (text: string, offset: number) => {  
-  return offset + (getWordForward(text, offset).length || 1)
+  return offset + getWordForward(text, offset).length
 }
 
 export const getWordRange = (text: string, offset: number) => {

@@ -9,7 +9,6 @@ import {
   Range,
   Scrubber,
   Transforms,
-  Location
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -42,7 +41,6 @@ import {
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
 import findClosestNode, { isAlignY } from '../utils/closest'
 import { getTextOffset } from '../utils/string'
-import { countBreaks } from '@editablejs/editable-breaker'
 
 /**
  * A React and DOM-specific version of the `Editor` interface.
@@ -562,23 +560,20 @@ export const ReactEditor = {
     if(!offsetNode) return null
     const node = ReactEditor.toSlateNode(editor, offsetNode)
     if(Text.isText(node)) {
-      const textRoot = offsetNode.closest('[data-slate-leaf]')
-      const stringNodes = textRoot?.querySelectorAll('[data-slate-string], [data-slate-composition], [data-slate-zero-width]')
-      if(stringNodes) {
-        let startOffset = 0
-        for(let s = 0; s < stringNodes.length; s++) { 
-          const stringNode = stringNodes[s]
-          if(stringNode === offsetNode) break
-          startOffset += countBreaks(stringNode.textContent ?? '')
-        }
-        const textNode = isDOMText(offsetNode) ? offsetNode : offsetNode.firstChild
-        if(!isDOMText(textNode)) return null
-        const content = textNode.textContent ?? ''
-        const offset = getTextOffset(textNode, left, top, 0, content.length, content.length)
-        return {
-          path: ReactEditor.findPath(editor, node),
-          offset: startOffset + offset
-        }
+      const textNodes = ReactEditor.findLowestDOMElements(editor, node)
+      let startOffset = 0
+      for(let s = 0; s < textNodes.length; s++) { 
+        const textNode = textNodes[s]
+        if(textNode === offsetNode) break
+        startOffset += (textNode.textContent ?? '').length
+      }
+      const textNode = isDOMText(offsetNode) ? offsetNode : offsetNode.firstChild
+      if(!isDOMText(textNode)) return null
+      const content = textNode.textContent ?? ''
+      const offset = getTextOffset(textNode, left, top, 0, content.length, content.length)
+      return {
+        path: ReactEditor.findPath(editor, node),
+        offset: startOffset + offset
       }
     } else if(Element.isElement(node)) {
       const point = ReactEditor.toSlatePoint(editor, [ offsetNode, 0 ], {
@@ -609,15 +604,20 @@ export const ReactEditor = {
     const { selection } = editor
     if(!at && selection) at = selection
     if(!at) return null
-    const startPoint = Range.start(at)
-    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
-    const currentRect = currentDomRange.getClientRects()[0]
+    const domRange = ReactEditor.toDOMRange(editor, at)
+    const startRange = domRange.cloneRange()
+    startRange.collapse(true)
+    const endRange = domRange.cloneRange()
+    endRange.collapse(false)
+    const isBackward = Range.isBackward(at)
+    const startRect = (isBackward ? endRange : startRange).getClientRects()[0]
+    const endRect = (isBackward ? startRange : endRange).getClientRects()[0]
 
     let blockEntry = Editor.above(editor, {
-      at: startPoint,
+      at: at.focus,
       match: n => Editor.isBlock(editor, n),
     })
-    let top = currentRect.top
+    let top = endRect.top
     let isFind = false
     let domBlock: DOMElement | null = null
     while(blockEntry && !isFind) {
@@ -645,22 +645,27 @@ export const ReactEditor = {
       }
     }
     if(!domBlock ) return null
-    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? currentRect.x : 0, top)
+    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? startRect.x : 0, top)
   },
 
   findNextLinePoint(editor: ReactEditor, at?: Range): Point | null { 
     const { selection } = editor
     if(!at && selection) at = selection
     if(!at) return null
-    const startPoint = Range.start(at)
-    const currentDomRange = ReactEditor.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
-    const currentRect = currentDomRange.getClientRects()[0]
+    const domRange = ReactEditor.toDOMRange(editor, at)
+    const startRange = domRange.cloneRange()
+    startRange.collapse(true)
+    const endRange = domRange.cloneRange()
+    endRange.collapse(false)
+    const isBackward = Range.isBackward(at)
+    const startRect = (isBackward ? endRange : startRange).getClientRects()[0]
+    const endRect = (isBackward ? startRange : endRange).getClientRects()[0]
 
     let blockEntry = Editor.above(editor, {
-      at: startPoint,
+      at: at.focus,
       match: n => Editor.isBlock(editor, n),
     })
-    let bottom = currentRect.bottom
+    let bottom = endRect.bottom
     let isFind = false
     let domBlock: DOMElement | null = null
     while(blockEntry && !isFind) {
@@ -689,7 +694,57 @@ export const ReactEditor = {
     }
     if(!domBlock ) return null
     
-    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? currentRect.x : 99999, bottom)
+    return ReactEditor.findClosestPoint(editor, domBlock, isFind ? startRect.x : 99999, bottom)
+  },
+
+  findTextOffsetOnLine(editor: ReactEditor, point: Point) { 
+    const blockEntry = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+      at: point,
+    })
+    const data = {
+      text: '',
+      offset: 0
+    }
+    if(!blockEntry) {
+      throw new Error(`Cannot resolve a Slate block from a point: ${point}`)
+    }
+    const textNodes = Node.texts(blockEntry[0])
+    let isFindOffset = false
+    for(const [textNode, textPath] of textNodes) {
+      const { text } = textNode
+      if(Path.equals(blockEntry[1].concat(textPath), point.path)) {
+        data.offset += point.offset
+        isFindOffset = true
+      } else if(!isFindOffset) {
+        data.offset += text.length
+      }
+      data.text += text
+    }
+    return data
+  },
+
+  findPointOnLine(editor: ReactEditor, path: Path, offset: number) {
+    const blockEntry = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+      at: path,
+    })
+    if(!blockEntry) {
+      throw new Error(`Cannot resolve a Slate block from a path: ${path}`)
+    }
+    const textNodes = Node.texts(blockEntry[0])
+    let findOffset = 0;
+    for(const [textNode, textPath] of textNodes) {
+      const { text } = textNode
+      const textLength = text.length
+      const totalOffset = findOffset + textLength
+      if(totalOffset >= offset) {
+        return {path: blockEntry[1].concat(textPath), offset: textLength - (totalOffset - offset)}
+      } else {
+        findOffset += textLength
+      }
+    }
+    return { path, offset }
   },
 
   /**
