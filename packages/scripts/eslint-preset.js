@@ -18,7 +18,7 @@ module.exports = {
     "no-redeclare": [
       "error",
       {
-        ignoreDeclarationMerge: true,
+        ignoreDeclarationMerge: true
       }
     ]
   }

@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/editable-breaker",
+  "name": "@editablejs/breaker",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts",
+    "build": "tsup src/index.ts --sourcemap --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --sourcemap --format esm,cjs --watch --dts",
     "lint": "eslint src --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

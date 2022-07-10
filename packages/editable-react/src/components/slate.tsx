@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { Editor, Node, Descendant, Scrubber } from 'slate'
-import { ReactEditor } from '../plugin/react-editor'
+import { EditableEditor } from '../plugin/editable-editor'
 import { FocusedContext } from '../hooks/use-focused'
 import { EditorContext } from '../hooks/use-slate-static'
 import { SlateContext } from '../hooks/use-slate'
@@ -16,7 +16,7 @@ import { EDITOR_TO_ON_CHANGE } from '../utils/weak-maps'
  */
 
 export const Slate = (props: {
-  editor: ReactEditor
+  editor: EditableEditor
   value: Descendant[]
   children: React.ReactNode
   onChange?: (value: Descendant[]) => void
@@ -25,7 +25,7 @@ export const Slate = (props: {
   const { editor, children, onChange, value, ...rest } = props
   const unmountRef = useRef(false)
 
-  const [context, setContext] = React.useState<[ReactEditor]>(() => {
+  const [context, setContext] = React.useState<[EditableEditor]>(() => {
     if (!Node.isNodeList(value)) {
       throw new Error(
         `[Slate] value is invalid! Expected a list of elements` +
@@ -67,10 +67,10 @@ export const Slate = (props: {
     }
   }, [])
 
-  const [isFocused, setIsFocused] = useState(ReactEditor.isFocused(editor))
+  const [isFocused, setIsFocused] = useState(EditableEditor.isFocused(editor))
 
   useEffect(() => {
-    setIsFocused(ReactEditor.isFocused(editor))
+    setIsFocused(EditableEditor.isFocused(editor))
   })
 
   return (

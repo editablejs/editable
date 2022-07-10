@@ -1,5 +1,5 @@
 const withPlugins = require('next-compose-plugins');
-const withTM = require('next-transpile-modules')(['@editablejs/editable-react']);
+const withTM = require('next-transpile-modules')(['@editablejs/editor-react']);
 const withLess = require('next-with-less');
 
 const plugins = [

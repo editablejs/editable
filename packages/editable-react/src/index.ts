@@ -1,6 +1,6 @@
 // Components
 // Environment-dependent Editable
-import { RenderElementProps, RenderLeafProps, RenderPlaceholderProps } from './components/editable'
+import { RenderElementProps, RenderLeafProps, RenderPlaceholderProps } from './components/content'
 
 export type {
   RenderElementProps,
@@ -9,9 +9,9 @@ export type {
 }
 
 export {
-  Editable,
+  ContentEditable,
   DefaultPlaceholder,
-} from './components/editable'
+} from './components/content'
 export { DefaultElement } from './components/element'
 export { DefaultLeaf } from './components/leaf'
 export { Slate } from './components/slate'
@@ -26,5 +26,5 @@ export { useSlate } from './hooks/use-slate'
 export { useSlateSelector } from './hooks/use-slate-selector'
 
 // Plugin
-export { ReactEditor } from './plugin/react-editor'
-export { withReact } from './plugin/with-react'
+export { EditableEditor } from './plugin/editable-editor'
+export { withEditable } from './plugin/with-editable'

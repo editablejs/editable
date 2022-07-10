@@ -15,7 +15,7 @@ import {
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
-import { ReactEditor } from '..'
+import { EditableEditor } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useSlate } from '../hooks/use-slate'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
@@ -101,7 +101,7 @@ export type EditableProps = {
   renderElement?: (props: RenderElementProps) => JSX.Element
   renderLeaf?: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder?: (props: RenderPlaceholderProps) => JSX.Element
-  scrollSelectionIntoView?: (editor: ReactEditor, domRange: DOMRange) => void
+  scrollSelectionIntoView?: (editor: EditableEditor, domRange: DOMRange) => void
   as?: React.ElementType
   selectionStyle?: SelectionStyle
   onFocus?: () => void
@@ -121,7 +121,7 @@ export type EditableProps = {
  * Editable.
  */
 
-export const Editable = (props: EditableProps) => {
+export const ContentEditable = (props: EditableProps) => {
   const {
     autoFocus,
     decorate = defaultDecorate,
@@ -182,7 +182,7 @@ export const Editable = (props: EditableProps) => {
 
   useEffect(() => {
     if (autoFocus) {
-      ReactEditor.focus(editor)
+      EditableEditor.focus(editor)
     }
   }, [editor, autoFocus])
 
@@ -224,7 +224,7 @@ export const Editable = (props: EditableProps) => {
     IS_FOCUSED.set(editor, focus)
     if(focus) {
       if(onFocus) onFocus()
-      ReactEditor.focus(editor)
+      EditableEditor.focus(editor)
     } else if(onBlur) {
       onBlur()
     }
@@ -246,7 +246,7 @@ export const Editable = (props: EditableProps) => {
     const anchor = startPointRef.current
     const range: Range = { anchor, focus: point }
     if(editor.selection && Range.equals(range, editor.selection)) {
-      ReactEditor.focus(editor)
+      EditableEditor.focus(editor)
       if(!caretRect) setCurrentSelection(selection => selection ? ({ ...selection }) : null)
       return
     }
@@ -258,13 +258,13 @@ export const Editable = (props: EditableProps) => {
     isRootMouseDown.current = false
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
-      const range = handleSelecting(ReactEditor.findEventPoint(editor, event))
+      const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
       if(range && onSelectEnd) onSelectEnd()
     }
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => { 
-    const point = ReactEditor.findEventPoint(editor, event)
+    const point = EditableEditor.findEventPoint(editor, event)
     const range = handleSelecting(point)
     if(range && onSelecting) onSelecting()
   }
@@ -273,7 +273,7 @@ export const Editable = (props: EditableProps) => {
     isRootMouseDown.current = true
     if(isDoubleClickRef.current) return
     changeFocus(true)
-    const point = ReactEditor.findEventPoint(editor, event)
+    const point = EditableEditor.findEventPoint(editor, event)
     if(point) {
       console.log(isShiftPressed.current)
       if(!isShiftPressed.current) {
@@ -294,7 +294,7 @@ export const Editable = (props: EditableProps) => {
     // so we sometimes might end up stuck in a composition state even though we
     // aren't composing any more.
     if (
-      ReactEditor.isComposing(editor) &&
+      EditableEditor.isComposing(editor) &&
       nativeEvent.isComposing === false
     ) {
       IS_COMPOSING.set(editor, false)
@@ -302,7 +302,7 @@ export const Editable = (props: EditableProps) => {
 
     if (
       isEventHandled(event, onKeydown) ||
-      ReactEditor.isComposing(editor)
+      EditableEditor.isComposing(editor)
     ) {
       return
     }
@@ -358,7 +358,7 @@ export const Editable = (props: EditableProps) => {
 
     if (Hotkeys.isExtendUp(nativeEvent)) {
       event.preventDefault()
-      const point = ReactEditor.findPreviousLinePoint(editor)
+      const point = EditableEditor.findPreviousLinePoint(editor)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
         focus: point
@@ -368,7 +368,7 @@ export const Editable = (props: EditableProps) => {
 
     if (Hotkeys.isExtendDown(nativeEvent)) {
       event.preventDefault()
-      const point = ReactEditor.findNextLinePoint(editor)
+      const point = EditableEditor.findNextLinePoint(editor)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
         focus: point
@@ -378,14 +378,14 @@ export const Editable = (props: EditableProps) => {
 
     if (Hotkeys.isMoveUp(nativeEvent)) {
       event.preventDefault()
-      const point = ReactEditor.findPreviousLinePoint(editor)
+      const point = EditableEditor.findPreviousLinePoint(editor)
       if(point) Transforms.select(editor, point)
       return
     }
 
     if (Hotkeys.isMoveDown(nativeEvent)) {
       event.preventDefault()
-      const point = ReactEditor.findNextLinePoint(editor)
+      const point = EditableEditor.findNextLinePoint(editor)
       if(point) Transforms.select(editor, point)
       return
     }
@@ -419,10 +419,10 @@ export const Editable = (props: EditableProps) => {
           Transforms.move(editor, { reverse: !isRTL })
           return
         }
-        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
         if(text) {
           const wordOffset = getWordOffsetBackward(text, offset)
-          const newPoint = ReactEditor.findPointOnLine(editor, focusPath, wordOffset)
+          const newPoint = EditableEditor.findPointOnLine(editor, focusPath, wordOffset)
           Transforms.select(editor, newPoint)
           return
         }
@@ -444,10 +444,10 @@ export const Editable = (props: EditableProps) => {
           Transforms.move(editor, { reverse: isRTL })
           return
         }
-        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
         if(text) {
           const wordOffset = getWordOffsetForward(text, offset)
-          Transforms.select(editor, ReactEditor.findPointOnLine(editor, focusPath, wordOffset))
+          Transforms.select(editor, EditableEditor.findPointOnLine(editor, focusPath, wordOffset))
           return
         }
       }
@@ -583,12 +583,12 @@ export const Editable = (props: EditableProps) => {
       const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
       if(count === 2) {
-        const { text, offset } = ReactEditor.findTextOffsetOnLine(editor, focus)
+        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
         if(text) {
           const [startOffset, endOffset] = getWordRange(text, offset)
           Transforms.select(editor, {
-            anchor: ReactEditor.findPointOnLine(editor, focusPath, startOffset),
-            focus: ReactEditor.findPointOnLine(editor, focusPath, endOffset)
+            anchor: EditableEditor.findPointOnLine(editor, focusPath, startOffset),
+            focus: EditableEditor.findPointOnLine(editor, focusPath, endOffset)
           })
           isDoubleClickRef.current = true
           setTimeout(() => {
@@ -719,7 +719,7 @@ export const Editable = (props: EditableProps) => {
       setCaretRect(null)
       setTextareaRect(null)
     } else {
-      const domRange = ReactEditor.toDOMRange(editor, currentSelection)
+      const domRange = EditableEditor.toDOMRange(editor, currentSelection)
       drawCaret(domRange)
       drawBoxs(domRange)
     }
@@ -883,7 +883,7 @@ export const defaultDecorate: (entry: NodeEntry) => Range[] = () => []
  */
 
 const defaultScrollSelectionIntoView = (
-  editor: ReactEditor,
+  editor: EditableEditor,
   domRange: DOMRange
 ) => {
   // This was affecting the selection of multiple blocks and dragging behavior,
@@ -906,10 +906,10 @@ const defaultScrollSelectionIntoView = (
  */
 
 export const hasTarget = (
-  editor: ReactEditor,
+  editor: EditableEditor,
   target: EventTarget | null
 ): target is DOMNode => {
-  return isDOMNode(target) && ReactEditor.hasDOMNode(editor, target)
+  return isDOMNode(target) && EditableEditor.hasDOMNode(editor, target)
 }
 
 /**
@@ -917,12 +917,12 @@ export const hasTarget = (
  */
 
 export const hasEditableTarget = (
-  editor: ReactEditor,
+  editor: EditableEditor,
   target: EventTarget | null
 ): target is DOMNode => {
   return (
     isDOMNode(target) &&
-    ReactEditor.hasDOMNode(editor, target)
+    EditableEditor.hasDOMNode(editor, target)
   )
 }
 
@@ -931,13 +931,13 @@ export const hasEditableTarget = (
  */
 
 export const isTargetInsideNonReadonlyVoid = (
-  editor: ReactEditor,
+  editor: EditableEditor,
   target: EventTarget | null
 ): boolean => {
   if (IS_READ_ONLY.get(editor)) return false
  
   const slateNode =
-    hasTarget(editor, target) && ReactEditor.toSlateNode(editor, target)
+    hasTarget(editor, target) && EditableEditor.toSlateNode(editor, target)
   return Editor.isVoid(editor, slateNode)
 }
 

@@ -3,7 +3,7 @@ import { Editor, Range, Element, Ancestor, Descendant } from 'slate'
 
 import ElementComponent from '../components/element'
 import TextComponent from '../components/text'
-import { ReactEditor } from '..'
+import { EditableEditor } from '..'
 import { useSlateStatic } from './use-slate-static'
 import { useDecorate } from './use-decorate'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
@@ -11,7 +11,7 @@ import {
   RenderElementProps,
   RenderLeafProps,
   RenderPlaceholderProps,
-} from '../components/editable'
+} from '../components/content'
 import { SelectedContext } from './use-selected'
 
 /**
@@ -36,7 +36,7 @@ const useChildren = (props: {
   } = props
   const decorate = useDecorate()
   const editor = useSlateStatic()
-  const path = ReactEditor.findPath(editor, node)
+  const path = EditableEditor.findPath(editor, node)
   const children = []
   const isLeafBlock =
     Element.isElement(node) &&
@@ -46,7 +46,7 @@ const useChildren = (props: {
   for (let i = 0; i < node.children.length; i++) {
     const p = path.concat(i)
     const n = node.children[i] as Descendant
-    const key = ReactEditor.findKey(editor, n)
+    const key = EditableEditor.findKey(editor, n)
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
     const ds = decorate([n, p])

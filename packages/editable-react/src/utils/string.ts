@@ -1,4 +1,4 @@
-import { nextBreak, previousBreak } from "@editablejs/editable-breaker";
+import { nextBreak, previousBreak } from "@editablejs/breaker";
 
 /**
  * @zh-CN 获取字符串索引处的向前或向后字符

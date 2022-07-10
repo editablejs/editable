@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom'
 import { Editor, Node, Path, Operation, Transforms, Range } from 'slate'
 
-import { ReactEditor } from './react-editor'
+import { EditableEditor } from './editable-editor'
 import { Key } from '../utils/key'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
@@ -17,7 +17,7 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 
 /**
- * `withReact` adds React and DOM specific behaviors to the editor.
+ * `withEditable` adds React and DOM specific behaviors to the editor.
  *
  * If you are using TypeScript, you must extend Slate's CustomTypes to use
  * this plugin.
@@ -25,8 +25,8 @@ import { findCurrentLineRange } from '../utils/lines'
  * See https://docs.slatejs.org/concepts/11-typescript to learn how.
  */
 
-export const withReact = <T extends Editor>(editor: T) => {
-  const e = editor as T & ReactEditor
+export const withEditable = <T extends Editor>(editor: T) => {
+  const e = editor as T & EditableEditor
   const { apply, onChange, deleteBackward } = e
 
   // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
@@ -129,7 +129,7 @@ export const withReact = <T extends Editor>(editor: T) => {
 
     // Create a fake selection so that we can add a Base64-encoded copy of the
     // fragment to the HTML, to decode on future pastes.
-    const domRange = ReactEditor.toDOMRange(e, selection)
+    const domRange = EditableEditor.toDOMRange(e, selection)
     let contents = domRange.cloneContents()
     let attach = contents.childNodes[0] as HTMLElement
 
@@ -146,7 +146,7 @@ export const withReact = <T extends Editor>(editor: T) => {
     if (endVoid) {
       const [voidNode] = endVoid
       const r = domRange.cloneRange()
-      const domNode = ReactEditor.toDOMNode(e, voidNode)
+      const domNode = EditableEditor.toDOMNode(e, voidNode)
       r.setEndAfter(domNode)
       contents = r.cloneContents()
     }
@@ -260,10 +260,10 @@ export const withReact = <T extends Editor>(editor: T) => {
   return e
 }
 
-const getMatches = (e: ReactEditor, path: Path) => {
+const getMatches = (e: EditableEditor, path: Path) => {
   const matches: [Path, Key][] = []
   for (const [n, p] of Editor.levels(e, { at: path })) {
-    const key = ReactEditor.findKey(e, n)
+    const key = EditableEditor.findKey(e, n)
     matches.push([p, key])
   }
   return matches
