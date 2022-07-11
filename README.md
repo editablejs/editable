@@ -41,7 +41,7 @@ Use the slatejs data model, and use react to render in the self-drawn cursor mod
 - [x] get all selected content api
 - [x] Switch cursor and selection by keyboard left and right keys
 - [x] Switch cursor and selection by keyboard Shift+left and right keys
-- [ ] Use the keyboard up and down keys to switch the cursor and selection
-- [ ] Double-click, triple-click to select text
+- [x] Use the keyboard up and down keys to switch the cursor and selection
+- [x] Double-click, triple-click to select text
 - [ ] touch to select selection and cursor
 - [ ] Full coverage of unit tests
