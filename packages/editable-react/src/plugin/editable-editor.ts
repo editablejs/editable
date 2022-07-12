@@ -42,10 +42,40 @@ import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
 import findClosestNode, { isAlignY } from '../utils/closest'
 import { getTextOffset } from '../utils/string'
 
+export interface SelectionStyle {
+  focusBgColor?: string
+  blurBgColor?: string
+  caretColor?: string
+  caretWidth?: number
+}
+
+/**
+ * `RenderElementProps` are passed to the `renderElement` handler.
+ */
+export interface RenderElementProps {
+  children: any
+  element: Element
+  attributes: {
+    'data-slate-node': 'element'
+    'data-slate-inline'?: true
+    'data-slate-void'?: true
+    dir?: 'rtl'
+    ref: any
+  }
+}
+
+/**
+ * `RenderLeafProps` are passed to the `renderLeaf` handler.
+ */
+export interface RenderLeafProps {
+  children: any
+  text: Text
+  attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-leaf', true>
+}
+
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
-
 export interface EditableEditor extends BaseEditor {
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
@@ -55,6 +85,22 @@ export interface EditableEditor extends BaseEditor {
     originEvent?: 'drag' | 'copy' | 'cut'
   ) => void
   hasRange: (editor: EditableEditor, range: Range) => boolean
+  onKeydown: (event: KeyboardEvent) => void
+  onKeyup: (event: KeyboardEvent) => void
+  onFocus: () => void
+  onBlur: () => void
+  onInput: (value: string) => void
+  onBeforeInput: (value: string) => void
+  onCompositionStart: (value: string) => void
+  onCompositionEnd: (value: string) => void
+  onSelectStart: () => void
+  onSelecting: () => void
+  onSelectEnd: () => void
+  onSelectionChange: () => void
+  setSelectionStyle: (style: SelectionStyle) => void
+  renderElement: (props: RenderElementProps) => JSX.Element
+  renderLeaf: (props: RenderLeafProps) => JSX.Element
+  renderPlaceholder: () => JSX.Element
 }
 
 export const EditableEditor = {
@@ -64,6 +110,17 @@ export const EditableEditor = {
 
   isComposing(editor: EditableEditor): boolean {
     return !!IS_COMPOSING.get(editor)
+  },
+
+  isEmpty(editor: EditableEditor, node: Node): boolean {
+    if(Text.isText(node)) {
+      return node.text === '' && !IS_COMPOSING.get(editor)
+    }
+    else {
+      if(node.children.length === 0) return true
+      if(node.children.length === 1) return !Editor.isVoid(editor, node) && EditableEditor.isEmpty(editor, (node as Element).children[0])
+      return false
+    }
   },
 
   /**

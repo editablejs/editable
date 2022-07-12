@@ -34,6 +34,7 @@ export const IS_DRAGGING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_CLICKING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_COMPOSING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_ON_COMPOSITION_END: WeakMap<Editor, boolean> = new WeakMap()
+export const IS_SHIFT_PRESSED: WeakMap<Editor, boolean> = new WeakMap()
 
 export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
 
@@ -41,12 +42,7 @@ export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
  * Weak map for associating the context `onChange` context with the plugin.
  */
 
-export const EDITOR_TO_ON_CHANGE = new WeakMap<Editor, () => void>()
 
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
 
-/**
- * Symbols.
- */
 
-export const PLACEHOLDER_SYMBOL = (Symbol('placeholder') as unknown) as string

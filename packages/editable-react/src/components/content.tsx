@@ -1,16 +1,12 @@
-import React, { useEffect, useRef, useMemo, useState, useContext } from 'react'
-import getDirection from 'direction'
+import React, { useEffect, useRef, useState, useContext } from 'react'
 import {
   Editor,
-  Element,
   NodeEntry,
   Node,
   Range,
-  Text,
   Transforms,
   Point,
   BaseSelection,
-  Path,
 } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
@@ -19,73 +15,35 @@ import { EditableEditor } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useSlate } from '../hooks/use-slate'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { DecorateContext } from '../hooks/use-decorate'
 import {
   DOMNode,
   DOMRange,
   getDefaultView,
   isDOMNode,
 } from '../utils/dom'
-import Hotkeys from '../utils/hotkeys'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
   IS_READ_ONLY,
   NODE_TO_ELEMENT,
   IS_FOCUSED,
-  PLACEHOLDER_SYMBOL,
   EDITOR_TO_WINDOW,
   IS_COMPOSING,
+  IS_SHIFT_PRESSED,
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
-import { SlateSelectorContext } from '../hooks/use-slate-selector'
-import { getWordOffsetBackward, getWordOffsetForward, getWordRange } from '../utils/string'
+import { getWordRange } from '../utils/string'
 import useMultipleClick from '../hooks/use-multiple-click'
+import { SelectionStyle } from '../plugin/editable-editor'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
 )
 
-export interface SelectionStyle {
-  focusBgColor?: string
-  blurBgColor?: string
-  caretColor?: string
-  caretWidth?: number
-}
-
 const SELECTION_DEFAULT_BLUR_BG_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_DEFAULT_FOCUS_BG_COLOR = 'rgba(0,127,255,0.3)'
 const SELECTION_DEFAULT_CARET_COLOR = '#000'
 const SELECTION_DEFAULT_CARET_WIDTH = 2
-
-/**
- * `RenderElementProps` are passed to the `renderElement` handler.
- */
-
-export interface RenderElementProps {
-  children: any
-  element: Element
-  attributes: {
-    'data-slate-node': 'element'
-    'data-slate-inline'?: true
-    'data-slate-void'?: true
-    dir?: 'rtl'
-    ref: any
-  }
-}
-
-/**
- * `RenderLeafProps` are passed to the `renderLeaf` handler.
- */
-
-export interface RenderLeafProps {
-  children: any
-  leaf: Text
-  text: Text
-  attributes: {
-    'data-slate-leaf': true
-  }
-}
 
 /**
  * `EditableProps` are passed to the `<Editable>` component.
@@ -98,23 +56,18 @@ export type EditableProps = {
   readOnly?: boolean
   role?: string
   style?: React.CSSProperties
-  renderElement?: (props: RenderElementProps) => JSX.Element
-  renderLeaf?: (props: RenderLeafProps) => JSX.Element
-  renderPlaceholder?: (props: RenderPlaceholderProps) => JSX.Element
   scrollSelectionIntoView?: (editor: EditableEditor, domRange: DOMRange) => void
   as?: React.ElementType
   selectionStyle?: SelectionStyle
-  onFocus?: () => void
-  onBlur?: () => void
-  onKeydown?: (event: React.KeyboardEvent) => void
-  onKeyup?: (event: React.KeyboardEvent) => void
-  onBeforeInput?: (event: React.FormEvent<HTMLTextAreaElement>) => void
-  onInput?: (event: React.FormEvent<HTMLTextAreaElement>) => void
-  onCompositionStart?: (event: React.CompositionEvent) => void
-  onCompositionEnd?: (event: React.CompositionEvent) => void
-  onSelectStart?: () => void
-  onSelecting?: () => void
-  onSelectEnd?: () => void
+}
+
+const mergeSelectionStyle = (selectionStyle: SelectionStyle, oldStyle: SelectionStyle = {
+  focusBgColor: SELECTION_DEFAULT_FOCUS_BG_COLOR,
+  blurBgColor: SELECTION_DEFAULT_BLUR_BG_COLOR,
+  caretColor: SELECTION_DEFAULT_CARET_COLOR,
+  caretWidth: SELECTION_DEFAULT_CARET_WIDTH
+}): Required<SelectionStyle> => { 
+  return Object.assign({},oldStyle , selectionStyle) as Required<SelectionStyle>
 }
 
 /**
@@ -127,31 +80,17 @@ export const ContentEditable = (props: EditableProps) => {
     decorate = defaultDecorate,
     placeholder,
     readOnly = false,
-    renderElement,
-    renderLeaf,
-    renderPlaceholder = props => <DefaultPlaceholder {...props} />,
     scrollSelectionIntoView = defaultScrollSelectionIntoView,
     style = {},
     as: Component = 'div',
     selectionStyle,
-    onFocus,
-    onBlur,
-    onKeydown,
-    onKeyup,
-    onBeforeInput,
-    onInput,
-    onCompositionStart,
-    onCompositionEnd,
-    onSelectStart,
-    onSelecting,
-    onSelectEnd,
     ...attributes
   } = props
   const editor = useSlate()
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [currentSelection, setCurrentSelection] = useState<BaseSelection>()
+  const [drawSelectionStyle, setDrawSelectionStyle] = useState(mergeSelectionStyle(selectionStyle ?? {}))
   const caretTimer = useRef<number>()
-  const isShiftPressed = useRef(false)
   const ref = useRef<HTMLDivElement>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
@@ -186,23 +125,11 @@ export const ContentEditable = (props: EditableProps) => {
     }
   }, [editor, autoFocus])
 
-  const decorations = decorate([editor, []])
-
-  if (
-    placeholder &&
-    editor.children.length === 1 &&
-    Array.from(Node.texts(editor)).length === 1 &&
-    Node.string(editor) === '' &&
-    !IS_COMPOSING.get(editor)
-  ) {
-    const start = Editor.start(editor, [])
-    decorations.push({
-      [PLACEHOLDER_SYMBOL]: true,
-      placeholder,
-      anchor: start,
-      focus: start,
-    })
-  }
+  useEffect(() => {  
+    editor.setSelectionStyle = style => {
+      setDrawSelectionStyle(value => mergeSelectionStyle(style, value))
+    }
+  }, [editor])
 
   const [ caretRect, setCaretRect ] = useState<DrawRect | null>(null)
   const [ boxRects, setBoxRects ] = useState<DrawRect[]>([])
@@ -212,26 +139,18 @@ export const ContentEditable = (props: EditableProps) => {
   const startPointRef = useRef<Point | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
-  const drawStyle = useMemo(() => Object.assign({}, {
-    focusBgColor: SELECTION_DEFAULT_FOCUS_BG_COLOR,
-    blurBgColor: SELECTION_DEFAULT_BLUR_BG_COLOR,
-    caretColor: SELECTION_DEFAULT_CARET_COLOR,
-    caretWidth: SELECTION_DEFAULT_CARET_WIDTH
-  }, selectionStyle), [selectionStyle])
-
   const changeFocus = (focus: boolean) => {
     if(IS_FOCUSED.get(editor) === focus) return
     IS_FOCUSED.set(editor, focus)
     if(focus) {
-      if(onFocus) onFocus()
-      EditableEditor.focus(editor)
-    } else if(onBlur) {
-      onBlur()
+      editor.onFocus()
+    } else {
+      editor.onBlur()
     }
     if(!focus) setCaretRect(null)
     setBoxRects(rects => {
       return rects.map(rect => {
-        rect.color = focus ? drawStyle.focusBgColor : drawStyle.blurBgColor
+        rect.color = focus ? drawSelectionStyle.focusBgColor : drawSelectionStyle.blurBgColor
         return rect
       })
     })
@@ -259,14 +178,14 @@ export const ContentEditable = (props: EditableProps) => {
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
       const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
-      if(range && onSelectEnd) onSelectEnd()
+      if(range) editor.onSelectEnd()
     }
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => { 
     const point = EditableEditor.findEventPoint(editor, event)
     const range = handleSelecting(point)
-    if(range && onSelecting) onSelecting()
+    if(range)  editor.onSelecting()
   }
 
   const handleRootMouseDown = (event: MouseEvent) => {
@@ -275,12 +194,11 @@ export const ContentEditable = (props: EditableProps) => {
     changeFocus(true)
     const point = EditableEditor.findEventPoint(editor, event)
     if(point) {
-      console.log(isShiftPressed.current)
-      if(!isShiftPressed.current) {
+      if(!IS_SHIFT_PRESSED.get(editor)) {
         startPointRef.current = point
       }
       const range = handleSelecting(point)
-      if(range && onSelectStart) onSelectStart()
+      if(range) editor.onSelectStart()
     }
     else startPointRef.current = null
     if(event.button === 0) {
@@ -301,272 +219,11 @@ export const ContentEditable = (props: EditableProps) => {
     }
 
     if (
-      isEventHandled(event, onKeydown) ||
       EditableEditor.isComposing(editor)
     ) {
       return
     }
-
-    const { selection } = editor
-    const element =
-      editor.children[
-        selection !== null ? selection.focus.path[0] : 0
-      ]
-    const isRTL = getDirection(Node.string(element)) === 'rtl'
-
-    // COMPAT: Since we prevent the default behavior on
-    // `beforeinput` events, the browser doesn't think there's ever
-    // any history stack to undo or redo, so we have to manage these
-    // hotkeys ourselves. (2019/11/06)
-    if (Hotkeys.isRedo(nativeEvent)) {
-      event.preventDefault()
-      const maybeHistoryEditor: any = editor
-
-      if (typeof maybeHistoryEditor.redo === 'function') {
-        maybeHistoryEditor.redo()
-      }
-
-      return
-    }
-
-    if (Hotkeys.isUndo(nativeEvent)) {
-      event.preventDefault()
-      const maybeHistoryEditor: any = editor
-
-      if (typeof maybeHistoryEditor.undo === 'function') {
-        maybeHistoryEditor.undo()
-      }
-
-      return
-    }
-
-    if(Hotkeys.isShift(nativeEvent)) {
-      isShiftPressed.current = true
-    }
-
-    if (Hotkeys.isExtendForward(nativeEvent)) {
-      event.preventDefault()
-      Transforms.move(editor, { edge: 'focus' })
-      return
-    }
-
-    if (Hotkeys.isExtendBackward(nativeEvent)) {
-      event.preventDefault()
-      Transforms.move(editor, { edge: 'focus', reverse: true })
-      return
-    }
-
-    if (Hotkeys.isExtendUp(nativeEvent)) {
-      event.preventDefault()
-      const point = EditableEditor.findPreviousLinePoint(editor)
-      if(point && selection) Transforms.select(editor, {
-        anchor: selection.anchor,
-        focus: point
-      })
-      return
-    }
-
-    if (Hotkeys.isExtendDown(nativeEvent)) {
-      event.preventDefault()
-      const point = EditableEditor.findNextLinePoint(editor)
-      if(point && selection) Transforms.select(editor, {
-        anchor: selection.anchor,
-        focus: point
-      })
-      return
-    }
-
-    if (Hotkeys.isMoveUp(nativeEvent)) {
-      event.preventDefault()
-      const point = EditableEditor.findPreviousLinePoint(editor)
-      if(point) Transforms.select(editor, point)
-      return
-    }
-
-    if (Hotkeys.isMoveDown(nativeEvent)) {
-      event.preventDefault()
-      const point = EditableEditor.findNextLinePoint(editor)
-      if(point) Transforms.select(editor, point)
-      return
-    }
-
-    if (Hotkeys.isExtendLineBackward(nativeEvent)) {
-      event.preventDefault()
-      Transforms.move(editor, {
-        unit: 'line',
-        edge: 'focus',
-        reverse: true,
-      })
-      return
-    }
-
-    if (Hotkeys.isExtendLineForward(nativeEvent)) {
-      event.preventDefault()
-      Transforms.move(editor, { unit: 'line', edge: 'focus' })
-      return
-    }
-
-    if (Hotkeys.isMoveWordBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-      if(selection) {
-        const { focus } = selection
-        const { path: focusPath } = focus
-        if(Editor.isStart(editor, focus, focusPath)) {
-          Transforms.move(editor, { reverse: !isRTL })
-          return
-        }
-        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
-        if(text) {
-          const wordOffset = getWordOffsetBackward(text, offset)
-          const newPoint = EditableEditor.findPointOnLine(editor, focusPath, wordOffset)
-          Transforms.select(editor, newPoint)
-          return
-        }
-      }
-      Transforms.move(editor, { unit: 'word', reverse: !isRTL })
-      return
-    }
-
-    if (Hotkeys.isMoveWordForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-      if(selection) {
-        const { focus } = selection
-        const { path: focusPath } = focus
-        if(Editor.isEnd(editor, focus, focusPath)) {
-          Transforms.move(editor, { reverse: isRTL })
-          return
-        }
-        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
-        if(text) {
-          const wordOffset = getWordOffsetForward(text, offset)
-          Transforms.select(editor, EditableEditor.findPointOnLine(editor, focusPath, wordOffset))
-          return
-        }
-      }
-      Transforms.move(editor, { unit: 'word', reverse: isRTL })
-      return
-    }
-
-    // COMPAT: If a void node is selected, or a zero-width text node
-    // adjacent to an inline is selected, we need to handle these
-    // hotkeys manually because browsers won't be able to skip over
-    // the void node with the zero-width space not being an empty
-    // string.
-    if (Hotkeys.isMoveBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isCollapsed(selection)) {
-        Transforms.move(editor, { reverse: !isRTL })
-      } else {
-        Transforms.collapse(editor, { edge: 'start' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isMoveForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isCollapsed(selection)) {
-        Transforms.move(editor, { reverse: isRTL })
-      } else {
-        Transforms.collapse(editor, { edge: 'end' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isSoftBreak(nativeEvent)) {
-      event.preventDefault()
-      Editor.insertSoftBreak(editor)
-      return
-    }
-
-    if (Hotkeys.isSplitBlock(nativeEvent)) {
-      event.preventDefault()
-      Editor.insertBreak(editor)
-      return
-    }
-
-    if (Hotkeys.isDeleteBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
-      } else {
-        Editor.deleteBackward(editor)
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor)
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteLineBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
-      } else {
-        Editor.deleteBackward(editor, { unit: 'line' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteLineForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor, { unit: 'line' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteWordBackward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
-      } else {
-        Editor.deleteBackward(editor, { unit: 'word' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteWordForward(nativeEvent)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor, { unit: 'word' })
-      }
-
-      return
-    }
+    editor.onKeydown(nativeEvent)
   }
 
   const isDoubleClickRef = useRef(false)
@@ -616,10 +273,7 @@ export const ContentEditable = (props: EditableProps) => {
   })
 
   const handleKeyup = (event: React.KeyboardEvent) => { 
-    if(onKeyup) onKeyup(event)
-    if(event.key.toLowerCase() === 'shift') {
-      isShiftPressed.current = false
-    }
+    editor.onKeyup(event.nativeEvent)
   }
 
   const handleBlur = () => {
@@ -627,7 +281,9 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleBeforeInput = (event: React.FormEvent<HTMLTextAreaElement>) => { 
-    if(onBeforeInput) onBeforeInput(event)
+    const textarea = event.target
+    if(!(textarea instanceof HTMLTextAreaElement)) return
+    editor.onBeforeInput(textarea.value)
   }
 
   const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => { 
@@ -637,69 +293,28 @@ export const ContentEditable = (props: EditableProps) => {
     if(!IS_COMPOSING.get(editor)) {
       textarea.value = ''
     }
-
-    if(!isEventHandled(event, onInput)) {
-      const { selection } = editor
-      if(!selection) return
-      if(IS_COMPOSING.get(editor)) {
-        const [node, path] = Editor.node(editor, selection)
-        if(Text.isText(node)) {
-          if(Range.isExpanded(selection)) { 
-            Editor.deleteFragment(editor)
-          }
-          const offset = node.composition?.offset ?? selection.anchor.offset
-          Transforms.setNodes<Text>(editor, {
-            composition: {
-              text: value,
-              offset
-            }
-          }, { at: path })
-          const point = { path, offset: offset + value.length}
-          Transforms.select(editor, {
-            anchor: point,
-            focus: point
-          })
-        }
-      } else {
-        editor.insertText(value)
-      }
-    }
+    editor.onInput(value)
   }
 
   const handleCompositionStart = (ev: React.CompositionEvent) => {
-    IS_COMPOSING.set(editor, true)
-    if(onCompositionStart) onCompositionStart(ev)
+    editor.onCompositionStart(ev.nativeEvent.data)
   }
 
   const handleCompositionEnd = (ev: React.CompositionEvent) => { 
-    IS_COMPOSING.set(editor, false)
     const textarea = ev.target
     if(!(textarea instanceof HTMLTextAreaElement)) return
     const value = textarea.value
     textarea.value = ''
-    if(!isEventHandled(ev, onCompositionEnd)) {
-      const { selection } = editor
-      if(!selection) return
-      const [node, path] = Editor.node(editor, selection)
-      if(Text.isText(node)) {
-        const { composition } = node
-        Transforms.setNodes<Text>(editor, {
-          composition: undefined,
-        }, { at: path })
-        const point = { path, offset: composition?.offset ?? selection.anchor.offset}
-        Transforms.select(editor, point)
-        Transforms.insertText(editor, value)
-      }
-    }
+    editor.onCompositionEnd(value)
   }
 
-  const selectorContext = useContext(SlateSelectorContext)
-
   useIsomorphicLayoutEffect(() => {
-    selectorContext.addEventListener(() => {
+    const { onSelectionChange } = editor
+    editor.onSelectionChange = () => { 
       const { selection } = editor
       setCurrentSelection(selection)
-    })
+      onSelectionChange()
+    }
     const root = EDITOR_TO_ELEMENT.get(editor)
     document.addEventListener('mousedown', handleDocumentMouseDown)
     document.addEventListener('mouseup', handleDocumentMouseUp)
@@ -712,7 +327,7 @@ export const ContentEditable = (props: EditableProps) => {
 
       root?.removeEventListener('mousedown', handleRootMouseDown)
     }
-  }, [selectorContext, editor])
+  }, [editor])
 
   useIsomorphicLayoutEffect(() => {
     if(!currentSelection) {
@@ -728,7 +343,7 @@ export const ContentEditable = (props: EditableProps) => {
   const drawCaret = (range: DOMRange) => { 
     const rects = range.getClientRects()
     if(rects.length === 0 || !range.collapsed || !IS_FOCUSED.get(editor)) return setCaretRect(null)
-    const caretRect = Object.assign({}, rects[0].toJSON(), {  width: drawStyle.caretWidth, color: drawStyle.caretColor })
+    const caretRect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor })
     setCaretRect(caretRect)
     setTextareaRect(caretRect)
   }
@@ -774,7 +389,7 @@ export const ContentEditable = (props: EditableProps) => {
             indexs.push(i)
             continue
           }
-          drawRects.push(Object.assign({}, rect.toJSON(), { color: IS_FOCUSED.get(editor) ? drawStyle.focusBgColor : drawStyle.blurBgColor }))
+          drawRects.push(Object.assign({}, rect.toJSON(), { color: IS_FOCUSED.get(editor) ? drawSelectionStyle.focusBgColor : drawSelectionStyle.blurBgColor }))
         }
       }
     }
@@ -784,104 +399,73 @@ export const ContentEditable = (props: EditableProps) => {
 
   return (
     <ReadOnlyContext.Provider value={readOnly}>
-      <DecorateContext.Provider value={decorate}>
-        <Component
-          role={readOnly ? undefined : 'textbox'}
-          {...attributes}
-          data-slate-editor
-          data-slate-node="value"
-          // explicitly set this
-          // in some cases, a decoration needs access to the range / selection to decorate a text node,
-          // then you will select the whole text node when you select part the of text
-          // this magic zIndex="-1" will fix it
-          zindex={-1}
-          ref={ref}
-          style={{
-            // Prevent the default outline styles.
-            outline: 'none',
-            // Preserve adjacent whitespace and new lines.
-            whiteSpace: 'pre-wrap',
-            // Allow words to break if they are too long.
-            wordWrap: 'break-word',
-            // Allow for passed-in styles to override anything.
-            ...style,
-          }}
-          onClick={handleMultipleClick}
-        >
-          <Children
-            decorations={decorations}
-            node={editor}
-            renderElement={renderElement}
-            renderPlaceholder={renderPlaceholder}
-            renderLeaf={renderLeaf}
-            selection={editor.selection}
-          />
-        </Component>
-        <Shadow caretRects={caretRect ? [caretRect] : []} boxRects={boxRects}>
-          {
-            <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1, style: { opacity:0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}})}>
-              <textarea 
-              ref={textareaRef}
-              rows={1} 
-              style={{
-                fontSize: 'inherit', 
-                lineHeight: 1,
-                padding: 0,
-                border: 'none',
-                whiteSpace: 'nowrap',
-                width: '1em',
-                overflow: 'auto',
-                resize: 'vertical'
-              }} 
-              onKeyDown={handleKeydown}
-              onKeyUp={handleKeyup}
-              onBeforeInput={handleBeforeInput}
-              onInput={handleInput}
-              onCompositionStart={handleCompositionStart}
-              onCompositionEnd={handleCompositionEnd}
-              onBlur={handleBlur}
-              />
-            </ShadowBox>
-          }
-        </Shadow>
-      </DecorateContext.Provider>
+      <Component
+        role={readOnly ? undefined : 'textbox'}
+        {...attributes}
+        data-slate-editor
+        data-slate-node="value"
+        // explicitly set this
+        // in some cases, a decoration needs access to the range / selection to decorate a text node,
+        // then you will select the whole text node when you select part the of text
+        // this magic zIndex="-1" will fix it
+        zindex={-1}
+        ref={ref}
+        style={{
+          // Prevent the default outline styles.
+          outline: 'none',
+          // Preserve adjacent whitespace and new lines.
+          whiteSpace: 'pre-wrap',
+          // Allow words to break if they are too long.
+          wordWrap: 'break-word',
+          // Allow for passed-in styles to override anything.
+          ...style,
+        }}
+        onClick={handleMultipleClick}
+      >
+        <Children
+          node={editor}
+          selection={editor.selection}
+        />
+      </Component>
+      <Shadow caretRects={caretRect ? [caretRect] : []} boxRects={boxRects}>
+        {
+          <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1, style: { opacity:0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}})}>
+            <textarea 
+            ref={textareaRef}
+            rows={1} 
+            style={{
+              fontSize: 'inherit', 
+              lineHeight: 1,
+              padding: 0,
+              border: 'none',
+              whiteSpace: 'nowrap',
+              width: '1em',
+              overflow: 'auto',
+              resize: 'vertical'
+            }} 
+            onKeyDown={handleKeydown}
+            onKeyUp={handleKeyup}
+            onBeforeInput={handleBeforeInput}
+            onInput={handleInput}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            onBlur={handleBlur}
+            />
+          </ShadowBox>
+        }
+      </Shadow>
     </ReadOnlyContext.Provider>
   )
 }
 
 /**
- * The props that get passed to renderPlaceholder
- */
-export type RenderPlaceholderProps = {
-  children: any
-  attributes: {
-    'data-slate-placeholder': boolean
-    dir?: 'rtl'
-    contentEditable: boolean
-    ref: React.RefObject<any>
-    style: React.CSSProperties
-  }
-}
-
-/**
- * The default placeholder element
- */
-
-export const DefaultPlaceholder = ({
-  attributes,
-  children,
-}: RenderPlaceholderProps) => <span {...attributes}>{children}</span>
-
-/**
  * A default memoized decorate function.
  */
-
 export const defaultDecorate: (entry: NodeEntry) => Range[] = () => []
 
 /**
  * A default implement to scroll dom range into view.
  */
-
 const defaultScrollSelectionIntoView = (
   editor: EditableEditor,
   domRange: DOMRange
@@ -939,51 +523,4 @@ export const isTargetInsideNonReadonlyVoid = (
   const slateNode =
     hasTarget(editor, target) && EditableEditor.toSlateNode(editor, target)
   return Editor.isVoid(editor, slateNode)
-}
-
-/**
- * Check if an event is overrided by a handler.
- */
-
-export const isEventHandled = <
-  EventType extends React.SyntheticEvent<unknown, unknown>
->(
-  event: EventType,
-  handler?: (event: EventType) => void | boolean
-) => {
-  if (!handler) {
-    return false
-  }
-  // The custom event handler may return a boolean to specify whether the event
-  // shall be treated as being handled or not.
-  const shouldTreatEventAsHandled = handler(event)
-
-  if (shouldTreatEventAsHandled != null) {
-    return shouldTreatEventAsHandled
-  }
-
-  return event.isDefaultPrevented() || event.isPropagationStopped()
-}
-
-/**
- * Check if a DOM event is overrided by a handler.
- */
-
-export const isDOMEventHandled = <E extends Event>(
-  event: E,
-  handler?: (event: E) => void | boolean
-) => {
-  if (!handler) {
-    return false
-  }
-
-  // The custom event handler may return a boolean to specify whether the event
-  // shall be treated as being handled or not.
-  const shouldTreatEventAsHandled = handler(event)
-
-  if (shouldTreatEventAsHandled != null) {
-    return shouldTreatEventAsHandled
-  }
-  
-  return event.defaultPrevented
 }

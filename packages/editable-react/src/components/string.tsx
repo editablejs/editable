@@ -6,14 +6,12 @@ import { EditableEditor, useSlateStatic } from '..'
 /**
  * Leaf content strings.
  */
-
 const String: React.FC<{
   isLast: boolean
-  leaf: Text
   parent: Element
   text: Text
 }> = (props) => {
-  const { isLast, leaf, parent, text } = props
+  const { isLast, parent, text } = props
   const editor = useSlateStatic()
   const path = EditableEditor.findPath(editor, text)
   const parentPath = Path.parent(path)
@@ -28,7 +26,7 @@ const String: React.FC<{
   // width space that will convert into a line break when copying and pasting
   // to support expected plain text.
   if (
-    leaf.text === '' &&
+    text.text === '' &&
     parent.children[parent.children.length - 1] === text &&
     !editor.isInline(parent) &&
     Editor.string(editor, parentPath) === ''
@@ -39,23 +37,23 @@ const String: React.FC<{
   // COMPAT: If the text is empty, it's because it's on the edge of an inline
   // node, so we render a zero-width space so that the selection can be
   // inserted next to it still.
-  if (leaf.text === '') {
+  if (text.text === '') {
     return <ZeroWidthString />
   }
 
   // COMPAT: Browsers will collapse trailing new lines at the end of blocks,
   // so we need to add an extra trailing new lines to prevent that.
-  if (isLast && leaf.text.slice(-1) === '\n') {
-    return <TextString isTrailing text={leaf.text} />
+  if (isLast && text.text.slice(-1) === '\n') {
+    return <TextString isTrailing text={text.text} />
   }
-  if(leaf.composition) {
-    const { offset, text: compositionText } = leaf.composition
-    const text = leaf.text
-    const left = text.substring(0, offset)
-    const right = text.substring(offset)
+  if(text.composition) {
+    const { offset, text: compositionText } = text.composition
+    const t = text.text
+    const left = t.substring(0, offset)
+    const right = t.substring(offset)
     return <>{left && <TextString text={left}/>}<CompositionString text={compositionText} />{right && <TextString text={right}/>}</>
   }
-  return <TextString text={leaf.text} />
+  return <TextString text={text.text} />
 }
 
 /**

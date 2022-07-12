@@ -72,7 +72,7 @@ const create = (key: string) => {
  * Hotkeys.
  */
 
-export default {
+const Hotkeys = {
   isMoveUp: create('moveUp'),
   isMoveDown: create('moveDown'),
   isCompose: create('compose'),
@@ -101,3 +101,5 @@ export default {
   isTransposeCharacter: create('transposeCharacter'),
   isUndo: create('undo'),
 }
+
+export default Hotkeys

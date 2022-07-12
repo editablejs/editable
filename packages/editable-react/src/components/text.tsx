@@ -1,58 +1,32 @@
 import React, { useRef } from 'react'
-import { Range, Element, Text as SlateText } from 'slate'
+import { Element, Text as SlateText } from 'slate'
 
 import Leaf from './leaf'
-import { EditableEditor, useSlateStatic } from '..'
-import { RenderLeafProps, RenderPlaceholderProps } from './content'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   NODE_TO_ELEMENT,
   ELEMENT_TO_NODE,
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
-import { isDecoratorRangeListEqual } from '../utils/range-list'
+import { useSlateStatic } from '../hooks/use-slate-static'
+import { EditableEditor } from '../plugin/editable-editor'
 
 /**
  * Text.
  */
-
 const Text = (props: {
-  decorations: Range[]
   isLast: boolean
   parent: Element
-  renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element
-  renderLeaf?: (props: RenderLeafProps) => JSX.Element
   text: SlateText
 }) => {
   const {
-    decorations,
     isLast,
     parent,
-    renderPlaceholder,
-    renderLeaf,
     text,
   } = props
   const editor = useSlateStatic()
   const ref = useRef<HTMLSpanElement>(null)
-  const leaves = SlateText.decorations(text, decorations)
   const key = EditableEditor.findKey(editor, text)
-  const children = []
-
-  for (let i = 0; i < leaves.length; i++) {
-    const leaf = leaves[i]
-
-    children.push(
-      <Leaf
-        isLast={isLast && i === leaves.length - 1}
-        key={`${key.id}-${i}`}
-        renderPlaceholder={renderPlaceholder}
-        leaf={leaf}
-        text={text}
-        parent={parent}
-        renderLeaf={renderLeaf}
-      />
-    )
-  }
 
   // Update element-related weak maps with the DOM element ref.
   useIsomorphicLayoutEffect(() => {
@@ -69,7 +43,12 @@ const Text = (props: {
 
   return (
     <span data-slate-node="text" ref={ref}>
-      {children}
+      <Leaf
+        isLast={isLast}
+        key={`${key.id}`}
+        text={text}
+        parent={parent}
+      />
     </span>
   )
 }
@@ -78,9 +57,7 @@ const MemoizedText = React.memo(Text, (prev, next) => {
   return (
     next.parent === prev.parent &&
     next.isLast === prev.isLast &&
-    next.renderLeaf === prev.renderLeaf &&
-    next.text === prev.text &&
-    isDecoratorRangeListEqual(next.decorations, prev.decorations)
+    next.text === prev.text
   )
 })
 

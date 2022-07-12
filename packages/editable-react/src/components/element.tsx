@@ -13,31 +13,17 @@ import {
   NODE_TO_INDEX,
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
-import { isDecoratorRangeListEqual } from '../utils/range-list'
-import {
-  RenderElementProps,
-  RenderLeafProps,
-  RenderPlaceholderProps,
-} from './content'
 
 /**
  * Element.
  */
 
 const Element = (props: {
-  decorations: Range[]
   element: SlateElement
-  renderElement?: (props: RenderElementProps) => JSX.Element
-  renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element
-  renderLeaf?: (props: RenderLeafProps) => JSX.Element
   selection: Range | null
 }) => {
   const {
-    decorations,
     element,
-    renderElement = (p: RenderElementProps) => <DefaultElement {...p} />,
-    renderPlaceholder,
-    renderLeaf,
     selection,
   } = props
   const ref = useRef<HTMLElement>(null)
@@ -46,11 +32,7 @@ const Element = (props: {
   const isInline = editor.isInline(element)
   const key = EditableEditor.findKey(editor, element)
   let children: React.ReactNode = useChildren({
-    decorations,
     node: element,
-    renderElement,
-    renderPlaceholder,
-    renderLeaf,
     selection,
   })
 
@@ -105,8 +87,6 @@ const Element = (props: {
         }}
       >
         <Text
-          renderPlaceholder={renderPlaceholder}
-          decorations={[]}
           isLast={false}
           parent={element}
           text={text}
@@ -131,7 +111,7 @@ const Element = (props: {
     }
   })
 
-  const content = renderElement({ attributes, children, element })
+  const content = editor.renderElement({ attributes, children, element })
 
   return content
 }
@@ -139,29 +119,11 @@ const Element = (props: {
 const MemoizedElement = React.memo(Element, (prev, next) => {
   return (
     prev.element === next.element &&
-    prev.renderElement === next.renderElement &&
-    prev.renderLeaf === next.renderLeaf &&
-    isDecoratorRangeListEqual(prev.decorations, next.decorations) &&
     (prev.selection === next.selection ||
       (!!prev.selection &&
         !!next.selection &&
         Range.equals(prev.selection, next.selection)))
   )
 })
-
-/**
- * The default element renderer.
- */
-
-export const DefaultElement = (props: RenderElementProps) => {
-  const { attributes, children, element } = props
-  const editor = useSlateStatic()
-  const Tag = editor.isInline(element) ? 'span' : 'div'
-  return (
-    <Tag {...attributes}>
-      {children}
-    </Tag>
-  )
-}
 
 export default MemoizedElement

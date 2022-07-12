@@ -1,19 +1,10 @@
 // Components
 // Environment-dependent Editable
-import { RenderElementProps, RenderLeafProps, RenderPlaceholderProps } from './components/content'
-
-export type {
-  RenderElementProps,
-  RenderLeafProps,
-  RenderPlaceholderProps,
-}
+import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
 
 export {
   ContentEditable,
-  DefaultPlaceholder,
 } from './components/content'
-export { DefaultElement } from './components/element'
-export { DefaultLeaf } from './components/leaf'
 export { Slate } from './components/slate'
 
 // Hooks
@@ -23,8 +14,18 @@ export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
 export { useSelected } from './hooks/use-selected'
 export { useSlate } from './hooks/use-slate'
-export { useSlateSelector } from './hooks/use-slate-selector'
 
 // Plugin
 export { EditableEditor } from './plugin/editable-editor'
 export { withEditable } from './plugin/with-editable'
+
+export type {
+  RenderElementProps,
+  RenderLeafProps,
+} from './plugin/editable-editor'
+
+export {
+  isHotkey,
+  isCodeHotkey,
+  isKeyHotkey
+} 
