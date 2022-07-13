@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react'
+import React, { useEffect, useRef, useState, useContext, useMemo } from 'react'
 import {
   Editor,
   NodeEntry,
@@ -92,7 +92,7 @@ export const ContentEditable = (props: EditableProps) => {
   const caretTimer = useRef<number>()
   const ref = useRef<HTMLDivElement>(null)
   const caretRef = useRef<HTMLDivElement>(null)
-
+  const prevRange = useRef<DOMRange | null>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
@@ -305,8 +305,8 @@ export const ContentEditable = (props: EditableProps) => {
     const { onChange } = editor
     editor.onChange = () => { 
       const { selection } = editor
-      setCurrentSelection(selection)
       onChange()
+      setCurrentSelection(selection ? {...selection} : undefined)
     }
     const root = EDITOR_TO_ELEMENT.get(editor)
     console.log(root)
@@ -328,11 +328,27 @@ export const ContentEditable = (props: EditableProps) => {
       setCaretRect(null)
       setTextareaRect(null)
     } else {
-      const domRange = EditableEditor.toDOMRange(editor, currentSelection)
-      drawCaret(domRange)
-      drawBoxs(domRange)
+      const range = EditableEditor.toDOMRange(editor, currentSelection)
+      const pRange = prevRange.current
+      if(pRange && pRange.startContainer === range.startContainer && pRange.startOffset === range.startOffset && pRange.endContainer === range.endContainer && pRange.endOffset === range.endOffset) {
+        const rects = range.getClientRects()
+        const pRects = pRange.getClientRects()
+        for(let i = 0; i < rects.length; i++) {
+          const rect = rects[i]
+          const pRect = pRects[i]
+          if(rect.left !== pRect.left || rect.top !== pRect.top || rect.width !== pRect.width || rect.height !== pRect.height) {
+            prevRange.current = range
+            break
+          }
+        }
+        return
+      } else {
+        prevRange.current = range
+      }
+      drawCaret(range)
+      drawBoxs(range)
     }
-  }, [currentSelection])
+  }, [editor, currentSelection])
 
   const drawCaret = (range: DOMRange) => { 
     let rects
@@ -375,7 +391,7 @@ export const ContentEditable = (props: EditableProps) => {
     const drawRects: DrawRect[] = []
     if(rects) {
       const indexs: number[] = []
-      const findSameLocation = (x: number, y: number, index: number) => { 
+      const findSamePoint = (x: number, y: number, index: number) => { 
         for(let r = 0; r < rects.length; r++) {
           if(~indexs.indexOf(r)) continue
           const rect = rects[r]
@@ -386,8 +402,8 @@ export const ContentEditable = (props: EditableProps) => {
       for(let i = 0; i < rects.length; i++) {
         const rect = rects[i]
         if(rect && rect.width > 0) {
-          const sameLocation = findSameLocation(rect.x, rect.y, i)
-          if(sameLocation && rect.width >= sameLocation.width) {
+          const point = findSamePoint(rect.x, rect.y, i)
+          if(point && rect.width >= point.width) {
             indexs.push(i)
             continue
           }

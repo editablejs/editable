@@ -18,7 +18,7 @@ const initialValue = [
 
 export default function Docs() {
   const [ editor ] = useState(() => withMark(withEditable(createEditor())))
-  const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code"]
+  const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
   const toolbarConfig: ToolbarItem[][] = [marks.map(mark => ({ 
     onToggle: () => {
       editor.toggleMark(mark)

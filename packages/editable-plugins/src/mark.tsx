@@ -17,7 +17,7 @@ const isEnabled = (editor: EditableEditor, format: MarkFormat) => {
   return true
 }
 
-export type MarkFormat = "bold" | "italic" | "underline" | "strikethrough" | "code"
+export type MarkFormat = "bold" | "italic" | "underline" | "strikethrough" | "code" | "sub" | "sup"
 
 export interface MarkInterface {
 
@@ -36,6 +36,11 @@ const toggleMark = (editor: EditableEditor, format: MarkFormat) => {
   if (isActive) {
     Editor.removeMark(editor, format)
   } else {
+    if(format === 'sub') {
+      Editor.removeMark(editor, 'sup')
+    } else if(format === 'sup') {
+      Editor.removeMark(editor, 'sub')
+    }
     Editor.addMark(editor, format, true)
   }
 }
@@ -62,6 +67,12 @@ const renderMark = (editor: EditableEditor, { attributes, children, text }: Rend
 
   if (text.strikethrough && isEnabled(editor, 'strikethrough')) {
     style.textDecoration = style.textDecoration ? style.textDecoration + ' line-through' : 'line-through'
+  }
+
+  const enabledSub = text.sub && isEnabled(editor, 'sub')
+  const enabledSup = text.sup && isEnabled(editor, 'sup')
+  if(enabledSub || enabledSup) {
+    children = <span style={{ position: 'relative', fontSize: '75%', verticalAlign: 'baseline', top: enabledSup ? '-0.5em' : '', bottom: enabledSub ? '-.25em' : ''}}>{children}</span>
   }
 
   if (text.code && isEnabled(editor, 'code')) {
