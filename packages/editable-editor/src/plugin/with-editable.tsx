@@ -540,9 +540,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
       if(IS_COMPOSING.get(e)) {
         let [node, path] = Editor.node(editor, selection)
         if(marks) {
-          node = { text: '', ...marks, composition: {
+          // 使用零宽字符绕过slate里面不能插入空字符的问题。组合输入法完成后会删除掉
+          node = { text: '\u200b', ...marks, composition: {
             text: value,
-            offset: 0
+            offset: 0,
+            emptyText: true
           }}
           Transforms.insertNodes(editor, node)
           e.marks = null
@@ -554,6 +556,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           const offset = node.composition?.offset ?? selection.anchor.offset
           Transforms.setNodes<Text>(editor, {
             composition: {
+              ...node.composition,
               text: value,
               offset
             }
@@ -586,7 +589,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
         composition: undefined,
       }, { at: path })
       const point = { path, offset: composition?.offset ?? selection.anchor.offset}
-      Transforms.select(editor, point)
+      const range = composition?.emptyText ? {
+        anchor: { path, offset: 0},
+        focus: { path, offset: 1}
+      } : point
+      Transforms.select(editor, range)
       Transforms.insertText(editor, value)
     }
   }

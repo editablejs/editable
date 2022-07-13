@@ -164,7 +164,6 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
-    isRootMouseDown.current = false
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
       if(IS_FOCUSED.get(editor) && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
@@ -173,6 +172,7 @@ export const ContentEditable = (props: EditableProps) => {
       const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
       if(range) editor.onSelectEnd()
     }
+    isRootMouseDown.current = false
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => { 
@@ -309,6 +309,7 @@ export const ContentEditable = (props: EditableProps) => {
       onChange()
     }
     const root = EDITOR_TO_ELEMENT.get(editor)
+    console.log(root)
     document.addEventListener('mousedown', handleDocumentMouseDown)
     document.addEventListener('mouseup', handleDocumentMouseUp)
 
@@ -334,8 +335,8 @@ export const ContentEditable = (props: EditableProps) => {
   }, [currentSelection])
 
   const drawCaret = (range: DOMRange) => { 
-    const rects = range.getClientRects()
-    if(rects.length === 0 || !range.collapsed || !IS_FOCUSED.get(editor)) return setCaretRect(null)
+    let rects
+    if(!range.collapsed || !IS_FOCUSED.get(editor) || (rects = range.getClientRects()).length === 0) return setCaretRect(null)
     const rect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor  })
     setCaretRect(rect)
     setTextareaRect(rect)
@@ -366,7 +367,7 @@ export const ContentEditable = (props: EditableProps) => {
     }
     activeCaret(1)
     return () => clearActive()
-  },[caretRect, editor])
+  },[caretRect])
 
   const drawBoxs = (range: DOMRange) => { 
     if(range.collapsed) return setBoxRects([])

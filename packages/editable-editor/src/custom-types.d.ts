@@ -7,6 +7,7 @@ declare module 'slate' {
       composition?: {
         text: string
         offset: number
+        emptyText?: boolean
       }
     }
   }
