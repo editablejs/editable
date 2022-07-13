@@ -2,7 +2,6 @@ import React from 'react'
 import { Element, Text } from 'slate'
 import String from './string'
 import { useSlateStatic } from '../hooks/use-slate-static'
-import { EditableEditor } from '../plugin/editable-editor'
 import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
 
 /**

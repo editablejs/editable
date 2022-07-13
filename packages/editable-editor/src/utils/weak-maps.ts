@@ -16,6 +16,8 @@ export const NODE_TO_PARENT: WeakMap<Node, Ancestor> = new WeakMap()
 export const EDITOR_TO_WINDOW: WeakMap<Editor, Window> = new WeakMap()
 export const EDITOR_TO_ELEMENT: WeakMap<Editor, HTMLElement> = new WeakMap()
 export const EDITOR_TO_PLACEHOLDER: WeakMap<Editor, string> = new WeakMap()
+export const EDITOR_TO_TEXTAREA: WeakMap<Editor, HTMLTextAreaElement> = new WeakMap()
+export const EDITOR_TO_SHADOW: WeakMap<Editor, ShadowRoot | null> = new WeakMap()
 export const ELEMENT_TO_NODE: WeakMap<HTMLElement, Node> = new WeakMap()
 export const NODE_TO_ELEMENT: WeakMap<Node, HTMLElement> = new WeakMap()
 export const NODE_TO_KEY: WeakMap<Node, Key> = new WeakMap()
@@ -41,8 +43,7 @@ export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
 /**
  * Weak map for associating the context `onChange` context with the plugin.
  */
-
-
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
+
 
 

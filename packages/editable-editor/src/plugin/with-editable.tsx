@@ -535,11 +535,19 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.onBlur = () => {}
 
   e.onInput = (value: string) => {
-    const { selection } = editor
+    const { selection, marks } = editor
       if(!selection) return
-      if(IS_COMPOSING.get(editor)) {
-        const [node, path] = Editor.node(editor, selection)
-        if(Text.isText(node)) {
+      if(IS_COMPOSING.get(e)) {
+        let [node, path] = Editor.node(editor, selection)
+        if(marks) {
+          node = { text: '', ...marks, composition: {
+            text: value,
+            offset: 0
+          }}
+          Transforms.insertNodes(editor, node)
+          e.marks = null
+        }
+        else if(Text.isText(node)) {
           if(Range.isExpanded(selection)) { 
             Editor.deleteFragment(editor)
           }

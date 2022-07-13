@@ -23,6 +23,8 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
+  EDITOR_TO_TEXTAREA,
+  EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
 import {
   DOMElement,
@@ -241,21 +243,17 @@ export const EditableEditor = {
   /**
    * Focus the editor.
    */
-
   focus(editor: EditableEditor): void {
-    const el = EditableEditor.toDOMNode(editor, editor)
-    const root = EditableEditor.findDocumentOrShadowRoot(editor)
-    // IS_FOCUSED.set(editor, true)
-
-    if (root.activeElement !== el) {
-      el.focus({ preventScroll: true })
+    const shadow = EDITOR_TO_SHADOW.get(editor)
+    const textarea = EDITOR_TO_TEXTAREA.get(editor)
+    if (textarea && shadow && shadow.activeElement !== textarea) {
+      textarea.focus({ preventScroll: true })
     }
   },
 
   /**
    * Deselect the editor.
    */
-
   deselect(editor: EditableEditor): void {
     const el = EditableEditor.toDOMNode(editor, editor)
     const { selection } = editor

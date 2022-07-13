@@ -16,10 +16,8 @@ import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useSlate } from '../hooks/use-slate'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
-  DOMNode,
   DOMRange,
   getDefaultView,
-  isDOMNode,
 } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
@@ -31,6 +29,8 @@ import {
   IS_COMPOSING,
   IS_SHIFT_PRESSED,
   EDITOR_TO_PLACEHOLDER,
+  EDITOR_TO_TEXTAREA,
+  EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { getWordRange } from '../utils/string'
@@ -52,7 +52,6 @@ const SELECTION_DEFAULT_CARET_WIDTH = 2
 
 export type EditableProps = {
   autoFocus?: boolean
-  decorate?: (entry: NodeEntry) => Range[]
   placeholder?: string
   readOnly?: boolean
   role?: string
@@ -78,7 +77,6 @@ const mergeSelectionStyle = (selectionStyle: SelectionStyle, oldStyle: Selection
 export const ContentEditable = (props: EditableProps) => {
   const {
     autoFocus,
-    decorate = defaultDecorate,
     placeholder,
     readOnly = false,
     scrollSelectionIntoView = defaultScrollSelectionIntoView,
@@ -93,6 +91,8 @@ export const ContentEditable = (props: EditableProps) => {
   const [drawSelectionStyle, setDrawSelectionStyle] = useState(mergeSelectionStyle(selectionStyle ?? {}))
   const caretTimer = useRef<number>()
   const ref = useRef<HTMLDivElement>(null)
+  const caretRef = useRef<HTMLDivElement>(null)
+
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
@@ -105,16 +105,6 @@ export const ContentEditable = (props: EditableProps) => {
       EDITOR_TO_ELEMENT.set(editor, ref.current)
       NODE_TO_ELEMENT.set(editor, ref.current)
       ELEMENT_TO_NODE.set(ref.current, editor)
-      
-      ref.current.focus = () => {
-        textareaRef.current?.focus({
-          preventScroll: true
-        })
-      }
-
-      ref.current.blur = () => {
-        textareaRef.current?.blur()
-      }
     } else {
       NODE_TO_ELEMENT.delete(editor)
     }
@@ -138,7 +128,6 @@ export const ContentEditable = (props: EditableProps) => {
 
   const isRootMouseDown = useRef(false)
   const startPointRef = useRef<Point | null>(null)
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const changeFocus = (focus: boolean) => {
     if(IS_FOCUSED.get(editor) === focus) return
@@ -178,6 +167,9 @@ export const ContentEditable = (props: EditableProps) => {
     isRootMouseDown.current = false
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
+      if(IS_FOCUSED.get(editor) && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
+        EditableEditor.focus(editor)
+      }
       const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
       if(range) editor.onSelectEnd()
     }
@@ -310,11 +302,11 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   useIsomorphicLayoutEffect(() => {
-    const { onSelectionChange } = editor
-    editor.onSelectionChange = () => { 
+    const { onChange } = editor
+    editor.onChange = () => { 
       const { selection } = editor
       setCurrentSelection(selection)
-      onSelectionChange()
+      onChange()
     }
     const root = EDITOR_TO_ELEMENT.get(editor)
     document.addEventListener('mousedown', handleDocumentMouseDown)
@@ -344,29 +336,37 @@ export const ContentEditable = (props: EditableProps) => {
   const drawCaret = (range: DOMRange) => { 
     const rects = range.getClientRects()
     if(rects.length === 0 || !range.collapsed || !IS_FOCUSED.get(editor)) return setCaretRect(null)
-    const caretRect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor })
-    setCaretRect(caretRect)
-    setTextareaRect(caretRect)
+    const rect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor  })
+    setCaretRect(rect)
+    setTextareaRect(rect)
   }
 
-  useEffect(() => {
-    const clearActive = () => clearTimeout(caretTimer.current)
-    const activeCaret = () => {
+  useIsomorphicLayoutEffect(() => {
+    const clearActive = () => {
+      clearTimeout(caretTimer.current)
+    }
+
+    const changeOpacity = (opacity?: number) => { 
+      const elRef = caretRef.current
+      if(elRef) {
+        elRef.style.opacity = opacity !== undefined ? String(opacity) : (elRef.style.opacity === '1' ? '0' : '1')
+      }
+    }
+    const activeCaret = (opacity?: number) => {
       clearActive()
+      if(!caretRect) return 
+      if(isRootMouseDown.current) {
+        changeOpacity(1)
+      } else {
+        changeOpacity(opacity)
+      }
       caretTimer.current = setTimeout(() => { 
-        setCaretRect(rect => {
-          if(rect) {
-            const currentState = rect.style?.opacity === '1'
-            return {...rect, style: {...rect.style, opacity: currentState ? '0' : '1'}}
-          }
-          return rect
-        })
         activeCaret()
       }, 530)
     }
-    activeCaret()
+    activeCaret(1)
     return () => clearActive()
-  },[])
+  },[caretRect, editor])
 
   const drawBoxs = (range: DOMRange) => { 
     if(range.collapsed) return setBoxRects([])
@@ -405,10 +405,6 @@ export const ContentEditable = (props: EditableProps) => {
         {...attributes}
         data-slate-editor
         data-slate-node="value"
-        // explicitly set this
-        // in some cases, a decoration needs access to the range / selection to decorate a text node,
-        // then you will select the whole text node when you select part the of text
-        // this magic zIndex="-1" will fix it
         zindex={-1}
         ref={ref}
         style={{
@@ -428,11 +424,19 @@ export const ContentEditable = (props: EditableProps) => {
           selection={editor.selection}
         />
       </Component>
-      <Shadow caretRects={caretRect ? [caretRect] : []} boxRects={boxRects}>
+      <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         {
-          <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1, style: { opacity:0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}})}>
+          <ShadowBox rect={caretRect || { width: 0, height: 0, top: 0, left: 0}} ref={caretRef} style={{ willChange: 'opacity, transform', opacity: caretRect ? 1 : 0 }} />
+        }
+        {
+          boxRects.map((rect, index) => <ShadowBox key={index} rect={rect} style={{ willChange: 'transform', ...rect.style }} />)
+        }
+        {
+          <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1})} style={{ opacity: 0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}}>
             <textarea 
-            ref={textareaRef}
+            ref={current => {
+              if(current) EDITOR_TO_TEXTAREA.set(editor, current)
+            }}
             rows={1} 
             style={{
               fontSize: 'inherit', 
@@ -460,11 +464,6 @@ export const ContentEditable = (props: EditableProps) => {
 }
 
 /**
- * A default memoized decorate function.
- */
-export const defaultDecorate: (entry: NodeEntry) => Range[] = () => []
-
-/**
  * A default implement to scroll dom range into view.
  */
 const defaultScrollSelectionIntoView = (
@@ -486,42 +485,3 @@ const defaultScrollSelectionIntoView = (
   }
 }
 
-/**
- * Check if the target is in the editor.
- */
-
-export const hasTarget = (
-  editor: EditableEditor,
-  target: EventTarget | null
-): target is DOMNode => {
-  return isDOMNode(target) && EditableEditor.hasDOMNode(editor, target)
-}
-
-/**
- * Check if the target is editable and in the editor.
- */
-
-export const hasEditableTarget = (
-  editor: EditableEditor,
-  target: EventTarget | null
-): target is DOMNode => {
-  return (
-    isDOMNode(target) &&
-    EditableEditor.hasDOMNode(editor, target)
-  )
-}
-
-/**
- * Check if the target is inside void and in an non-readonly editor.
- */
-
-export const isTargetInsideNonReadonlyVoid = (
-  editor: EditableEditor,
-  target: EventTarget | null
-): boolean => {
-  if (IS_READ_ONLY.get(editor)) return false
- 
-  const slateNode =
-    hasTarget(editor, target) && EditableEditor.toSlateNode(editor, target)
-  return Editor.isVoid(editor, slateNode)
-}

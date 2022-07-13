@@ -21,7 +21,14 @@ const String: React.FC<{
   if (editor.isVoid(parent)) {
     return <ZeroWidthString length={Node.string(parent).length} />
   }
-
+  
+  if(text.composition) {
+    const { offset, text: compositionText } = text.composition
+    const t = text.text
+    const left = t.substring(0, offset)
+    const right = t.substring(offset)
+    return <>{left && <TextString text={left}/>}<CompositionString text={compositionText} />{right && <TextString text={right}/>}</>
+  }
   // COMPAT: If this is the last text node in an empty block, render a zero-
   // width space that will convert into a line break when copying and pasting
   // to support expected plain text.
@@ -45,13 +52,6 @@ const String: React.FC<{
   // so we need to add an extra trailing new lines to prevent that.
   if (isLast && text.text.slice(-1) === '\n') {
     return <TextString isTrailing text={text.text} />
-  }
-  if(text.composition) {
-    const { offset, text: compositionText } = text.composition
-    const t = text.text
-    const left = t.substring(0, offset)
-    const right = t.substring(offset)
-    return <>{left && <TextString text={left}/>}<CompositionString text={compositionText} />{right && <TextString text={right}/>}</>
   }
   return <TextString text={text.text} />
 }
