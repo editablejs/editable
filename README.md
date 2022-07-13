@@ -25,9 +25,13 @@ All source codes are in packages, and the apps directory is mainly used for docu
 
 Mainly index some `unicode` characters. Because the number of bytes occupied by some characters is uncertain, resulting in inaccurate indexes after some characters are split, so this toolkit is needed to solve this problem.
 
-### packages/editable-react
+### packages/editable-editor
 
 Use the slatejs data model, and use react to render in the self-drawn cursor mode, no longer relying on the contenteditable attribute
+
+### packages/editable-plugins
+
+plugin directory
 
 ## Task
 
