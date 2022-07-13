@@ -3,6 +3,7 @@ import { Element, Text } from 'slate'
 import String from './string'
 import { useSlateStatic } from '../hooks/use-slate-static'
 import { EditableEditor } from '../plugin/editable-editor'
+import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
 
 /**
  * Individual leaves in a text node with unique formatting.
@@ -24,11 +25,13 @@ const Leaf = (props: {
   )
   
   const editor = useSlateStatic()
-
-  if (EditableEditor.isEmpty(editor, editor)) {
+  const placeholder = EDITOR_TO_PLACEHOLDER.get(editor)
+  if (placeholder) {
+    const placeholderComponent = editor.renderPlaceholder({ attributes: {'data-slate-placeholder': true}, node: text, children: placeholder })
+    if(placeholderComponent)
     children = (
       <React.Fragment>
-        {editor.renderPlaceholder()}
+        {placeholderComponent}
         {children}
       </React.Fragment>
     )

@@ -605,13 +605,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
     return <span {...attributes}>{children}</span>
   }
 
-  e.renderPlaceholder = () => {
-    return <span style={{pointerEvents: 'none', userSelect: 'none', position: 'relative'}}><span data-slate-placeholder={true} style={{
+  e.renderPlaceholder = ({ attributes, children }) => {
+    if(!EditableEditor.isEmpty(e, editor)) return
+    return <span style={{pointerEvents: 'none', userSelect: 'none', position: 'relative'}}><span style={{
       position: 'absolute',
       opacity: '0.333',
       width: 'fit-content',
       whiteSpace: 'nowrap'
-    }}>Please enter content...</span></span>
+    }} {...attributes}>{children}</span></span>
   }
 
   return e

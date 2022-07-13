@@ -73,6 +73,12 @@ export interface RenderLeafProps {
   attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-leaf', true>
 }
 
+export interface RenderPlaceholderProps {
+  children: any
+  attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-placeholder', true>
+  node: Node
+}
+
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -100,7 +106,7 @@ export interface EditableEditor extends BaseEditor {
   setSelectionStyle: (style: SelectionStyle) => void
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
-  renderPlaceholder: () => JSX.Element
+  renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
 }
 
 export const EditableEditor = {

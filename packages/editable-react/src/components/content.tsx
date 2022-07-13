@@ -30,6 +30,7 @@ import {
   EDITOR_TO_WINDOW,
   IS_COMPOSING,
   IS_SHIFT_PRESSED,
+  EDITOR_TO_PLACEHOLDER,
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { getWordRange } from '../utils/string'
@@ -94,7 +95,7 @@ export const ContentEditable = (props: EditableProps) => {
   const ref = useRef<HTMLDivElement>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
-
+  EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
   // Whenever the editor updates...
   useIsomorphicLayoutEffect(() => {
     // Update element-related weak maps with the DOM element ref.
