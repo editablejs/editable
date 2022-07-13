@@ -38,7 +38,35 @@ pnpm dev
 - [x] 拖拽鼠标选择选区与光标
 - [x] 通过键盘左右键切换光标和选区
 - [x] 通过键盘Shift+左右键切换光标和选区
+- [x] 通过键盘Shift+上下键切换光标和选区
+- [x] 通过键盘Ctrl+上下键切换光标和选区
 - [x] 通过键盘上下键切换光标和选区
-- [x] 鼠标双击、三击选中文本
-- [x] 触摸选择选区与光标
+- [x] 鼠标双击、三击后分词选中文本
+- [ ] 触摸选择选区与光标
 - [ ] 单元测试全覆盖
+
+### Input
+
+- [x] 组合输入法输入
+
+### Plugins
+
+- [x] Bold
+- [x] Italic
+- [x] Underline
+- [x] StrikeThrough
+- [x] Code
+- [x] Sub
+- [x] Sup
+- [ ] Fontsize
+- [ ] Fontcolor
+- [ ] BackgroundColor
+- [ ] Redo
+- [ ] Undo
+- [ ] Link
+- [ ] Image
+- [ ] Codeblock
+- [ ] Heading
+- [ ] Table
+- [ ] Hr
+- [ ] Toolbar
