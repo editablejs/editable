@@ -1,20 +1,15 @@
 .wrapper {
   cursor: default;
   width: 600px;
-  margin: 0 auto;
+  margin: 60px auto;
 }
 
 .toolbar {
-  display: flex;
-  gap: 8px;
-  margin: 16px 0;
-}
-
-.toolbar .active {
-  color: blue;
+  border-bottom: 2px solid rgba(126, 134, 142, 0.24);
 }
 
 .container {
+  margin-top: 20px;
   cursor: text;
   white-space: pre-wrap;
   overflow-wrap: break-word;

@@ -1,5 +1,5 @@
 import { Slate, ContentEditable, withEditable } from '@editablejs/editor';
-import { MarkFormat, Toolbar, withMark, type ToolbarItem } from '@editablejs/editor-plugins'
+import { Icon, MarkFormat, Toolbar, withMark, type ToolbarItem } from '@editablejs/editor-plugins'
 import { createEditor } from 'slate';
 import React, { useState } from 'react';
 import styles from './index.module.css'
@@ -26,14 +26,12 @@ export default function Docs() {
     onActive: () => { 
       return editor.isMarkActive(mark)
     },
-    children: mark
+    children: <Icon name={mark} />
   }))]
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.toolbar}>
-        <Toolbar editor={editor} items={toolbarConfig} />
-      </div>
+      <Toolbar className={styles.toolbar} editor={editor} items={toolbarConfig} />
       <div className={styles.container}>
         <Slate editor={editor} value={initialValue}><ContentEditable placeholder='Please enter content...' /></Slate>
       </div>

@@ -12,3 +12,5 @@ export type {
   ToolbarProps,
   ToolbarItem
 }
+
+export * from './icon'

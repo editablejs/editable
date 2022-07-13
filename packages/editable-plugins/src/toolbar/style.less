@@ -1,8 +1,19 @@
 .editable-toolbar {
   display: flex;
+  flex-direction: row;
+  background: transparent;
+  text-align: center;
+  width: 100%;
+  flex-wrap: wrap;
 
   .toolbar-group {
     display: flex;
+    align-items: stretch;
+    padding: 4px;
+
+    &:first-child, &:last-child {
+      padding-left: 0;
+    }
   }
 
   .toolbar-btn {
@@ -10,9 +21,13 @@
     border: 1px solid transparent;
     border-radius: 3px 3px;
     font-size: 16px;
+    padding: 2px 4px;
     cursor: pointer;
     color: #595959;
     outline: none;
+    display: flex;
+    align-items: center;
+    margin: 0 2px;
 
     &:hover, &.active {
       background-color: #e8e8e8;
