@@ -384,7 +384,7 @@ export const ContentEditable = (props: EditableProps) => {
       }
       for(let i = 0; i < rects.length; i++) {
         const rect = rects[i]
-        if(rect) {
+        if(rect && rect.width > 0) {
           const sameLocation = findSameLocation(rect.x, rect.y, i)
           if(sameLocation && rect.width >= sameLocation.width) {
             indexs.push(i)
