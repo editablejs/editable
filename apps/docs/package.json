@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@editablejs/editor-react": "workspace:*",
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/editor-plugins": "workspace:*",
     "next": "latest",
     "react": "^17.x",
     "react-dom": "^17.x",

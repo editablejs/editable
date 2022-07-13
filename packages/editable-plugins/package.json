@@ -1,0 +1,46 @@
+{
+  "name": "@editablejs/editor-plugins",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@types/is-hotkey": "^0.1.7",
+    "@types/jest": "^26.0.22",
+    "@types/lodash": "^4.14.149",
+    "@types/react": "^17.x",
+    "@types/react-dom": "^17.x",
+    "esbuild": "^0.14.49",
+    "jest": "^27.5.1",
+    "react": "^17.x",
+    "react-dom": "^17.x",
+    "scripts": "workspace:*",
+    "slate": "^0.81.0",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.1.2",
+    "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*"
+  },
+  "jest": {
+    "preset": "scripts/jest/node"
+  },
+  "dependencies": {
+    "classnames": "^2.3.1"
+  }
+}
