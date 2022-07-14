@@ -337,17 +337,24 @@ export const ContentEditable = (props: EditableProps) => {
       const range = EditableEditor.toDOMRange(editor, currentSelection)
       const pRange = prevRange.current
       if(pRange && pRange.startContainer === range.startContainer && pRange.startOffset === range.startOffset && pRange.endContainer === range.endContainer && pRange.endOffset === range.endOffset) {
-        const rects = range.getClientRects()
-        const pRects = pRange.getClientRects()
-        for(let i = 0; i < rects.length; i++) {
-          const rect = rects[i]
-          const pRect = pRects[i]
-          if(rect.left !== pRect.left || rect.top !== pRect.top || rect.width !== pRect.width || rect.height !== pRect.height) {
-            prevRange.current = range
-            break
+        const clientRect = range.getBoundingClientRect()
+        const pClientRect = pRange.getBoundingClientRect()
+        const compare = (a: DOMRect, b: DOMRect) => a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
+        let isEqual = compare(clientRect, pClientRect)
+        if(!isEqual) {
+          const rects = range.getClientRects()
+          const pRects = pRange.getClientRects()
+          isEqual = rects.length === pRects.length
+          for(let i = 0; i < rects.length && isEqual; i++) {
+            const rect = rects[i]
+            const pRect = pRects[i]
+            if(!compare(rect, pRect)) {
+              isEqual = false
+            }
           }
         }
-        return
+        if(isEqual) return
+        prevRange.current = range
       } else {
         prevRange.current = range
       }

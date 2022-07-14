@@ -1,5 +1,5 @@
 import { BaseRange, BaseText } from 'slate'
-import { EditableEditor } from './plugin/editable-editor'
+import { EditableEditor } from './src/plugin/editable-editor'
 
 declare module 'slate' {
   interface CustomTypes {
