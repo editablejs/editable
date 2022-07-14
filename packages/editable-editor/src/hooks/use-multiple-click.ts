@@ -13,11 +13,17 @@ const useMultipleClick = (options: {
   const api = useCancellablePromises();
   const pointRef = useRef<{ x: number; y: number }>();
   const countRef = useRef(0)
+
+  const isSamePoint = (event: React.MouseEvent | MouseEvent) => { 
+    const point = pointRef.current;
+    return point ? Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10 : false;
+  }
+
   const handleMultipleClick = (event: React.MouseEvent) => {
     if (event.button === 2) return
     const point = pointRef.current;
     if(point) {
-      if(Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10) {
+      if(isSamePoint(event)) {
         api.clearPendingPromises();
         countRef.current += 1
         if(onMultipleClick(event, countRef.current) === false) {
@@ -54,7 +60,7 @@ const useMultipleClick = (options: {
       });
   };
 
-  return [ handleMultipleClick ];
+  return { handleMultipleClick, isSamePoint };
 };
 
 export default useMultipleClick;

@@ -183,7 +183,13 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleRootMouseDown = (event: MouseEvent) => {
     isRootMouseDown.current = true
-    if(isDoubleClickRef.current) return
+    if(isDoubleClickRef.current) {
+      if(isSamePoint(event)) {
+        return
+      } else {
+        isDoubleClickRef.current = false
+      }
+    }
     changeFocus(true)
     const point = EditableEditor.findEventPoint(editor, event)
     if(point) {
@@ -221,7 +227,7 @@ export const ContentEditable = (props: EditableProps) => {
 
   const isDoubleClickRef = useRef(false)
 
-  const [ handleMultipleClick ] = useMultipleClick({
+  const { handleMultipleClick, isSamePoint } = useMultipleClick({
     onClick: () => {
       isDoubleClickRef.current = false
     },
