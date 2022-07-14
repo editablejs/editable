@@ -113,7 +113,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
-    
+
     apply(op)
 
     for (const [path, key] of matches) {
@@ -280,7 +280,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     elements = {}
     const { selection } = editor
     if(!selection) return {}
-    Editor.nodes(editor, {
+    const [nodes] = Editor.nodes(editor, {
       at: selection,
       match: n => {
         if(!Editor.isEditor(n) && Element.isElement(n)) {
@@ -288,11 +288,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
           const els = elements!
           if(els[type]) els[type].push(n)
           else els[type] = [n]
+          return true
         }
         return false
       }
     })
-    EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
+    if(!!nodes) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   },
 

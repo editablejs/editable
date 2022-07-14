@@ -7,7 +7,6 @@ const Dropdown: React.FC<DropdownProps & Record<'editor', EditableEditor>> = ({ 
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		event.preventDefault()
-    console.log(event.target.value)
 		onToggle(editor, event.target.value)
 	}
 
@@ -18,7 +17,7 @@ const Dropdown: React.FC<DropdownProps & Record<'editor', EditableEditor>> = ({ 
     }
     return els
   }, [items])
-
+console.log(activeKey)
   return (
     <select className="toolbar-dropdown" value={activeKey} onChange={handleChange}>
       {
