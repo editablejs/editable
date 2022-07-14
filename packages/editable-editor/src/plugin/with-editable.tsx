@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom'
-import { Editor, Node, Path, Operation, Transforms, Range, Text, Selection } from 'slate'
+import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks } from 'slate'
 import getDirection from 'direction'
-import { EditableEditor, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable-editor'
+import { EditableEditor, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable-editor'
 import { Key } from '../utils/key'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
@@ -18,6 +18,11 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
+
+
+const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
+
+const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -106,6 +111,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
     }
 
+    EDITOR_ACTIVE_MARKS.delete(editor)
+    EDITOR_ACTIVE_ELEMENTS.delete(editor)
+    
     apply(op)
 
     for (const [path, key] of matches) {
@@ -257,6 +265,36 @@ export const withEditable = <T extends Editor>(editor: T) => {
       onChange()
     })
   }
+
+  e.queryActiveMarks = () => {
+    const marks = EDITOR_ACTIVE_MARKS.get(editor)
+    if(marks) return marks
+    const editorMarks = Editor.marks(editor)
+    if(editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
+    return editorMarks ?? {}
+  },
+
+  e.queryActiveElements = () => {
+    let elements = EDITOR_ACTIVE_ELEMENTS.get(editor)
+    if(elements) return elements
+    elements = {}
+    const { selection } = editor
+    if(!selection) return {}
+    Editor.nodes(editor, {
+      at: selection,
+      match: n => {
+        if(!Editor.isEditor(n) && Element.isElement(n)) {
+          const type = n.type ?? 'paragraph'
+          const els = elements!
+          if(els[type]) els[type].push(n)
+          else els[type] = [n]
+        }
+        return false
+      }
+    })
+    EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
+    return elements
+  },
 
   e.onKeydown = (event: KeyboardEvent) => {
 

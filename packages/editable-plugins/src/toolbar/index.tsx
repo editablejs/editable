@@ -2,22 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react'
 import classNames from 'classnames';
 import { EditableEditor } from '@editablejs/editor';
 import ToolbarGroup from './group';
-import { GroupItem, ToolbarItem } from './types';
+import { ButtonProps, GroupItem, ToolbarItem, DropdownProps } from './types';
 import './style.less'
 
 export interface ToolbarProps {
   editor: EditableEditor
   items: ToolbarItem[][]
-  renderButton?: (editor: EditableEditor, item: ToolbarItem) => JSX.Element
+  renderButton?: (editor: EditableEditor, item: ButtonProps) => JSX.Element
 }
 
 const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ editor, items: itemProps, renderButton, className, ...props }) => {
 
   const setActiveState = useCallback((items: ToolbarItem[][]): GroupItem[][] => { 
-    return items.map(group => group.map(item => ({ ...item, active: item.onActive ? item.onActive(editor) : false })))
+    return items.map(group => group.map(item => {
+      switch(item.type) { 
+        case 'button':
+          return { ...item, active: item.onActive ? item.onActive(editor) : false }
+        case 'dropdown':
+          return { ...item, activeKey: item.onActive ? item.onActive(editor) : '' }
+      }
+      return item
+    }))
   },[editor])
 
-  const [ items, setItems ] = useState<(GroupItem)[][]>(setActiveState(itemProps))
+  const [ items, setItems ] = useState<GroupItem[][]>(setActiveState(itemProps))
 
   useEffect(() => {
     const { onSelectionChange } = editor
@@ -43,5 +51,8 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
 
 export default Toolbar
 export type {
-  ToolbarItem
+  ToolbarItem,
+  GroupItem,
+  ButtonProps,
+  DropdownProps
 }

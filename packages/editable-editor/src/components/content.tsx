@@ -92,7 +92,6 @@ export const ContentEditable = (props: EditableProps) => {
   const caretTimer = useRef<number>()
   const ref = useRef<HTMLDivElement>(null)
   const caretRef = useRef<HTMLDivElement>(null)
-  const prevRange = useRef<DOMRange | null>(null)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
@@ -335,40 +334,30 @@ export const ContentEditable = (props: EditableProps) => {
       setTextareaRect(null)
     } else {
       const range = EditableEditor.toDOMRange(editor, currentSelection)
-      const pRange = prevRange.current
-      if(pRange && pRange.startContainer === range.startContainer && pRange.startOffset === range.startOffset && pRange.endContainer === range.endContainer && pRange.endOffset === range.endOffset) {
-        const clientRect = range.getBoundingClientRect()
-        const pClientRect = pRange.getBoundingClientRect()
-        const compare = (a: DOMRect, b: DOMRect) => a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
-        let isEqual = compare(clientRect, pClientRect)
-        if(!isEqual) {
-          const rects = range.getClientRects()
-          const pRects = pRange.getClientRects()
-          isEqual = rects.length === pRects.length
-          for(let i = 0; i < rects.length && isEqual; i++) {
-            const rect = rects[i]
-            const pRect = pRects[i]
-            if(!compare(rect, pRect)) {
-              isEqual = false
-            }
-          }
-        }
-        if(isEqual) return
-        prevRange.current = range
-      } else {
-        prevRange.current = range
-      }
       drawCaret(range)
       drawBoxs(range)
     }
   }, [editor, currentSelection])
 
+  const isEqualDrawRect = (rect1: DrawRect, rect2: DrawRect) => { 
+    const { top, left, width, height, color } = rect1
+    const { top: top2, left: left2, width: width2, height: height2, color: color2 } = rect2
+    if(top !== top2 || left !== left2 || width !== width2 || height !== height2 || color !== color2) return false
+    return true
+  }
+
   const drawCaret = (range: DOMRange) => { 
     let rects
     if(!range.collapsed || !IS_FOCUSED.get(editor) || (rects = range.getClientRects()).length === 0) return setCaretRect(null)
     const rect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor  })
-    setCaretRect(rect)
-    setTextareaRect(rect)
+    setCaretRect(caretRect => {
+      if(caretRect && isEqualDrawRect(caretRect, rect)) return caretRect
+      return rect
+    })
+    setTextareaRect(textRect => {
+      if(textRect && isEqualDrawRect(textRect, rect)) return textRect
+      return rect
+    })
   }
 
   useIsomorphicLayoutEffect(() => {
@@ -424,8 +413,22 @@ export const ContentEditable = (props: EditableProps) => {
         }
       }
     }
-    setBoxRects(drawRects)
-    setTextareaRect(drawRects[drawRects.length - 1])
+    setBoxRects(rects => {
+      if(rects.length === drawRects.length) {
+        for(let i = 0; i < rects.length; i++) {
+          if(!isEqualDrawRect(rects[i], drawRects[i])) return drawRects
+        }
+        return rects
+      }
+      return drawRects
+    })
+    setTextareaRect(rect => {
+      const newRect = drawRects[drawRects.length - 1]
+      if(rect && newRect && isEqualDrawRect(rect, newRect)) {
+        return rect
+      }
+      return newRect
+    })
   }
 
   return (

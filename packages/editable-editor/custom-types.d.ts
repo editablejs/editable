@@ -1,4 +1,4 @@
-import { BaseRange, BaseText } from 'slate'
+import { BaseRange, BaseText, BaseElement } from 'slate'
 import { EditableEditor } from './src/plugin/editable-editor'
 
 declare module 'slate' {
@@ -9,6 +9,9 @@ declare module 'slate' {
         offset: number
         emptyText?: boolean
       }
+    },
+    Element: BaseElement & {
+      type?: string
     }
   }
 }

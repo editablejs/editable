@@ -9,6 +9,7 @@ import {
   Range,
   Scrubber,
   Transforms,
+  EditorMarks,
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -81,6 +82,10 @@ export interface RenderPlaceholderProps {
   node: Node
 }
 
+export interface EditorElements {
+  [key: string]: Omit<Element, 'children'>[]
+}
+
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -93,6 +98,8 @@ export interface EditableEditor extends BaseEditor {
     originEvent?: 'drag' | 'copy' | 'cut'
   ) => void
   hasRange: (editor: EditableEditor, range: Range) => boolean
+  queryActiveMarks: () => EditorMarks,
+  queryActiveElements: () => EditorElements,
   onKeydown: (event: KeyboardEvent) => void
   onKeyup: (event: KeyboardEvent) => void
   onFocus: () => void
@@ -115,7 +122,6 @@ export const EditableEditor = {
   /**
    * Check if the user is currently composing inside the editor.
    */
-
   isComposing(editor: EditableEditor): boolean {
     return !!IS_COMPOSING.get(editor)
   },
@@ -134,7 +140,6 @@ export const EditableEditor = {
   /**
    * Return the host window of the current editor.
    */
-
   getWindow(editor: EditableEditor): Window {
     const window = EDITOR_TO_WINDOW.get(editor)
     if (!window) {

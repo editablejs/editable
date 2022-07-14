@@ -2,9 +2,9 @@
 import { EditableEditor } from '@editablejs/editor';
 import classNames from 'classnames'
 import React from 'react';
-import { GroupItem } from './types';
+import { ButtonProps } from './types';
 
-const Button: React.FC<GroupItem & Record<'editor', EditableEditor>> = ({ editor, children, onToggle, active }) => {
+const Button: React.FC<ButtonProps & Record<'editor', EditableEditor>> = ({ editor, children, onToggle, active }) => {
 
 	const handleMouseDown = (event: React.MouseEvent) => {
 		event.preventDefault()

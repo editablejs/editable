@@ -1,6 +1,6 @@
 import { EditableEditor, RenderLeafProps, isHotkey } from "@editablejs/editor";
 import { CSSProperties } from 'react'
-import { BaseText, Editor } from "slate";
+import { Editor } from "slate";
 
 type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
 export interface MarkOptions {
@@ -37,10 +37,6 @@ export interface MarkInterface {
   isMarkActive: (format: MarkFormat) => boolean
 }
 
-interface RenderMarkLeafProps extends RenderLeafProps {
-  text: BaseText & Partial<Record<MarkFormat, boolean>>
-}
-
 const toggleMark = (editor: EditableEditor, format: MarkFormat) => {
   if(!isEnabled(editor, format)) return
   const isActive = isMarkActive(editor, format)
@@ -58,12 +54,12 @@ const toggleMark = (editor: EditableEditor, format: MarkFormat) => {
 
 const isMarkActive = (editor: EditableEditor, format: MarkFormat) => {
   if(!isEnabled(editor, format)) return false
-  const marks = Editor.marks(editor)
-  return marks ? (marks as any)[format] === true : false
+  const marks = editor.queryActiveMarks()
+  return marks[format] === true
 }
 
-const renderMark = (editor: EditableEditor, { attributes, children, text }: RenderMarkLeafProps, next: (props: RenderLeafProps) => JSX.Element) => {
-  const style: CSSProperties = {}
+const renderMark = (editor: EditableEditor, { attributes, children, text }: RenderLeafProps, next: (props: RenderLeafProps) => JSX.Element) => {
+  const style: CSSProperties = attributes.style ?? {}
   if (text.bold && isEnabled(editor, 'bold')) {
     style.fontWeight = "bold"
   }
