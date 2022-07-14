@@ -2,10 +2,11 @@ import { EditableEditor, RenderLeafProps, isHotkey } from "@editablejs/editor";
 import { CSSProperties } from 'react'
 import { BaseText, Editor } from "slate";
 
+type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
 export interface MarkOptions {
   enabled?: MarkFormat[]
   disabled?: MarkFormat[]
-  hotkeys?: Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
+  hotkeys?: Hotkeys
 }
 
 export const MARK_OPTIONS = new WeakMap<EditableEditor, MarkOptions>()
@@ -18,6 +19,16 @@ const isEnabled = (editor: EditableEditor, format: MarkFormat) => {
 }
 
 export type MarkFormat = "bold" | "italic" | "underline" | "strikethrough" | "code" | "sub" | "sup"
+
+export const defaultHotkeys: Hotkeys = { 
+  bold: 'mod+b',
+  italic: 'mod+i',
+  underline: 'mod+u',
+  strikethrough: 'mod+shift+x',
+  code: 'mod+e',
+  sub: 'mod+,',
+  sup: 'mod+.'
+}
 
 export interface MarkInterface {
 
@@ -86,8 +97,6 @@ const withMark = <T extends EditableEditor>(editor: T, options: MarkOptions = {}
   const newEditor = editor as T & MarkInterface
 
   MARK_OPTIONS.set(newEditor, options)
-
-  const { hotkeys } = options
   
   newEditor.toggleMark = (format: MarkFormat) => { 
     toggleMark(newEditor, format)
@@ -102,24 +111,24 @@ const withMark = <T extends EditableEditor>(editor: T, options: MarkOptions = {}
   newEditor.renderLeaf = (props) => {
     return renderMark(newEditor, props, renderLeaf)
   }
+
+  const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
   
-  if(hotkeys) {
-    const { onKeydown } = newEditor
-    newEditor.onKeydown = (e: KeyboardEvent) => { 
-      for(let key in hotkeys) {
-        const format = key as MarkFormat
-        const hotkey = hotkeys[format]
-        const toggle = () => {
-          e.preventDefault()
-          toggleMark(newEditor, format)
-        }
-        if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
-          toggle()
-          return
-        }
+  const { onKeydown } = newEditor
+  newEditor.onKeydown = (e: KeyboardEvent) => { 
+    for(let key in hotkeys) {
+      const format = key as MarkFormat
+      const hotkey = hotkeys[format]
+      const toggle = () => {
+        e.preventDefault()
+        toggleMark(newEditor, format)
       }
-      onKeydown(e)
+      if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
+        toggle()
+        return
+      }
     }
+    onKeydown(e)
   }
 
   return newEditor
