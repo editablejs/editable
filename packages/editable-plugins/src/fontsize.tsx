@@ -39,7 +39,7 @@ const renderFontSize = (editor: EditableEditor, { attributes, children, text }: 
   return next({ attributes: Object.assign({}, attributes, { style }), children, text })
 }
 
-const withFontSize = <T extends EditableEditor>(editor: T, options: FontSizeOptions = {}) => {
+export const withFontSize = <T extends EditableEditor>(editor: T, options: FontSizeOptions = {}) => {
   const newEditor = editor as T & FontSizeInterface
 
   FONTSIZE_OPTIONS.set(newEditor, options)
@@ -60,5 +60,3 @@ const withFontSize = <T extends EditableEditor>(editor: T, options: FontSizeOpti
 
   return newEditor
 }
-
-export default withFontSize

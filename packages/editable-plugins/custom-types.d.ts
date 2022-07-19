@@ -4,7 +4,7 @@ import { EditableEditor } from './plugin/editable-editor'
 declare module 'slate' {
   interface CustomTypes {
     Text: BaseText & {
-      bold?: boolean
+      bold?: string | boolean
       italic?: boolean
       underline?: boolean
       strikethrough?: boolean

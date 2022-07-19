@@ -1,5 +1,5 @@
 import { EditableEditor, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms } from "slate";
+import { Transforms, Text, Element, Editor, Range } from "slate";
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -19,11 +19,38 @@ export const HeadingTags = {
   [HEADING_SIX_KEY]: 'h6',
 }
 
+const defaultHeadingStyle = { 
+  [HEADING_ONE_KEY]: { 
+    fontSize: '28px',
+    fontWeight: 'bold',
+  },
+  [HEADING_TWO_KEY]: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+  },
+  [HEADING_THREE_KEY]: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+  },
+  [HEADING_FOUR_KEY]: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  [HEADING_FIVE_KEY]: {
+    fontSize: '14px',
+    fontWeight: 'bold',
+  },
+  [HEADING_SIX_KEY]: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+  }
+}
+
 export type HeadingType = keyof typeof HeadingTags
 
 type Hotkeys = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
 
-export const defaultHotkeys: Hotkeys = { 
+const defaultHotkeys: Hotkeys = { 
   [HEADING_ONE_KEY]: 'mod+opt+1',
   [HEADING_TWO_KEY]: 'mod+opt+2',
   [HEADING_THREE_KEY]: 'mod+opt+3',
@@ -36,6 +63,7 @@ export interface HeadingOptions {
   enabled?: HeadingType[]
   disabled?: HeadingType[]
   hotkeys?: Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
+  style?: Partial<Record<HeadingType, Record<'fontSize' | 'fontWeight', string>>>
 }
 
 export const HEADING_OPTIONS = new WeakMap<EditableEditor, HeadingOptions>()
@@ -55,10 +83,29 @@ export interface HeadingInterface {
 }
 
 const toggleHeading = (editor: EditableEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
-  if(type && type !== PARAGRAPH_KEY && !isEnabled(editor, type)) return
+  const { selection } = editor
+  if(!selection || type && type !== PARAGRAPH_KEY && !isEnabled(editor, type)) return
+  if(!type) type = PARAGRAPH_KEY
   const activeType = queryHeadingActive(editor)
   if(!activeType && type === PARAGRAPH_KEY) return
-  Transforms.setNodes(editor, { type: activeType === type ? PARAGRAPH_KEY : type })
+  type = activeType === type ? PARAGRAPH_KEY : type
+
+  const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
+  for(const [_, path] of lowestBlocks) {
+    if(type !== PARAGRAPH_KEY) { 
+      const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
+      Transforms.setNodes(editor, { fontSize: style.fontSize, bold: style.fontWeight}, {
+        at: path,
+        match: n => Text.isText(n)
+      })
+    } else {
+      Transforms.setNodes(editor, { fontSize: '', bold: false}, {
+        at: path,
+        match: n => Text.isText(n)
+      })
+    }
+    Transforms.setNodes(editor, { type }, { at: path })
+  }
 }
 
 const queryHeadingActive = (editor: EditableEditor) => {
@@ -73,12 +120,12 @@ const renderHeading = (editor: EditableEditor, { attributes, element, children }
   const type: HeadingType = (element.type ?? PARAGRAPH_KEY) as HeadingType
   if(type in HeadingTags) { 
     const Heading = HeadingTags[type]
-    children = <Heading {...attributes}>{children}</Heading>
+    return <Heading {...attributes}>{children}</Heading>
   }
   return next({ attributes, children, element })
 }
 
-const withHeading = <T extends EditableEditor>(editor: T, options: HeadingOptions = {}) => {
+export const withHeading = <T extends EditableEditor>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingInterface
 
   HEADING_OPTIONS.set(newEditor, options)
@@ -117,5 +164,3 @@ const withHeading = <T extends EditableEditor>(editor: T, options: HeadingOption
 
   return newEditor
 }
-
-export default withHeading

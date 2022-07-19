@@ -20,7 +20,7 @@ const isEnabled = (editor: EditableEditor, format: MarkFormat) => {
 
 export type MarkFormat = "bold" | "italic" | "underline" | "strikethrough" | "code" | "sub" | "sup"
 
-export const defaultHotkeys: Hotkeys = { 
+const defaultHotkeys: Hotkeys = { 
   bold: 'mod+b',
   italic: 'mod+i',
   underline: 'mod+u',
@@ -55,13 +55,15 @@ const toggleMark = (editor: EditableEditor, format: MarkFormat) => {
 const isMarkActive = (editor: EditableEditor, format: MarkFormat) => {
   if(!isEnabled(editor, format)) return false
   const marks = editor.queryActiveMarks()
-  return marks[format] === true
+  return !!marks[format]
 }
 
 const renderMark = (editor: EditableEditor, { attributes, children, text }: RenderLeafProps, next: (props: RenderLeafProps) => JSX.Element) => {
   const style: CSSProperties = attributes.style ?? {}
   if (text.bold && isEnabled(editor, 'bold')) {
-    style.fontWeight = "bold"
+    style.fontWeight = typeof text.bold === 'string' ? text.bold : "bold"
+  } else {
+    style.fontWeight = "normal"
   }
 
   if (text.italic && isEnabled(editor, 'italic')) {
@@ -89,7 +91,7 @@ const renderMark = (editor: EditableEditor, { attributes, children, text }: Rend
   return next({ attributes: Object.assign({}, attributes, { style }), children, text })
 }
 
-const withMark = <T extends EditableEditor>(editor: T, options: MarkOptions = {}) => {
+export const withMark = <T extends EditableEditor>(editor: T, options: MarkOptions = {}) => {
   const newEditor = editor as T & MarkInterface
 
   MARK_OPTIONS.set(newEditor, options)
@@ -129,5 +131,3 @@ const withMark = <T extends EditableEditor>(editor: T, options: MarkOptions = {}
 
   return newEditor
 }
-
-export default withMark

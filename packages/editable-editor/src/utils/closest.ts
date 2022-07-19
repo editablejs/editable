@@ -130,6 +130,12 @@ const findClosestNode = (nodes: Element[], x: number, y: number): Element | Clos
             node: child
           }
         }
+        if(closerNode.left && isPrecedingX(rect, child, closerNode.left)) {
+          closerNode.left = {
+            rect,
+            node: child
+          }
+        }
       } else if(isBetweenY(y, rect) && x > rect.left && (!closerNode.left || isPrecedingX(rect, child, closerNode.left))) {
         closerNode.left = {
           rect,

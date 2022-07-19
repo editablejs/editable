@@ -38,6 +38,7 @@ export const IS_COMPOSING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_ON_COMPOSITION_END: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_SHIFT_PRESSED: WeakMap<Editor, boolean> = new WeakMap()
 
+export const SET_IS_FOCUSED: WeakMap<Editor, (focused: boolean) => void> = new WeakMap()
 export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
 
 /**

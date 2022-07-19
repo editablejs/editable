@@ -1,5 +1,5 @@
 import { Slate, ContentEditable, withEditable } from '@editablejs/editor';
-import { Icon, MarkFormat, Toolbar, withMark, withFontSize, withHeading, type ToolbarItem, HeadingType } from '@editablejs/editor-plugins'
+import { Icon, MarkFormat, Toolbar, type ToolbarItem, HeadingType, withPlugins } from '@editablejs/editor-plugins'
 import { createEditor } from 'slate';
 import React, { useState } from 'react';
 import styles from './index.module.css'
@@ -10,14 +10,28 @@ const initialValue = [
     type: 'paragraph',
     children: [
       {
-        text: 'Hello, This is a Paragraph'
+        text: 'Hello, '
+      },
+      {
+        text: 'This',
+        fontSize: '28px'
+      },
+      {
+        text: ' is a Paragraph'
+      }
+    ]
+  }, {
+    type: 'paragraph',
+    children: [
+      {
+        text: '拉萨扩大解放是的方式来的过节费打过来快递费建国饭店给对方dlsfjsdlfjsdlfjsdlfjsdlfjsdlfsdjlfdslkfsdlf'
       }
     ]
   }
 ]
 
 export default function Docs() {
-  const [ editor ] = useState(() => withHeading(withFontSize(withMark(withEditable(createEditor())), { defaultSize: '14px'})))
+  const [ editor ] = useState(() => withPlugins(withEditable(createEditor()), { fontSize: { defaultSize: '14px'}}))
   const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
   const toolbarConfig: ToolbarItem[][] = [marks.map(mark => ({ 
     type: 'button',

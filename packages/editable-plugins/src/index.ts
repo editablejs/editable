@@ -1,18 +1,11 @@
-import withMark, { MarkInterface, MarkFormat, MarkOptions } from './mark'
+export * from './mark'
+export * from './fontsize'
+export * from './heading'
 
-export { withMark }
-export type { MarkInterface, MarkFormat, MarkOptions }
-
-import withFontSize, { FontSizeInterface, FontSizeOptions } from './fontsize'
-
-export { withFontSize }
-export type { FontSizeInterface, FontSizeOptions }
-
-import withHeading, { HeadingInterface, HeadingOptions, HeadingType } from './heading'
-
-export { withHeading }
-export type { HeadingInterface, HeadingOptions, HeadingType }
-
+import { EditableEditor } from '@editablejs/editor'
+import { FontSizeInterface, FontSizeOptions, withFontSize } from './fontsize'
+import { HeadingInterface, HeadingOptions, withHeading } from './heading'
+import { MarkInterface, MarkOptions, withMark } from './mark'
 import Toolbar from './toolbar'
 
 export {
@@ -21,3 +14,15 @@ export {
 
 export * from './toolbar'
 export * from './icon'
+interface PluginOptions {
+  mark?: MarkOptions
+  fontSize?: FontSizeOptions
+  heading?: HeadingOptions
+}
+
+export const withPlugins = (editor: EditableEditor, options: PluginOptions = {}) => { 
+  let newEditor = withMark(editor, options.mark)
+  newEditor = withFontSize(newEditor, options.fontSize)
+  newEditor = withHeading(newEditor, options.heading)
+  return newEditor as EditableEditor & MarkInterface & HeadingInterface & FontSizeInterface
+}
