@@ -218,7 +218,6 @@ export const EditableEditor = {
   /**
    * Check if the editor is focused.
    */
-
   isFocused(editor: EditableEditor): boolean {
     return !!IS_FOCUSED.get(editor)
   },
@@ -236,12 +235,10 @@ export const EditableEditor = {
    */
 
   blur(editor: EditableEditor): void {
-    const el = EditableEditor.toDOMNode(editor, editor)
-    const root = EditableEditor.findDocumentOrShadowRoot(editor)
-    // IS_FOCUSED.set(editor, false)
-
-    if (root.activeElement === el) {
-      el.blur()
+    const shadow = EDITOR_TO_SHADOW.get(editor)
+    const textarea = EDITOR_TO_TEXTAREA.get(editor)
+    if (textarea && shadow && shadow.activeElement !== textarea) {
+      textarea.blur()
     }
   },
 
@@ -256,19 +253,8 @@ export const EditableEditor = {
     }
   },
 
-  /**
-   * Deselect the editor.
-   */
   deselect(editor: EditableEditor): void {
-    const el = EditableEditor.toDOMNode(editor, editor)
     const { selection } = editor
-    const root = EditableEditor.findDocumentOrShadowRoot(editor)
-    const domSelection = (root as any).getSelection()
-
-    if (domSelection && domSelection.rangeCount > 0) {
-      domSelection.removeAllRanges()
-    }
-
     if (selection) {
       Transforms.deselect(editor)
     }
@@ -277,7 +263,6 @@ export const EditableEditor = {
   /**
    * Check if a DOM node is within the editor.
    */
-
   hasDOMNode(
     editor: EditableEditor,
     target: DOMNode
@@ -555,7 +540,11 @@ export const EditableEditor = {
     let element: DOMElement | null = domEl.hasAttribute('data-slate-node') ? domEl : domEl.closest(`[data-slate-node]`)
 
     const addToElements = (node: Node) => {
-      elements.push(...EditableEditor.findLowestDOMElements(editor, node))
+      const children = EditableEditor.findLowestDOMElements(editor, node)
+      for(const child of children) {
+        if(~elements.indexOf(child)) continue
+          elements.push(child)
+      }
     }
     
     if(!element) {
@@ -576,6 +565,7 @@ export const EditableEditor = {
     }
     let top = y, left = x
     const nodes = findClosestNode(elements, x, y)
+    console.log(elements, nodes, x, y)
     if(!nodes) return null
     let offsetNode: DOMElement | null = null
     if(isDOMNode(nodes)) {
@@ -624,6 +614,7 @@ export const EditableEditor = {
       }
     }
     if(!offsetNode) return null
+    console.log(offsetNode)
     const node = EditableEditor.toSlateNode(editor, offsetNode)
     if(Text.isText(node)) {
       const textNodes = EditableEditor.findLowestDOMElements(editor, node)
@@ -790,7 +781,7 @@ export const EditableEditor = {
     return data
   },
 
-  findPointOnLine(editor: EditableEditor, path: Path, offset: number) {
+  findPointOnLine(editor: EditableEditor, path: Path, offset: number, moveNext: boolean = false) {
     const blockEntry = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
       at: path,
@@ -805,6 +796,18 @@ export const EditableEditor = {
       const textLength = text.length
       const totalOffset = findOffset + textLength
       if(totalOffset >= offset) {
+        const path = blockEntry[1].concat(textPath)
+        if(moveNext && offset > 0 && totalOffset === offset) {
+          const next = Editor.next(editor, {
+            at: path,
+          })
+          if(next) {
+            return {
+              path: next[1],
+              offset: 0
+            }
+          }
+        }
         return {path: blockEntry[1].concat(textPath), offset: textLength - (totalOffset - offset)}
       } else {
         findOffset += textLength

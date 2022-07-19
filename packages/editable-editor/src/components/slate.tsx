@@ -4,6 +4,7 @@ import { EditableEditor } from '../plugin/editable-editor'
 import { FocusedContext } from '../hooks/use-focused'
 import { EditorContext } from '../hooks/use-slate-static'
 import { SlateContext } from '../hooks/use-slate'
+import { IS_FOCUSED, SET_IS_FOCUSED } from '../utils/weak-maps'
 
 /**
  * A wrapper around the provider to handle `onChange` events, because the editor
@@ -51,11 +52,13 @@ export const Slate = (props: {
     }
   }, [editor, onChange])
 
-  const [isFocused, setIsFocused] = useState(EditableEditor.isFocused(editor))
+  const [isFocused, setIsFocused] = useState(false)
+
+  SET_IS_FOCUSED.set(editor, setIsFocused)
 
   useEffect(() => {
-    setIsFocused(EditableEditor.isFocused(editor))
-  }, [editor])
+    IS_FOCUSED.set(editor, isFocused)
+  }, [editor, isFocused])
 
   return (
     <SlateContext.Provider value={context}>

@@ -9,6 +9,7 @@ import {
   EDITOR_TO_USER_SELECTION,
   IS_SHIFT_PRESSED,
   IS_COMPOSING,
+  SET_IS_FOCUSED,
 } from '../utils/weak-maps'
 import {
   isDOMText,
@@ -113,6 +114,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
+
+    if(!EditableEditor.isFocused(e)) {
+      const setIsFocused = SET_IS_FOCUSED.get(e)
+      if(setIsFocused) setIsFocused(true)
+    }
 
     apply(op)
 

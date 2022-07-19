@@ -7,6 +7,7 @@ import {
   Transforms,
   Point,
   BaseSelection,
+  Element,
 } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
@@ -18,24 +19,27 @@ import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect
 import {
   DOMRange,
   getDefaultView,
+  isDOMElement,
 } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
   IS_READ_ONLY,
   NODE_TO_ELEMENT,
-  IS_FOCUSED,
   EDITOR_TO_WINDOW,
   IS_COMPOSING,
   IS_SHIFT_PRESSED,
   EDITOR_TO_PLACEHOLDER,
   EDITOR_TO_TEXTAREA,
   EDITOR_TO_SHADOW,
+  SET_IS_FOCUSED,
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { getWordRange } from '../utils/string'
 import useMultipleClick from '../hooks/use-multiple-click'
 import { SelectionStyle } from '../plugin/editable-editor'
+import { FocusedContext } from '../hooks/use-focused'
+import { toDOMRects } from '../utils/selection'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -44,7 +48,7 @@ const Children = (props: Parameters<typeof useChildren>[0]) => (
 const SELECTION_DEFAULT_BLUR_BG_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_DEFAULT_FOCUS_BG_COLOR = 'rgba(0,127,255,0.3)'
 const SELECTION_DEFAULT_CARET_COLOR = '#000'
-const SELECTION_DEFAULT_CARET_WIDTH = 2
+const SELECTION_DEFAULT_CARET_WIDTH = 1
 
 /**
  * `EditableProps` are passed to the `<Editable>` component.
@@ -121,6 +125,8 @@ export const ContentEditable = (props: EditableProps) => {
     }
   }, [editor])
 
+  const isFocused = useContext(FocusedContext)
+
   const [ caretRect, setCaretRect ] = useState<DrawRect | null>(null)
   const [ boxRects, setBoxRects ] = useState<DrawRect[]>([])
   const [ textareaRect, setTextareaRect ] = useState<DrawRect | null>(null)
@@ -129,8 +135,9 @@ export const ContentEditable = (props: EditableProps) => {
   const startPointRef = useRef<Point | null>(null)
 
   const changeFocus = (focus: boolean) => {
-    if(IS_FOCUSED.get(editor) === focus) return
-    IS_FOCUSED.set(editor, focus)
+    if(isFocused === focus) return
+    const setIsFocused = SET_IS_FOCUSED.get(editor)
+    if(setIsFocused) setIsFocused(focus)
     if(focus) {
       editor.onFocus()
     } else {
@@ -165,7 +172,7 @@ export const ContentEditable = (props: EditableProps) => {
   const handleDocumentMouseUp = (event: MouseEvent) => {
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
-      if(IS_FOCUSED.get(editor) && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
+      if(isFocused && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
         EditableEditor.focus(editor)
       }
       const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
@@ -242,7 +249,7 @@ export const ContentEditable = (props: EditableProps) => {
         if(text) {
           const [startOffset, endOffset] = getWordRange(text, offset)
           Transforms.select(editor, {
-            anchor: EditableEditor.findPointOnLine(editor, focusPath, startOffset),
+            anchor: EditableEditor.findPointOnLine(editor, focusPath, startOffset, true),
             focus: EditableEditor.findPointOnLine(editor, focusPath, endOffset)
           })
           isDoubleClickRef.current = true
@@ -333,9 +340,8 @@ export const ContentEditable = (props: EditableProps) => {
       setCaretRect(null)
       setTextareaRect(null)
     } else {
-      const range = EditableEditor.toDOMRange(editor, currentSelection)
-      drawCaret(range)
-      drawBoxs(range)
+      drawCaret(currentSelection)
+      drawBoxs(currentSelection)
     }
   }, [editor, currentSelection])
 
@@ -346,9 +352,10 @@ export const ContentEditable = (props: EditableProps) => {
     return true
   }
 
-  const drawCaret = (range: DOMRange) => { 
+  const drawCaret = (range: Range) => { 
+    const domRange = EditableEditor.toDOMRange(editor, range)
     let rects
-    if(!range.collapsed || !IS_FOCUSED.get(editor) || (rects = range.getClientRects()).length === 0) return setCaretRect(null)
+    if(!domRange.collapsed || !isFocused || (rects = domRange.getClientRects()).length === 0) return setCaretRect(null)
     const rect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor  })
     setCaretRect(caretRect => {
       if(caretRect && isEqualDrawRect(caretRect, rect)) return caretRect
@@ -387,32 +394,12 @@ export const ContentEditable = (props: EditableProps) => {
     return () => clearActive()
   },[caretRect])
 
-  const drawBoxs = (range: DOMRange) => { 
-    if(range.collapsed) return setBoxRects([])
-    const rects = range.getClientRects()
-    const drawRects: DrawRect[] = []
-    if(rects) {
-      const indexs: number[] = []
-      const findSamePoint = (x: number, y: number, index: number) => { 
-        for(let r = 0; r < rects.length; r++) {
-          if(~indexs.indexOf(r)) continue
-          const rect = rects[r]
-          if(rect.x === x && rect.y === y && r !== index) return rect
-        }
-        return null
-      }
-      for(let i = 0; i < rects.length; i++) {
-        const rect = rects[i]
-        if(rect && rect.width > 0) {
-          const point = findSamePoint(rect.x, rect.y, i)
-          if(point && rect.width >= point.width) {
-            indexs.push(i)
-            continue
-          }
-          drawRects.push(Object.assign({}, rect.toJSON(), { color: IS_FOCUSED.get(editor) ? drawSelectionStyle.focusBgColor : drawSelectionStyle.blurBgColor }))
-        }
-      }
-    }
+  const drawBoxs = (range: Range) => { 
+    if(Range.isCollapsed(range)) return setBoxRects([])
+    const drawRects: DrawRect[] = toDOMRects(editor, range)
+    drawRects.map(rect => {
+      rect.color = isFocused ? drawSelectionStyle.focusBgColor : drawSelectionStyle.blurBgColor
+    })
     setBoxRects(rects => {
       if(rects.length === drawRects.length) {
         for(let i = 0; i < rects.length; i++) {
@@ -422,9 +409,12 @@ export const ContentEditable = (props: EditableProps) => {
       }
       return drawRects
     })
+
     setTextareaRect(rect => {
-      const newRect = drawRects[drawRects.length - 1]
-      if(rect && newRect && isEqualDrawRect(rect, newRect)) {
+      let newRect = drawRects[drawRects.length - 1]
+      if(!newRect) return null
+      newRect = Object.assign({}, newRect, { left: newRect.left + newRect.width })
+      if(rect && isEqualDrawRect(rect, newRect)) {
         return rect
       }
       return newRect
