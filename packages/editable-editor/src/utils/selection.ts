@@ -103,7 +103,6 @@ const getLineRect = (editor: EditableEditor, element: DOMElement, top: number, b
 }
 
 export const toDOMRects = (editor: EditableEditor, range: Range) => {
-  console.log(range)
   const anchor = Range.start(range)
   const focus = Range.end(range)
   const anchorBlock = Editor.above<Element>(editor, {
@@ -143,13 +142,11 @@ export const toDOMRects = (editor: EditableEditor, range: Range) => {
         line.top = lineRect.top
         line.height = lineRect.height
         line.bottom = lineRect.bottom
-        console.log(lineRect)
       }
     }
     const width = rects[rects.length - 1].right - rects[0].left
     const lineRect = new DOMRect(rects[0].left, line.top, width, line.height)
     lineRects.push(lineRect)
   }
-  console.log(lineRects)
   return lineRects
 }
