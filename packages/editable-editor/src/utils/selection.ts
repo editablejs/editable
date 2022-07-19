@@ -144,7 +144,8 @@ export const toDOMRects = (editor: EditableEditor, range: Range) => {
         line.bottom = lineRect.bottom
       }
     }
-    const width = rects[rects.length - 1].right - rects[0].left
+    let width = rects[rects.length - 1].right - rects[0].left
+    if(width === 0) width = 4
     const lineRect = new DOMRect(rects[0].left, line.top, width, line.height)
     lineRects.push(lineRect)
   }
