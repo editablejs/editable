@@ -19,6 +19,7 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
+import { isDOMEventHandled } from '../utils/event'
 
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
@@ -304,7 +305,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   },
 
   e.onKeydown = (event: KeyboardEvent) => {
-
+    if(event.defaultPrevented) return
     const { selection } = editor
     const element =
       editor.children[

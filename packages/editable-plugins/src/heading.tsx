@@ -1,5 +1,5 @@
 import { EditableEditor, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Text, Element, Editor, Range } from "slate";
+import { Transforms, Text, Element, Editor, Range, PointRef } from "slate";
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -157,6 +157,18 @@ export const withHeading = <T extends EditableEditor>(editor: T, options: Headin
       if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
         toggle()
         return
+      }
+    }
+    const { selection } = editor
+    if(selection && Range.isCollapsed(selection) && isHotkey('enter', e)) {
+      const entry = Editor.above(newEditor, { match: n => Editor.isBlock(newEditor, n) && !!n.type && n.type in HeadingTags })
+      if(entry) {
+        const at = selection.focus
+        const [_, path] = entry
+        if(Editor.isEnd(newEditor, at, path)) {
+          e.preventDefault()
+          Transforms.insertNodes(newEditor, { type: PARAGRAPH_KEY, children: [ {text: ''}] }, { at, select: true })
+        }
       }
     }
     onKeydown(e)
