@@ -135,17 +135,17 @@ export const toDOMRects = (editor: EditableEditor, range: Range) => {
   const lineRects: DOMRect[] = []
   for(const [line, rects] of lines) {
     const blockRect = blockRects.find(r => r.top >= line.top && r.bottom <= line.bottom || r.top <= line.top && r.bottom >= line.bottom)
-    if(blockRect) {
-      const el = rectMap.get(blockRect)
-      if(el) { 
-        const lineRect = getLineRect(editor, el, line.top, line.bottom)
-        line.top = lineRect.top
-        line.height = lineRect.height
-        line.bottom = lineRect.bottom
+    const el = blockRect ? rectMap.get(blockRect) : null
+    let width = rects[rects.length - 1].right - rects[0].left
+    if(el) { 
+      const lineRect = getLineRect(editor, el, line.top, line.bottom)
+      line.top = lineRect.top
+      line.height = lineRect.height
+      line.bottom = lineRect.bottom
+      if(width === 0 && el.getBoundingClientRect().left === rects[0].left) {
+        width = 4
       }
     }
-    let width = rects[rects.length - 1].right - rects[0].left
-    if(width === 0) width = 4
     const lineRect = new DOMRect(rects[0].left, line.top, width, line.height)
     lineRects.push(lineRect)
   }
