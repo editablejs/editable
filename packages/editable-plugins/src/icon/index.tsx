@@ -36,6 +36,10 @@ export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (prop
   return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M357.472 848.422c12.166 0.107 24.365-4.48 33.648-13.763l558.546-558.546c18.35-18.35 18.352-48.11-0.002-66.463l-1.417-1.417c-18.357-18.357-48.11-18.355-66.463-0.002L357.448 732.566 149.67 524.788c-18.352-18.352-48.105-18.353-66.462 0.004l-1.416 1.416c-18.354 18.354-18.356 48.11-0.004 66.462l241.99 241.99c9.294 9.294 21.513 13.882 33.694 13.762z" p-id="9084"></path></svg>
 }
 
+export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props) => {
+  return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M412 205.133c-4.348 0.158-7.873 0.343-10.556 0.554C254.344 217.24 140 340.351 140 488.805v279.04c0 28.72 23.281 52 52 52h168c28.719 0 52-23.28 52-52v-168c0-28.718-23.281-52-52-52H244v-59.04c0-89.924 66.33-165.709 154.528-178.21 3.508-0.497 7.982-0.907 13.472-1.24V205.132z m472 0c-4.348 0.158-7.873 0.343-10.556 0.554C726.344 217.24 612 340.351 612 488.805v279.04c0 28.72 23.281 52 52 52h168c28.719 0 52-23.28 52-52v-168c0-28.718-23.281-52-52-52H716v-59.04c0-89.924 66.33-165.709 154.528-178.21 3.508-0.497 7.982-0.907 13.472-1.24V205.132z" p-id="9084"></path></svg>
+}
+
 const ICON_LIST = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -44,7 +48,8 @@ const ICON_LIST = {
   code: CodeIcon,
   sub: SubIcon,
   sup: SupIcon,
-  check: CheckIcon
+  check: CheckIcon,
+  blockquote: BlockquoteIcon,
 }
 
 export const Icon: React.FC<React.HTMLAttributes<HTMLOrSVGElement> & Record<'name', keyof typeof ICON_LIST>> = ({ className, name, ...props}) => { 

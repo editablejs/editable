@@ -497,13 +497,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isDeleteBackward(event)) {
       event.preventDefault()
-
       if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
+        Editor.deleteFragment(editor)
       } else {
         Editor.deleteBackward(editor)
       }
-
       return
     }
 

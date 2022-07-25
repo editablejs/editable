@@ -1,5 +1,5 @@
 import { EditableEditor, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Text, Element, Editor, Range, PointRef } from "slate";
+import { Transforms, Text, Element, Editor, Range } from "slate";
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -62,7 +62,7 @@ const defaultHotkeys: Hotkeys = {
 export interface HeadingOptions {
   enabled?: HeadingType[]
   disabled?: HeadingType[]
-  hotkeys?: Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
+  hotkeys?: Hotkeys
   style?: Partial<Record<HeadingType, Record<'fontSize' | 'fontWeight', string>>>
 }
 
