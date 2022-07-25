@@ -256,6 +256,7 @@ export const ContentEditable = (props: EditableProps) => {
           setTimeout(() => {
             isDoubleClickRef.current = false
           }, 500);
+          EditableEditor.focus(editor)
           return
         }
       } else if(count === 3) {
@@ -272,6 +273,7 @@ export const ContentEditable = (props: EditableProps) => {
         const range = Editor.range(editor, blockPath)
         Transforms.select(editor, range)
         isDoubleClickRef.current = false
+        EditableEditor.focus(editor)
         return false
       }
     }
