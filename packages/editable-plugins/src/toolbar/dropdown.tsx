@@ -1,30 +1,135 @@
 
 import { EditableEditor } from '@editablejs/editor';
-import React, { useMemo } from 'react';
-import { DropdownProps } from './types';
+import classnames from 'classnames';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Icon } from '../icon';
+import Button from './button';
 
-const Dropdown: React.FC<DropdownProps & Record<'editor', EditableEditor>> = ({ editor, items, onToggle, activeKey }) => {
+export interface DropdownItem {
+	key: string;
+	content?: React.ReactNode | (<T extends EditableEditor>(editor: T) => React.ReactChild)
+	className?: string;
+	disabled?: boolean;
+}
 
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		event.preventDefault()
-		onToggle(editor, event.target.value)
+interface DropdownProps { 
+	editor: EditableEditor;
+	className?: string;
+  activeKey?: string
+	defaultActiveKey?: string
+	direction?: 'vertical' | 'horizontal'
+  onToggle: <T extends EditableEditor>(editor: T, item: DropdownItem) => void;
+  onActive?: <T extends EditableEditor>(editor: T) => string;
+	items: DropdownItem[]
+	renderItem?: (item: DropdownItem) => React.ReactNode
+	disabled?: boolean;
+}
+
+export interface ToolbarDropdown extends Omit<DropdownProps, 'activeKey' | 'editor'> { 
+	type: 'dropdown'
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ 
+	className, 
+	editor, items, onToggle, activeKey, defaultActiveKey, children, direction, renderItem: _renderItem, disabled }) => {
+
+  const [visible, setVisible] = useState(false);
+
+	const dropdownElRef = useRef<HTMLDivElement>(null)
+  
+	const toggerSelect = (item: DropdownItem) => {
+		hideList();
+		onToggle(editor, item)
 	}
 
-  const options = useMemo(() => {
-    const els = []
-    for(const key in items) { 
-      els.push(<option key={key} value={key}>{ items[key] }</option>)
-    }
-    return els
-  }, [items])
-console.log(activeKey)
-  return (
-    <select className="toolbar-dropdown" value={activeKey} onChange={handleChange}>
-      {
-        options
-      }
-    </select>
-  )
+	const hideList = useCallback((event?: MouseEvent) => {
+		if (
+			event &&
+			dropdownElRef.current &&
+			dropdownElRef.current.contains(event.target as Node)
+		)
+			return;
+		setVisible(false);
+	}, []);
+
+	const showList = () => {
+		setVisible(true);
+	};
+
+  const toggleVisible = () => {
+		if (visible) {
+			hideList();
+		} else {
+			showList();
+		}
+	};
+
+	useEffect(() => {
+		if (visible) document.addEventListener('click', hideList);
+		return () => {
+			document.removeEventListener('click', hideList);
+		};
+	}, [hideList, visible]);
+
+	const renderContent = () => {
+		if(children) return children
+		const key = (activeKey || defaultActiveKey)
+		const activeItem = key ? items.find(item => item.key === key) ?? items[0] : items[0]
+		return activeItem.content
+	}
+
+	const renderList = () => { 
+		if(!visible) return
+		return (
+			<div
+			className={classnames(
+				'toolbar-dropdown-list',
+				`toolbar-dropdown-${direction ?? 'vertical'}`,
+				className,
+			)}
+		>
+			{items.map((item) => _renderItem ? _renderItem(item) : renderItem(item))}
+		</div>
+		)
+	}
+
+	const renderItem = (item: DropdownItem) => { 
+		const { key, disabled, className, content } = item
+		return (
+			<a
+			key={key}
+			className={classnames('toolbar-dropdown-item', className, {
+				'toolbar-dropdown-item-disabled': disabled,
+			})}
+			onMouseDown={(event) => {
+				event.preventDefault()
+				if (disabled) return;
+				return toggerSelect(item);
+			}}
+		>
+			{typeof content === 'function' ? content(editor) : content}
+			{
+				direction !== 'horizontal' && activeKey === key && <Icon name='check' />
+			}
+		</a>
+	);
+	}
+
+  const render = () => {
+    return (
+      <div
+				ref={dropdownElRef}
+        className={classnames('toolbar-dropdown', {'toolbar-dropdown-active': visible})}
+      >
+        <Button onToggle={toggleVisible} editor={editor} active={visible} disabled={disabled}>{ renderContent() }</Button>
+				{
+					renderList()
+				}
+      </div>
+    );
+  }
+
+  return render()
 }
 
 export default Dropdown

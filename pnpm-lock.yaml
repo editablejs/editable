@@ -137,6 +137,7 @@ importers:
       '@types/react-dom': ^17.x
       classnames: ^2.3.1
       esbuild: ^0.14.49
+      esbuild-plugin-less: ^1.1.8
       jest: ^27.5.1
       react: ^17.x
       react-dom: ^17.x
@@ -155,6 +156,7 @@ importers:
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
       esbuild: 0.14.49
+      esbuild-plugin-less: 1.1.8_esbuild@0.14.49
       jest: 27.5.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
@@ -1311,6 +1313,10 @@ packages:
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
+
+  /@types/less/3.0.3:
+    resolution: {integrity: sha512-1YXyYH83h6We1djyoUEqTlVyQtCfJAFXELSKW2ZRtjHD4hQ82CC4lvrv5D0l0FLcKBaiPbXyi3MpMsI9ZRgKsw==}
+    dev: true
 
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
@@ -2580,6 +2586,18 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /esbuild-plugin-less/1.1.8_esbuild@0.14.49:
+    resolution: {integrity: sha512-CJ25vnEFvYplrHWG2G3tG+SOye9Z2iacKIcpZPW5n/1LAyQh0gkIRi03Q170GD6tQaaszNojezZNoYZ3RRQbZw==}
+    peerDependencies:
+      esbuild: ^0.14.x
+    dependencies:
+      '@types/less': 3.0.3
+      esbuild: 0.14.49
+      less: 4.1.3
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /esbuild-sunos-64/0.14.49:
     resolution: {integrity: sha512-4c8Zowp+V3zIWje329BeLbGh6XI9c/rqARNaj5yPHdC61pHI9UNdDxT3rePPJeWcEZVKjkiAS6AP6kiITp7FSw==}

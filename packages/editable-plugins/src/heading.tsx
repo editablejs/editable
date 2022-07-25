@@ -75,7 +75,7 @@ const isEnabled = (editor: EditableEditor, type: HeadingType) => {
   return true
 }
 
-export interface HeadingInterface {
+export interface HeadingInterface extends EditableEditor {
 
   toggleHeading: (type?: HeadingType | typeof PARAGRAPH_KEY) => void
 

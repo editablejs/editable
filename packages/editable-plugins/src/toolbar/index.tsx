@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import classNames from 'classnames';
 import { EditableEditor } from '@editablejs/editor';
-import ToolbarGroup from './group';
-import { ButtonProps, GroupItem, ToolbarItem, DropdownProps } from './types';
+import ToolbarGroup, { GroupItem } from './group';
+import { ToolbarButton } from './button';
+import { ToolbarDropdown } from './dropdown';
 import './style.less'
 
+export type ToolbarItem = ToolbarButton | ToolbarDropdown
 export interface ToolbarProps {
   editor: EditableEditor
   items: ToolbarItem[][]
-  renderButton?: (editor: EditableEditor, item: ButtonProps) => JSX.Element
 }
 
-const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ editor, items: itemProps, renderButton, className, ...props }) => {
+const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ editor, items: itemProps, className, ...props }) => {
 
   const setActiveState = useCallback((items: ToolbarItem[][]): GroupItem[][] => { 
     return items.map(group => group.map(item => {
@@ -50,9 +51,3 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
 }
 
 export default Toolbar
-export type {
-  ToolbarItem,
-  GroupItem,
-  ButtonProps,
-  DropdownProps
-}

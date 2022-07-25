@@ -32,6 +32,10 @@ export const SupIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props)
   return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M184.182 264.227c-3.132-5.116-8.656-8.227-14.581-8.227H83.194c-3.358 0-6.285 0.852-8.722 2.522l-0.172 0.117-0.177 0.111c-7.908 4.949-10.254 15.391-5.15 23.483l188.57 299.163-3.37 5.37L66.497 885.995c-1.638 2.597-2.496 5.674-2.496 9.04C64 904.344 71.647 912 80.944 912h77.63c5.847 0 11.249-3.052 14.396-8.064l149.665-242.594 8.547 13.929L471.38 903.75c3.052 5.001 8.509 8.024 14.37 8.024h84.381c3.072 0 6.208-0.925 9.314-2.764 7.818-5.128 10.026-15.496 4.957-23.39L391.88 586.366l3.506-5.454L587.28 282.456c1.738-2.756 2.721-6.086 2.721-9.266 0-9.307-7.647-16.965-16.944-16.965h-80.33a17.086 17.086 0 0 1-14.546 8.167L331.876 509.264 184.182 264.227zM704 339.031V408a8 8 0 0 1 8 8h240a8 8 0 0 1 8-8v-64a8 8 0 0 1-8-8H792.103L958.98 146.296a8 8 0 0 1 1.993-5.354l-0.607-69.012a8 8 0 0 1-8-7.93H712a8 8 0 0 1-8 8v64a8 8 0 0 1 8 8h161.897L706.01 333.73a8 8 0 0 1-2.01 5.3z" p-id="10156"></path></svg>
 }
 
+export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props) => { 
+  return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M357.472 848.422c12.166 0.107 24.365-4.48 33.648-13.763l558.546-558.546c18.35-18.35 18.352-48.11-0.002-66.463l-1.417-1.417c-18.357-18.357-48.11-18.355-66.463-0.002L357.448 732.566 149.67 524.788c-18.352-18.352-48.105-18.353-66.462 0.004l-1.416 1.416c-18.354 18.354-18.356 48.11-0.004 66.462l241.99 241.99c9.294 9.294 21.513 13.882 33.694 13.762z" p-id="9084"></path></svg>
+}
+
 const ICON_LIST = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -40,6 +44,7 @@ const ICON_LIST = {
   code: CodeIcon,
   sub: SubIcon,
   sup: SupIcon,
+  check: CheckIcon
 }
 
 export const Icon: React.FC<React.HTMLAttributes<HTMLOrSVGElement> & Record<'name', keyof typeof ICON_LIST>> = ({ className, name, ...props}) => { 

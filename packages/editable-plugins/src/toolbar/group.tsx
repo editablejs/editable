@@ -1,9 +1,9 @@
 import { EditableEditor } from "@editablejs/editor"
 import React from "react"
-import Button from "./button"
-import Dropdown from "./dropdown"
-import { GroupItem } from "./types"
+import Button, { ToolbarButton } from "./button"
+import Dropdown, { DropdownProps } from "./dropdown"
 
+export type GroupItem = ToolbarButton | DropdownProps
 export interface ToolbarGroupProps {
   editor: EditableEditor
   items: GroupItem[]
@@ -19,6 +19,8 @@ const ToolbarGroup: React.FC<ToolbarGroupProps> = ({ editor, items }) => {
             return <Button key={index} {...item} editor={editor} />
           case 'dropdown':
             return <Dropdown key={index} {...item} editor={editor} />
+          default:
+            return null
         }
       })
     }
