@@ -1,6 +1,7 @@
 import { EditableEditor, RenderLeafProps, isHotkey } from "@editablejs/editor";
 import { CSSProperties } from 'react'
 import { Editor } from "slate";
+import './mark.less'
 
 type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
 export interface MarkOptions {
@@ -85,7 +86,7 @@ const renderMark = (editor: EditableEditor, { attributes, children, text }: Rend
   }
 
   if (text.code && isEnabled(editor, 'code')) {
-    children = <code>{children}</code>
+    children = <code className="editable-code">{children}</code>
   }
   
   return next({ attributes: Object.assign({}, attributes, { style }), children, text })
