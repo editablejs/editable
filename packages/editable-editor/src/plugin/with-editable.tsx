@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom'
 import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks, Point } from 'slate'
 import getDirection from 'direction'
-import { EditableEditor, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable-editor'
+import { Editable, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable'
 import { Key } from '../utils/key'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
@@ -19,7 +19,7 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
-import { EditableTransforms } from './editable-transforms'
+import { Transforms as EditableTransforms } from './transforms'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -34,7 +34,7 @@ const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
  * See https://docs.slatejs.org/concepts/11-typescript to learn how.
  */
 export const withEditable = <T extends Editor>(editor: T) => {
-  const e = editor as T & EditableEditor
+  const e = editor as T & Editable
   const { apply, onChange, deleteBackward } = e
 
   // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
@@ -119,7 +119,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
 
-    if(!EditableEditor.isFocused(e)) {
+    if(!Editable.isFocused(e)) {
       const setIsFocused = SET_IS_FOCUSED.get(e)
       if(setIsFocused) setIsFocused(true)
     }
@@ -149,7 +149,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     // Create a fake selection so that we can add a Base64-encoded copy of the
     // fragment to the HTML, to decode on future pastes.
-    const domRange = EditableEditor.toDOMRange(e, selection)
+    const domRange = Editable.toDOMRange(e, selection)
     let contents = domRange.cloneContents()
     let attach = contents.childNodes[0] as HTMLElement
 
@@ -166,7 +166,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (endVoid) {
       const [voidNode] = endVoid
       const r = domRange.cloneRange()
-      const domNode = EditableEditor.toDOMNode(e, voidNode)
+      const domNode = Editable.toDOMNode(e, voidNode)
       r.setEndAfter(domNode)
       contents = r.cloneContents()
     }
@@ -360,7 +360,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isExtendUp(event)) {
       event.preventDefault()
-      const point = EditableEditor.findPreviousLinePoint(e)
+      const point = Editable.findPreviousLinePoint(e)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
         focus: point
@@ -370,7 +370,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isExtendDown(event)) {
       event.preventDefault()
-      const point = EditableEditor.findNextLinePoint(e)
+      const point = Editable.findNextLinePoint(e)
       if(point && selection) Transforms.select(editor, {
         anchor: selection.anchor,
         focus: point
@@ -380,14 +380,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isMoveUp(event)) {
       event.preventDefault()
-      const point = EditableEditor.findPreviousLinePoint(e)
+      const point = Editable.findPreviousLinePoint(e)
       if(point) Transforms.select(editor, point)
       return
     }
 
     if (Hotkeys.isMoveDown(event)) {
       event.preventDefault()
-      const point = EditableEditor.findNextLinePoint(e)
+      const point = Editable.findNextLinePoint(e)
       if(point) Transforms.select(editor, point)
       return
     }
@@ -421,10 +421,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
           EditableTransforms.move(e, { reverse: !isRTL })
           return
         }
-        const { text, offset } = EditableEditor.findTextOffsetOnLine(e, focus)
+        const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
         if(text) {
           const wordOffset = getWordOffsetBackward(text, offset)
-          const newPoint = EditableEditor.findPointOnLine(e, focusPath, wordOffset)
+          const newPoint = Editable.findPointOnLine(e, focusPath, wordOffset)
           Transforms.select(editor, newPoint)
           return
         }
@@ -446,10 +446,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
           EditableTransforms.move(e, { reverse: isRTL })
           return
         }
-        const { text, offset } = EditableEditor.findTextOffsetOnLine(e, focus)
+        const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
         if(text) {
           const wordOffset = getWordOffsetForward(text, offset)
-          Transforms.select(editor, EditableEditor.findPointOnLine(e, focusPath, wordOffset))
+          Transforms.select(editor, Editable.findPointOnLine(e, focusPath, wordOffset))
           return
         }
       }
@@ -576,7 +576,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.onFocus = () => {
-    EditableEditor.focus(e)
+    Editable.focus(e)
   }
 
   e.onBlur = () => {}
@@ -668,7 +668,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.renderPlaceholder = ({ attributes, children }) => {
-    if(!EditableEditor.isEmpty(e, editor)) return
+    if(!Editable.isEmpty(e, editor)) return
     return <span style={{pointerEvents: 'none', userSelect: 'none', position: 'relative'}}><span style={{
       position: 'absolute',
       opacity: '0.333',
@@ -680,10 +680,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
   return e
 }
 
-const getMatches = (e: EditableEditor, path: Path) => {
+const getMatches = (e: Editable, path: Path) => {
   const matches: [Path, Key][] = []
   for (const [n, p] of Editor.levels(e, { at: path })) {
-    const key = EditableEditor.findKey(e, n)
+    const key = Editable.findKey(e, n)
     matches.push([p, key])
   }
   return matches

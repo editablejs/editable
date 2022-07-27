@@ -1,25 +1,22 @@
-import React, { useEffect, useRef, useState, useContext, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useContext } from 'react'
 import {
   Editor,
-  NodeEntry,
   Node,
   Range,
   Transforms,
   Point,
   BaseSelection,
-  Element,
 } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
-import { EditableEditor } from '..'
+import { Editable } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useSlate } from '../hooks/use-slate'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   DOMRange,
   getDefaultView,
-  isDOMElement,
 } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
@@ -37,9 +34,9 @@ import {
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { getWordRange } from '../utils/string'
 import useMultipleClick from '../hooks/use-multiple-click'
-import { SelectionStyle } from '../plugin/editable-editor'
+import { SelectionStyle } from '../plugin/editable'
 import { FocusedContext } from '../hooks/use-focused'
-import { toDOMRects } from '../utils/selection'
+import { getLineRectsByRange } from '../utils/selection'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -53,14 +50,13 @@ const SELECTION_DEFAULT_CARET_WIDTH = 1
 /**
  * `EditableProps` are passed to the `<Editable>` component.
  */
-
 export type EditableProps = {
   autoFocus?: boolean
   placeholder?: string
   readOnly?: boolean
   role?: string
   style?: React.CSSProperties
-  scrollSelectionIntoView?: (editor: EditableEditor, domRange: DOMRange) => void
+  scrollSelectionIntoView?: (editor: Editable, domRange: DOMRange) => void
   as?: React.ElementType
   selectionStyle?: SelectionStyle
 }
@@ -115,7 +111,7 @@ export const ContentEditable = (props: EditableProps) => {
 
   useEffect(() => {
     if (autoFocus) {
-      EditableEditor.focus(editor)
+      Editable.focus(editor)
     }
   }, [editor, autoFocus])
 
@@ -161,7 +157,7 @@ export const ContentEditable = (props: EditableProps) => {
     const anchor = startPointRef.current
     const range: Range = { anchor, focus: point }
     if(editor.selection && Range.equals(range, editor.selection)) {
-      EditableEditor.focus(editor)
+      Editable.focus(editor)
       if(!caretRect) setCurrentSelection(selection => selection ? ({ ...selection }) : null)
       return
     }
@@ -173,16 +169,16 @@ export const ContentEditable = (props: EditableProps) => {
     document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
       if(isFocused && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
-        EditableEditor.focus(editor)
+        Editable.focus(editor)
       }
-      const range = handleSelecting(EditableEditor.findEventPoint(editor, event))
+      const range = handleSelecting(Editable.findEventPoint(editor, event))
       if(range) editor.onSelectEnd()
     }
     isRootMouseDown.current = false
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => { 
-    const point = EditableEditor.findEventPoint(editor, event)
+    const point = Editable.findEventPoint(editor, event)
     const range = handleSelecting(point)
     if(range)  editor.onSelecting()
   }
@@ -197,7 +193,7 @@ export const ContentEditable = (props: EditableProps) => {
       }
     }
     changeFocus(true)
-    const point = EditableEditor.findEventPoint(editor, event)
+    const point = Editable.findEventPoint(editor, event)
     if(point) {
       if(!IS_SHIFT_PRESSED.get(editor)) {
         startPointRef.current = point
@@ -217,14 +213,14 @@ export const ContentEditable = (props: EditableProps) => {
     // so we sometimes might end up stuck in a composition state even though we
     // aren't composing any more.
     if (
-      EditableEditor.isComposing(editor) &&
+      Editable.isComposing(editor) &&
       nativeEvent.isComposing === false
     ) {
       IS_COMPOSING.set(editor, false)
     }
 
     if (
-      EditableEditor.isComposing(editor)
+      Editable.isComposing(editor)
     ) {
       return
     }
@@ -245,18 +241,18 @@ export const ContentEditable = (props: EditableProps) => {
       const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
       if(count === 2) {
-        const { text, offset } = EditableEditor.findTextOffsetOnLine(editor, focus)
+        const { text, offset } = Editable.findTextOffsetOnLine(editor, focus)
         if(text) {
           const [startOffset, endOffset] = getWordRange(text, offset)
           Transforms.select(editor, {
-            anchor: EditableEditor.findPointOnLine(editor, focusPath, startOffset, true),
-            focus: EditableEditor.findPointOnLine(editor, focusPath, endOffset)
+            anchor: Editable.findPointOnLine(editor, focusPath, startOffset, true),
+            focus: Editable.findPointOnLine(editor, focusPath, endOffset)
           })
           isDoubleClickRef.current = true
           setTimeout(() => {
             isDoubleClickRef.current = false
           }, 500);
-          EditableEditor.focus(editor)
+          Editable.focus(editor)
           return
         }
       } else if(count === 3) {
@@ -273,7 +269,7 @@ export const ContentEditable = (props: EditableProps) => {
         const range = Editor.range(editor, blockPath)
         Transforms.select(editor, range)
         isDoubleClickRef.current = false
-        EditableEditor.focus(editor)
+        Editable.focus(editor)
         return false
       }
     }
@@ -355,7 +351,7 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const drawCaret = (range: Range) => { 
-    const domRange = EditableEditor.toDOMRange(editor, range)
+    const domRange = Editable.toDOMRange(editor, range)
     let rects
     if(!domRange.collapsed || !isFocused || (rects = domRange.getClientRects()).length === 0) return setCaretRect(null)
     const rect = Object.assign({}, rects[0].toJSON(), {  width: drawSelectionStyle.caretWidth, color: drawSelectionStyle.caretColor  })
@@ -398,7 +394,7 @@ export const ContentEditable = (props: EditableProps) => {
 
   const drawBoxs = (range: Range) => { 
     if(Range.isCollapsed(range)) return setBoxRects([])
-    const drawRects: DrawRect[] = toDOMRects(editor, range)
+    const drawRects: DrawRect[] = getLineRectsByRange(editor, range)
     drawRects.map(rect => {
       rect.color = isFocused ? drawSelectionStyle.focusBgColor : drawSelectionStyle.blurBgColor
     })
@@ -492,7 +488,7 @@ export const ContentEditable = (props: EditableProps) => {
  * A default implement to scroll dom range into view.
  */
 const defaultScrollSelectionIntoView = (
-  editor: EditableEditor,
+  editor: Editable,
   domRange: DOMRange
 ) => {
   // This was affecting the selection of multiple blocks and dragging behavior,

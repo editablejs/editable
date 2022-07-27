@@ -9,7 +9,7 @@ import {
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
 import { useSlateStatic } from '../hooks/use-slate-static'
-import { EditableEditor } from '../plugin/editable-editor'
+import { Editable } from '../plugin/editable'
 
 /**
  * Text.
@@ -26,7 +26,7 @@ const Text = (props: {
   } = props
   const editor = useSlateStatic()
   const ref = useRef<HTMLSpanElement>(null)
-  const key = EditableEditor.findKey(editor, text)
+  const key = Editable.findKey(editor, text)
 
   // Update element-related weak maps with the DOM element ref.
   useIsomorphicLayoutEffect(() => {

@@ -16,13 +16,13 @@ export { useSelected } from './hooks/use-selected'
 export { useSlate } from './hooks/use-slate'
 
 // Plugin
-export { EditableEditor } from './plugin/editable-editor'
+export { Editable } from './plugin/editable'
 export { withEditable } from './plugin/with-editable'
 
 export type {
   RenderElementProps,
   RenderLeafProps,
-} from './plugin/editable-editor'
+} from './plugin/editable'
 
 export {
   isHotkey,

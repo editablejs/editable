@@ -1,12 +1,12 @@
-import { Editor, Path, Point, Range, Transforms } from "slate"
+import { Editor, Path, Point, Range, Transforms as SlateTransforms } from "slate"
 import { SelectionMoveOptions } from "slate/dist/transforms/selection"
-import { EditableEditor } from "./editable-editor"
+import { Editable } from "./editable"
 
-export interface EditableTransforms {
+export interface Transforms {
   move: (editor: Editor, options?: SelectionMoveOptions) => void
 }
   
-const getVoidPoint = (editor: EditableEditor, point: Point, reverse: boolean) => { 
+const getVoidPoint = (editor: Editable, point: Point, reverse: boolean) => { 
   const voidElement = Editor.above(editor, {
     at: point,
     match: n => Editor.isVoid(editor, n),
@@ -21,9 +21,9 @@ const getVoidPoint = (editor: EditableEditor, point: Point, reverse: boolean) =>
   return point
 }
 
-export const EditableTransforms = { 
-  move: (editor: EditableEditor, options: SelectionMoveOptions = {}) => { 
-    if(EditableEditor.isEditor(editor)) {
+export const Transforms = { 
+  move: (editor: Editable, options: SelectionMoveOptions = {}) => { 
+    if(Editable.isEditor(editor)) {
       const { selection } = editor
       const { distance = 1, unit = 'character', reverse = false } = options
       
@@ -73,9 +73,9 @@ export const EditableTransforms = {
         props.focus = getVoidPoint(editor, props.focus, reverse)
       }
   
-      Transforms.setSelection(editor, props)
+      SlateTransforms.setSelection(editor, props)
     } else {
-      Transforms.move(editor, options)
+      SlateTransforms.move(editor, options)
     }
   },
 }

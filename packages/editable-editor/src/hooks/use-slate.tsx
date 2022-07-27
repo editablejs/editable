@@ -1,17 +1,17 @@
 import { createContext, useContext } from 'react'
-import { EditableEditor } from '../plugin/editable-editor'
+import { Editable } from '../plugin/editable'
 
 /**
  * A React context for sharing the editor object, in a way that re-renders the
  * context whenever changes occur.
  */
 
-export const SlateContext = createContext<[EditableEditor] | null>(null)
+export const SlateContext = createContext<[Editable] | null>(null)
 
 /**
  * Get the current editor object from the React context.
  */
-export const useSlate = (): EditableEditor => {
+export const useSlate = (): Editable => {
   const context = useContext(SlateContext)
 
   if (!context) {

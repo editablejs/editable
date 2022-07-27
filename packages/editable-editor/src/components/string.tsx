@@ -1,7 +1,7 @@
 import React from 'react'
 import { Editor, Text, Path, Element, Node } from 'slate'
 
-import { EditableEditor, useSlateStatic } from '..'
+import { Editable, useSlateStatic } from '..'
 
 /**
  * Leaf content strings.
@@ -13,7 +13,7 @@ const String: React.FC<{
 }> = (props) => {
   const { isLast, parent, text } = props
   const editor = useSlateStatic()
-  const path = EditableEditor.findPath(editor, text)
+  const path = Editable.findPath(editor, text)
   const parentPath = Path.parent(path)
 
   // COMPAT: Render text inside void nodes with a zero-width space.

@@ -3,7 +3,7 @@
  */
 
 import { Range, Editor } from 'slate'
-import { EditableEditor } from '..'
+import { Editable } from '..'
 
 const doRectsIntersect = (rect: DOMRect, compareRect: DOMRect) => {
   const middle = (compareRect.top + compareRect.bottom) / 2
@@ -12,12 +12,12 @@ const doRectsIntersect = (rect: DOMRect, compareRect: DOMRect) => {
 }
 
 const areRangesSameLine = (
-  editor: EditableEditor,
+  editor: Editable,
   range1: Range,
   range2: Range
 ) => {
-  const rect1 = EditableEditor.toDOMRange(editor, range1).getBoundingClientRect()
-  const rect2 = EditableEditor.toDOMRange(editor, range2).getBoundingClientRect()
+  const rect1 = Editable.toDOMRange(editor, range1).getBoundingClientRect()
+  const rect2 = Editable.toDOMRange(editor, range2).getBoundingClientRect()
 
   return doRectsIntersect(rect1, rect2) && doRectsIntersect(rect2, rect1)
 }
@@ -31,7 +31,7 @@ const areRangesSameLine = (
  * @returns {Range} A valid portion of the parentRange which is one a single line
  */
 export const findCurrentLineRange = (
-  editor: EditableEditor,
+  editor: Editable,
   parentRange: Range
 ): Range => {
   const parentRangeBoundary = Editor.range(editor, Range.end(parentRange))

@@ -1,17 +1,17 @@
 import { createContext, useContext } from 'react'
-import { EditableEditor } from '../plugin/editable-editor'
+import { Editable } from '../plugin/editable'
 
 /**
  * A React context for sharing the editor object.
  */
 
-export const EditorContext = createContext<EditableEditor | null>(null)
+export const EditorContext = createContext<Editable | null>(null)
 
 /**
  * Get the current editor object from the React context.
  */
 
-export const useSlateStatic = (): EditableEditor => {
+export const useSlateStatic = (): Editable => {
   const editor = useContext(EditorContext)
 
   if (!editor) {
