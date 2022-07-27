@@ -43,7 +43,7 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
-    "slate": ">=0.81.0"
+    "slate": "^0.81.0"
   },
   "jest": {
     "preset": "scripts/jest/node"

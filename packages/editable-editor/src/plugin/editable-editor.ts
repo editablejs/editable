@@ -55,10 +55,10 @@ export interface SelectionStyle {
 /**
  * `RenderElementProps` are passed to the `renderElement` handler.
  */
-export interface RenderElementProps {
+export interface RenderElementProps<T extends Element = Element> {
   children: any
-  element: Element
-  attributes: {
+  element: T
+  attributes: React.HTMLAttributes<HTMLElement> & {
     'data-slate-node': 'element'
     'data-slate-inline'?: true
     'data-slate-void'?: true
@@ -70,16 +70,16 @@ export interface RenderElementProps {
 /**
  * `RenderLeafProps` are passed to the `renderLeaf` handler.
  */
-export interface RenderLeafProps {
+export interface RenderLeafProps<T extends Text = Text> {
   children: any
-  text: Text
+  text: T
   attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-leaf', true>
 }
 
-export interface RenderPlaceholderProps {
+export interface RenderPlaceholderProps<T extends Node = Node> {
   children: any
   attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-placeholder', true>
-  node: Node
+  node: T
 }
 
 export interface EditorElements {
@@ -90,6 +90,7 @@ export interface EditorElements {
  * A React and DOM-specific version of the `Editor` interface.
  */
 export interface EditableEditor extends BaseEditor {
+  canFocusVoid: (element: Element) => boolean
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
   insertTextData: (data: DataTransfer) => boolean
@@ -119,6 +120,9 @@ export interface EditableEditor extends BaseEditor {
 }
 
 export const EditableEditor = {
+  isEditor(value: any): value is EditableEditor { 
+    return !!value && Editor.isEditor(value) && !!(value as EditableEditor).onSelectionChange
+  },
   /**
    * Check if the user is currently composing inside the editor.
    */
@@ -461,71 +465,6 @@ export const EditableEditor = {
     return node
   },
 
-  findEventRange(editor: EditableEditor, event: any): Range {
-    if ('nativeEvent' in event) {
-      event = event.nativeEvent
-    }
-
-    const { clientX: x, clientY: y, target } = event
-
-    if (x == null || y == null) {
-      throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
-    }
-
-    const node = EditableEditor.toSlateNode(editor, event.target)
-    const path = EditableEditor.findPath(editor, node)
-
-    // If the drop target is inside a void node, move it into either the
-    // next or previous node, depending on which side the `x` and `y`
-    // coordinates are closest to.
-    if (Editor.isVoid(editor, node)) {
-      const rect = target.getBoundingClientRect()
-      const isPrev = editor.isInline(node)
-        ? x - rect.left < rect.left + rect.width - x
-        : y - rect.top < rect.top + rect.height - y
-
-      const edge = Editor.point(editor, path, {
-        edge: isPrev ? 'start' : 'end',
-      })
-      const point = isPrev
-        ? Editor.before(editor, edge)
-        : Editor.after(editor, edge)
-
-      if (point) {
-        const range = Editor.range(editor, point)
-        return range
-      }
-    }
-
-    // Else resolve a range from the caret position where the drop occured.
-    let domRange
-    const { document } = EditableEditor.getWindow(editor)
-
-    // COMPAT: In Firefox, `caretRangeFromPoint` doesn't exist. (2016/07/25)
-    if (document.caretRangeFromPoint) {
-      domRange = document.caretRangeFromPoint(x, y)
-    } else {
-      const position = (document as any).caretPositionFromPoint(x, y)
-
-      if (position) {
-        domRange = document.createRange()
-        domRange.setStart(position.offsetNode, position.offset)
-        domRange.setEnd(position.offsetNode, position.offset)
-      }
-    }
-
-    if (!domRange) {
-      throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
-    }
-
-    // Resolve a Slate range from the DOM range.
-    const range = EditableEditor.toSlateRange(editor, domRange, {
-      exactMatch: false,
-      suppressThrow: false,
-    })
-    return range
-  },
-
   findLowestDOMElements(editor: EditableEditor, node: Node) {
     const domNode = EditableEditor.toDOMNode(editor, node)
     if(Editor.isVoid(editor, node)) return [domNode]
@@ -557,15 +496,25 @@ export const EditableEditor = {
       if(Text.isText(node)) {
         addToElements(node)
       } else {
-        const nodes = Node.nodes(node)
-        for(const [ node ] of nodes) { 
-          addToElements(node)
+        if(!editor.canFocusVoid(node)) {
+          const rect = element.getBoundingClientRect()
+          const reverse = x < rect.left + rect.width / 2
+          const adjacent = (reverse ? Editor.previous : Editor.next)(editor, {
+            at: EditableEditor.findPath(editor, node),
+          })
+          if(adjacent) {
+            addToElements(adjacent[0])
+          }
+        } else {
+          const nodes = Node.nodes(node)
+          for(const [ node ] of nodes) { 
+            addToElements(node)
+          }
         }
       }
     }
     let top = y, left = x
     const nodes = findClosestNode(elements, x, y)
-    console.log(elements, nodes, x, y)
     if(!nodes) return null
     let offsetNode: DOMElement | null = null
     if(isDOMNode(nodes)) {
@@ -614,7 +563,6 @@ export const EditableEditor = {
       }
     }
     if(!offsetNode) return null
-    console.log(offsetNode)
     const node = EditableEditor.toSlateNode(editor, offsetNode)
     if(Text.isText(node)) {
       const textNodes = EditableEditor.findLowestDOMElements(editor, node)
@@ -865,9 +813,6 @@ export const EditableEditor = {
           const removals = [
             ...Array.prototype.slice.call(
               contents.querySelectorAll('[data-slate-zero-width]')
-            ),
-            ...Array.prototype.slice.call(
-              contents.querySelectorAll('[contenteditable=false]')
             ),
           ]
 

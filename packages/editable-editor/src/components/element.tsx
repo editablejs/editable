@@ -42,7 +42,6 @@ const Element = (props: {
     'data-slate-node': 'element'
     'data-slate-void'?: true
     'data-slate-inline'?: true
-    contentEditable?: false
     dir?: 'rtl'
     ref: any
   } = {
@@ -69,10 +68,6 @@ const Element = (props: {
   if (Editor.isVoid(editor, element)) {
     attributes['data-slate-void'] = true
 
-    if (!readOnly && isInline) {
-      attributes.contentEditable = false
-    }
-
     const Tag = isInline ? 'span' : 'div'
     const [[text]] = Node.texts(element)
 
@@ -82,8 +77,7 @@ const Element = (props: {
         style={{
           height: '0',
           color: 'transparent',
-          outline: 'none',
-          position: 'absolute',
+          outline: 'none'
         }}
       >
         <Text
