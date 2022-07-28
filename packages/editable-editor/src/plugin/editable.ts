@@ -775,8 +775,13 @@ export const Editable = {
     const textNodes = Node.texts(blockEntry[0])
     let isFindOffset = false
     for(const [textNode, textPath] of textNodes) {
-      const { text } = textNode
-      if(Path.equals(blockEntry[1].concat(textPath), point.path)) {
+      let { text } = textNode
+      const path = blockEntry[1].concat(textPath)
+      const [parent] = Editor.parent(editor, path)
+      if(parent && Editor.isVoid(editor, parent)) {
+        text = ' '
+      }
+      if(Path.equals(path, point.path)) {
         data.offset += point.offset
         isFindOffset = true
       } else if(!isFindOffset) {
@@ -798,14 +803,19 @@ export const Editable = {
     const textNodes = Node.texts(blockEntry[0])
     let findOffset = 0;
     for(const [textNode, textPath] of textNodes) {
-      const { text } = textNode
+      let { text } = textNode
+      const path = blockEntry[1].concat(textPath)
+      const [parent, parentPath] = Editor.parent(editor, path)
+      const isVoid = parent && Editor.isVoid(editor, parent)
+      if(isVoid) {
+        text = ' '
+      }
       const textLength = text.length
       const totalOffset = findOffset + textLength
       if(totalOffset >= offset) {
-        const path = blockEntry[1].concat(textPath)
         if(moveNext && offset > 0 && totalOffset === offset) {
           const next = Editor.next(editor, {
-            at: path,
+            at: isVoid ? parentPath : path,
           })
           if(next) {
             return {
@@ -814,7 +824,7 @@ export const Editable = {
             }
           }
         }
-        return {path: blockEntry[1].concat(textPath), offset: textLength - (totalOffset - offset)}
+        return {path, offset: textLength - (totalOffset - offset)}
       } else {
         findOffset += textLength
       }
