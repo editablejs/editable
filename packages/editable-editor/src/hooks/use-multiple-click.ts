@@ -19,6 +19,11 @@ const useMultipleClick = (options: {
     return point ? Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10 : false;
   }
 
+  const clear = () => {
+    api.clearPendingPromises();
+    pointRef.current = undefined
+  }
+
   const handleMultipleClick = (event: React.MouseEvent) => {
     if (event.button === 2) return
     const point = pointRef.current;
@@ -27,13 +32,11 @@ const useMultipleClick = (options: {
         api.clearPendingPromises();
         countRef.current += 1
         if(onMultipleClick(event, countRef.current) === false) {
-          api.clearPendingPromises();
-          pointRef.current = undefined
+          clear()
           return
         }
       } else {
-        api.clearPendingPromises();
-        pointRef.current = undefined
+        clear()
       }
     } else {
       countRef.current = 1
@@ -42,11 +45,12 @@ const useMultipleClick = (options: {
         y: event.clientY
       }
     }
-
-    const waitForClick = cancellablePromise(delay(500));
-    api.appendPendingPromise(waitForClick);
-
-    return waitForClick.promise
+    if(countRef.current === 1 && onMultipleClick(event, 1) === false) {
+      clear()
+    } else {
+      const waitForClick = cancellablePromise(delay(500));
+      api.appendPendingPromise(waitForClick);
+      return waitForClick.promise
       .then(() => {
         api.removePendingPromise(waitForClick);
         if(onClick) onClick(event);
@@ -58,6 +62,7 @@ const useMultipleClick = (options: {
           throw errorInfo.error;
         }
       });
+    }
   };
 
   return { handleMultipleClick, isSamePoint };

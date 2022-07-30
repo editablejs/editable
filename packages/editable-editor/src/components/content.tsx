@@ -240,7 +240,11 @@ export const ContentEditable = (props: EditableProps) => {
       const { focus } = selection
       const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
-      if(count === 2) {
+      const isCollapsed = Range.isCollapsed(selection)
+      if(count === 1 && !isCollapsed) {
+        return false
+      }
+      else if(count === 2) {
         const { text, offset } = Editable.findTextOffsetOnLine(editor, focus)
         if(text) {
           const [startOffset, endOffset] = getWordRange(text, offset)
