@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import classNames from 'classnames';
-import { EditableEditor } from '@editablejs/editor';
+import { Editable } from '@editablejs/editor';
 import ToolbarGroup, { GroupItem } from './group';
 import { ToolbarButton } from './button';
 import { ToolbarDropdown } from './dropdown';
@@ -8,7 +8,7 @@ import './style.less'
 
 export type ToolbarItem = ToolbarButton | ToolbarDropdown
 export interface ToolbarProps {
-  editor: EditableEditor
+  editor: Editable
   items: ToolbarItem[][]
 }
 
@@ -22,7 +22,6 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
         case 'dropdown':
           return { ...item, activeKey: item.onActive ? item.onActive(editor) : '' }
       }
-      return item
     }))
   },[editor])
 

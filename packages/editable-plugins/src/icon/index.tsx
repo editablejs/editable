@@ -40,6 +40,18 @@ export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
   return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M412 205.133c-4.348 0.158-7.873 0.343-10.556 0.554C254.344 217.24 140 340.351 140 488.805v279.04c0 28.72 23.281 52 52 52h168c28.719 0 52-23.28 52-52v-168c0-28.718-23.281-52-52-52H244v-59.04c0-89.924 66.33-165.709 154.528-178.21 3.508-0.497 7.982-0.907 13.472-1.24V205.132z m472 0c-4.348 0.158-7.873 0.343-10.556 0.554C726.344 217.24 612 340.351 612 488.805v279.04c0 28.72 23.281 52 52 52h168c28.719 0 52-23.28 52-52v-168c0-28.718-23.281-52-52-52H716v-59.04c0-89.924 66.33-165.709 154.528-178.21 3.508-0.497 7.982-0.907 13.472-1.24V205.132z" p-id="9084"></path></svg>
 }
 
+export const UnorderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props) => { 
+  return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M360 160h560a8 8 0 0 0 8 8v80a8 8 0 0 0-8 8H360a8 8 0 0 0-8-8v-80a8 8 0 0 0 8-8z m0 304h560a8 8 0 0 0 8 8v80a8 8 0 0 0-8 8H360a8 8 0 0 0-8-8v-80a8 8 0 0 0 8-8z m0 304h560a8 8 0 0 0 8 8v80a8 8 0 0 0-8 8H360a8 8 0 0 0-8-8v-80a8 8 0 0 0 8-8zM96 208a80 80 0 1 1 160 0 80 80 0 1 1-160 0z m0 304a80 80 0 1 1 160 0 80 80 0 1 1-160 0z m0 304a80 80 0 1 1 160 0 80 80 0 1 1-160 0z" p-id="9084"></path></svg>
+}
+
+export const OrderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props) => { 
+  return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M359.68 764h560.64c4.224 0 7.68 4.8 7.68 10.667v74.666c0 5.867-3.456 10.667-7.68 10.667H359.68c-4.224 0-7.68-4.8-7.68-10.667v-74.666c0-5.867 3.456-10.667 7.68-10.667z m0-600h560.64c4.224 0 7.68 4.8 7.68 10.667v74.666c0 5.867-3.456 10.667-7.68 10.667H359.68c-4.224 0-7.68-4.8-7.68-10.667v-74.666c0-5.867 3.456-10.667 7.68-10.667z m0 300h560.64c4.224 0 7.68 4.8 7.68 10.667v74.666c0 5.867-3.456 10.667-7.68 10.667H359.68c-4.224 0-7.68-4.8-7.68-10.667v-74.666c0-5.867 3.456-10.667 7.68-10.667zM172.384 728H99.968c-2.182 0-3.968 1.8-3.968 4v34c0 2.2 1.786 4 3.968 4h72.416v20.5h-35.712c-2.182 0-3.968 1.8-3.968 4v34c0 2.2 1.786 4 3.968 4h35.712V854H99.968c-2.182 0-3.968 1.8-3.968 4v34c0 2.2 1.786 4 3.968 4h116.064c2.182 0 3.968-1.8 3.968-4V732c0-2.2-1.786-4-3.968-4h-43.648zM142 296h40c2.2 0 4-1.8 4-4V136a8 8 0 0 1-8-8h-78c-2.2 0-4 1.8-4 4v36c0 2.2 1.8 4 4 4h38v120c0 2.2 1.8 4 4 4z m74.032 256h-68.448l70.333-77.7c1.29-1.5 2.083-3.4 2.083-5.4V432c0-2.2-1.786-4-3.968-4H99.968c-2.182 0-3.968 1.8-3.968 4v36c0 2.2 1.786 4 3.968 4h68.448l-70.333 77.7c-1.29 1.5-2.083 3.4-2.083 5.4V592c0 2.2 1.786 4 3.968 4h116.064c2.182 0 3.968-1.8 3.968-4v-36c0-2.2-1.786-4-3.968-4z" p-id="9352"></path></svg>
+}
+
+export const TaskListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = (props) => { 
+  return <svg {...props} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"><path d="M188 188v648h648V188H188z m-44-76h736c17.673 0 32 14.327 32 32v736c0 17.673-14.327 32-32 32H144c-17.673 0-32-14.327-32-32V144c0-17.673 14.327-32 32-32z m472.227 254.26l-157.21 218.01-71.244-98.796a31.9 31.9 0 0 1-25.868-13.26h-46.907c-6.517 0-10.288 7.415-6.467 12.714L433.147 657.74c12.75 17.681 38.99 17.681 51.738 0L695.47 365.714c3.821-5.3 0.05-12.714-6.467-12.714h-46.907a31.9 31.9 0 0 1-25.868 13.26" p-id="9486"></path></svg>
+}
+
 const ICON_LIST = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -50,6 +62,9 @@ const ICON_LIST = {
   sup: SupIcon,
   check: CheckIcon,
   blockquote: BlockquoteIcon,
+  unorderedList: UnorderedListIcon,
+  orderedList: OrderedListIcon,
+  taskList: TaskListIcon,
 }
 
 export const Icon: React.FC<React.HTMLAttributes<HTMLOrSVGElement> & Record<'name', keyof typeof ICON_LIST>> = ({ className, name, ...props}) => { 

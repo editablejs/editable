@@ -1,11 +1,11 @@
-import { EditableEditor } from "@editablejs/editor"
+import { Editable } from "@editablejs/editor"
 import React from "react"
 import Button, { ToolbarButton } from "./button"
 import Dropdown, { ToolbarDropdown } from "./dropdown"
 
 export type GroupItem = ToolbarButton | ToolbarDropdown
 export interface ToolbarGroupProps {
-  editor: EditableEditor
+  editor: Editable
   items: GroupItem[]
 }
 

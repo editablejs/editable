@@ -1,18 +1,8 @@
-import { BaseElement, BaseRange, BaseText } from 'slate'
-import { EditableEditor } from './plugin/editable-editor'
+import { BaseElement, BaseText } from 'slate'
+import { Editable } from './plugin/editable-editor'
 
 declare module 'slate' {
   interface CustomTypes {
-    Text: BaseText & {
-      bold?: string | boolean
-      italic?: boolean
-      underline?: boolean
-      strikethrough?: boolean
-      code?: boolean
-      sup?: boolean
-      sub?: boolean
-      fontSize?: string
-    },
     Element: BaseElement & {
       type?: string
     }

@@ -1,5 +1,5 @@
 
-import { EditableEditor } from '@editablejs/editor';
+import { Editable } from '@editablejs/editor';
 import classnames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '../icon';
@@ -7,19 +7,19 @@ import Button from './button';
 
 export interface DropdownItem {
 	key: string;
-	content?: React.ReactNode | (<T extends EditableEditor>(editor: T) => React.ReactChild)
+	content?: React.ReactNode | (<T extends Editable>(editor: T) => React.ReactChild)
 	className?: string;
 	disabled?: boolean;
 }
 
 interface DropdownProps { 
-	editor: EditableEditor;
+	editor: Editable;
 	className?: string;
   activeKey?: string
 	defaultActiveKey?: string
 	direction?: 'vertical' | 'horizontal'
-  onToggle: <T extends EditableEditor>(editor: T, item: DropdownItem) => void;
-  onActive?: <T extends EditableEditor>(editor: T) => string;
+  onToggle: <T extends Editable>(editor: T, item: DropdownItem) => void;
+  onActive?: <T extends Editable>(editor: T) => string;
 	items: DropdownItem[]
 	renderItem?: (item: DropdownItem) => React.ReactNode
 	disabled?: boolean;

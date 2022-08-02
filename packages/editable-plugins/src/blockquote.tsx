@@ -1,4 +1,4 @@
-import { EditableEditor, isHotkey, RenderElementProps } from "@editablejs/editor";
+import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
 import { Transforms, Editor, Range, Element, Path } from "slate";
 import './blockquote.less'
 
@@ -13,7 +13,7 @@ export interface BlockquoteOptions {
   hotkey?: Hotkey
 }
 
-export interface BlockquoteInterface extends EditableEditor {
+export interface BlockquoteInterface extends Editable {
 
   toggleBlockquote: () => void
 
@@ -27,16 +27,18 @@ const toggleBlockquote = (editor: BlockquoteInterface) => {
       split: true,
     })
   } else {
-    Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] })
+    Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
+      mode: 'highest'
+    })
   }
 }
 
-const queryBlockquoteActive = (editor: EditableEditor) => {
+const queryBlockquoteActive = (editor: Editable) => {
   const elements = editor.queryActiveElements()
   return !!elements[BLOCKQUOTE_KEY]
 }
 
-const renderBlockquote = (editor: EditableEditor, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
+const renderBlockquote = (editor: Editable, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
   if(element.type === BLOCKQUOTE_KEY) { 
     const Blockquote = BLOCKQUOTE_KEY
     return <Blockquote className="editable-blockquote" {...attributes}>{children}</Blockquote>
@@ -44,7 +46,7 @@ const renderBlockquote = (editor: EditableEditor, { attributes, element, childre
   return next({ attributes, children, element })
 }
 
-export const withBlockquote = <T extends EditableEditor>(editor: T, options: BlockquoteOptions = {}) => {
+export const withBlockquote = <T extends Editable>(editor: T, options: BlockquoteOptions = {}) => {
   const newEditor = editor as T & BlockquoteInterface
   
   newEditor.toggleBlockquote = () => { 
@@ -73,12 +75,13 @@ export const withBlockquote = <T extends EditableEditor>(editor: T, options: Blo
       return
     }
     const { selection } = editor
-    if(selection && Range.isCollapsed(selection) && isHotkey('enter', e) && newEditor.queryBlockquoteActive()) {
+    if(!selection || !Range.isCollapsed(selection) || !newEditor.queryBlockquoteActive() || isHotkey('shift+enter', e)) return onKeydown(e)
+    if(isHotkey('enter', e)) {
       const entry = Editor.above(newEditor, { match: n => Editor.isBlock(newEditor, n) && !Editor.isVoid(newEditor, n)})
       if(entry) {
         const [block, path] = entry
         const [parent, parentPath ] = Editor.parent(newEditor, path)
-        if(EditableEditor.isEmpty(newEditor, block) && (parent as Element).type === BLOCKQUOTE_KEY) {
+        if(Editable.isEmpty(newEditor, block) && (parent as Element).type === BLOCKQUOTE_KEY) {
           e.preventDefault()
           Transforms.moveNodes(newEditor, { 
             at: path,

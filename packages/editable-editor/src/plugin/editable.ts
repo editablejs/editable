@@ -9,7 +9,6 @@ import {
   Range,
   Scrubber,
   Transforms,
-  EditorMarks,
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -100,7 +99,7 @@ export interface Editable extends BaseEditor {
     originEvent?: 'drag' | 'copy' | 'cut'
   ) => void
   hasRange: (editor: Editable, range: Range) => boolean
-  queryActiveMarks: () => EditorMarks,
+  queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>,
   queryActiveElements: () => EditorElements,
   onKeydown: (event: KeyboardEvent) => void
   onKeyup: (event: KeyboardEvent) => void
@@ -410,10 +409,25 @@ export const Editable = {
     return offsetNode
   },
 
+  toLowestPoint(editor: Editable, point: Point, edge: 'start' | 'end' = 'start'): Point { 
+    let [node] = Editor.node(editor, point.path)
+    let path = point.path
+    let offset = point.offset
+    while(Element.isElement(node)) {
+      const { children } = node
+      node = children[Math.min(offset, children.length - 1)]
+      path = Editable.findPath(editor, node)
+      offset = edge === 'start' ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
+    }
+    return {
+      path,
+      offset
+    }
+  },
+
   /**
    * Find a native DOM selection point from a Slate point.
    */
-
   toDOMPoint(editor: Editable, point: Point): DOMPoint {
     const [node] = Editor.node(editor, point.path)
     const el = Editable.toDOMNode(editor, node)

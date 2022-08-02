@@ -1,6 +1,6 @@
-import { Editor, Node, Range, Element, NodeEntry } from 'slate'
+import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
 import { Editable } from '../plugin/editable';
-import { DOMElement, DOMNode, isDOMElement, isDOMText } from './dom';
+import { DOMElement, DOMNode, DOMRange, isDOMElement, isDOMText } from './dom';
 
 interface LineRect {
   top: number
@@ -8,7 +8,7 @@ interface LineRect {
   bottom: number
 }
 
-const splitLines = (rects: DOMRectList) => {
+const splitLines = (rects: DOMRect[] | DOMRectList) => {
   const lines: Map<LineRect, DOMRect[]> = new Map()
   if(rects.length === 0) return lines
   const lineKeys: LineRect[] = []
@@ -90,18 +90,19 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
               }
             })
           }
-        } else {
-          const display = window.getComputedStyle(child).display
-          if(display === 'inline') {
-            const rects = child.getClientRects()
-            for(let r = 0; r < rects.length; r++) {
-              const rect = rects[r]
-              compareHeight(rect)
-            }
-          } else {
-            findHeight(child)
-          }
-        }
+        } 
+        // else if(!child.hasAttribute('data-no-selection')){
+        //   const display = window.getComputedStyle(child).display
+        //   if(display === 'inline') {
+        //     const rects = child.getClientRects()
+        //     for(let r = 0; r < rects.length; r++) {
+        //       const rect = rects[r]
+        //       compareHeight(rect)
+        //     }
+        //   } else {
+        //     findHeight(child)
+        //   }
+        // }
       }
     }
   }
@@ -149,35 +150,72 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   const anchor = Range.start(range)
   const focus = Range.end(range)
   // 开始位置的 block节点
-  const anchorBlock = Editor.above<Element>(editor, {
+  const anchorEntry = Editor.above<Element>(editor, {
     at: anchor,
     match: n => Editor.isBlock(editor, n),
-    mode: 'highest'
+    mode: 'lowest'
   })
   // 结束位置的 block 节点
-  const focusBlock = Editor.above<Element>(editor, {
+  const focusEntry = Editor.above<Element>(editor, {
     at: focus,
     match: n => Editor.isBlock(editor, n),
-    mode: 'highest'
+    mode: 'lowest'
   })
-  if(!anchorBlock || !focusBlock) return []
+  if(!anchorEntry || !focusEntry) return []
 
   const blockRects: DOMRect[] = []
   const rectMap: Map<DOMRect, DOMElement> = new Map()
-  let anchorEl = Editable.toDOMNode(editor, anchorBlock[0])
-  let focusEl = Editable.toDOMNode(editor, focusBlock[0])
-  while(anchorEl) {
-    const rect = anchorEl.getBoundingClientRect()
-    rectMap.set(rect, anchorEl)
+
+  let [startBlock, startPath] = anchorEntry
+  let [_, endPath] = focusEntry
+  const ranges: DOMRange[] = []
+  let isStart = true
+  let next: NodeEntry<Element> | undefined = anchorEntry
+  while(next) {
+    const [nextBlock, nextPath] = next as NodeEntry<Element>
+    const element = Editable.toDOMNode(editor, nextBlock)
+    const rect = element.getBoundingClientRect()
+    rectMap.set(rect, element)
     blockRects.push(rect)
-    if(anchorEl === focusEl) break
-    const next: DOMNode | null = anchorEl.nextElementSibling
-    if(isDOMElement(next)) anchorEl = next as HTMLElement
+   
+    if(Path.equals(nextPath, endPath)) break
+    if(!isStart) {
+      const range = document.createRange()
+      range.selectNodeContents(element)
+      ranges.push(range)
+    } else {
+      isStart = false
+    }
+    next = Editor.next<Element>(editor, {
+      at: nextPath,
+      match: n => Editor.isBlock(editor, n),
+    })
   }
-  // 获取原生 range
-  const domRange = Editable.toDOMRange(editor, range)
+  if(Path.equals(startPath, endPath)) {
+    ranges.unshift(Editable.toDOMRange(editor, range))
+  } else {
+    ranges.unshift(Editable.toDOMRange(editor, {
+      anchor,
+      focus: Editable.toLowestPoint(editor, {
+        path: startPath,
+        offset: startBlock.children.length
+      }, 'end')
+    }))
+    ranges.push(Editable.toDOMRange(editor, {
+      anchor: Editable.toLowestPoint(editor, {
+        path: endPath,
+        offset: 0
+      }),
+      focus
+    }))
+  }
+  
   // 拆分的行
-  const lines = splitLines(domRange.getClientRects())
+  const rects: DOMRect[] = []
+  for(const range of ranges) { 
+    rects.push(...range.getClientRects())
+  }
+  const lines = splitLines(rects)
   const lineRects: DOMRect[] = []
   for(const [line, rects] of lines) {
     // 找到对应行所在的 element

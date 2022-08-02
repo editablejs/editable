@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom'
-import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks, Point } from 'slate'
+import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks } from 'slate'
 import getDirection from 'direction'
 import { Editable, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable'
 import { Key } from '../utils/key'
@@ -276,10 +276,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
     })
   }
 
-  e.queryActiveMarks = () => {
+  e.queryActiveMarks = <T extends Text>() => {
     const marks = EDITOR_ACTIVE_MARKS.get(editor)
-    if(marks) return marks
-    const editorMarks = Editor.marks(editor)
+    if(marks) return marks as Omit<T, 'text' | 'composition'>
+    const editorMarks: Omit<T, 'text' | 'composition'> = Editor.marks(editor) as any
     if(editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
     return editorMarks ?? {}
   },

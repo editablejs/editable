@@ -1,5 +1,7 @@
-import { EditableEditor, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Text, Element, Editor, Range } from "slate";
+import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
+import { Transforms, Text, Element, Editor, Range, Node } from "slate";
+import { FontSizeText } from "./fontsize";
+import { MarkText } from "./mark";
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -66,23 +68,31 @@ export interface HeadingOptions {
   style?: Partial<Record<HeadingType, Record<'fontSize' | 'fontWeight', string>>>
 }
 
-export const HEADING_OPTIONS = new WeakMap<EditableEditor, HeadingOptions>()
+export const HEADING_OPTIONS = new WeakMap<Editable, HeadingOptions>()
 
-const isEnabled = (editor: EditableEditor, type: HeadingType) => { 
+export interface HeadingElement extends Element {
+  type: HeadingType
+}
+
+const isEnabled = (editor: Editable, type: HeadingType) => { 
   const { enabled, disabled } = HEADING_OPTIONS.get(editor) ?? {}
   if(enabled && ~~enabled.indexOf(type)) return false
   if(disabled && ~disabled.indexOf(type)) return false
   return true
 }
 
-export interface HeadingInterface extends EditableEditor {
+export const isHeading = (editor: Editable, n: Node): n is HeadingElement => {
+  return Editor.isBlock(editor, n) && !!n.type && n.type in HeadingTags
+} 
+
+export interface HeadingInterface extends Editable {
 
   toggleHeading: (type?: HeadingType | typeof PARAGRAPH_KEY) => void
 
   queryHeadingActive: () => HeadingType | null
 }
 
-const toggleHeading = (editor: EditableEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
+const toggleHeading = (editor: Editable, type?: HeadingType | typeof PARAGRAPH_KEY) => {
   const { selection } = editor
   if(!selection || type && type !== PARAGRAPH_KEY && !isEnabled(editor, type)) return
   if(!type) type = PARAGRAPH_KEY
@@ -94,12 +104,12 @@ const toggleHeading = (editor: EditableEditor, type?: HeadingType | typeof PARAG
   for(const [_, path] of lowestBlocks) {
     if(type !== PARAGRAPH_KEY) { 
       const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
-      Transforms.setNodes(editor, { fontSize: style.fontSize, bold: style.fontWeight}, {
+      Transforms.setNodes<FontSizeText & MarkText>(editor, { fontSize: style.fontSize, bold: style.fontWeight}, {
         at: path,
         match: n => Text.isText(n)
       })
     } else {
-      Transforms.setNodes(editor, { fontSize: '', bold: false}, {
+      Transforms.setNodes<FontSizeText & MarkText>(editor, { fontSize: '', bold: false}, {
         at: path,
         match: n => Text.isText(n)
       })
@@ -108,7 +118,7 @@ const toggleHeading = (editor: EditableEditor, type?: HeadingType | typeof PARAG
   }
 }
 
-const queryHeadingActive = (editor: EditableEditor) => {
+const queryHeadingActive = (editor: Editable) => {
   const elements = editor.queryActiveElements()
   for(const key in HeadingTags) {
     if(elements[key]) return key as HeadingType
@@ -116,16 +126,15 @@ const queryHeadingActive = (editor: EditableEditor) => {
   return null
 }
 
-const renderHeading = (editor: EditableEditor, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
-  const type: HeadingType = (element.type ?? PARAGRAPH_KEY) as HeadingType
-  if(type in HeadingTags) { 
-    const Heading = HeadingTags[type]
+const renderHeading = (editor: Editable, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
+  if(isHeading(editor, element)) { 
+    const Heading = HeadingTags[element.type]
     return <Heading {...attributes}>{children}</Heading>
   }
   return next({ attributes, children, element })
 }
 
-export const withHeading = <T extends EditableEditor>(editor: T, options: HeadingOptions = {}) => {
+export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingInterface
 
   HEADING_OPTIONS.set(newEditor, options)

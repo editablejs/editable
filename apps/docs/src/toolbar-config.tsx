@@ -1,4 +1,4 @@
-import { FontSizeInterface, HeadingInterface, BlockquoteInterface, HeadingType, Icon, MarkFormat, MarkInterface, ToolbarItem } from "@editablejs/editor-plugins"
+import { FontSizeInterface, HeadingInterface, BlockquoteInterface, ListInterface, HeadingType, Icon, MarkFormat, MarkInterface, ToolbarItem } from "@editablejs/editor-plugins"
 
 const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
 
@@ -99,6 +99,16 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
         (editor as unknown as BlockquoteInterface).toggleBlockquote()
       },
       children: <Icon name="blockquote" />
+    }, 
+    {
+      type: 'button',
+      onActive: (editor) => { 
+        return (editor as unknown as ListInterface).queryListActive()
+      },
+      onToggle: (editor) => {
+        (editor as unknown as ListInterface).toggleList()
+      },
+      children: <Icon name="unorderedList" />
     }
   ],
 ]

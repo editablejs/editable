@@ -1,12 +1,12 @@
-import { EditableEditor, RenderLeafProps } from "@editablejs/editor";
+import { Editable, RenderLeafProps } from "@editablejs/editor";
 import { CSSProperties } from 'react'
-import { Editor } from "slate";
+import { Editor, Text } from "slate";
 
 export interface FontSizeOptions {
   defaultSize?: string
 }
 
-export const FONTSIZE_OPTIONS = new WeakMap<EditableEditor, FontSizeOptions>()
+export const FONTSIZE_OPTIONS = new WeakMap<Editable, FontSizeOptions>()
 
 export const FONTSIZE_KEY = 'fontSize'
 
@@ -17,7 +17,11 @@ export interface FontSizeInterface {
   queryFontSizeActive: () => string | null
 }
 
-const toggleFontSize = (editor: EditableEditor, size: string) => {
+export interface FontSizeText extends Text {
+  fontSize?: string
+}
+
+const toggleFontSize = (editor: Editable, size: string) => {
   const defaultSize = FONTSIZE_OPTIONS.get(editor)
   if (defaultSize && size === defaultSize) {
     Editor.removeMark(editor, FONTSIZE_KEY)
@@ -26,12 +30,12 @@ const toggleFontSize = (editor: EditableEditor, size: string) => {
   }
 }
 
-const queryFontSizeActive = (editor: EditableEditor) => {
-  const marks = editor.queryActiveMarks()
-  return marks[FONTSIZE_KEY] ?? null
+const queryFontSizeActive = (editor: Editable) => {
+  const marks = editor.queryActiveMarks<FontSizeText>()
+  return marks.fontSize ?? null
 }
 
-const renderFontSize = (editor: EditableEditor, { attributes, children, text }: RenderLeafProps, next: (props: RenderLeafProps) => JSX.Element) => {
+const renderFontSize = (editor: Editable, { attributes, children, text }: RenderLeafProps<FontSizeText>, next: (props: RenderLeafProps) => JSX.Element) => {
   const style: CSSProperties = attributes.style ?? {}
   if (text.fontSize) {
     style.fontSize = text.fontSize
@@ -39,7 +43,7 @@ const renderFontSize = (editor: EditableEditor, { attributes, children, text }: 
   return next({ attributes: Object.assign({}, attributes, { style }), children, text })
 }
 
-export const withFontSize = <T extends EditableEditor>(editor: T, options: FontSizeOptions = {}) => {
+export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOptions = {}) => {
   const newEditor = editor as T & FontSizeInterface
 
   FONTSIZE_OPTIONS.set(newEditor, options)

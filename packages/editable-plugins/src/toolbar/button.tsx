@@ -1,18 +1,18 @@
 
-import { EditableEditor } from '@editablejs/editor';
+import { Editable } from '@editablejs/editor';
 import classNames from 'classnames'
 import React, { forwardRef } from 'react';
 
 interface ButtonProps { 
-  editor: EditableEditor
-  onToggle: <T extends EditableEditor>(editor: T) => void;
+  editor: Editable
+  onToggle: <T extends Editable>(editor: T) => void;
   active?: boolean
   disabled?: boolean
   children: any
 }
 
 export interface ToolbarButton extends Omit<ButtonProps, 'active' | 'editor'> {
-  onActive?: <T extends EditableEditor>(editor: T) => boolean
+  onActive?: <T extends Editable>(editor: T) => boolean
   type: 'button'
 } 
 
