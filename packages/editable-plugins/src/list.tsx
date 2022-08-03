@@ -1,5 +1,6 @@
 import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor"
 import { Editor, Transforms, Element, Node, Path, Range } from "slate"
+import { isHeading } from "./heading"
 import { isIndentEditor } from "./indent"
 import './list.less'
 
@@ -193,7 +194,13 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
         updateNextStart(editor, entry[1])
         return
       }
-
+      // here we need to insert a new paragraph
+      const heading = Editor.above(newEditor, { match: n => isHeading(editor, n)})
+      if(entry && heading) {
+        Transforms.insertNodes(newEditor, { type: '', children: [{text: ''}] }, { at: Path.next(entry[1]), select: true })
+        return
+      } 
+      // split the current list
       Transforms.splitNodes(editor, { 
         match: n => isList(editor, n),
         always: true

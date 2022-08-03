@@ -1,7 +1,8 @@
 import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Text, Element, Editor, Range, Node } from "slate";
+import { Transforms, Text, Element, Editor, Range, Node, Path } from "slate";
 import { FontSizeText } from "./fontsize";
 import { MarkText } from "./mark";
+import "./heading.less"
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -11,6 +12,8 @@ export const HEADING_THREE_KEY = 'heading-three'
 export const HEADING_FOUR_KEY = 'heading-four'
 export const HEADING_FIVE_KEY = 'heading-five'
 export const HEADING_SIX_KEY = 'heading-six'
+
+export type HeadingType = keyof typeof HeadingTags
 
 export const HeadingTags = {
   [HEADING_ONE_KEY]: 'h1',
@@ -47,8 +50,6 @@ const defaultHeadingStyle = {
     fontWeight: 'bold',
   }
 }
-
-export type HeadingType = keyof typeof HeadingTags
 
 type Hotkeys = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
 
@@ -125,11 +126,11 @@ const queryHeadingActive = (editor: Editable) => {
   }
   return null
 }
-
+const prefixCls = "editable-heading"
 const renderHeading = (editor: Editable, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
   if(isHeading(editor, element)) { 
-    const Heading = HeadingTags[element.type]
-    return <Heading {...attributes}>{children}</Heading>
+    const Heading = HeadingTags[element.type] as ('h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6')
+    return <Heading className={`${prefixCls}`}{...attributes}>{children}</Heading>
   }
   return next({ attributes, children, element })
 }
@@ -172,11 +173,10 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
     if(selection && Range.isCollapsed(selection) && isHotkey('enter', e)) {
       const entry = Editor.above(newEditor, { match: n => Editor.isBlock(newEditor, n) && !!n.type && n.type in HeadingTags })
       if(entry) {
-        const at = selection.focus
         const [_, path] = entry
-        if(Editor.isEnd(newEditor, at, path)) {
+        if(Editor.isEnd(newEditor, selection.focus, path)) {
           e.preventDefault()
-          Transforms.insertNodes(newEditor, { type: PARAGRAPH_KEY, children: [ {text: ''}] }, { at, select: true })
+          Transforms.insertNodes(newEditor, { type: PARAGRAPH_KEY, children: [{text: ''}] }, { at: Path.next(path), select: true })
         }
       }
     }
