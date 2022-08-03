@@ -39,7 +39,7 @@ export const INDENT_OPTIONS = new WeakMap<Editable, IndentOptions>()
 
 export interface IndentEditor extends Editable {
 
-  toggleIndent: () => void
+  toggleIndent: (mode?: 'line' | 'auto') => void
 
   toggleOutdent: () => void
 
@@ -58,22 +58,32 @@ export const IndentEditor = {
   queryActive: (editor: Editable) => { 
     const elements = editor.queryActiveElements()
     for(const type in elements) { 
-      const { textIndent, lineIndent } = elements[type] as unknown as Indent
-      if(textIndent || lineIndent) { 
-        const text = textIndent ?? 0
-        const line = lineIndent ?? 0
-        const options = INDENT_OPTIONS.get(editor) ?? {}
-        const size = options.size ?? DEFAULT_SIZE
-        const all = text + line
-        const leval = all < 1 ? 0 : (text + line) / size
-        return {
-          text,
-          line,
-          leval
+      for(const element of elements[type]) {
+        const { textIndent, lineIndent } = element as Indent
+        if(textIndent || lineIndent) { 
+          const text = textIndent ?? 0
+          const line = lineIndent ?? 0
+          const options = INDENT_OPTIONS.get(editor) ?? {}
+          const size = options.size ?? DEFAULT_SIZE
+          const all = text + line
+          const leval = all < 1 ? 0 : (text + line) / size
+          return {
+            text,
+            line,
+            leval
+          }
         }
       }
     }
     return null
+  },
+
+  toggle: (editor: IndentEditor, mode?: 'line' | 'auto') => { 
+    editor.toggleIndent(mode)
+  },
+
+  toggleOut: (editor: IndentEditor) => { 
+    editor.toggleOutdent()
   },
 
   getOptions: (editor: Editable): IndentOptions => { 
@@ -172,20 +182,25 @@ export const renderIndentAttributes = (editor: Editable, { attributes, element }
   return next({ attributes: Object.assign({}, attributes, { style }), element })
 }
 
-const toggleIndent = (editor: IndentEditor, size: number) => { 
+const toggleIndent = (editor: IndentEditor, size: number, mode: 'line' | 'auto' = 'auto') => { 
   const { selection } = editor
   if(!selection) return
+  // 是否选中一行
   const selectLine = Editable.getSelectLine(editor)
+  // 是否选中在一行的开始或结尾位置
   const selectLineEdge = Editable.isSelectLineEdge(editor)
   // text indent
-  if(!selectLine) {
+  if(!selectLine || mode === 'line') {
     const entry = Editor.above(editor, { match: editor.onIndentMatch})
     if(!entry) return
     const [_, path] = entry
+    // 在节点的开始位置，设置text indent
     if(Editor.isStart(editor, selection.focus, path)) {
-      setTextIndent(editor, entry, size)
+      mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
       return
-    } else if(selectLineEdge) {
+    } 
+    // 在一行的开始位置，设置line indent
+    else if(selectLineEdge) {
       if(size > 0) {
         setTextIndent(editor, entry, -size)
       }
@@ -218,8 +233,8 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   
   const size = IndentEditor.getSize(editor)
 
-  newEditor.toggleIndent = () => { 
-    toggleIndent(newEditor, size)
+  newEditor.toggleIndent = (mode) => { 
+    toggleIndent(newEditor, size, mode)
   }
 
   newEditor.toggleOutdent = () => {

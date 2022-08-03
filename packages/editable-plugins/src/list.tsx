@@ -208,7 +208,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
       // here we need to insert a new paragraph
       const heading = Editor.above(newEditor, { match: n => HeadingEditor.isHeading(editor, n)})
       if(entry && heading) {
-        Transforms.insertNodes(newEditor, { type: '', children: [{text: ''}] }, { at: Path.next(entry[1]), select: true })
+        Transforms.insertNodes(newEditor, { type: '', children: [] }, { at: Path.next(entry[1]), select: true })
         return
       } 
       // split the current list
@@ -222,17 +222,23 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
       const entry = Editor.above<List>(newEditor, { match: n => isList(editor, n)})
       let listEl: List | null = null
       let leval: number = 0
-      let path: Path = []
-      if(entry && (listEl = entry[0], path = entry[1]) && Editable.isEmpty(newEditor, listEl) && (leval = getLeval(editor, listEl)) === 0) {
+      if(entry) {
+        const [list, path] = entry
+        const leval = getLeval(editor, list)
+        const isUpdate = Editor.isStart(newEditor, selection.focus, path) && leval === 0
+        // if the prev is undefined, we need to remove it
         const prev = Editor.previous(newEditor, { match: n => Editor.isBlock(newEditor, n)})
-        if(!prev) {
-          Transforms.setNodes(newEditor, { type: '', children: [{text: ''}] }, { at: path })
+        if(!prev && isUpdate) {
+          Transforms.setNodes(newEditor, { type: '', children: [] }, { at: path })
         }
-        updateAfterStart(editor, path, {
-          listid: listEl.listid,
-          start: listEl.start,
-          leval
-        })
+
+        if(isUpdate) {
+          updateAfterStart(editor, path, {
+            listid: list.listid,
+            start: list.start,
+            leval
+          })
+        }
       }
     }
     onKeydown(e)
@@ -248,7 +254,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
           
         }
       }
-      toggleIndent()
+      toggleIndent('line')
     }
     newEditor.onIndentMatch = (node: Node, path: Path) => {
       if(Editor.above(newEditor, { match: n => isList(editor, n) })) { 
