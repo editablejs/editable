@@ -3,6 +3,7 @@ import { Element, Text } from 'slate'
 import String from './string'
 import { useSlateStatic } from '../hooks/use-slate-static'
 import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
+import { TextAttributes } from '../plugin/editable'
 
 /**
  * Individual leaves in a text node with unique formatting.
@@ -39,12 +40,11 @@ const Leaf = (props: {
   // COMPAT: Having the `data-` attributes on these leaf elements ensures that
   // in certain misbehaving browsers they aren't weirdly cloned/destroyed by
   // contenteditable behaviors. (2019/05/08)
-  const attributes: {
-    'data-slate-leaf': true
-  } = {
+  const attributes: TextAttributes = {
     'data-slate-leaf': true,
   }
-  return editor.renderLeaf({ attributes, children, text })
+  const newAttributes = editor.renderLeafAttributes({ attributes, text })
+  return editor.renderLeaf({ attributes: newAttributes, children, text })
 }
 
 const MemoizedLeaf = React.memo(Leaf, (prev, next) => {

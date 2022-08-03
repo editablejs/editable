@@ -1,14 +1,14 @@
-import { FontSizeInterface, HeadingInterface, BlockquoteInterface, ListInterface, HeadingType, Icon, MarkFormat, MarkInterface, ToolbarItem } from "@editablejs/editor-plugins"
+import { FontSizeEditor, HeadingEditor, BlockquoteEditor, ListEditor, HeadingType, Icon, MarkFormat, MarkEditor, ToolbarItem } from "@editablejs/editor-plugins"
 
 const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
 
 const marksConfig: ToolbarItem[] = marks.map(mark => ({ 
   type: 'button',
   onToggle: (editor) => {
-    (editor as unknown as MarkInterface).toggleMark(mark)
+    if(MarkEditor.isMarkEditor(editor)) MarkEditor.toggle(editor, mark)
   },
   onActive: (editor) => { 
-    return (editor as unknown as MarkInterface).isMarkActive(mark)
+    return MarkEditor.isActive(editor, mark)
   },
   children: <Icon name={mark} />
 }))
@@ -45,10 +45,10 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
         },
       ],
       onActive: (editor) => { 
-        return (editor as unknown as FontSizeInterface).queryFontSizeActive() || ''
+        return FontSizeEditor.queryActive(editor) || ''
       },
       onToggle: (editor, { key }) => {
-        (editor as unknown as FontSizeInterface).toggleFontSize(key)
+        if(FontSizeEditor.isFontSizeEditor(editor)) FontSizeEditor.toggle(editor, key)
       },
     },
     {
@@ -84,29 +84,29 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
         },
       ],
       onActive: (editor) => { 
-        return (editor as unknown as HeadingInterface).queryHeadingActive() || 'paragraph'
+        return HeadingEditor.queryHeading(editor) ?? 'paragraph'
       },
       onToggle: (editor, { key }) => {
-        (editor as unknown as HeadingInterface).toggleHeading(key as HeadingType)
+        if(HeadingEditor.isHeadingEditor(editor)) HeadingEditor.toggle(editor, key as HeadingType)
       },
     }, 
     {
       type: 'button',
       onActive: (editor) => { 
-        return (editor as unknown as BlockquoteInterface).queryBlockquoteActive()
+        return BlockquoteEditor.isActive(editor)
       },
       onToggle: (editor) => {
-        (editor as unknown as BlockquoteInterface).toggleBlockquote()
+        if(BlockquoteEditor.isBlockquoteEditor(editor)) BlockquoteEditor.toggle(editor)
       },
       children: <Icon name="blockquote" />
     }, 
     {
       type: 'button',
       onActive: (editor) => { 
-        return (editor as unknown as ListInterface).queryListActive()
+        return ListEditor.queryActive(editor)
       },
       onToggle: (editor) => {
-        (editor as unknown as ListInterface).toggleList()
+        if(ListEditor.isListEditor(editor)) ListEditor.toggle(editor)
       },
       children: <Icon name="unorderedList" />
     }

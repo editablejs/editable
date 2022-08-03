@@ -10,56 +10,61 @@ export const FONTSIZE_OPTIONS = new WeakMap<Editable, FontSizeOptions>()
 
 export const FONTSIZE_KEY = 'fontSize'
 
-export interface FontSizeInterface {
+export interface FontSizeEditor extends Editable {
 
   toggleFontSize: (size: string) => void
 
-  queryFontSizeActive: () => string | null
 }
 
-export interface FontSizeText extends Text {
+export interface FontSize extends Text {
   fontSize?: string
 }
 
-const toggleFontSize = (editor: Editable, size: string) => {
-  const defaultSize = FONTSIZE_OPTIONS.get(editor)
-  if (defaultSize && size === defaultSize) {
-    Editor.removeMark(editor, FONTSIZE_KEY)
-  } else {
-    Editor.addMark(editor, FONTSIZE_KEY, size)
-  }
-}
+export const FontSizeEditor = {
+  isFontSizeEditor: (editor: Editable): editor is FontSizeEditor => {
+    return !!(editor as FontSizeEditor).toggleFontSize
+  },
 
-const queryFontSizeActive = (editor: Editable) => {
-  const marks = editor.queryActiveMarks<FontSizeText>()
-  return marks.fontSize ?? null
-}
+  isFontSize: (node: Text): node is FontSize => {
+    return Text.isText(node)
+  },
 
-const renderFontSize = (editor: Editable, { attributes, children, text }: RenderLeafProps<FontSizeText>, next: (props: RenderLeafProps) => JSX.Element) => {
-  const style: CSSProperties = attributes.style ?? {}
-  if (text.fontSize) {
-    style.fontSize = text.fontSize
-  }
-  return next({ attributes: Object.assign({}, attributes, { style }), children, text })
+  queryActive: (editor: Editable) => { 
+    const marks = editor.queryActiveMarks<FontSize>()
+    return marks.fontSize ?? null
+  },
+
+  toggle: (editor: FontSizeEditor, size: string) => {
+    editor.toggleFontSize(size)
+  },
+
+  getOptions: (editor: Editable): FontSizeOptions => { 
+    return FONTSIZE_OPTIONS.get(editor) ?? {}
+  },
 }
 
 export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOptions = {}) => {
-  const newEditor = editor as T & FontSizeInterface
+  const newEditor = editor as T & FontSizeEditor
 
   FONTSIZE_OPTIONS.set(newEditor, options)
   
   newEditor.toggleFontSize = (size: string) => { 
-    toggleFontSize(newEditor, size)
-  }
-
-  newEditor.queryFontSizeActive = () => { 
-    return queryFontSizeActive(editor)
+    const defaultSize = FontSizeEditor.getOptions(editor)
+    if (defaultSize && size === defaultSize) {
+      Editor.removeMark(editor, FONTSIZE_KEY)
+    } else {
+      Editor.addMark(editor, FONTSIZE_KEY, size)
+    }
   }
 
   const { renderLeaf } = newEditor
 
-  newEditor.renderLeaf = (props) => {
-    return renderFontSize(newEditor, props, renderLeaf)
+  newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<FontSize>) => {
+    const style: CSSProperties = attributes.style ?? {}
+    if (text.fontSize) {
+      style.fontSize = text.fontSize
+    }
+    return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 
   return newEditor

@@ -52,19 +52,42 @@ export interface SelectionStyle {
   caretWidth?: number
 }
 
+export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
+
+export interface ElementAttributes extends BaseAttributes {
+  'data-slate-node': 'element'
+  'data-slate-inline'?: true
+  'data-slate-void'?: true
+  dir?: 'rtl'
+  ref: any
+}
+
+export interface TextAttributes extends BaseAttributes { 
+  'data-slate-leaf': true
+}
+
+export type NodeAttributes = ElementAttributes | TextAttributes
+
+export interface PlaceholderAttributes extends BaseAttributes { 
+  'data-slate-placeholder': true
+}
+
+export interface RenderElementAttributes<T extends Element = Element> {
+  element: T
+  attributes: ElementAttributes
+}
+
+export interface RenderLeafAttributes<T extends Text = Text> {
+  text: T
+  attributes: TextAttributes
+}
 /**
  * `RenderElementProps` are passed to the `renderElement` handler.
  */
 export interface RenderElementProps<T extends Element = Element> {
   children: any
   element: T
-  attributes: React.HTMLAttributes<HTMLElement> & {
-    'data-slate-node': 'element'
-    'data-slate-inline'?: true
-    'data-slate-void'?: true
-    dir?: 'rtl'
-    ref: any
-  }
+  attributes: ElementAttributes
 }
 
 /**
@@ -73,12 +96,12 @@ export interface RenderElementProps<T extends Element = Element> {
 export interface RenderLeafProps<T extends Text = Text> {
   children: any
   text: T
-  attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-leaf', true>
+  attributes: TextAttributes
 }
 
 export interface RenderPlaceholderProps<T extends Node = Node> {
   children: any
-  attributes: React.HTMLAttributes<HTMLElement> & Record<'data-slate-placeholder', true>
+  attributes: PlaceholderAttributes
   node: T
 }
 
@@ -114,6 +137,8 @@ export interface Editable extends BaseEditor {
   onSelectEnd: () => void
   onSelectionChange: () => void
   setSelectionStyle: (style: SelectionStyle) => void
+  renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
+  renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null

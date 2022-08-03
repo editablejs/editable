@@ -4,7 +4,7 @@ import { Editor, Node, Range, Element as SlateElement } from 'slate'
 
 import Text from './text'
 import useChildren from '../hooks/use-children'
-import { Editable, useSlateStatic, useReadOnly } from '..'
+import { Editable, useSlateStatic, useReadOnly, ElementAttributes } from '..'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   NODE_TO_ELEMENT,
@@ -38,13 +38,7 @@ const Element = (props: {
 
   // Attributes that the developer must mix into the element in their
   // custom node renderer component.
-  const attributes: {
-    'data-slate-node': 'element'
-    'data-slate-void'?: true
-    'data-slate-inline'?: true
-    dir?: 'rtl'
-    ref: any
-  } = {
+  const attributes: ElementAttributes = {
     'data-slate-node': 'element',
     ref,
   }
@@ -104,8 +98,8 @@ const Element = (props: {
       NODE_TO_ELEMENT.delete(element)
     }
   })
-
-  const content = editor.renderElement({ attributes, children, element })
+  const newAttributes = editor.renderElementAttributes({attributes, element})
+  const content = editor.renderElement({ attributes: newAttributes, children, element })
 
   return content
 }

@@ -1,5 +1,5 @@
-import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Editor, Range, Element, Path } from "slate";
+import { Editable, isHotkey } from "@editablejs/editor";
+import { Transforms, Editor, Range, Element, Path, Node } from "slate";
 import './blockquote.less'
 
 export const BLOCKQUOTE_KEY = 'blockquote'
@@ -13,54 +13,66 @@ export interface BlockquoteOptions {
   hotkey?: Hotkey
 }
 
-export interface BlockquoteInterface extends Editable {
+export const BLOCKQUOTE_OPTIONS = new WeakMap<Editable, BlockquoteOptions>()
+export interface BlockquoteEditor extends Editable {
 
   toggleBlockquote: () => void
 
-  queryBlockquoteActive: () => boolean
 }
 
-const toggleBlockquote = (editor: BlockquoteInterface) => {
-  if(editor.queryBlockquoteActive()) {
-    Transforms.unwrapNodes(editor, { 
-      match: n => Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY,
-      split: true,
-    })
-  } else {
-    Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
-      mode: 'highest'
-    })
+export interface Blockquote extends Element {
+  type: 'blockquote'
+}
+
+export const BlockquoteEditor = {
+  isBlockquoteEditor: (editor: Editable): editor is BlockquoteEditor => {
+    return !!(editor as BlockquoteEditor).toggleBlockquote
+  },
+
+  isBlockquote: (editor: Editable, n: Node): n is Blockquote => { 
+    return Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY
+  },
+
+  isActive: (editor: Editable) => {
+    const elements = editor.queryActiveElements()
+    return !!elements[BLOCKQUOTE_KEY]
+  },
+
+  getOptions: (editor: Editable): BlockquoteOptions => { 
+    return BLOCKQUOTE_OPTIONS.get(editor) ?? {}
+  },
+
+  toggle: (editor: BlockquoteEditor) => { 
+    editor.toggleBlockquote()
   }
-}
-
-const queryBlockquoteActive = (editor: Editable) => {
-  const elements = editor.queryActiveElements()
-  return !!elements[BLOCKQUOTE_KEY]
-}
-
-const renderBlockquote = (editor: Editable, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
-  if(element.type === BLOCKQUOTE_KEY) { 
-    const Blockquote = BLOCKQUOTE_KEY
-    return <Blockquote className="editable-blockquote" {...attributes}>{children}</Blockquote>
-  }
-  return next({ attributes, children, element })
 }
 
 export const withBlockquote = <T extends Editable>(editor: T, options: BlockquoteOptions = {}) => {
-  const newEditor = editor as T & BlockquoteInterface
+  const newEditor = editor as T & BlockquoteEditor
   
-  newEditor.toggleBlockquote = () => { 
-    toggleBlockquote(newEditor)
-  }
+  BLOCKQUOTE_OPTIONS.set(newEditor, options)
 
-  newEditor.queryBlockquoteActive = () => { 
-    return queryBlockquoteActive(editor)
+  newEditor.toggleBlockquote = () => { 
+    if(BlockquoteEditor.isActive(editor)) {
+      Transforms.unwrapNodes(editor, { 
+        match: n => Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY,
+        split: true,
+      })
+    } else {
+      Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
+        mode: 'highest'
+      })
+    }
   }
 
   const { renderElement } = newEditor
 
-  newEditor.renderElement = (props) => {
-    return renderBlockquote(newEditor, props, renderElement)
+  newEditor.renderElement = ({ element, attributes, children }) => {
+    if(element.type === BLOCKQUOTE_KEY) { 
+      const Blockquote = BLOCKQUOTE_KEY
+      return <Blockquote className="editable-blockquote" {...attributes}>{children}</Blockquote>
+    }
+    return renderElement({ attributes, children, element })
   }
   
   const hotkey = options.hotkey ?? defaultHotkey
@@ -68,14 +80,14 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   newEditor.onKeydown = (e: KeyboardEvent) => { 
     const toggle = () => {
       e.preventDefault()
-      toggleBlockquote(newEditor)
+      newEditor.toggleBlockquote()
     }
     if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
       toggle()
       return
     }
     const { selection } = editor
-    if(!selection || !Range.isCollapsed(selection) || !newEditor.queryBlockquoteActive() || isHotkey('shift+enter', e)) return onKeydown(e)
+    if(!selection || !Range.isCollapsed(selection) || !BlockquoteEditor.isActive(newEditor) || isHotkey('shift+enter', e)) return onKeydown(e)
     if(isHotkey('enter', e)) {
       const entry = Editor.above(newEditor, { match: n => Editor.isBlock(newEditor, n) && !Editor.isVoid(newEditor, n)})
       if(entry) {

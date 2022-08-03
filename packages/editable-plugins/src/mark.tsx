@@ -12,13 +12,6 @@ export interface MarkOptions {
 
 export const MARK_OPTIONS = new WeakMap<Editable, MarkOptions>()
 
-const isEnabled = (editor: Editable, format: MarkFormat) => { 
-  const { enabled, disabled } = MARK_OPTIONS.get(editor) ?? {}
-  if(enabled && ~~enabled.indexOf(format)) return false
-  if(disabled && ~disabled.indexOf(format)) return false
-  return true
-}
-
 export type MarkFormat = "bold" | "italic" | "underline" | "strikethrough" | "code" | "sub" | "sup"
 
 const defaultHotkeys: Hotkeys = { 
@@ -31,14 +24,7 @@ const defaultHotkeys: Hotkeys = {
   sup: 'mod+.'
 }
 
-export interface MarkInterface extends Editable {
-
-  toggleMark: (format: MarkFormat) => void
-
-  isMarkActive: (format: MarkFormat) => boolean
-}
-
-export interface MarkText extends Text {
+export interface Mark extends Text {
   bold?: string | boolean
   italic?: boolean
   underline?: boolean
@@ -47,82 +33,98 @@ export interface MarkText extends Text {
   sup?: boolean
   sub?: boolean
 }
+export interface MarkEditor extends Editable {
 
-export const isMark = (editor: Editor, text: Text): text is MarkText => { 
-  return Text.isText(editor)
+  toggleMark: (format: MarkFormat) => void
 }
 
-const toggleMark = (editor: Editable, format: MarkFormat) => {
-  if(!isEnabled(editor, format)) return
-  const isActive = isMarkActive(editor, format)
-  if (isActive) {
-    Editor.removeMark(editor, format)
-  } else {
-    if(format === 'sub') {
-      Editor.removeMark(editor, 'sup')
-    } else if(format === 'sup') {
-      Editor.removeMark(editor, 'sub')
-    }
-    Editor.addMark(editor, format, true)
-  }
-}
+export const MarkEditor = {
+  isMarkEditor: (editor: Editable): editor is MarkEditor => { 
+    return !!(editor as MarkEditor).toggleMark
+  },
 
-const isMarkActive = (editor: Editable, format: MarkFormat) => {
-  if(!isEnabled(editor, format)) return false
-  const marks = editor.queryActiveMarks<MarkText>()
-  return !!marks[format]
-}
+  isMark: (node: Text): node is Mark => { 
+    return Text.isText(node)
+  },
 
-const renderMark = (editor: Editable, { attributes, children, text }: RenderLeafProps<MarkText>, next: (props: RenderLeafProps) => JSX.Element) => {
-  const style: CSSProperties = attributes.style ?? {}
-  if (text.bold && isEnabled(editor, 'bold')) {
-    style.fontWeight = typeof text.bold === 'string' ? text.bold : "bold"
-  } else {
-    style.fontWeight = "normal"
-  }
+  isActive: (editor: Editable, format: MarkFormat) => {
+    if(!MarkEditor.isEnabled(editor, format)) return false
+    const marks = editor.queryActiveMarks<Mark>()
+    return !!marks[format]
+  },
 
-  if (text.italic && isEnabled(editor, 'italic')) {
-    style.fontStyle = "italic"
-  }
+  isEnabled: (editor: Editable, format: MarkFormat) => { 
+    if(!MarkEditor.isMarkEditor(editor)) return false
+    const { enabled, disabled } = MarkEditor.getOptions(editor)
+    if(enabled && ~~enabled.indexOf(format)) return false
+    if(disabled && ~disabled.indexOf(format)) return false
+    return true
+  },
 
-  if (text.underline && isEnabled(editor, 'underline')) {
-    style.textDecoration = "underline"
-  }
+  toggle: (editor: MarkEditor, format: MarkFormat) => { 
+    editor.toggleMark(format)
+  },
 
-  if (text.strikethrough && isEnabled(editor, 'strikethrough')) {
-    style.textDecoration = style.textDecoration ? style.textDecoration + ' line-through' : 'line-through'
-  }
-
-  const enabledSub = text.sub && isEnabled(editor, 'sub')
-  const enabledSup = text.sup && isEnabled(editor, 'sup')
-  if(enabledSub || enabledSup) {
-    children = <span style={{ position: 'relative', fontSize: '75%', verticalAlign: 'baseline', top: enabledSup ? '-0.5em' : '', bottom: enabledSub ? '-.25em' : ''}}>{children}</span>
-  }
-
-  if (text.code && isEnabled(editor, 'code')) {
-    children = <code className="editable-code">{children}</code>
-  }
-  
-  return next({ attributes: Object.assign({}, attributes, { style }), children, text })
+  getOptions: (editor: Editable): MarkOptions => { 
+    return MARK_OPTIONS.get(editor) ?? {}
+  },
 }
 
 export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
-  const newEditor = editor as T & MarkInterface
+  const newEditor = editor as T & MarkEditor
 
   MARK_OPTIONS.set(newEditor, options)
   
   newEditor.toggleMark = (format: MarkFormat) => { 
-    toggleMark(newEditor, format)
-  }
-
-  newEditor.isMarkActive = (format: MarkFormat) => { 
-    return isMarkActive(editor, format)
+    if(!MarkEditor.isEnabled(editor, format)) return
+    if (MarkEditor.isActive(editor, format)) {
+      Editor.removeMark(editor, format)
+    } else {
+      if(format === 'sub') {
+        Editor.removeMark(editor, 'sup')
+      } else if(format === 'sup') {
+        Editor.removeMark(editor, 'sub')
+      }
+      Editor.addMark(editor, format, true)
+    }
   }
 
   const { renderLeaf } = newEditor
 
-  newEditor.renderLeaf = (props) => {
-    return renderMark(newEditor, props, renderLeaf)
+  newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<Mark>) => {
+    const style: CSSProperties = attributes.style ?? {}
+    if (text.bold && MarkEditor.isEnabled(editor, 'bold')) {
+      style.fontWeight = typeof text.bold === 'string' ? text.bold : "bold"
+    } else {
+      style.fontWeight = "normal"
+    }
+
+    if (text.italic && MarkEditor.isEnabled(editor, 'italic')) {
+      style.fontStyle = "italic"
+    }
+
+    if (text.underline && MarkEditor.isEnabled(editor, 'underline')) {
+      style.textDecoration = "underline"
+    }
+
+    if (text.strikethrough && MarkEditor.isEnabled(editor, 'strikethrough')) {
+      style.textDecoration = style.textDecoration ? style.textDecoration + ' line-through' : 'line-through'
+    }
+
+    const enabledSub = text.sub && MarkEditor.isEnabled(editor, 'sub')
+    if(enabledSub) {
+      children = <span className="editable-sub">{children}</span>
+    }
+    const enabledSup = text.sup && MarkEditor.isEnabled(editor, 'sup')
+    if(enabledSup) {
+      children = <span className="editable-sup">{children}</span>
+    }
+
+    if (text.code && MarkEditor.isEnabled(editor, 'code')) {
+      children = <code className="editable-code">{children}</code>
+    }
+    
+    return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
@@ -134,7 +136,7 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
       const hotkey = hotkeys[format]
       const toggle = () => {
         e.preventDefault()
-        toggleMark(newEditor, format)
+        newEditor.toggleMark(format)
       }
       if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
         toggle()

@@ -652,6 +652,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.setSelectionStyle = (style: SelectionStyle) => {}
 
+  e.renderElementAttributes = ({ attributes }) => { 
+    return attributes
+  }
+
+  e.renderLeafAttributes = ({ attributes }) => { 
+    return attributes
+  }
+
   e.renderElement = (props: RenderElementProps) => {
     const { attributes, children, element } = props
     const Tag = e.isInline(element) ? 'span' : 'div'

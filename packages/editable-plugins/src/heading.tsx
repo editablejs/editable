@@ -1,7 +1,7 @@
-import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
+import { Editable, isHotkey } from "@editablejs/editor";
 import { Transforms, Text, Element, Editor, Range, Node, Path } from "slate";
-import { FontSizeText } from "./fontsize";
-import { MarkText } from "./mark";
+import { FontSize, FontSizeEditor } from "./fontsize";
+import { Mark, MarkEditor } from "./mark";
 import "./heading.less"
 
 export const HEADING_KEY = 'heading'
@@ -71,87 +71,98 @@ export interface HeadingOptions {
 
 export const HEADING_OPTIONS = new WeakMap<Editable, HeadingOptions>()
 
-export interface HeadingElement extends Element {
+export interface Heading extends Element {
   type: HeadingType
 }
 
-const isEnabled = (editor: Editable, type: HeadingType) => { 
-  const { enabled, disabled } = HEADING_OPTIONS.get(editor) ?? {}
-  if(enabled && ~~enabled.indexOf(type)) return false
-  if(disabled && ~disabled.indexOf(type)) return false
-  return true
-}
-
-export const isHeading = (editor: Editable, n: Node): n is HeadingElement => {
-  return Editor.isBlock(editor, n) && !!n.type && n.type in HeadingTags
-} 
-
-export interface HeadingInterface extends Editable {
+export interface HeadingEditor extends Editable {
 
   toggleHeading: (type?: HeadingType | typeof PARAGRAPH_KEY) => void
 
-  queryHeadingActive: () => HeadingType | null
 }
 
-const toggleHeading = (editor: Editable, type?: HeadingType | typeof PARAGRAPH_KEY) => {
-  const { selection } = editor
-  if(!selection || type && type !== PARAGRAPH_KEY && !isEnabled(editor, type)) return
-  if(!type) type = PARAGRAPH_KEY
-  const activeType = queryHeadingActive(editor)
-  if(!activeType && type === PARAGRAPH_KEY) return
-  type = activeType === type ? PARAGRAPH_KEY : type
+export const HeadingEditor = {
+  isHeadingEditor: (editor: Editable): editor is HeadingEditor => {
+    return !!(editor as HeadingEditor).toggleHeading
+  },
 
-  const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
-  for(const [_, path] of lowestBlocks) {
-    if(type !== PARAGRAPH_KEY) { 
-      const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
-      Transforms.setNodes<FontSizeText & MarkText>(editor, { fontSize: style.fontSize, bold: style.fontWeight}, {
-        at: path,
-        match: n => Text.isText(n)
-      })
-    } else {
-      Transforms.setNodes<FontSizeText & MarkText>(editor, { fontSize: '', bold: false}, {
-        at: path,
-        match: n => Text.isText(n)
-      })
+  isHeading: (editor: Editable, n: Node): n is Heading => { 
+    return Editor.isBlock(editor, n) && !!n.type && n.type in HeadingTags
+  },
+
+  isEnabled: (editor: Editable, type: HeadingType) => { 
+    if(!HeadingEditor.isHeadingEditor(editor)) return false
+    const { enabled, disabled } = HEADING_OPTIONS.get(editor) ?? {}
+    if(enabled && ~~enabled.indexOf(type)) return false
+    if(disabled && ~disabled.indexOf(type)) return false
+    return true
+  },
+
+  queryHeading: (editor: Editable) => {
+    const elements = editor.queryActiveElements()
+    for(const key in HeadingTags) {
+      if(elements[key]) return key as HeadingType
     }
-    Transforms.setNodes(editor, { type }, { at: path })
+    return null
+  },
+
+  getOptions: (editor: Editable): HeadingOptions => { 
+    return HEADING_OPTIONS.get(editor) ?? {}
+  },
+
+  toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => { 
+    editor.toggleHeading(type)
   }
 }
 
-const queryHeadingActive = (editor: Editable) => {
-  const elements = editor.queryActiveElements()
-  for(const key in HeadingTags) {
-    if(elements[key]) return key as HeadingType
-  }
-  return null
-}
 const prefixCls = "editable-heading"
-const renderHeading = (editor: Editable, { attributes, element, children }: RenderElementProps, next: (props: RenderElementProps) => JSX.Element) => {
-  if(isHeading(editor, element)) { 
-    const Heading = HeadingTags[element.type] as ('h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6')
-    return <Heading className={`${prefixCls}`}{...attributes}>{children}</Heading>
-  }
-  return next({ attributes, children, element })
-}
 
 export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
-  const newEditor = editor as T & HeadingInterface
+  const newEditor = editor as T & HeadingEditor
 
   HEADING_OPTIONS.set(newEditor, options)
   
   newEditor.toggleHeading = (type) => { 
-    toggleHeading(newEditor, type)
-  }
+    const { selection } = editor
+    if(!selection || type && type !== PARAGRAPH_KEY && !HeadingEditor.isEnabled(editor, type)) return
+    if(!type) type = PARAGRAPH_KEY
+    const activeType = HeadingEditor.queryHeading(editor)
+    if(!activeType && type === PARAGRAPH_KEY) return
+    type = activeType === type ? PARAGRAPH_KEY : type
 
-  newEditor.queryHeadingActive = () => { 
-    return queryHeadingActive(editor)
+    const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
+    for(const [_, path] of lowestBlocks) {
+      if(type !== PARAGRAPH_KEY) { 
+        const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
+        const mark: Partial<FontSize & Mark> = { }
+        if(FontSizeEditor.isFontSizeEditor(editor)) {
+          mark.fontSize = style.fontSize
+        }
+        if(MarkEditor.isMarkEditor(editor)) { 
+          mark.bold = style.fontWeight
+        }
+        Transforms.setNodes<FontSize & Mark>(editor, mark, {
+          at: path,
+          match: n => Text.isText(n)
+        })
+      } else {
+        Transforms.setNodes<FontSize & Mark>(editor, { fontSize: '', bold: false}, {
+          at: path,
+          match: n => Text.isText(n)
+        })
+      }
+      Transforms.setNodes(editor, { type }, { at: path })
+    }
   }
 
   const { renderElement } = newEditor
 
-  newEditor.renderElement = (props) => {
-    return renderHeading(newEditor, props, renderElement)
+  newEditor.renderElement = ({ element, attributes, children }) => {
+    if(HeadingEditor.isHeading(editor, element)) { 
+      const Heading = HeadingTags[element.type] as ('h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6')
+      return <Heading className={`${prefixCls}`}{...attributes}>{children}</Heading>
+    }
+    return renderElement({ attributes, children, element })
   }
   
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
@@ -162,7 +173,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
       const hotkey = hotkeys[type]
       const toggle = () => {
         e.preventDefault()
-        toggleHeading(newEditor, type)
+        newEditor.toggleHeading(type)
       }
       if(typeof hotkey === 'string' && isHotkey(hotkey, e) || typeof hotkey === 'function' && hotkey(e)) {
         toggle()

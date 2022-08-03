@@ -22,6 +22,12 @@ export { withEditable } from './plugin/with-editable'
 export type {
   RenderElementProps,
   RenderLeafProps,
+  RenderElementAttributes,
+  RenderLeafAttributes,
+  ElementAttributes,
+  NodeAttributes,
+  TextAttributes,
+  PlaceholderAttributes
 } from './plugin/editable'
 
 export {
