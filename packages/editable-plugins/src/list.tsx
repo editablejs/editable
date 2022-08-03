@@ -222,8 +222,13 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
       const entry = Editor.above<List>(newEditor, { match: n => isList(editor, n)})
       let listEl: List | null = null
       let leval: number = 0
-      if(entry && (listEl = entry[0]) && Editable.isEmpty(newEditor, listEl) && (leval = getLeval(editor, listEl)) === 0) {
-        updateAfterStart(editor, entry[1], {
+      let path: Path = []
+      if(entry && (listEl = entry[0], path = entry[1]) && Editable.isEmpty(newEditor, listEl) && (leval = getLeval(editor, listEl)) === 0) {
+        const prev = Editor.previous(newEditor, { match: n => Editor.isBlock(newEditor, n)})
+        if(!prev) {
+          Transforms.setNodes(newEditor, { type: '', children: [{text: ''}] }, { at: path })
+        }
+        updateAfterStart(editor, path, {
           listid: listEl.listid,
           start: listEl.start,
           leval
