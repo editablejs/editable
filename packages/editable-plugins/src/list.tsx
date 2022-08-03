@@ -7,7 +7,6 @@ export const LIST_KEY = 'list'
 
 interface ListNode {
   start: number
-  leval: number
   listid: string
 }
 
@@ -27,104 +26,122 @@ export const isList = (editor: Editable, n: Node): n is ListElement => {
   return Editor.isBlock(editor, n) && n.type === LIST_KEY
 }
 
-const updateNextStart = (editor: Editable, path: Path, ...nodes: ListNode[]) => { 
-  if(nodes.length === 0) {
+const getLeval = (editor: Editable, element: Element) => {
+  const indentEditor = isIndentEditor(editor)
+  return indentEditor ? editor.getIndentLeval(element) : 0
+}
+
+const updateNextStart = (editor: Editable, path: Path, options?: ListNode & Record<'leval', number>) => { 
+  if(!options) {
     const entry = Editor.above<ListElement>(editor, {
       at: path,
       match: n => isList(editor, n),
     })
     if(entry) {
       const listEl = entry[0]
-      nodes = [{
+      options = {
         listid: listEl.listid,
         start: listEl.start + 1,
-        leval: listEl.leval
-      }]
+        leval: getLeval(editor, listEl)
+      }
     } else return
   }
 
   while(true) {
-    let currentList: ListNode | undefined = undefined
     const next = Editor.next<ListElement>(editor, {
       at: path,
-      match: n => {
-        if(!isList(editor, n)) return false
-        currentList = nodes!.find(node => n.listid === n.listid && n.leval === node.leval)
-        return !!currentList
-      }
+      match: n => isList(editor, n) && n.listid === options?.listid && getLeval(editor, n) === options?.leval
     })
-    if(!next || !currentList) break
-    const list = currentList as ListNode
+    if(!next) break
     path = next[1]
-    Transforms.setNodes<ListElement>(editor, { start: list.start }, {
+    Transforms.setNodes<ListElement>(editor, { start: options.start }, {
       at: path
     })
-    list.start++
+    options.start++
   }
 }
 
 const toggleList = (editor: ListInterface, start = 1) => {
-  let endPath: Path = []
-  let listid = ''
-  let next = null
-  let leval = 0
   if(editor.queryListActive()) {
     const elements = editor.queryActiveElements()[LIST_KEY] as ListElement[]
-    const firstList = elements[0]
-    start = firstList.start
-    const lastList = elements[elements.length - 1]
-    listid = lastList.listid
-    leval = lastList.leval
+    
+    const updateStartMap = new Map<string, number>()
+    const updateMap = new Map<string, number[]>()
+    for(const element of elements) { 
+      const { start, listid } = element
+      const leval = getLeval(editor, element)
+      if(!updateMap.has(listid)) { 
+        updateMap.set(listid, [leval])
+        updateStartMap.set(`${listid}_${leval}`, start)
+      } else if(~~updateMap.get(listid)!.indexOf(leval)) {
+        updateMap.get(listid)!.push(leval)
+        updateStartMap.set(`${listid}_${leval}`, start)
+      }
+    }
     Transforms.unwrapNodes(editor, { 
       match: n => isList(editor, n),
       split: true,
     })
-    if(firstList.listid !== lastList.listid) {
-      updateNextStart(editor, endPath, {
-        ...firstList
+    const { selection } = editor
+    if(!selection) return
+    updateMap.forEach((levals, listid) => {
+      levals.forEach(leval => { 
+        const start = updateStartMap.get(`${listid}_${leval}`) ?? 0
+        updateNextStart(editor, selection.focus.path, {
+          start,
+          listid,
+          leval
+        })
       })
-    }
-    endPath = editor.selection?.focus.path ?? []
+    })
   } else {
+    const { selection } = editor
+    if(!selection) return
     const entrys = Editor.nodes<Element>(editor, { 
       match: n => Editor.isBlock(editor, n),
       mode: 'lowest'
     })
-    const prev = Editor.previous<ListElement>(editor, {
-      match: n => isList(editor, n),
+    const beforePath = Editor.before(editor, selection.anchor.path)
+    const afterPath = Editor.after(editor, selection.focus.path)
+    const prev = Editor.above<ListElement>(editor, {
+      at: beforePath,
+      match: n => isList(editor, n)
     })
+    let listid = ''
+    let next = null
+    let leval = 0
     if(prev) {
       const prevList = prev[0]
       listid = prevList.listid
       start = prevList.start + 1
-      leval = prevList.leval
-    } else if(next = Editor.next<ListElement>(editor, {
-      match: n => isList(editor, n),
+      leval = getLeval(editor, prevList)
+    } else if(next = Editor.above<ListElement>(editor, {
+      at: afterPath,
+      match: n => isList(editor, n)
     })) {
       const nextList = next[0]
       listid = nextList.listid
       start = Math.max(nextList.start - 1, 1)
-      leval = nextList.leval
+      leval = getLeval(editor, nextList)
     } else {
       listid = Number(Math.random().toString().substring(2, 7) + Date.now()).toString(36)
     }
-    const indentEditor = isIndentEditor(editor)
-    for(const [block, path] of entrys) { 
-      const leval = indentEditor ? editor.getIndentLeval(block) : 0
-      const element: ListElement = { type: LIST_KEY, listid, start, leval, children: [] }
+    let nextPath: Path = []
+    for(const [_, path] of entrys) { 
+      const element: ListElement = { type: LIST_KEY, listid, start, children: [] }
       Transforms.wrapNodes(editor, element, {
         at: path 
       })
-      endPath = path
+      nextPath = path
       start++
     }
-  }
-  if(endPath.length > 0) {
-    updateNextStart(editor, endPath, {
-      listid,
-      start,
-      leval
-    })
+    if(nextPath.length > 0) {
+      updateNextStart(editor, nextPath, {
+        listid,
+        start,
+        leval
+      })
+    }
   }
 }
 
@@ -183,6 +200,17 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
       })
       updateNextStart(editor, selection.focus.path)
       return
+    } else if(isHotkey('backspace', e)) { 
+      const entry = Editor.above<ListElement>(newEditor, { match: n => isList(editor, n)})
+      let listEl: ListElement | null = null
+      let leval: number = 0
+      if(entry && (listEl = entry[0]) && Editable.isEmpty(newEditor, listEl) && (leval = getLeval(editor, listEl)) === 0) {
+        updateNextStart(editor, entry[1], {
+          listid: listEl.listid,
+          start: listEl.start,
+          leval
+        })
+      }
     }
     onKeydown(e)
   }
