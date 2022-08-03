@@ -220,8 +220,6 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
       return
     } else if(isHotkey('backspace', e)) { 
       const entry = Editor.above<List>(newEditor, { match: n => isList(editor, n)})
-      let listEl: List | null = null
-      let leval: number = 0
       if(entry) {
         const [list, path] = entry
         const leval = getLeval(editor, list)
@@ -253,8 +251,10 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions = {
         if(leval === 0) {
           
         }
+        toggleIndent('line')
+      } else {
+        toggleIndent()
       }
-      toggleIndent('line')
     }
     newEditor.onIndentMatch = (node: Node, path: Path) => {
       if(Editor.above(newEditor, { match: n => isList(editor, n) })) { 
