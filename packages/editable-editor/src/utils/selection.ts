@@ -90,7 +90,9 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
               }
             })
           }
-        } 
+        } else {
+          findHeight(child)
+        }
         // else if(!child.hasAttribute('data-no-selection')){
         //   const display = window.getComputedStyle(child).display
         //   if(display === 'inline') {
@@ -120,6 +122,7 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
   })
   if(!block) return []
   const domEl = Editable.toDOMNode(editor, block[0])
+  const domRect = domEl.getBoundingClientRect()
   const range = document.createRange()
   range.selectNodeContents(Editable.toDOMNode(editor, node))
   const lines = splitLines(range.getClientRects())
@@ -132,7 +135,7 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
     line.height = lineRect.height
     line.bottom = lineRect.bottom
     // 空节点的宽度给个最小值
-    if(width === 0 && domEl.getBoundingClientRect().left === rects[0].left) {
+    if(width === 0 && domRect.left === rects[0].left) {
       width = minWidth
     }
     lineRects.push(new DOMRect(rects[0].left, line.top, width, line.height))

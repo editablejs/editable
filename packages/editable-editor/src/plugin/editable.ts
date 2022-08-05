@@ -9,6 +9,7 @@ import {
   Range,
   Scrubber,
   Transforms,
+  NodeEntry,
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -106,7 +107,7 @@ export interface RenderPlaceholderProps<T extends Node = Node> {
 }
 
 export interface EditorElements {
-  [key: string]: Omit<Element, 'children'>[]
+  [key: string]: NodeEntry<Element>[]
 }
 
 /**

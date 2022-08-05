@@ -59,7 +59,7 @@ export const IndentEditor = {
     const elements = editor.queryActiveElements()
     for(const type in elements) { 
       for(const element of elements[type]) {
-        const { textIndent, lineIndent } = element as Indent
+        const { textIndent, lineIndent } = element[0] as Indent
         if(textIndent || lineIndent) { 
           const text = textIndent ?? 0
           const line = lineIndent ?? 0
@@ -189,9 +189,14 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: 'line' | 'auto' 
   const selectLine = Editable.getSelectLine(editor)
   // 是否选中在一行的开始或结尾位置
   const selectLineEdge = Editable.isSelectLineEdge(editor)
+  
+  const isCollapsed = Range.isCollapsed(selection)
   // text indent
-  if(!selectLine || mode === 'line') {
-    const entry = Editor.above(editor, { match: editor.onIndentMatch})
+  if(isCollapsed && (!selectLine || mode === 'line')) {
+    const entry = Editor.above(editor, { 
+      match: editor.onIndentMatch,
+      at: selection.anchor
+    })
     if(!entry) return
     const [_, path] = entry
     // 在节点的开始位置，设置text indent
@@ -209,7 +214,10 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: 'line' | 'auto' 
   } 
   // line indent
   else if(selectLine) {
-    const blockEntrys = Editor.nodes<Indent>(editor, { match: editor.onIndentMatch})
+    const blockEntrys = Editor.nodes<Indent>(editor, { 
+      match: editor.onIndentMatch,
+      mode: 'lowest'
+    })
     if(!blockEntrys) return
     for(const entry of blockEntrys) { 
       setLineIndent(editor, entry, size)
@@ -222,8 +230,9 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: 'line' | 'auto' 
     textIndent: Math.abs(size),
     children: [],
   } as Indent, {
-    at: selection
+    at: selection,
   })
+  Transforms.collapse(editor, { edge: 'end' })
 }
 
 export const withIndent = <T extends Editable>(editor: T, options: IndentOptions = {}) => {
@@ -287,7 +296,9 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
     }
     const { selection } = editor
     if(selection && Range.isCollapsed(selection) && isHotkey('backspace', e)) { 
-      const entry = Editor.above(newEditor, { match: newEditor.onIndentMatch})
+      const entry = Editor.above(newEditor, { 
+        match: newEditor.onIndentMatch
+      })
       const active = IndentEditor.queryActive(newEditor)
       if(active && active.leval > 0 && entry && Editor.isStart(editor, selection.focus, entry[1])){
         newEditor.toggleOutdent()

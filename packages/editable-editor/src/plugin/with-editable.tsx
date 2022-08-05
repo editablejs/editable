@@ -290,20 +290,17 @@ export const withEditable = <T extends Editor>(editor: T) => {
     elements = {}
     const { selection } = editor
     if(!selection) return {}
-    const [nodes] = Editor.nodes(editor, {
+    const nodeEntries = Editor.nodes<Element>(editor, {
       at: selection,
-      match: n => {
-        if(!Editor.isEditor(n) && Element.isElement(n)) {
-          const type = n.type ?? 'paragraph'
-          const els = elements!
-          if(els[type]) els[type].push(n)
-          else els[type] = [n]
-          return true
-        }
-        return false
-      }
+      match: n => !Editor.isEditor(n) && Element.isElement(n)
     })
-    if(!!nodes) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
+  
+    for(const entry of nodeEntries) {
+      const type = entry[0].type ?? 'paragraph'
+      if(elements[type]) elements[type].push(entry)
+      else elements[type] = [entry]
+    }
+    if(Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   },
 
