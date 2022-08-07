@@ -68,7 +68,7 @@ plugin directory
 - [x] OrderedList
 - [x] UnOrderedList
 - [x] TaskList
-- [x] Quoteblock
+- [x] Blockquote
 - [x] Indent
 - [ ] Fontcolor
 - [ ] BackgroundColor
