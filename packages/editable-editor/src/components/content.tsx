@@ -167,7 +167,6 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
-    document.removeEventListener('mousemove', handleDocumentMouseMove);
     if(isRootMouseDown.current) {
       if(isFocused && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
         Editable.focus(editor)
@@ -179,12 +178,14 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => { 
+    if(event.button !== 0 || !isRootMouseDown.current || event.defaultPrevented) return
     const point = Editable.findEventPoint(editor, event)
     const range = handleSelecting(point)
     if(range)  editor.onSelecting()
   }
 
-  const handleRootMouseDown = (event: MouseEvent) => {
+  const handleRootMouseDown = (event: React.MouseEvent) => {
+    if(event.defaultPrevented) return
     isRootMouseDown.current = true
     if(isDoubleClickRef.current) {
       if(isSamePoint(event)) {
@@ -203,9 +204,6 @@ export const ContentEditable = (props: EditableProps) => {
       if(range) editor.onSelectStart()
     }
     else startPointRef.current = null
-    if(event.button === 0) {
-      document.addEventListener('mousemove', handleDocumentMouseMove);
-    }
   }
 
   const handleKeydown = (event: React.KeyboardEvent) => { 
@@ -323,18 +321,14 @@ export const ContentEditable = (props: EditableProps) => {
       onChange()
       setCurrentSelection(selection ? {...selection} : undefined)
     }
-    const root = EDITOR_TO_ELEMENT.get(editor)
-    console.log(root)
-    document.addEventListener('mousedown', handleDocumentMouseDown)
-    document.addEventListener('mouseup', handleDocumentMouseUp)
-
-    root?.addEventListener('mousedown', handleRootMouseDown)
+    window.addEventListener('mousedown', handleDocumentMouseDown)
+    window.addEventListener('mouseup', handleDocumentMouseUp)
+    window.addEventListener('mousemove', handleDocumentMouseMove)
 
     return () => {
-      document.removeEventListener('mousedown', handleDocumentMouseDown)
-      document.removeEventListener('mouseup', handleDocumentMouseUp)
-
-      root?.removeEventListener('mousedown', handleRootMouseDown)
+      window.removeEventListener('mousedown', handleDocumentMouseDown)
+      window.removeEventListener('mouseup', handleDocumentMouseUp)
+      window.removeEventListener('mousemove', handleDocumentMouseMove)
     }
   }, [editor])
 
@@ -443,6 +437,7 @@ export const ContentEditable = (props: EditableProps) => {
           // Allow for passed-in styles to override anything.
           ...style,
         }}
+        onMouseDown={handleRootMouseDown}
         onClick={handleMultipleClick}
       >
         <Children

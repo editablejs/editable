@@ -48,7 +48,11 @@ interface TaskProps {
 
 const TaskElement = ({ checked, onChange }: TaskProps) => { 
 
-  return <span onClick={() => onChange(!checked)} className={`${prefixCls}-checkbox`}><span className={`${prefixCls}-inner`}></span></span>
+  const handleMouseDown = (e: React.MouseEvent) => { 
+    e.preventDefault()
+  }
+
+  return <span onMouseDown={handleMouseDown} onClick={() => onChange(!checked)} className={`${prefixCls}-checkbox`}><span className={`${prefixCls}-inner`}></span></span>
 }
 
 export const withTaskList = <T extends Editable>(editor: T, options: TaskListOptions = {}) => { 
