@@ -2,7 +2,9 @@ export * from './mark'
 export * from './fontsize'
 export * from './heading'
 export * from './blockquote'
-export * from './list'
+export * from './list/list'
+export * from './list/ordered'
+export * from './list/unordered'
 export * from './indent'
 
 import { Editable } from '@editablejs/editor'
@@ -10,9 +12,10 @@ import { MarkEditor, MarkOptions, withMark } from './mark'
 import { FontSizeEditor, FontSizeOptions, withFontSize } from './fontsize'
 import { HeadingEditor, HeadingOptions, withHeading } from './heading'
 import { BlockquoteOptions, withBlockquote, BlockquoteEditor } from './blockquote'
-import { ListEditor, ListOptions, withList } from './list';
 import Toolbar from './toolbar'
 import { IndentEditor, IndentOptions, withIndent } from './indent'
+import { OrderedListOptions, withOrderedList, OrderedListEditor } from './list/ordered'
+import { UnOrderedListOptions, withUnOrderedList, UnOrderedListEditor } from './list/unordered'
 
 export {
   Toolbar
@@ -25,7 +28,8 @@ interface PluginOptions {
   fontSize?: FontSizeOptions
   heading?: HeadingOptions
   blockquote?: BlockquoteOptions
-  list?: ListOptions
+  orderedList?: OrderedListOptions
+  unOrderedList?: UnOrderedListOptions
   indent?: IndentOptions
 }
 
@@ -35,6 +39,7 @@ export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   newEditor = withIndent(newEditor, options.indent)
   newEditor = withHeading(newEditor, options.heading)
   newEditor = withBlockquote(newEditor, options.blockquote)
-  newEditor = withList(newEditor, options.list)
-  return newEditor as Editable & MarkEditor & HeadingEditor & FontSizeEditor & BlockquoteEditor & ListEditor & IndentEditor
+  newEditor = withOrderedList(newEditor, options.orderedList)
+  newEditor = withUnOrderedList(newEditor, options.unOrderedList)
+  return newEditor as Editable & MarkEditor & HeadingEditor & FontSizeEditor & BlockquoteEditor & OrderedListEditor & IndentEditor & UnOrderedListEditor
 }

@@ -32,7 +32,9 @@ const initialValue = [
 ]
 
 export default function Docs() {
-  const [ editor ] = useState(() => withPlugins(withEditable(createEditor()), { fontSize: { defaultSize: '14px'}}))
+  const [ editor ] = useState(() => withPlugins(withEditable(createEditor()), { 
+    fontSize: { defaultSize: '14px'}
+  }))
   
   return (
     <div className={styles.wrapper}>

@@ -39,12 +39,14 @@ export const INDENT_OPTIONS = new WeakMap<Editable, IndentOptions>()
 
 export interface IndentEditor extends Editable {
 
-  toggleIndent: (mode?: 'line' | 'auto') => void
+  toggleIndent: (mode?: IndentMode) => void
 
   toggleOutdent: () => void
 
   onIndentMatch: (<T extends Node>(node: Node, path: Path) => node is T) | ((node: Node, path: Path) => boolean)
 }
+
+export type IndentMode = 'line' | 'auto'
 
 export const IndentEditor = {
   isIndentEditor: (editor: Editable): editor is IndentEditor => {
@@ -78,7 +80,7 @@ export const IndentEditor = {
     return null
   },
 
-  toggle: (editor: IndentEditor, mode?: 'line' | 'auto') => { 
+  toggle: (editor: IndentEditor, mode?: IndentMode) => { 
     editor.toggleIndent(mode)
   },
 
@@ -182,7 +184,7 @@ export const renderIndentAttributes = (editor: Editable, { attributes, element }
   return next({ attributes: Object.assign({}, attributes, { style }), element })
 }
 
-const toggleIndent = (editor: IndentEditor, size: number, mode: 'line' | 'auto' = 'auto') => { 
+const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'auto') => { 
   const { selection } = editor
   if(!selection) return
   // 是否选中一行

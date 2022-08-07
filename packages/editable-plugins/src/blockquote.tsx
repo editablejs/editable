@@ -4,7 +4,6 @@ import './blockquote.less'
 
 export const BLOCKQUOTE_KEY = 'blockquote'
 
-
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
 const defaultHotkey: Hotkey = 'mod+shift+e'
