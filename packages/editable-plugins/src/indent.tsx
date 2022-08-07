@@ -126,6 +126,30 @@ export const IndentEditor = {
       setLineIndent(editor, [element, path], -99999)
     }
   },
+
+  canSetIndent: (editor: IndentEditor, mode: IndentMode = 'auto') => { 
+    const { selection } = editor
+    if(!selection) return false
+    // 是否选中一行
+    const selectLine = Editable.getSelectLine(editor)
+    // 是否选中在一行的开始或结尾位置
+    const selectLineEdge = Editable.isSelectLineEdge(editor)
+    
+    const isCollapsed = Range.isCollapsed(selection)
+    if(isCollapsed && (!selectLine || mode === 'line')) {
+      const entry = Editor.above(editor, { 
+        match: editor.onIndentMatch,
+        at: selection.anchor
+      })
+      if(!entry) return false
+      const [_, path] = entry
+      // 在节点的开始位置，设置text indent
+      if(Editor.isStart(editor, selection.focus, path) || selectLineEdge) return true
+    } else {
+      return selectLine
+    }
+    return false
+  }
 }
 
 const setTextIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: number) => { 

@@ -440,7 +440,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
         match: n => ListEditor.isList(editor, n, kind)
       })
       // 设置列表的缩进
-      if(entry) { 
+      if(entry && IndentEditor.canSetIndent(newEditor, 'line')) { 
         let [list, path] = entry
         const { listKey } = list
         const isStart = isStartList(editor, {
