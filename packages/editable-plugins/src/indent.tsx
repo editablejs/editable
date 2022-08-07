@@ -149,6 +149,31 @@ export const IndentEditor = {
       return selectLine
     }
     return false
+  },
+
+  insertIndent: (editor: Editable) => { 
+    const { selection } = editor
+    if(!selection) return
+    const size = IndentEditor.getSize(editor)
+    Transforms.insertNodes(editor, {
+      type: INDENT_KEY,
+      textIndent: Math.abs(size),
+      children: [],
+    } as Indent, {
+      at: selection,
+    })
+    const { focus } = selection
+    const path = focus.path.concat()
+    const lastIndex = path.length - 1
+    path[lastIndex] = path[lastIndex] + 2
+    const point = {
+      offset: 0,
+      path: path
+    }
+    Transforms.select(editor, {
+      anchor: point,
+      focus: point,
+    })
   }
 }
 
@@ -251,25 +276,7 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'au
     return
   }
 
-  Transforms.insertNodes(editor, {
-    type: INDENT_KEY,
-    textIndent: Math.abs(size),
-    children: [],
-  } as Indent, {
-    at: selection,
-  })
-  const { focus } = selection
-  const path = focus.path.concat()
-  const lastIndex = path.length - 1
-  path[lastIndex] = path[lastIndex] + 2
-  const point = {
-    offset: 0,
-    path: path
-  }
-  Transforms.select(editor, {
-    anchor: point,
-    focus: point,
-  })
+  IndentEditor.insertIndent(editor)
 }
 
 export const withIndent = <T extends Editable>(editor: T, options: IndentOptions = {}) => {
