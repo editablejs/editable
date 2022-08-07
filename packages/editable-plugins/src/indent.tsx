@@ -234,7 +234,18 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'au
   } as Indent, {
     at: selection,
   })
-  Transforms.collapse(editor, { edge: 'end' })
+  const { focus } = selection
+  const path = focus.path.concat()
+  const lastIndex = path.length - 1
+  path[lastIndex] = path[lastIndex] + 2
+  const point = {
+    offset: 0,
+    path: path
+  }
+  Transforms.select(editor, {
+    anchor: point,
+    focus: point,
+  })
 }
 
 export const withIndent = <T extends Editable>(editor: T, options: IndentOptions = {}) => {
