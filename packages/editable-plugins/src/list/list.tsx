@@ -202,7 +202,7 @@ export const ListEditor = {
     return elementIndentLeval - prefixIndentLeval
   },
 
-  findStartList: (editor: Editable, options: FindListOptions) => { 
+  findStartList: (editor: Editable, options: FindListOptions, callback?: (list: NodeEntry<List>) => boolean) => { 
     let { path, listKey, leval, kind } = options
     let entry: NodeEntry<List> | undefined = undefined
     const match = (n: Node): n is List => ListEditor.isList(editor, n, kind) && n.listKey === listKey 
@@ -218,6 +218,7 @@ export const ListEditor = {
       }
       path = p
       entry = prev
+      if(callback && callback(entry)) break
     }
     if(!entry) {
       [entry] = Editor.nodes<List>(editor, {
@@ -347,6 +348,8 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
             path,
             listKey: list.listKey,
             leval,
+          }, ([list]) => {
+            return list.leval === leval
           })
           Transforms.setNodes<List>(newEditor, { 
             kind: startList.kind, 
