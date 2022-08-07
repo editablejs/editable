@@ -153,8 +153,9 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleSelecting = (point: Point | null) => { 
-    if(!startPointRef.current || !point) return
-    const anchor = startPointRef.current
+    if(!point) return
+    const anchor = IS_SHIFT_PRESSED.get(editor) && editor.selection ? editor.selection.anchor : startPointRef.current
+    if(!anchor) return
     const range: Range = { anchor, focus: point }
     if(editor.selection && Range.equals(range, editor.selection)) {
       Editable.focus(editor)
