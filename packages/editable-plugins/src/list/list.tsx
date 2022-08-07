@@ -175,12 +175,10 @@ export const ListEditor = {
     TEMPLATE_WEAKMAP.set(editor, templates)
   },
 
-  getTemplates: (editor: ListEditor, kind: string, key: string): ListTemplate => { 
+  getTemplates: (editor: ListEditor, kind: string, key: string) => { 
     const templates = TEMPLATE_WEAKMAP.get(editor) ?? new Map()
     const list: ListTemplate[] = templates.get(kind) ?? []
-    const template = list.find(t => t.key === key)
-    if(!template) throw new Error(`template not found: ${template}`)
-    return template
+    return list.find(t => t.key === key)
   },
 
   calcLeval: (editor: Editable, kind: string, options: {
