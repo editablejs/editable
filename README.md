@@ -64,7 +64,12 @@ plugin directory
 - [x] Code
 - [x] Sub
 - [x] Sup
-- [ ] Fontsize
+- [x] Fontsize
+- [x] OrderedList
+- [x] UnOrderedList
+- [x] TaskList
+- [x] Quoteblock
+- [x] Indent
 - [ ] Fontcolor
 - [ ] BackgroundColor
 - [ ] Redo
@@ -72,7 +77,7 @@ plugin directory
 - [ ] Link
 - [ ] Image
 - [ ] Codeblock
-- [ ] Heading
+- [x] Heading
 - [ ] Table
 - [ ] Hr
-- [ ] Toolbar
+- [x] Toolbar
