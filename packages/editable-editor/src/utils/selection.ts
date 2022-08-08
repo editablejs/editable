@@ -17,7 +17,8 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
   const findKey = (rect: DOMRect) => {
     for(const lineKey of lineKeys) {
       const { top, bottom, right } = lineKey
-      if((rect.top >= top && rect.bottom <= bottom || rect.top <= top && rect.bottom >= bottom) && rect.left <= right + 1) {
+      const prevs = lines.get(lineKey)
+      if((rect.top >= top && rect.bottom <= bottom || rect.top <= top && rect.bottom >= bottom) && rect.left <= (prevs ? prevs[prevs.length - 1].right : right) + 1) {
         return lineKey
       }
     }
@@ -224,7 +225,7 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   const lineRects: DOMRect[] = []
   for(const [line, rects] of lines) {
     // 找到对应行所在的 element
-    const blockRect = blockRects.find(r => (r.top >= line.top && r.bottom <= line.bottom || r.top <= line.top && r.bottom >= line.bottom) && line.left <= r.right + 1)
+    const blockRect = blockRects.find(r => (r.top >= line.top && r.bottom <= line.bottom || r.top <= line.top && r.bottom >= line.bottom) && line.left >= r.left && line.right <= r.right)
     const el = blockRect ? rectMap.get(blockRect) : null
     // 一行的最后rect的right 减去第一个rect的left 行得到宽度
     let width = rects[rects.length - 1].right - rects[0].left
