@@ -435,14 +435,17 @@ export const Editable = {
     return offsetNode
   },
 
-  toLowestPoint(editor: Editable, point: Point, edge: 'start' | 'end' = 'start'): Point { 
-    let [node] = Editor.node(editor, point.path)
-    let path = point.path
-    let offset = point.offset
+  toLowestPoint(editor: Editable, at: Point | Path, edge: 'start' | 'end' = 'start'): Point { 
+    const isPoint = Point.isPoint(at)
+    let path = isPoint ? at.path : at
+    let offset = isPoint ? at.offset : 0
+    let [node] = Editor.node(editor, path)
+
     while(Element.isElement(node)) {
       const { children } = node
-      node = children[Math.min(offset, children.length - 1)]
-      path = Editable.findPath(editor, node)
+      const index = Math.min(offset, children.length - 1)
+      node = children[index]
+      path = path.concat(index)
       offset = edge === 'start' ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
     }
     return {
