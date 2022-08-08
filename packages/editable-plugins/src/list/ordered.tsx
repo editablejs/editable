@@ -88,7 +88,7 @@ export const OrderedListTemplates: ListTemplate[] = [
 ]
 
 const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { editor: Editable, element: List, template?: ListTemplate }) => { 
-  const { leval, listKey } = element
+  const { leval, key } = element
   const ref = React.useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
@@ -97,7 +97,7 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
       const path = Editable.findPath(editor, element)
       const [start, startPath] = ListEditor.findStartList(editor, {
         path,
-        listKey,
+        key,
         leval,
         kind: ORDERED_LIST_KEY
       })
@@ -120,7 +120,7 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
     } else if(label) {
       label.style.marginLeft = ''
     }
-  }, [editor, element, leval, listKey, template.depth])
+  }, [editor, element, leval, key, template.depth])
 
   return <span ref={ref} className={`${prefixCls}-label`}>{template.render(element)}</span>
 }

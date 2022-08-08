@@ -1,11 +1,13 @@
-import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms } from "slate";
-import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./list";
+import { Editable, ElementAttributes, isHotkey, RenderElementProps } from "@editablejs/editor";
+import { Transforms, Node } from "slate";
+import { List, ListEditor, ToggleListOptions, withList } from "./list";
 import './task.less'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
 const TASK_LIST_KEY = "task-list"
+
+const DATA_TASK_CHECKED_KEY = "data-task-checked"
 
 const defaultHotkey: Hotkey = 'mod+shift+9'
 
@@ -30,6 +32,10 @@ export const TaskListEditor = {
     return !!(editor as TaskListEditor).toggleTaskList
   },
 
+  isTask: (editor: Editable, n: Node): n is Task => { 
+    return ListEditor.isList(editor, n, TASK_LIST_KEY) && n.kind === TASK_LIST_KEY
+  },
+
   queryActive: (editor: Editable) => {
     return ListEditor.queryActive(editor, TASK_LIST_KEY)
   },
@@ -44,6 +50,10 @@ const prefixCls = 'editable-task-list'
 interface TaskProps {
   checked: boolean
   onChange: (checked: boolean) => void
+}
+
+interface RenderTaskElementProps extends RenderElementProps {
+  attributes: ElementAttributes & Partial<Record<typeof DATA_TASK_CHECKED_KEY, boolean>>
 }
 
 const TaskElement = ({ checked, onChange }: TaskProps) => { 
@@ -85,10 +95,10 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
 
   const { renderElement } = newEditor
 
-  newEditor.renderElement = ({ element, attributes, children }) => {
+  newEditor.renderElement = ({ element, attributes, children }: RenderTaskElementProps) => {
     
-    if(ListEditor.isList(editor, element, TASK_LIST_KEY)) { 
-      (attributes as any)['data-task-checked'] = (element as Task).checked ?? false
+    if(TaskListEditor.isTask(editor, element)) { 
+      attributes[DATA_TASK_CHECKED_KEY] = element.checked ?? false
     }
     return renderElement({ attributes, children, element })
   }

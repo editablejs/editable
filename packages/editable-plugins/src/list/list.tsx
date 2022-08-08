@@ -9,7 +9,7 @@ import './list.less'
 interface ListNode {
   kind: string
   start: number
-  listKey: string
+  key: string
   leval: number
   template?: string
 }
@@ -61,15 +61,15 @@ export const ListEditor = {
     if(activeElements) {
       const startLists = new Map<string, NodeEntry<List>>()
       for(const [element, path] of activeElements) { 
-        const { listKey } = element
-        if(!startLists.has(listKey)) {
+        const { key } = element
+        if(!startLists.has(key)) {
           const startList = ListEditor.findStartList(editor, {
             path,
-            listKey,
+            key,
             leval: element.leval,
             kind
           }) ?? [element, path]
-          startLists.set(listKey, startList)
+          startLists.set(key, startList)
         }
       }
       Transforms.unwrapNodes(editor, { 
@@ -81,7 +81,7 @@ export const ListEditor = {
       for(const [key, [list, path]] of startLists) {
         updateListStart(editor, kind, {
           path,
-          listKey: key,
+          key: key,
           leval: list.leval,
           start: list.start
         })
@@ -103,30 +103,30 @@ export const ListEditor = {
         at: beforePath,
         match: n => ListEditor.isList(editor, n, kind)
       })
-      let listKey = ''
+      let key = ''
       let next: NodeEntry<List> | undefined = undefined
       if(prev) {
         const prevList = prev[0]
-        listKey = prevList.listKey
+        key = prevList.key
         start = prevList.start + 1
       } else if(([next] = Editor.nodes<List>(editor, {
         at: afterPath,
         match: n => ListEditor.isList(editor, n, kind)
       })) && next) {
         const nextList = next[0]
-        listKey = nextList.listKey
+        key = nextList.key
         start = Math.max(nextList.start - 1, 1)
       } else {
-        listKey = generateRandomKey()
+        key = generateRandomKey()
       }
       let nextPath: Path = []
       for(const [node, path] of entrys) { 
         const { lineIndent = 0, textIndent = 0 } = node as Indent
-        const leval = ListEditor.calcLeval(editor, kind, {path, key: listKey})
+        const leval = ListEditor.calcLeval(editor, kind, {path, key: key})
         const element: List & Indent = { 
           type: LIST_KEY,
           kind,
-          listKey, 
+          key, 
           start, 
           leval, 
           lineIndent: lineIndent + textIndent,
@@ -142,7 +142,7 @@ export const ListEditor = {
           const node = list ? list[0] : element
           Transforms.setNodes(editor, {
             ...element,
-            listKey: node.leval > 0 ? node.listKey : element.listKey,
+            key: node.leval > 0 ? node.key : element.key,
             lineIndent: (node as Indent).lineIndent
           }, {
             at: list ? list[1] : path
@@ -161,7 +161,7 @@ export const ListEditor = {
       if(nextPath.length > 0) {
         updateListStart(editor, kind, {
           path: nextPath,
-          listKey
+          key
         })
       }
     }
@@ -192,7 +192,7 @@ export const ListEditor = {
     })
     const prev = Editor.previous<List>(editor, { 
       at: path,
-      match: n => ListEditor.isList(editor, n, kind) && n.listKey === key
+      match: n => ListEditor.isList(editor, n, kind) && n.key === key
     })
     const prevIndentLeval = prev ? IndentEditor.getLeval(editor, prev[0] as Indent) : 0
     const prefixIndentLeval = prev ? (prevIndentLeval - prev[0].leval) : 0
@@ -201,9 +201,9 @@ export const ListEditor = {
   },
 
   findStartList: (editor: Editable, options: FindListOptions, callback?: (list: NodeEntry<List>) => boolean) => { 
-    let { path, listKey, leval, kind } = options
+    let { path, key, leval, kind } = options
     let entry: NodeEntry<List> | undefined = undefined
-    const match = (n: Node): n is List => ListEditor.isList(editor, n, kind) && n.listKey === listKey 
+    const match = (n: Node): n is List => ListEditor.isList(editor, n, kind) && n.key === key 
     while(true) {
       const prev = Editor.previous<List>(editor, { 
         at: path,
@@ -230,7 +230,7 @@ export const ListEditor = {
 
 interface FindListOptions { 
   path: Path, 
-  listKey: string, 
+  key: string, 
   leval?: number
   kind?: string
 }
@@ -248,7 +248,7 @@ type UpdateListStartOptions = FindListOptions & {
 }
 
 const updateListStart = (editor: Editable, kind: string, options: UpdateListStartOptions) => { 
-  const { path, listKey, leval, mode = 'all', start } = options
+  const { path, key, leval, mode = 'all', start } = options
   let startPath = path
   const startMap: Record<number, number> = {}
   if(start !== undefined) {
@@ -257,7 +257,7 @@ const updateListStart = (editor: Editable, kind: string, options: UpdateListStar
   if(mode === 'all') {
     const startList = ListEditor.findStartList(editor, {
       path,
-      listKey,
+      key,
       leval,
       kind
     })
@@ -276,7 +276,7 @@ const updateListStart = (editor: Editable, kind: string, options: UpdateListStar
   while(true) {
     const next = Editor.next<List>(editor, {
       at: startPath,
-      match: n => ListEditor.isList(editor, n, kind) && n.listKey === listKey && (leval === undefined || n.leval === leval)
+      match: n => ListEditor.isList(editor, n, kind) && n.key === key && (leval === undefined || n.leval === leval)
     })
     if(!next) break
     const [list, path] = next
@@ -344,7 +344,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           const leval = list.leval - 1
           const [startList] = ListEditor.findStartList(newEditor, {
             path,
-            listKey: list.listKey,
+            key: list.key,
             leval,
           }, ([list]) => {
             return list.leval === leval
@@ -358,18 +358,18 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           IndentEditor.addLineIndent(newEditor, path, true)
           updateListStart(editor, kind, {
             path,
-            listKey: list.listKey,
+            key: list.key,
           })
           if(startList.kind !== kind)
           updateListStart(editor, startList.kind, {
             path,
-            listKey: list.listKey,
+            key: list.key,
           })
         } else {
           ListEditor.toggle(editor, kind)
           updateListStart(editor, kind, {
             path,
-            listKey: list.listKey,
+            key: list.key,
             leval: list.leval
           })
         }
@@ -389,7 +389,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
       })
       updateListStart(editor, kind, {
         path: selection.focus.path,
-        listKey: list.listKey,
+        key: list.key,
         leval: list.leval
       })
       return
@@ -397,7 +397,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
       const entry = Editor.above<List>(newEditor, { match: n => ListEditor.isList(editor, n, kind)})
       if(entry) {
         let [list, path] = entry
-        const { listKey } = list
+        const { key } = list
         
         if(Editor.isStart(newEditor, selection.focus, path)) {
           if(Editable.isEmpty(newEditor, list) && list.leval > 0 && IndentEditor.isIndentEditor(newEditor)) { 
@@ -406,7 +406,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           }
           const startList = ListEditor.findStartList(newEditor, {
             path,
-            listKey,
+            key,
             leval: list.leval,
             kind
           }) ?? entry
@@ -420,7 +420,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           })
           updateListStart(editor, kind, {
             path,
-            listKey,
+            key,
             leval: list.leval,
             start: startList[0].start
           })
@@ -446,10 +446,10 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           return
         } 
         let [list, path] = entry
-        const { listKey } = list
+        const { key } = list
         const isStart = isStartList(editor, {
           path,
-          listKey,
+          key,
           kind
         })
         // 如果是列表的开头，则更新所有后代的缩进
@@ -459,13 +459,13 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           while(true) {
             next = Editor.next(newEditor, { 
               at: path,
-              match: n => ListEditor.isList(editor, n, kind) && n.listKey === listKey
+              match: n => ListEditor.isList(editor, n, kind) && n.key === key
             })
             if(!next) break
             path = next[1]
             IndentEditor.addLineIndent(editor, path, sub)
             if(sub) {
-              const leval = ListEditor.calcLeval(newEditor, kind, {path, key: listKey})
+              const leval = ListEditor.calcLeval(newEditor, kind, {path, key: key})
               Transforms.setNodes<List>(newEditor, { leval }, {
                 at: path,
               })
@@ -474,7 +474,7 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
           if(sub) {
             updateListStart(editor, kind, {
               path,
-              listKey
+              key
             })
           }
         } 
@@ -490,14 +490,14 @@ export const withList = <T extends Editable>(editor: T, options: ListOptions) =>
             match: n => ListEditor.isList(newEditor, n, kind)
           })
           for(const [_, p] of listEntries) {
-            const leval = ListEditor.calcLeval(newEditor, kind, {path: p, key: listKey})
+            const leval = ListEditor.calcLeval(newEditor, kind, {path: p, key: key})
             Transforms.setNodes<List>(newEditor, { leval }, {
               at: p,
             })
           }
           updateListStart(editor, kind, {
             path,
-            listKey
+            key
           })
         }
       } else if(sub){
