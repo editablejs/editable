@@ -10,6 +10,7 @@ import {
   IS_SHIFT_PRESSED,
   IS_COMPOSING,
   SET_IS_FOCUSED,
+  DRAW_SELECTION_TO_EDITOR,
 } from '../utils/weak-maps'
 import {
   isDOMText,
@@ -680,6 +681,20 @@ export const withEditable = <T extends Editor>(editor: T) => {
       width: 'fit-content',
       whiteSpace: 'nowrap'
     }} {...attributes}>{children}</span></span>
+  }
+
+  e.clearSelectionDraw = () => {
+    const setSelectionDraw = DRAW_SELECTION_TO_EDITOR.get(e)
+    if(setSelectionDraw) { 
+      setSelectionDraw(false)
+    }
+  }
+
+  e.startSelectionDraw = () => { 
+    const setSelectionDraw = DRAW_SELECTION_TO_EDITOR.get(e)
+    if(setSelectionDraw) { 
+      setSelectionDraw(true)
+    }
   }
 
   return e

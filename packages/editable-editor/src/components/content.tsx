@@ -30,6 +30,7 @@ import {
   EDITOR_TO_TEXTAREA,
   EDITOR_TO_SHADOW,
   SET_IS_FOCUSED,
+  DRAW_SELECTION_TO_EDITOR,
 } from '../utils/weak-maps'
 import Shadow, { DrawRect, ShadowBox } from './shadow'
 import { getWordRange } from '../utils/string'
@@ -92,9 +93,11 @@ export const ContentEditable = (props: EditableProps) => {
   const caretTimer = useRef<number>()
   const ref = useRef<HTMLDivElement>(null)
   const caretRef = useRef<HTMLDivElement>(null)
+  const [ drawSelection, setDrawSelection ] = useState(true)
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
+  DRAW_SELECTION_TO_EDITOR.set(editor, setDrawSelection)
   // Whenever the editor updates...
   useIsomorphicLayoutEffect(() => {
     // Update element-related weak maps with the DOM element ref.
@@ -126,7 +129,6 @@ export const ContentEditable = (props: EditableProps) => {
   const [ caretRect, setCaretRect ] = useState<DrawRect | null>(null)
   const [ boxRects, setBoxRects ] = useState<DrawRect[]>([])
   const [ textareaRect, setTextareaRect ] = useState<DrawRect | null>(null)
-
   const isRootMouseDown = useRef(false)
   const startPointRef = useRef<Point | null>(null)
 
@@ -167,7 +169,7 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
-    if(isRootMouseDown.current) {
+    if(isRootMouseDown.current && !event.defaultPrevented) {
       if(isFocused && EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)) {
         Editable.focus(editor)
       }
@@ -447,10 +449,10 @@ export const ContentEditable = (props: EditableProps) => {
       </Component>
       <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         {
-          <ShadowBox rect={caretRect || { width: 0, height: 0, top: 0, left: 0}} ref={caretRef} style={{ willChange: 'opacity, transform', opacity: caretRect ? 1 : 0 }} />
+          drawSelection && <ShadowBox rect={caretRect || { width: 0, height: 0, top: 0, left: 0}} ref={caretRef} style={{ willChange: 'opacity, transform', opacity: caretRect ? 1 : 0 }} />
         }
         {
-          boxRects.map((rect, index) => <ShadowBox key={index} rect={rect} style={{ willChange: 'transform', ...rect.style }} />)
+          drawSelection && boxRects.map((rect, index) => <ShadowBox key={index} rect={rect} style={{ willChange: 'transform', ...rect.style }} />)
         }
         {
           <ShadowBox rect={Object.assign({}, textareaRect, { color: 'transparent', width: 1})} style={{ opacity: 0, outline: 'none', caretColor: 'transparent', overflow: 'hidden'}}>

@@ -45,3 +45,6 @@ export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
  * Weak map for associating the context `onChange` context with the plugin.
  */
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
+
+
+export const DRAW_SELECTION_TO_EDITOR: WeakMap<Editor, (draw: boolean) => void> = new WeakMap()

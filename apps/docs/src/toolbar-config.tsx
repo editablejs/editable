@@ -1,4 +1,4 @@
-import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, Icon, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor } from "@editablejs/editor-plugins"
+import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, Icon, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor, TableEditor } from "@editablejs/editor-plugins"
 
 const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
 
@@ -129,6 +129,16 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
         if(TaskListEditor.isListEditor(editor)) TaskListEditor.toggle(editor)
       },
       children: <Icon name="taskList" />
+    }, 
+    {
+      type: 'button',
+      onActive: (editor) => { 
+        return !!TableEditor.isActive(editor)
+      },
+      onToggle: (editor) => {
+        if(TableEditor.isTableEditor(editor)) TableEditor.toggle(editor)
+      },
+      children: <Icon name="table" />
     }
   ],
 ]

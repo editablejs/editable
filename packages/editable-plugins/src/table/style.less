@@ -1,0 +1,31 @@
+.editable-table {
+  position: relative;
+  
+  > table {
+    table-layout: fixed;
+    white-space: pre-wrap;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  &-row {
+    min-height: 30px;
+  }
+
+  &-cell {
+    border: 1px solid #d9d9d9;
+    vertical-align: top;
+    min-width: 50px;
+
+    &-inner {
+      padding: 6px;
+    }
+  }
+
+  &-selection {
+    position: absolute;
+    border: 1px solid rgb(0, 106, 254);
+    background-color: rgba(0, 106, 254, 0.12);
+    pointer-events: none;
+  }
+}

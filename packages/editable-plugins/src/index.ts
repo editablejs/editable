@@ -7,6 +7,7 @@ export * from './list/ordered'
 export * from './list/unordered'
 export * from './list/task'
 export * from './indent'
+export * from './table'
 
 import { Editable } from '@editablejs/editor'
 import { MarkEditor, MarkOptions, withMark } from './mark'
@@ -18,6 +19,7 @@ import { IndentEditor, IndentOptions, withIndent } from './indent'
 import { OrderedListOptions, withOrderedList, OrderedListEditor } from './list/ordered'
 import { UnOrderedListOptions, withUnOrderedList, UnOrderedListEditor } from './list/unordered'
 import { TaskListOptions, withTaskList, TaskListEditor } from './list/task'
+import { TableOptions, TableEditor, withTable } from './table'
 
 export {
   Toolbar
@@ -34,6 +36,7 @@ interface PluginOptions {
   unOrderedList?: UnOrderedListOptions
   taskList?: TaskListOptions
   indent?: IndentOptions
+  table?: TableOptions
 }
 
 export const withPlugins = (editor: Editable, options: PluginOptions = {}) => { 
@@ -45,5 +48,6 @@ export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   newEditor = withOrderedList(newEditor, options.orderedList)
   newEditor = withUnOrderedList(newEditor, options.unOrderedList)
   newEditor = withTaskList(newEditor, options.taskList)
-  return newEditor as Editable & MarkEditor & HeadingEditor & FontSizeEditor & BlockquoteEditor & OrderedListEditor & IndentEditor & UnOrderedListEditor & TaskListEditor
+  newEditor = withTable(newEditor, options.table)
+  return newEditor as Editable & MarkEditor & HeadingEditor & FontSizeEditor & BlockquoteEditor & OrderedListEditor & IndentEditor & UnOrderedListEditor & TaskListEditor & TableEditor
 }

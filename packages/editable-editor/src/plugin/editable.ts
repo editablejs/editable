@@ -143,6 +143,8 @@ export interface Editable extends BaseEditor {
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
+  clearSelectionDraw: () => void
+  startSelectionDraw: () => void
 }
 
 export const Editable = {
