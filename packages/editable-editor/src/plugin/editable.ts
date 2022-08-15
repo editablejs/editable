@@ -115,6 +115,9 @@ export interface EditorElements {
  */
 export interface Editable extends BaseEditor {
   canFocusVoid: (element: Element) => boolean
+  isGrid: (value: any) => boolean
+  isRow: (value: any) => boolean
+  isCell: (value: any) => boolean
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
   insertTextData: (data: DataTransfer) => boolean
@@ -168,6 +171,19 @@ export const Editable = {
       return false
     }
   },
+
+  isGrid(editor: Editable, value: any){
+    return editor.isGrid(value)
+  },
+
+  isRow(editor: Editable, value: any){
+    return editor.isRow(value)
+  },
+
+  isCell(editor: Editable, value: any){
+    return editor.isCell(value)
+  },
+
   /**
    * 获取在选区内选中一行内容的节点以及所在行的索引
    * @param editor
@@ -609,10 +625,11 @@ export const Editable = {
             addToElements(adjacent[0])
           }
         } else {
+          const isGrid = Editable.isGrid(editor, node)
           const nodes = Editor.nodes(editor, {
             at: Editable.findPath(editor, node),
-            match: n => Editor.isBlock(editor, n) && Editable.isEmpty(editor, n) || Text.isText(n) && n.text.length > 0,
-            mode: 'highest'
+            match: n => isGrid && Editable.isCell(editor, n) || Text.isText(n),
+            mode: 'highest',
           })
           for(const [child] of nodes) { 
             if(Editor.isBlock(editor, child)) {

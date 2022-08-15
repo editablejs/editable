@@ -59,7 +59,11 @@ export const TableCellEditor = {
 
 export const withTableCell =  <T extends Editable>(editor: T, options: TableCellOptions = {}) => { 
   const newEditor = editor as T & TableCellEditor
-  const { renderElement, deleteBackward, deleteForward } = editor
+  const { renderElement, deleteBackward, deleteForward, isCell } = editor
+
+  newEditor.isCell = (node: Node) => {
+    return TableCellEditor.isTableCell(newEditor, node) || isCell(node)
+  }
 
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props

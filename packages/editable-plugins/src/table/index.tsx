@@ -1,5 +1,5 @@
 import { Editable, RenderElementProps } from "@editablejs/editor"
-import { Transforms } from "slate"
+import { Transforms, Node } from "slate"
 import { withTableCell } from "./cell"
 import { Table, TableEditor, TableOptions, TABLE_OPTIONS_WEAKMAP } from "./editor"
 import { withTableRow } from "./row"
@@ -12,6 +12,12 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
   
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
+
+  const { isGrid } = editor
+
+  newEditor.isGrid = (node: Node) => {
+    return TableEditor.isTable(newEditor, node) || isGrid(node)
+  }
 
   newEditor.toggleTable = (options) => {
     const table = TableEditor.create(newEditor, options)

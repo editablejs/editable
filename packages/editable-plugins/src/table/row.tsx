@@ -76,7 +76,11 @@ const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableR
 
 export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOptions = {}) => { 
   const newEditor = editor as T & TableRowEditor
-  const { renderElement } = editor
+  const { renderElement, isRow } = editor
+
+  newEditor.isRow = (node: Node) => {
+    return TableRowEditor.isTableRow(newEditor, node) || isRow(node)
+  }
 
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props

@@ -46,6 +46,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
     return true
   }
 
+  e.isGrid = (value: any) => false,
+  
+  e.isRow = (value: any) => false,
+
+  e.isCell = (value: any) => false,
+
   e.deleteBackward = unit => {
     if (unit !== 'line') {
       return deleteBackward(unit)

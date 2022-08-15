@@ -85,8 +85,11 @@ export const isClosestY = (x: number, rect: DOMRect, node: Node, closestNode: Cl
     if(!topBetween && (isBetween || min < topMin)) {
       return true
     }
-  } else  {
-    return preceding ? isPrecedingY(rect, node, closestNode) : isFollowingY(rect, node, closestNode)
+    return false
+  } else if(preceding) {
+    return isPrecedingY(rect, node, closestNode)
+  } else {
+    return isFollowingY(rect, node, closestNode)
   }
 }
 
