@@ -4,8 +4,9 @@ import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } fr
 import { Editor, Path, Range } from "slate";
 import { InsertAction, SplitAction } from "./action";
 import { TableCellPoint, TableCellEditor } from "./cell";
-import { TableContext, TableDragOptions } from "./context";
+import { TableContext, TableDragOptions, TableSelection } from "./context";
 import { Table, TableEditor } from "./editor";
+import { TableSelection as TableSelectionElement, useSelection } from "./selection";
 import './style.less'
 
 const prefixCls = 'editable-table';
@@ -14,92 +15,13 @@ interface TableProps extends RenderElementProps<Table> {
   editor: TableEditor
 }
 
-export interface TableSelection {
-  start: TableCellPoint
-  end: TableCellPoint
-}
-
-const isEqualCell = (a: TableCellPoint, b: TableCellPoint) => { 
-  return a[0] === b[0] && a[1] === b[1]
-}
-
 const TableReact: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
   // selection
-  const [selection, setSelection] = useState<TableSelection | null>(null)
-  const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
+  const {selection, selected} = useSelection(editor)
   // drag
   const dragRef = useRef<TableDragOptions | null>(null)
 
-  const selected = useSelected()
-  
-  // select table cell
-  useLayoutEffect(() => {
-    const { selection: editorSelection } = editor
-    if(!selected) {
-      setSelection(null)
-    } else if (editorSelection && Range.isExpanded(editorSelection)) {
-      const [start, end] = Range.edges(editorSelection)
-      const [startEntry] = Editor.nodes(editor, {
-        at: start,
-        match: n => TableCellEditor.isTableCell(editor, n)
-      })
-      if(!startEntry) return setSelection(null)
-      const [endEntry] = Editor.nodes(editor, {
-        at: end,
-        match: n => TableCellEditor.isTableCell(editor, n)
-      })
-      if(!endEntry) return setSelection(null)
-      const [, startPath] = startEntry
-      const [, endPath] = endEntry
-      if(Path.equals(startPath, endPath)) return setSelection(null)
-      setSelection({
-        start: startPath.slice(startPath.length - 2) as TableCellPoint,
-        end: endPath.slice(endPath.length - 2) as TableCellPoint
-      })
-    } else {
-      setSelection(null)
-    }
-  }, [editor, editor.selection, selected])
-
-  useLayoutEffect(() => {
-    if(!selection) return setSelectionRect(null)
-    let {start, end} = selection
-    if(start[0] > end[0] || start[0] === end[0] && start[1] > end[1]) { 
-      [start, end] = [end, start]
-    } 
-    if(isEqualCell(start, end)) return setSelectionRect(null)
-    const startCell = TableEditor.getCell(editor, element, start)
-    if(!startCell) return setSelectionRect(null)
-    const endCell = TableEditor.getCell(editor, element, end)
-    if(!endCell) return setSelectionRect(null)
-    const startEl = Editable.toDOMNode(editor, startCell[0])
-    const endEl = Editable.toDOMNode(editor, endCell[0])
-    const tableEl = Editable.toDOMNode(editor, element)
-    const tableRect = tableEl.getBoundingClientRect()
-    const startRect = startEl.getBoundingClientRect()
-    const endRect = endEl.getBoundingClientRect()
-    const width = (endRect.left < startRect.left ? startRect.right - endRect.left : endRect.right - startRect.left)
-    const height = Math.max(endRect.bottom - startRect.top, startRect.height) 
-    const top = startRect.top - tableRect.top
-    const left = Math.min(startRect.left - tableRect.left, endRect.left - tableRect.left)
-    setSelectionRect(new DOMRect(left, top, width, height))
-  }, [editor, element, selection])
-
-  useLayoutEffect(() => {
-    if(selectionRect) {
-      editor.clearSelectionDraw()
-    } else {
-      editor.startSelectionDraw()
-    }
-  }, [editor, selectionRect])
-
   const { colsWidth = [] } = element
-
-  const renderSelection = () => {
-    if(!selectionRect) return
-    const { top, left, width, height } = selectionRect
-    return <div className={`${prefixCls}-selection`} style={{ left, top, width, height }} />
-  }
 
   const renderColgroup = () => {
     const colgroup = []
@@ -206,7 +128,8 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     <TableContext.Provider value={{
       editor,
       table: element,
-      dragRef
+      dragRef,
+      selection
     }}>
       <div 
       className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected, [`${prefixCls}-hover`]: isHover})}
@@ -231,9 +154,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
             { children }
           </tbody>
         </table>
-        {
-          renderSelection()
-        }
+        <TableSelectionElement editor={editor} table={element} />
       </div>
     </TableContext.Provider>
   )
