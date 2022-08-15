@@ -50,11 +50,12 @@ interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> 
 
 const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
   const { style, ref, ...rest } = attributes
-
+  const { children: cells } = element
+  // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
     let maxHeight = defaultTableMinRowHeight
-    for(let i = 0; i < element.children.length; i++) {
-      const child = TableCellEditor.getInner(editor, element.children[i])
+    for(let i = 0; i < cells.length; i++) {
+      const child = TableCellEditor.getInner(editor, cells[i])
       const rect = child.getBoundingClientRect()
       maxHeight = Math.max(maxHeight, rect.height + 2)
     }
@@ -63,7 +64,8 @@ const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableR
         at: Editable.findPath(editor, element) 
       })
     }
-  }, [editor, element, ref])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, cells, ref])
  
   return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
 }
