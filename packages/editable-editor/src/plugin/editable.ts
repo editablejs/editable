@@ -609,9 +609,16 @@ export const Editable = {
             addToElements(adjacent[0])
           }
         } else {
-          const nodes = Node.nodes(node)
-          for(const [ node ] of nodes) { 
-            addToElements(node)
+          const nodes = Editor.nodes(editor, {
+            at: Editable.findPath(editor, node),
+            match: n => Editor.isBlock(editor, n) && Editable.isEmpty(editor, n) || Text.isText(n) && n.text.length > 0,
+            mode: 'highest'
+          })
+          for(const [child] of nodes) { 
+            if(Editor.isBlock(editor, child)) {
+              elements.push(Editable.toDOMNode(editor, child))
+            } else
+            addToElements(child)
           }
         }
       }

@@ -1,7 +1,7 @@
 import { Editable, RenderElementProps, useSelected, useCancellablePromises, cancellablePromise } from "@editablejs/editor"
 import classnames from "classnames"
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { Editor, Element, Node, NodeEntry, Transforms } from "slate"
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { Editor, Element, Node, NodeEntry, Transforms, Range, Path } from "slate"
 import { Icon } from "../icon"
 import { TableCell, TableCellEditor, TableCellPoint, withTableCell } from "./cell"
 import { TableRow, TableRowEditor, withTableRow } from "./row"
@@ -135,7 +135,7 @@ export const TableEditor = {
   },
 
   focus: (editor: Editable, options: {
-    point: [number, number], 
+    point: TableCellPoint, 
     tableEntry?: NodeEntry<Table>, 
     edge?: 'start' | 'end'
   }) => {
@@ -154,6 +154,18 @@ export const TableEditor = {
         TableCellEditor.focus(editor, [cell, path], edge)
       }
     }
+  },
+
+  select: (editor: Editable, table: Table, options?: Record<'start' | 'end', TableCellPoint>) => {
+    let { start, end } = options ?? { start: [0, 0], end: [TableEditor.getRowCount(editor, table) - 1, TableEditor.getColCount(editor, table)] }
+    const path = Editable.findPath(editor, table)
+    Transforms.select(editor, {
+      anchor: {
+        path: path.concat(start),
+        offset: 0
+      },
+      focus: Editable.toLowestPoint(editor, end, 'end')
+    })
   },
 
   getCell: (editor: Editable, table: Table, point: [number, number]): NodeEntry<TableCell> | undefined => { 
@@ -206,9 +218,8 @@ const isEqualCell = (a: TableCellPoint, b: TableCellPoint) => {
 const prefixCls = 'editable-table';
 
 const TableTable: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
-  const isMouswDown = useRef(false)
   // selection
-  const [selection, setSelection] = useState<TableSelection>()
+  const [selection, setSelection] = useState<TableSelection | null>(null)
   const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
   // drag
   const dragPoint = useRef<{type: 'cols' | 'rows', x: number, y: number, start: number, end: number}>()
@@ -218,58 +229,38 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
   }, [editor, element])
 
   const selected = useSelected()
+  
   // select table cell
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if(e.button !== 0) return
-    const cellEntry = findCellFromEvent(editor, e)
-    if(cellEntry) {
-      isMouswDown.current = true
-      const point = TableCellEditor.getPoint(editor, cellEntry)
-      setSelection({ start: point, end: point})
+  useEffect(() => {
+    const { selection: editorSelection } = editor
+    if(!selected) {
+      setSelection(null)
+    } else if (editorSelection && Range.isExpanded(editorSelection)) {
+      const [start, end] = Range.edges(editorSelection)
+      const [startEntry] = Editor.nodes(editor, {
+        at: start,
+        match: n => TableCellEditor.isTableCell(editor, n)
+      })
+      if(!startEntry) return setSelection(null)
+      const [endEntry] = Editor.nodes(editor, {
+        at: end,
+        match: n => TableCellEditor.isTableCell(editor, n)
+      })
+      if(!endEntry) return setSelection(null)
+      const [, startPath] = startEntry
+      const [, endPath] = endEntry
+      if(Path.equals(startPath, endPath)) return setSelection(null)
+      setSelection({
+        start: startPath.slice(startPath.length - 2) as TableCellPoint,
+        end: endPath.slice(endPath.length - 2) as TableCellPoint
+      })
+    } else {
+      setSelection(null)
     }
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => { 
-    if(isMouswDown.current && selection) {
-      const cellEntry = findCellFromEvent(editor, e)
-      if(!cellEntry) {
-        return
-      }
-      const point = TableCellEditor.getPoint(editor, cellEntry)
-      const { start, end } = selection
-      if(point[0] === start[0] && point[1] === start[1]) {
-        setSelection({ start, end: start })
-        return
-      }
-      if(end[0] === point[0] && end[1] === point[1]) return
-      setSelection({...selection, end: point})
-    }
-  }
-
-  const handleMouseUp = useCallback((e: MouseEvent) => {
-    dragPoint.current = undefined
-    isMouswDown.current = false
-    if(!selection) return
-    const {start, end} = selection
-    if(isEqualCell(start, end)) return
-    const point = Editable.findPath(editor, element)
-    // 设置selection选中单元格
-    e.preventDefault()
-    Transforms.setSelection(editor, {
-      anchor: Editable.toLowestPoint(editor, point.concat(start)),
-      focus: Editable.toLowestPoint(editor, point.concat(end), 'end'),
-    })
-  }, [editor, element, selection])
+  }, [editor, editor.selection, selected])
 
   useLayoutEffect(() => {
-    window.addEventListener('mouseup', handleMouseUp)
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [handleMouseUp])
-
-  useLayoutEffect(() => {
-    if(!selection) return
+    if(!selection) return setSelectionRect(null)
     let {start, end} = selection
     if(start[0] > end[0] || start[0] === end[0] && start[1] > end[1]) { 
       [start, end] = [end, start]
@@ -478,18 +469,20 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     return <div className={`${prefixCls}-all-header`} />
   }
 
-
   const [isHover, setHover] = useState(false)
   const cancellablePromisesApi = useCancellablePromises()
 
   const handleMouseOver = useCallback(() => {
     cancellablePromisesApi.clearPendingPromises()
+    if(selected) return
     const wait = cancellablePromise(cancellablePromisesApi.delay(200))
     cancellablePromisesApi.appendPendingPromise(wait)
     wait.promise.then(() => {
       setHover(true)
+    }).catch(err => {
+
     })
-  }, [cancellablePromisesApi])
+  }, [selected, cancellablePromisesApi])
 
   const handleMouseLevae = useCallback(() => { 
     cancellablePromisesApi.clearPendingPromises()
@@ -512,9 +505,7 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
       {
         renderAllHeader()
       }
-      <table 
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
+      <table
       style={{width: tableWidth}}
       >
         {
