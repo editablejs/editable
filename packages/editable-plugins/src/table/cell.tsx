@@ -18,6 +18,8 @@ export interface TableCellEditor extends Editable {
 
 export type TableCellPoint = [number, number]
 
+export type TableCellEdge = 'start' | 'end'
+
 const prefixCls = 'editable-table-cell';
 
 export const TableCellEditor = {
@@ -39,7 +41,7 @@ export const TableCellEditor = {
     }
   },
 
-  focus: (editor: TableCellEditor, [, path]: NodeEntry<TableCell>, edge: 'start' | 'end' = 'start') => { 
+  focus: (editor: TableCellEditor, [, path]: NodeEntry<TableCell>, edge: TableCellEdge = 'start') => { 
     const point = Editable.toLowestPoint(editor, path, edge)
     Transforms.select(editor, point)
   },

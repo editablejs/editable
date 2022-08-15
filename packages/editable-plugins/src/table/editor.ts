@@ -1,6 +1,6 @@
 import { Editable } from "@editablejs/editor"
 import { Editor, Transforms, NodeEntry, Element, Node } from "slate"
-import { TableCellEditor, TableCellPoint, TableCell } from "./cell"
+import { TableCellEditor, TableCellPoint, TableCell, TableCellEdge } from "./cell"
 import { TableRow, TableRowEditor } from "./row"
 
 export const TABLE_KEY = 'table'
@@ -133,7 +133,7 @@ export const TableEditor = {
   focus: (editor: Editable, options: {
     point: TableCellPoint, 
     tableEntry?: NodeEntry<Table>, 
-    edge?: 'start' | 'end'
+    edge?: TableCellEdge
   }) => {
     let { point, tableEntry, edge = 'start' } = options 
     if(!tableEntry) {
@@ -152,7 +152,7 @@ export const TableEditor = {
     }
   },
 
-  select: (editor: Editable, table: Table, options?: Record<'start' | 'end', TableCellPoint>) => {
+  select: (editor: Editable, table: Table, options?: Record<TableCellEdge, TableCellPoint>) => {
     const { start, end } = options ?? { start: [0, 0], end: [TableEditor.getRowCount(editor, table) - 1, TableEditor.getColCount(editor, table) - 1] }
     const path = Editable.findPath(editor, table)
     Transforms.select(editor, {

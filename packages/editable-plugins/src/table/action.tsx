@@ -9,6 +9,8 @@ import { Table, TableEditor } from "./editor";
 import { TableRow } from "./row";
 
 const prefixCls = 'editable-table';
+const TYPE_COLS = 'cols'
+const TYPE_ROWS = 'rows'
 
 export interface TableActionProps {
   index: number
@@ -36,29 +38,29 @@ export const InsertActionDefault: React.FC<TableActionProps> = ({ left, top, hei
 
   const { editor, table } = useContext(TableContext)
 
-  const type = left !== undefined ? 'cols' : 'rows'
-  const cls = `${prefixCls}-${type}`
+  const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
+  const cls = `${prefixCls}-${type}-insert`
 
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault()
-    if(type === 'cols') {
+    if(type === TYPE_COLS) {
       TableEditor.insertCol(editor, table, index)
-    } else if(type === 'rows') { 
+    } else if(type === TYPE_ROWS) { 
       TableEditor.insertRow(editor, table, index)
     }
   }
 
   return (
     <div 
-    className={`${cls}-insert`} 
+    className={cls} 
     style={{ left, top }}
     onMouseDown={handleMouseDown}
     >
-      <div className={`${cls}-insert-icon`}>
+      <div className={`${cls}-icon`}>
         <svg width="3" height="3" viewBox="0 0 3 3" fill="none"><circle cx="1.5" cy="1.5" r="1.5" fill="#BBBFC4"></circle></svg>
       </div>
-      <div className={`${cls}-insert-plus`}><Icon name="plus" /></div>
-      <div className={`${cls}-insert-line`} style={{height, width}}></div>
+      <div className={`${cls}-plus`}><Icon name="plus" /></div>
+      <div className={`${cls}-line`} style={{height, width}}></div>
     </div>
   )
 }
@@ -82,7 +84,7 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
   if(top !== undefined) {
     top -= 1
   }
-  const type = left !== undefined ? 'cols' : 'rows'
+  const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
   const cls = `${prefixCls}-${type}-split`
 
   const { editor, table, dragRef } = useContext(TableContext)
