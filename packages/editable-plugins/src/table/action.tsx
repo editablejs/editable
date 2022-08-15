@@ -68,7 +68,6 @@ export const InsertAction = React.memo(InsertActionDefault, (prev, next) => {
 });
 
 // split action
-const splitRrefixCls = `${prefixCls}-split`
 export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, height, width, index }) => {
   if(height !== undefined) {
     height += 8
@@ -84,7 +83,7 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
     top -= 1
   }
   const type = left !== undefined ? 'cols' : 'rows'
-  const cls = `${prefixCls}-${type}`
+  const cls = `${prefixCls}-${type}-split`
 
   const { editor, table, dragRef } = useContext(TableContext)
 
@@ -162,13 +161,13 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
 
   return (
     <div 
-    className={classNames(splitRrefixCls, {[`${splitRrefixCls}-hover`]: isHover})} 
+    className={classNames(cls, {[`${cls}-hover`]: isHover})} 
     style={{ left, top, height, width }}
     onMouseDown={handleMouseDown}
     onMouseOver={handleMouseOver}
     onMouseLeave={handleMouseLeave}
     >
-      <div className={`${splitRrefixCls}-line`} />
+      <div className={`${cls}-line`} />
     </div>
   )
 }
