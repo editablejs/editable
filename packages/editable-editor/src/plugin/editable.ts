@@ -55,12 +55,12 @@ export interface SelectionStyle {
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
-export interface ElementAttributes extends BaseAttributes {
+export interface ElementAttributes<T extends any = any> extends BaseAttributes {
   'data-slate-node': 'element'
   'data-slate-inline'?: true
   'data-slate-void'?: true
   dir?: 'rtl'
-  ref: any
+  ref: React.Ref<T>
 }
 
 export interface TextAttributes extends BaseAttributes { 
@@ -85,10 +85,10 @@ export interface RenderLeafAttributes<T extends Text = Text> {
 /**
  * `RenderElementProps` are passed to the `renderElement` handler.
  */
-export interface RenderElementProps<T extends Element = Element> {
+export interface RenderElementProps<T extends Element = Element, R extends any = any> {
   children: any
   element: T
-  attributes: ElementAttributes
+  attributes: ElementAttributes<R>
 }
 
 /**

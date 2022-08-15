@@ -1,6 +1,8 @@
-import { Editable } from "@editablejs/editor";
-import { Editor, Node, Element } from "slate";
+import { Editable, RenderElementProps } from "@editablejs/editor";
+import React, { useLayoutEffect } from "react";
+import { Editor, Node, Element, Transforms } from "slate";
 import { TableCell, TableCellEditor } from "./cell";
+import { defaultTableMinRowHeight } from "./editor";
 
 export const TABLE_ROW_KEY = 'table-row';
 
@@ -41,6 +43,31 @@ export const TableRowEditor = {
 
 const prefixCls = 'editable-table-row';
 
+interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> {
+  editor: TableRowEditor
+  element: TableRow
+}
+
+const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
+  const { style, ref, ...rest } = attributes
+
+  useLayoutEffect(() => {
+    let maxHeight = defaultTableMinRowHeight
+    for(let i = 0; i < element.children.length; i++) {
+      const child = TableCellEditor.getInner(editor, element.children[i])
+      const rect = child.getBoundingClientRect()
+      maxHeight = Math.max(maxHeight, rect.height + 2)
+    }
+    if(maxHeight !== element.height) {
+      Transforms.setNodes<TableRow>(editor, { height: maxHeight }, { 
+        at: Editable.findPath(editor, element) 
+      })
+    }
+  }, [editor, element, ref])
+ 
+  return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
+}
+
 export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOptions = {}) => { 
   const newEditor = editor as T & TableRowEditor
   const { renderElement } = editor
@@ -48,8 +75,7 @@ export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOp
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props
     if(TableRowEditor.isTableRow(newEditor, element)) {
-      const { style, ...rest } = attributes
-      return <tr style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
+      return <TableRow editor={editor} element={element} attributes={attributes}>{ children }</TableRow>
     }
     return renderElement(props)
   }

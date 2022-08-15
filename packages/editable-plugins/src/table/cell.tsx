@@ -18,6 +18,8 @@ export interface TableCellEditor extends Editable {
 
 export type TableCellPoint = [number, number]
 
+const prefixCls = 'editable-table-cell';
+
 export const TableCellEditor = {
   isTableCell: (editor: Editable, n: Node): n is TableCell => { 
     return Editor.isBlock(editor, n) && n.type === TABLE_CELL_KEY
@@ -45,10 +47,15 @@ export const TableCellEditor = {
   getPoint: (editor: TableCellEditor, [, path]: NodeEntry<TableCell>): TableCellPoint => { 
     if(path.length < 2) throw new Error('Invalid path')
     return path.slice(path.length - 2) as TableCellPoint
-  } 
-}
+  },
 
-const prefixCls = 'editable-table-cell';
+  getInner: (editor: TableCellEditor, cell: TableCell): HTMLDivElement => { 
+    const node = Editable.toDOMNode(editor, cell)
+    const element = node.querySelector(`.${prefixCls}-inner`)
+    if(!element) throw new Error('Invalid cell')
+    return element as HTMLDivElement
+  }
+}
 
 export const withTableCell =  <T extends Editable>(editor: T, options: TableCellOptions = {}) => { 
   const newEditor = editor as T & TableCellEditor

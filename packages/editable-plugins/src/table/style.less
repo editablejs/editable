@@ -6,7 +6,8 @@
 
 @table-item-bg: #f2f3f5;
 @table-item-hover-bg: #e2e4e6;
-@table-item-wh: 6px;
+@table-item-wh: 8px;
+@table-padding-top: 14px;
 
 @cols: ~'@{table}-cols';
 @cols-header: ~'@{cols}-header';
@@ -32,7 +33,7 @@
 
 .@{table} {
   position: relative;
-  padding: 14px 0 10px;
+  padding: @table-padding-top 0 10px;
   
   > table {
     table-layout: fixed;
@@ -57,7 +58,6 @@
 
   &-selection {
     position: absolute;
-    border: 1px solid rgb(0, 106, 254);
     background-color: rgba(0, 106, 254, 0.12);
     pointer-events: none;
     cursor: default;
@@ -65,7 +65,7 @@
 
   .@{cols-header} {
     position: absolute;
-    top: @table-item-wh + 1px;
+    top: @table-item-wh - 2px;
     left: 0;
     display: none;
     border-left: none;
@@ -75,7 +75,6 @@
     height: @table-item-wh;
     background: @table-item-bg;
     cursor: pointer;
-    border-top: 1px solid @table-border-color;
     border-bottom: 1px solid @table-border-color;
 
     &:hover {
@@ -85,7 +84,7 @@
 
   .@{cols-insert} {
     position: absolute;
-    top: -@table-item-wh;
+    top: -@table-item-wh + 2px;
     line-height: 0;
     cursor: pointer;
     z-index: 2;
@@ -96,7 +95,7 @@
       height: 6px;
       position: absolute;
       top: 0;
-      left: -1px;
+      left: -1.5px;
       justify-content: center;
     }
 
@@ -105,14 +104,14 @@
       font-size: 18px;
       position: absolute;
       top: -13px;
-      left: -8px;
+      left: -7.5px;
       align-items: flex-end;
       justify-content: center;
     }
 
     &-line {
       top: 3px;
-      left: 0px;
+      left: 0.5px;
       width: 2px;
       background-color: @table-split-bg;;
     }
@@ -142,6 +141,8 @@
     }
 
     &:hover {
+      z-index: 3;
+
       .@{cols-split-line} {
         background-color: @table-split-bg;
       }
@@ -151,8 +152,8 @@
   .@{rows-header} {
     display: none;
     position: absolute;
-    top: 14px;
-    left: -7px;
+    top: @table-padding-top;
+    left: -@table-item-wh;
   }
 
   .@{rows-item} {
@@ -160,7 +161,6 @@
     background: @table-item-bg;
     cursor: pointer;
     border-right: 1px solid @table-border-color;
-    border-left: 1px solid @table-border-color;
     &:hover {
       background: @table-item-hover-bg;
     }
@@ -168,7 +168,7 @@
 
   .@{rows-insert} {
     position: absolute;
-    left: -@table-item-wh - 1px;
+    left: -@table-item-wh + 2px;
     line-height: 0;
     z-index: 2;
     cursor: pointer;
@@ -178,7 +178,7 @@
       width: 6px;
       height: 6px;
       position: absolute;
-      top: -1px;
+      top: 0;
       left: 0;
       justify-content: flex-start;
     }
@@ -187,14 +187,14 @@
       display: none;
       font-size: 18px;
       position: absolute;
-      top: -8px;
+      top: -7.5px;
       left: -13px;
       align-items: flex-end;
       justify-content: flex-start;
     }
 
     &-line {
-      top: 0px;
+      top: 0.5px;
       left: 3px;
       height: 2px;
       background-color: @table-split-bg;;
@@ -233,14 +233,15 @@
 
   .@{all-header} {
     position: absolute;
-    top: @table-item-wh + 1px;
-    left: -@table-item-wh - 1px;
+    top: @table-item-wh - 2px;
+    left: -@table-item-wh;
     width: @table-item-wh;
     height: @table-item-wh;
     cursor: pointer;
-    border: 1px solid @table-border-color;
-    border-top-left-radius: 3px;
+    border-right: 1px solid @table-border-color;
+    border-bottom: 1px solid @table-border-color;
     background: @table-item-bg;
+    border-top-left-radius: 2px;
     display: none;
 
     &:hover {
