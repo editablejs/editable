@@ -12,6 +12,7 @@ export interface TableRow extends Element {
   type: typeof TABLE_ROW_KEY,
   children: TableCell[]
   height?: number
+  rowspan?: number
 }
 
 export interface TableRowEditor extends Editable { 
@@ -28,16 +29,13 @@ export const TableRowEditor = {
     return elements.some(e => TableRowEditor.isTableRow(editor, e[0]))
   },
 
-  create: (options: { cols?: number } = {}) => { 
-    const { cols = 3 } = options
-    const row: TableRow = {
+  create: (row: Partial<Omit<TableRow, 'type' | 'children'>> = {}, cells: Partial<Omit<TableCell, 'type' | 'children'>>[]): TableRow => { 
+    return {
       type: TABLE_ROW_KEY,
-      children: []
+      children: cells.map(cell => TableCellEditor.create(cell)),
+      rowspan: 1,
+      ...row
     }
-    for(let c = 0; c < cols; c++) {
-      row.children.push(TableCellEditor.create())
-    }
-    return row
   }
 }
 
@@ -50,7 +48,8 @@ export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOp
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props
     if(TableRowEditor.isTableRow(newEditor, element)) {
-      return <tr className={prefixCls} {...attributes}>{ children }</tr>
+      const { style, ...rest } = attributes
+      return <tr style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
     }
     return renderElement(props)
   }

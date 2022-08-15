@@ -1,21 +1,52 @@
-.editable-table {
+@import '../var';
+
+@table: ~'@{prefix}-table';
+@table-border-color: #d6d6d6;
+@table-split-bg: #008dff;
+
+@table-item-bg: #f2f3f5;
+@table-item-hover-bg: #e2e4e6;
+@table-item-wh: 6px;
+
+@cols: ~'@{table}-cols';
+@cols-header: ~'@{cols}-header';
+@cols-item: ~'@{cols}-item';
+@cols-insert: ~'@{cols}-insert';
+@cols-insert-icon: ~'@{cols-insert}-icon';
+@cols-insert-plus: ~'@{cols-insert}-plus';
+@cols-insert-line: ~'@{cols-insert}-line';
+@cols-split: ~'@{cols}-split';
+@cols-split-line: ~'@{cols-split}-line';
+
+@rows: ~'@{table}-rows';
+@rows-header: ~'@{rows}-header';
+@rows-item: ~'@{rows}-item';
+@rows-insert: ~'@{rows}-insert';
+@rows-insert-icon: ~'@{rows-insert}-icon';
+@rows-insert-plus: ~'@{rows-insert}-plus';
+@rows-insert-line: ~'@{rows-insert}-line';
+@rows-split: ~'@{rows}-split';
+@rows-split-line: ~'@{rows-split}-line';
+
+.@{table} {
   position: relative;
+  padding: 14px 0 10px;
   
   > table {
     table-layout: fixed;
     white-space: pre-wrap;
     width: 100%;
     border-collapse: collapse;
-  }
 
-  &-row {
-    min-height: 30px;
+    tr, td {
+      margin: 0;
+      padding: 0;
+    }
   }
 
   &-cell {
-    border: 1px solid #d9d9d9;
+    border: 1px solid @table-border-color;
     vertical-align: top;
-    min-width: 50px;
 
     &-inner {
       padding: 6px;
@@ -27,5 +58,189 @@
     border: 1px solid rgb(0, 106, 254);
     background-color: rgba(0, 106, 254, 0.12);
     pointer-events: none;
+    cursor: default;
+  }
+
+  .@{cols-header} {
+    position: absolute;
+    top: @table-item-wh + 1px;
+    left: 0;
+    display: flex;
+    border-left: none;
+  }
+
+  .@{cols-item} {
+    height: @table-item-wh;
+    background: @table-item-bg;
+    cursor: pointer;
+    border-top: 1px solid @table-border-color;
+    border-bottom: 1px solid @table-border-color;
+
+    &:hover {
+      background: @table-item-hover-bg;
+    }
+  }
+
+  .@{cols-insert} {
+    position: absolute;
+    top: -@table-item-wh;
+    line-height: 0;
+    cursor: pointer;
+    z-index: 2;
+
+    &-icon {
+      display: flex;
+      width: 6px;
+      height: 6px;
+      position: absolute;
+      top: 0;
+      left: -1px;
+      justify-content: center;
+    }
+
+    &-plus, &-line {
+      display: none;
+      font-size: 18px;
+      position: absolute;
+      top: -13px;
+      left: -8px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    &-line {
+      top: 3px;
+      left: 0px;
+      width: 2px;
+      background-color: @table-split-bg;;
+    }
+
+    &:hover {
+      .@{cols-insert-plus} {
+        display: flex;
+      }
+
+      .@{cols-insert-line} {
+        display: flex;
+      }
+    }
+  }
+
+  .@{cols-split} {
+    position: absolute;
+    top: 0;
+    height: @table-item-wh + 2px;
+    padding: 0 1px;
+    cursor: col-resize;
+
+    .@{cols-split-line} {
+      background-color: @table-border-color;
+      width: 1px;
+      height: 100%;
+    }
+
+    &:hover {
+      .@{cols-split-line} {
+        background-color: @table-split-bg;
+      }
+    }
+  }
+
+  .@{rows-header} {
+    position: absolute;
+    top: 14px;
+    left: -7px;
+  }
+
+  .@{rows-item} {
+    width: @table-item-wh;
+    background: @table-item-bg;
+    cursor: pointer;
+    border-right: 1px solid @table-border-color;
+    border-left: 1px solid @table-border-color;
+    &:hover {
+      background: @table-item-hover-bg;
+    }
+  }
+
+  .@{rows-insert} {
+    position: absolute;
+    left: -@table-item-wh - 1px;
+    line-height: 0;
+    z-index: 2;
+    cursor: pointer;
+
+    &-icon {
+      display: flex;
+      width: 6px;
+      height: 6px;
+      position: absolute;
+      top: -1px;
+      left: 0;
+      justify-content: flex-start;
+    }
+
+    &-plus, &-line {
+      display: none;
+      font-size: 18px;
+      position: absolute;
+      top: -8px;
+      left: -13px;
+      align-items: flex-end;
+      justify-content: flex-start;
+    }
+
+    &-line {
+      top: 0px;
+      left: 3px;
+      height: 2px;
+      background-color: @table-split-bg;;
+    }
+
+    &:hover {
+      .@{rows-insert-plus} {
+        display: flex;
+      }
+
+      .@{rows-insert-line} {
+        display: flex;
+      }
+    }
+  }
+
+  .@{rows-split} {
+    position: absolute;
+    left: 0;
+    width: @table-item-wh + 2px;
+    padding: 1px 0;
+    cursor: row-resize;
+
+    .@{rows-split-line} {
+      background-color: @table-border-color;
+      width: 100%;
+      height: 1px;
+    }
+
+    &:hover {
+      .@{rows-split-line} {
+        background-color: @table-split-bg;
+      }
+    }
+  }
+
+  &-all-header {
+    position: absolute;
+    top: @table-item-wh + 1px;
+    left: -@table-item-wh - 1px;
+    width: @table-item-wh;
+    height: @table-item-wh;
+    cursor: pointer;
+    border: 1px solid @table-border-color;
+    border-top-left-radius: 3px;
+    background: @table-item-bg;
+
+    &:hover {
+      background: @table-item-hover-bg;
+    }
   }
 }

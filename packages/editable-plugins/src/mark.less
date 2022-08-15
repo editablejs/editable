@@ -1,4 +1,6 @@
-.editable-code {
+@import './var';
+
+.@{prefix}-code {
   font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
   font-size: inherit;
   background-color: rgba(0,0,0,.06);
@@ -9,16 +11,16 @@
   text-indent: 0;
 }
 
-.editable-sub, .editable-sup {
+.@{prefix}-sub, .editable-sup {
   position: relative;
   font-size: 75%;
   vertical-align: baseline;
 }
 
-.editable-sub {
+.@{prefix}-sub {
   bottom: -.25em;
 }
 
-.editable-sup {
+.@{prefix}-sup {
   top: -0.5em;
 }

@@ -9,7 +9,7 @@ export interface TableCellOptions {
 
 export interface TableCell extends Element {
   type: typeof TABLE_CELL_KEY
-  width?: number
+  colspan?: number
 }
 
 export interface TableCellEditor extends Editable { 
@@ -30,6 +30,7 @@ export const TableCellEditor = {
 
   create: (cell: Partial<Omit<TableCell, 'type' | 'children'>> = {}): TableCell => { 
     return {
+      colspan: 1,
       ...cell,
       type: TABLE_CELL_KEY,
       children: [{ children: [{text: ''}] }]

@@ -1,6 +1,7 @@
 import { Editable, RenderElementProps } from "@editablejs/editor"
-import React, { useLayoutEffect, useRef, useState } from "react"
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Editor, Element, Node, NodeEntry, Transforms } from "slate"
+import { Icon } from "../icon"
 import { TableCell, TableCellEditor, TableCellPoint, withTableCell } from "./cell"
 import { TableRow, TableRowEditor, withTableRow } from "./row"
 import './style.less'
@@ -8,22 +9,28 @@ import './style.less'
 export const TABLE_KEY = 'table'
 
 export interface TableOptions {
-
+  minRowHeight?: number
+  minColWidth?: number
 }
 
 export interface Table extends Element {
   type: typeof TABLE_KEY
-  width?: number
+  colsWidth?: number[]
   children: TableRow[]
 }
 
-export interface ToggleTableOptions { 
+export const defaultTableMinRowHeight = 35
+export const defaultTableMinColWidth = 35
+
+const TABLE_OPTIONS_WEAKMAP = new WeakMap<Editable, TableOptions>()
+
+export interface CreateTableOptions { 
   rows?: number
   cols?: number
 }
 
 export interface TableEditor extends Editable { 
-  toggleTable: (options?: ToggleTableOptions) => void
+  toggleTable: (options?: CreateTableOptions) => void
 }
 
 export const TableEditor = {
@@ -40,11 +47,87 @@ export const TableEditor = {
     return elements.some(e => TableEditor.isTable(editor, e[0]))
   },
 
-  toggle: (editor: TableEditor, options: ToggleTableOptions = {}) => { 
+  getOptions: (editor: Editable): Required<TableOptions> => { 
+    const options = TABLE_OPTIONS_WEAKMAP.get(editor) ?? {}
+    if(!options.minRowHeight) options.minRowHeight = defaultTableMinRowHeight
+    if(!options.minColWidth) options.minColWidth = defaultTableMinColWidth
+    return options as Required<TableOptions>
+  },
+
+  create: (editor: Editable, options: CreateTableOptions = {}): Table => { 
+    const editorElement = Editable.toDOMNode(editor, editor)
+    const rect = editorElement.getBoundingClientRect()
+    const width = rect.width - 1
+    const { rows = 3, cols = 3 } = options
+    const { minRowHeight, minColWidth } = TableEditor.getOptions(editor)
+    const colWidth = Math.max(minColWidth, Math.floor(width / cols))
+    const rowHeight = minRowHeight 
+    const tableRows: TableRow[] = []
+    const tableColsWdith = []
+    let colsWidth = 0
+    for(let c = 0; c < cols; c++) { 
+      const cws = colsWidth + colWidth
+      if(c === cols - 1 && cws < width) { 
+        const cw = width - colsWidth
+        colsWidth += cw
+        tableColsWdith.push(cw)
+      } else {
+        colsWidth = cws
+        tableColsWdith.push(colWidth)
+      }
+    }
+    for(let r = 0; r < rows; r++) {
+      tableRows.push(TableRowEditor.create({ height: rowHeight }, tableColsWdith.map(() => ({ }))))
+    }
+    return {
+      type: TABLE_KEY,
+      children: tableRows,
+      colsWidth: tableColsWdith
+    }
+  },
+
+  insertCol: (editor: Editable, table: Table, index: number) => {
+    const { children, colsWidth } = table
+    const path = Editable.findPath(editor, table)
+    let colWidth = TableEditor.getOptions(editor).minColWidth
+    if(colsWidth) {
+      if(index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
+      else {
+        colWidth = colsWidth[index]
+      }
+    }
+    const newColsWidth = colsWidth?.concat() ?? []
+    newColsWidth.splice(index, 0, colWidth)
+    Transforms.setNodes<Table>(editor, { colsWidth: newColsWidth }, { at: path })
+    for(let r = 0; r < children.length; r++) {
+      Transforms.insertNodes(editor, TableCellEditor.create(), {
+        at: path.concat([r, index])
+      })
+    }
+    TableEditor.focus(editor, [0, index])
+  },
+
+  insertRow: (editor: Editable, table: Table, index: number) => { 
+    const { children, colsWidth } = table
+    const path = Editable.findPath(editor, table)
+    const count = children.length
+    let rowHeight: number | undefined = 0
+    if(index === 0){
+      rowHeight = children[index].height
+    } else {
+      rowHeight = children[(index > count ? count : index) - 1].height
+    }
+    if(!rowHeight) rowHeight = TableEditor.getOptions(editor).minRowHeight
+    const row = TableRowEditor.create({ height: rowHeight }, (colsWidth ?? [0]).map(() => TableCellEditor.create()))
+    Transforms.insertNodes(editor, row, { at: path.concat([index]) })
+    TableEditor.focus(editor, [index, 0])
+  },
+
+  toggle: (editor: TableEditor, options: CreateTableOptions) => { 
     editor.toggleTable(options)
   },
 
-  focus: (editor: TableEditor, point: [number, number], edge: 'start' | 'end' = 'start') => { 
+  focus: (editor: Editable, point: [number, number], edge: 'start' | 'end' = 'start') => { 
     const [tableEntry] = Editor.nodes(editor, { 
       match: n => TableEditor.isTable(editor, n),
     })
@@ -59,7 +142,7 @@ export const TableEditor = {
     }
   },
 
-  getCell: (editor: TableEditor, table: Table, point: [number, number]): NodeEntry<TableCell> | undefined => { 
+  getCell: (editor: Editable, table: Table, point: [number, number]): NodeEntry<TableCell> | undefined => { 
     const [row, cell] = point
     const rowElement = table.children[row]
     if(!TableRowEditor.isTableRow(editor, rowElement)) return
@@ -68,11 +151,11 @@ export const TableEditor = {
     return [cellElment, Editable.findPath(editor, table).concat(point)]
   },
 
-  getRowCount: (editor: TableEditor, table: Table): number => { 
+  getRowCount: (editor: Editable, table: Table): number => { 
     return table.children.filter(child => TableRowEditor.isTableRow(editor, child)).length
   },
 
-  getColCount: (editor: TableEditor, table: Table): number => { 
+  getColCount: (editor: Editable, table: Table): number => { 
     const rowElement = table.children[0]
     if(!TableRowEditor.isTableRow(editor, rowElement)) return 0
     return rowElement.children.length
@@ -110,10 +193,16 @@ const prefixCls = 'editable-table';
 
 const TableTable: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
   const isMouswDown = useRef(false)
+  // selection
   const [selection, setSelection] = useState<TableSelection>()
   const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
-
-
+  // drag
+  const dragPoint = useRef<{type: 'cols' | 'rows', x: number, y: number, start: number, end: number}>()
+  // table path
+  const path = useMemo(() => {
+    return Editable.findPath(editor, element)
+  }, [editor, element])
+  // select table cell
   const handleMouseDown = (e: React.MouseEvent) => {
     if(e.button !== 0) return
     const cellEntry = findCellFromEvent(editor, e)
@@ -125,22 +214,24 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
   }
 
   const handleMouseMove = (e: React.MouseEvent) => { 
-    if(!isMouswDown.current || !selection) return
-    const cellEntry = findCellFromEvent(editor, e)
-    if(!cellEntry) {
-      return
+    if(isMouswDown.current && selection) {
+      const cellEntry = findCellFromEvent(editor, e)
+      if(!cellEntry) {
+        return
+      }
+      const point = TableCellEditor.getPoint(editor, cellEntry)
+      const { start, end } = selection
+      if(point[0] === start[0] && point[1] === start[1]) {
+        setSelection({ start, end: start })
+        return
+      }
+      if(end[0] === point[0] && end[1] === point[1]) return
+      setSelection({...selection, end: point})
     }
-    const point = TableCellEditor.getPoint(editor, cellEntry)
-    const { start, end } = selection
-    if(point[0] === start[0] && point[1] === start[1]) {
-      setSelection({ start, end: start })
-      return
-    }
-    if(end[0] === point[0] && end[1] === point[1]) return
-    setSelection({...selection, end: point})
   }
 
-  const handleMouseUp = (e: React.MouseEvent) => {
+  const handleMouseUp = useCallback((e: MouseEvent) => {
+    dragPoint.current = undefined
     isMouswDown.current = false
     if(!selection) return
     const {start, end} = selection
@@ -152,7 +243,14 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
       anchor: Editable.toLowestPoint(editor, point.concat(start)),
       focus: Editable.toLowestPoint(editor, point.concat(end), 'end'),
     })
-  }
+  }, [editor, element, selection])
+
+  useLayoutEffect(() => {
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [handleMouseUp])
 
   useLayoutEffect(() => {
     if(!selection) return
@@ -186,6 +284,8 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     }
   }, [editor, selectionRect])
 
+  const { colsWidth = [] } = element
+
   const renderSelection = () => {
     if(!selectionRect) return
     const { top, left, width, height } = selectionRect
@@ -193,23 +293,190 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
   }
 
   const renderColgroup = () => {
-    const colCount = TableEditor.getColCount(editor, element)
     const colgroup = []
-    for(let i = 0; i < colCount; i++) { 
-      colgroup.push(<col key={i} />)
+    for(let i = 0; i < colsWidth.length; i++) { 
+      colgroup.push(<col width={colsWidth[i]} key={i} />)
     }
     return <colgroup>{colgroup}</colgroup>
   }
 
+  const tableWidth = useMemo(() => {
+    let width = 0
+    for(let i = 0; i < colsWidth.length; i++) { 
+      width += colsWidth[i]
+    }
+    return width
+  }, [colsWidth])
+
+  const tableHeight = useMemo(() => {
+    const { children } = element
+    let height = 0
+    for(let i = 0; i < children.length; i++) { 
+      height += children[i].height ?? 0
+    }
+    return height
+  }, [element])
+
+  const InsertAction = ({ left, top, height, width, index }: {left?: number, top?: number, height?: number, width?: number, index: number}) => {
+    if(left !== undefined) {
+      left -= 1
+    }
+    if(top !== undefined) {
+      top -= 1
+    }
+
+    if(height !== undefined) {
+      height += 11
+    }
+    if(width !== undefined) {
+      width += 11
+    }
+
+    const type = left !== undefined ? 'cols' : 'rows'
+    const cls = `${prefixCls}-${type}`
+
+    const handleMouseDown = (event: React.MouseEvent) => {
+      event.preventDefault()
+      if(type === 'cols') {
+        TableEditor.insertCol(editor, element, index)
+      } else if(type === 'rows') { 
+        TableEditor.insertRow(editor, element, index)
+      }
+    }
+
+    return (
+      <div 
+      className={`${cls}-insert`} 
+      style={{ left, top }}
+      onMouseDown={handleMouseDown}
+      >
+        <div className={`${cls}-insert-icon`}>
+          <svg width="3" height="3" viewBox="0 0 3 3" fill="none"><circle cx="1.5" cy="1.5" r="1.5" fill="#BBBFC4"></circle></svg>
+        </div>
+        <div className={`${cls}-insert-plus`}><Icon name="plus" /></div>
+        <div className={`${cls}-insert-line`} style={{height, width}}></div>
+      </div>
+    )
+  }
+
+  const handleDragMove = useCallback((e: MouseEvent) => { 
+    if(!dragPoint.current) return
+    const { type, x, y, start } = dragPoint.current
+    if(type === 'cols') {
+      const { colsWidth } = element
+      if(!colsWidth) return
+      const cX = e.clientX
+      const val = cX - x
+      const newColsWidth = colsWidth.concat()
+      let width = newColsWidth[start] + val
+      width = Math.max(width, TableEditor.getOptions(editor).minColWidth)
+      newColsWidth[start] = width
+      Transforms.setNodes<Table>(editor, { colsWidth: newColsWidth }, { at: path })
+    } else if(type === 'rows') {
+      const { height } = element.children[start]
+      if(height) {
+        const cY = e.clientY
+        const val = cY - y
+        let h = height + val
+        h = Math.max(h, TableEditor.getOptions(editor).minRowHeight)
+        Transforms.setNodes<TableRow>(editor, { height: h }, { at: path.concat(start) })
+      }
+    }
+  }, [editor, element, path])
+
+  const handleDragUp = useCallback((e: MouseEvent) => { 
+    dragPoint.current = undefined
+    window.removeEventListener('mousemove', handleDragMove)
+    window.removeEventListener('mouseup', handleDragUp)
+  }, [handleDragMove])
+
+  const SplitAction = ({ left, top, height, width, index }: {index: number, left?: number, top?: number, height?: number, width?: number}) => {
+    if(height !== undefined) {
+      height += 8
+    }
+    if(width !== undefined) {
+      width += 8
+    }
+    // 宽度为3，所以得减1居中
+    if(left !== undefined) {
+      left -= 1
+    }
+    if(top !== undefined) {
+      top -= 1
+    }
+    const type = left !== undefined ? 'cols' : 'rows'
+    const cls = `${prefixCls}-${type}`
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault()
+      dragPoint.current = {
+        type,
+        x: e.clientX,
+        y: e.clientY,
+        start: index,
+        end: index
+      }
+      window.addEventListener('mousemove', handleDragMove)
+      window.addEventListener('mouseup', handleDragUp)
+    }
+
+    return (
+      <div 
+      className={`${cls}-split`} 
+      style={{ left, top, height, width }}
+      onMouseDown={handleMouseDown}
+      >
+        <div className={`${cls}-split-line`} />
+      </div>
+    )
+  }
+
+  const renderColHeader = () => {
+    const headers = []
+    let width = 0;
+   
+    headers.push(<InsertAction index={0} height={tableHeight} left={0} key="insert--1" />)
+    for(let i = 0; i < colsWidth.length; i++) { 
+      width += colsWidth[i]
+      const item = <div className={`${prefixCls}-cols-item`} style={{width: colsWidth[i]}} key={i} />
+      headers.push(item, <InsertAction index={i + 1} left={width} height={tableHeight} key={`insert-${i}`} />, <SplitAction index={i} height={tableHeight} left={width} key={`split-${i}`} />)
+    }
+    return <div className={`${prefixCls}-cols-header`}>{headers}</div>
+  }
+
+  const renderRowHeader = () => {
+    const headers = []
+    let height = 0;
+    const { children } = element
+    headers.push(<InsertAction index={0} width={tableWidth} top={0} key="insert--1" />)
+    for(let i = 0; i < children.length; i++) { 
+      const rowHeight = children[i].height
+      height += rowHeight ?? 0
+      const item = <div className={`${prefixCls}-rows-item`} style={{height: rowHeight}} key={i} />
+      headers.push(item, <InsertAction width={tableWidth} index={i + 1} top={height} key={`insert-${i}`} />, <SplitAction index={i} width={tableWidth} top={height} key={`split-${i}`} />)
+    }
+    return <div className={`${prefixCls}-rows-header`}>{headers}</div>
+  }
+
+  const renderAllHeader = () => { 
+    return <div className={`${prefixCls}-all-header`} />
+  }
+
   return (
     <div className={prefixCls} {...attributes}>
-      <div className={`${prefixCls}-cols-header`}>
-
-      </div>
+      {
+        renderColHeader()
+      }
+      {
+        renderRowHeader()
+      }
+      {
+        renderAllHeader()
+      }
       <table 
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
+      style={{width: tableWidth}}
       >
         {
           renderColgroup()
@@ -227,20 +494,14 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
 
 export const withTable =  <T extends Editable>(editor: T, options: TableOptions = {}) => {
   let newEditor = editor as T & TableEditor
+
+  TABLE_OPTIONS_WEAKMAP.set(newEditor, options)
   
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
 
-  newEditor.toggleTable = (options = {}) => { 
-    const { rows = 3, cols = 3 } = options
-    const tableRows: TableRow[] = []
-    for(let r = 0; r < rows; r++) {
-      tableRows.push(TableRowEditor.create({ cols }))
-    }
-    const table: Table = {
-      type: TABLE_KEY,
-      children: tableRows
-    }
+  newEditor.toggleTable = (options) => {
+    const table = TableEditor.create(newEditor, options)
     Transforms.insertNodes(editor, table, {
       select: false
     })

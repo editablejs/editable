@@ -1,7 +1,7 @@
 
 import { Editable } from '@editablejs/editor';
 import classNames from 'classnames'
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 interface ButtonProps { 
   editor: Editable

@@ -1,16 +1,18 @@
-@task-cls: ~'editable-task-list';
-@task-inner-cls: ~'@{task-cls}-inner';
+@import '../var';
 
-.@{task-cls} {
+@task: ~'@{prefix}-task-list';
+@task-inner: ~'@{task}-inner';
 
-  .editable-list-label {
+.@{task} {
+
+  .@{prefix}-list-label {
     margin-right: 6px;
   }
 
   &[data-task-checked="true"] {
     text-decoration: line-through;
 
-    .@{task-inner-cls} {
+    .@{task-inner} {
       background-color: #347eff;
       border-color: #347eff;
 
@@ -43,7 +45,7 @@
     display: inline-block;
   }
 
-  .@{task-inner-cls} {
+  .@{task-inner} {
     position: relative;
     width: 16px;
     height: 16px;
