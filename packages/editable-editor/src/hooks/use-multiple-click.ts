@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 
-import useCancellablePromises, {
+import {
   cancellablePromise,
-  delay,
+  useCancellablePromises,
 } from './use-cancellable-promises';
 
 const useMultipleClick = (options: {
@@ -48,7 +48,7 @@ const useMultipleClick = (options: {
     if(countRef.current === 1 && onMultipleClick(event, 1) === false) {
       clear()
     } else {
-      const waitForClick = cancellablePromise(delay(500));
+      const waitForClick = cancellablePromise(api.delay(500));
       api.appendPendingPromise(waitForClick);
       return waitForClick.promise
       .then(() => {

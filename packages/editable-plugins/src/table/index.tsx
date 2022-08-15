@@ -1,4 +1,4 @@
-import { Editable, RenderElementProps, useSelected } from "@editablejs/editor"
+import { Editable, RenderElementProps, useSelected, useCancellablePromises, cancellablePromise } from "@editablejs/editor"
 import classnames from "classnames"
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Editor, Element, Node, NodeEntry, Transforms } from "slate"
@@ -105,7 +105,10 @@ export const TableEditor = {
         at: path.concat([r, index])
       })
     }
-    TableEditor.focus(editor, [0, index])
+    TableEditor.focus(editor, {
+      point: [0, index],
+      tableEntry: [table, path]
+    })
   },
 
   insertRow: (editor: Editable, table: Table, index: number) => { 
@@ -121,17 +124,27 @@ export const TableEditor = {
     if(!rowHeight) rowHeight = TableEditor.getOptions(editor).minRowHeight
     const row = TableRowEditor.create({ height: rowHeight }, (colsWidth ?? [0]).map(() => TableCellEditor.create()))
     Transforms.insertNodes(editor, row, { at: path.concat([index]) })
-    TableEditor.focus(editor, [index, 0])
+    TableEditor.focus(editor, {
+      point: [index, 0],
+      tableEntry: [table, path]
+    })
   },
 
   toggle: (editor: TableEditor, options: CreateTableOptions) => { 
     editor.toggleTable(options)
   },
 
-  focus: (editor: Editable, point: [number, number], edge: 'start' | 'end' = 'start') => { 
-    const [tableEntry] = Editor.nodes(editor, { 
-      match: n => TableEditor.isTable(editor, n),
-    })
+  focus: (editor: Editable, options: {
+    point: [number, number], 
+    tableEntry?: NodeEntry<Table>, 
+    edge?: 'start' | 'end'
+  }) => {
+    let { point, tableEntry, edge = 'start' } = options 
+    if(!tableEntry) {
+      [tableEntry] = Editor.nodes<Table>(editor, { 
+        match: n => TableEditor.isTable(editor, n),
+      })
+    }
     if(tableEntry) {
       const [table, gPath] = tableEntry
       const [rowIndex, cellIndex] = point
@@ -465,8 +478,31 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     return <div className={`${prefixCls}-all-header`} />
   }
 
+
+  const [isHover, setHover] = useState(false)
+  const cancellablePromisesApi = useCancellablePromises()
+
+  const handleMouseOver = useCallback(() => {
+    cancellablePromisesApi.clearPendingPromises()
+    const wait = cancellablePromise(cancellablePromisesApi.delay(200))
+    cancellablePromisesApi.appendPendingPromise(wait)
+    wait.promise.then(() => {
+      setHover(true)
+    })
+  }, [cancellablePromisesApi])
+
+  const handleMouseLevae = useCallback(() => { 
+    cancellablePromisesApi.clearPendingPromises()
+    setHover(false)
+  }, [cancellablePromisesApi])
+
   return (
-    <div className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected})} {...attributes}>
+    <div 
+    className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected, [`${prefixCls}-hover`]: isHover})}
+    {...attributes}
+    onMouseOver={handleMouseOver}
+    onMouseLeave={handleMouseLevae}
+    >
       {
         renderColHeader()
       }
@@ -508,7 +544,9 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
     Transforms.insertNodes(editor, table, {
       select: false
     })
-    TableEditor.focus(newEditor, [0, 0])
+    TableEditor.focus(newEditor, {
+      point: [0, 0]
+    })
   }
 
   const { renderElement } = newEditor

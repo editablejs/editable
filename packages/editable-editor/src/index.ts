@@ -30,6 +30,8 @@ export type {
   PlaceholderAttributes
 } from './plugin/editable'
 
+export { useCancellablePromises, cancellablePromise } from './hooks/use-cancellable-promises'
+
 export {
   isHotkey,
   isCodeHotkey,

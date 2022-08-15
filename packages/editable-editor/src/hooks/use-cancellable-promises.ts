@@ -44,11 +44,11 @@ const useCancellablePromises = <T>() => {
     appendPendingPromise,
     removePendingPromise,
     clearPendingPromises,
+    delay,
+    noop
   };
 
   return api;
 };
 
-export default useCancellablePromises;
-
-export { noop, delay, cancellablePromise };
+export { useCancellablePromises, cancellablePromise };
