@@ -1,4 +1,5 @@
-import { Editable, RenderElementProps } from "@editablejs/editor"
+import { Editable, RenderElementProps, useSelected } from "@editablejs/editor"
+import classnames from "classnames"
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { Editor, Element, Node, NodeEntry, Transforms } from "slate"
 import { Icon } from "../icon"
@@ -202,6 +203,8 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
   const path = useMemo(() => {
     return Editable.findPath(editor, element)
   }, [editor, element])
+
+  const selected = useSelected()
   // select table cell
   const handleMouseDown = (e: React.MouseEvent) => {
     if(e.button !== 0) return
@@ -299,7 +302,7 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     }
     return <colgroup>{colgroup}</colgroup>
   }
-
+  // table width
   const tableWidth = useMemo(() => {
     let width = 0
     for(let i = 0; i < colsWidth.length; i++) { 
@@ -307,7 +310,7 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     }
     return width
   }, [colsWidth])
-
+  // table height
   const tableHeight = useMemo(() => {
     const { children } = element
     let height = 0
@@ -316,7 +319,7 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
     }
     return height
   }, [element])
-
+  // insert action
   const InsertAction = ({ left, top, height, width, index }: {left?: number, top?: number, height?: number, width?: number, index: number}) => {
     if(left !== undefined) {
       left -= 1
@@ -463,7 +466,7 @@ const TableTable: React.FC<TableProps> = ({ editor, element, attributes, childre
   }
 
   return (
-    <div className={prefixCls} {...attributes}>
+    <div className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected})} {...attributes}>
       {
         renderColHeader()
       }

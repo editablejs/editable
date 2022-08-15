@@ -28,6 +28,8 @@
 @rows-split: ~'@{rows}-split';
 @rows-split-line: ~'@{rows-split}-line';
 
+@all-header: ~'@{table}-all-header';
+
 .@{table} {
   position: relative;
   padding: 14px 0 10px;
@@ -65,7 +67,7 @@
     position: absolute;
     top: @table-item-wh + 1px;
     left: 0;
-    display: flex;
+    display: none;
     border-left: none;
   }
 
@@ -147,6 +149,7 @@
   }
 
   .@{rows-header} {
+    display: none;
     position: absolute;
     top: 14px;
     left: -7px;
@@ -228,7 +231,7 @@
     }
   }
 
-  &-all-header {
+  .@{all-header} {
     position: absolute;
     top: @table-item-wh + 1px;
     left: -@table-item-wh - 1px;
@@ -238,9 +241,22 @@
     border: 1px solid @table-border-color;
     border-top-left-radius: 3px;
     background: @table-item-bg;
+    display: none;
 
     &:hover {
       background: @table-item-hover-bg;
+    }
+  }
+
+  
+
+  &-selected {
+    .@{cols-header} {
+      display: flex;
+    }
+
+    .@{rows-header}, .@{all-header} {
+      display: block;
     }
   }
 }
