@@ -2,7 +2,7 @@
 
 @table: ~'@{prefix}-table';
 @table-border-color: #d6d6d6;
-@table-split-bg: #008dff;
+@table-split-bg: @primary-color;
 
 @table-item-bg: #f2f3f5;
 @table-item-hover-bg: #e2e4e6;
@@ -100,6 +100,7 @@
     }
 
     &-plus, &-line {
+      color: @table-split-bg;
       display: none;
       font-size: 18px;
       position: absolute;
@@ -140,7 +141,7 @@
       height: 100%;
     }
 
-    &:hover {
+    &-hover {
       z-index: 3;
 
       .@{cols-split-line} {
@@ -184,6 +185,7 @@
     }
 
     &-plus, &-line {
+      color: @table-split-bg;
       display: none;
       font-size: 18px;
       position: absolute;
@@ -197,7 +199,7 @@
       top: 0.5px;
       left: 3px;
       height: 2px;
-      background-color: @table-split-bg;;
+      background-color: @table-split-bg;
     }
 
     &:hover {
@@ -224,7 +226,7 @@
       height: 1px;
     }
 
-    &:hover {
+    &-hover {
       .@{rows-split-line} {
         background-color: @table-split-bg;
       }

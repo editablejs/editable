@@ -1,5 +1,6 @@
-import { Editable } from "@editablejs/editor";
-import React from "react";
+import { cancellablePromise, Editable, useCancellablePromises } from "@editablejs/editor";
+import classNames from "classnames";
+import React, { useRef, useState } from "react";
 import { useCallback, useContext, useMemo } from "react";
 import { Transforms } from "slate";
 import { Icon } from "../icon";
@@ -67,6 +68,7 @@ export const InsertAction = React.memo(InsertActionDefault, (prev, next) => {
 });
 
 // split action
+const splitRrefixCls = `${prefixCls}-split`
 export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, height, width, index }) => {
   if(height !== undefined) {
     height += 8
@@ -86,6 +88,8 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
 
   const { editor, table, dragRef } = useContext(TableContext)
 
+  const [isHover, setHover] = useState(false)
+  const isDrag = useRef(false)
   // table path
   const path = useMemo(() => {
     return Editable.findPath(editor, table)
@@ -118,6 +122,7 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
 
   const handleDragUp = useCallback((e: MouseEvent) => { 
     dragRef.current = null
+    isDrag.current = false
     window.removeEventListener('mousemove', handleDragMove)
     window.removeEventListener('mouseup', handleDragUp)
   }, [dragRef, handleDragMove])
@@ -131,17 +136,39 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
       start: index,
       end: index
     }
+    isDrag.current = true
     window.addEventListener('mousemove', handleDragMove)
     window.addEventListener('mouseup', handleDragUp)
   }
 
+  const cancellablePromisesApi = useCancellablePromises()
+
+  const handleMouseOver = useCallback(() => {
+    cancellablePromisesApi.clearPendingPromises()
+    const wait = cancellablePromise(cancellablePromisesApi.delay(200))
+    cancellablePromisesApi.appendPendingPromise(wait)
+    wait.promise.then(() => {
+      setHover(true)
+    }).catch(err => {
+
+    })
+  }, [cancellablePromisesApi])
+
+  const handleMouseLeave = useCallback(() => { 
+    if(isDrag.current) return
+    cancellablePromisesApi.clearPendingPromises()
+    setHover(false)
+  }, [cancellablePromisesApi])
+
   return (
     <div 
-    className={`${cls}-split`} 
+    className={classNames(splitRrefixCls, {[`${splitRrefixCls}-hover`]: isHover})} 
     style={{ left, top, height, width }}
     onMouseDown={handleMouseDown}
+    onMouseOver={handleMouseOver}
+    onMouseLeave={handleMouseLeave}
     >
-      <div className={`${cls}-split-line`} />
+      <div className={`${splitRrefixCls}-line`} />
     </div>
   )
 }

@@ -197,7 +197,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     })
   }, [selected, cancellablePromisesApi])
 
-  const handleMouseLevae = useCallback(() => { 
+  const handleMouseLeave = useCallback(() => { 
     cancellablePromisesApi.clearPendingPromises()
     setHover(false)
   }, [cancellablePromisesApi])
@@ -212,7 +212,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
       className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected, [`${prefixCls}-hover`]: isHover})}
       {...attributes}
       onMouseOver={handleMouseOver}
-      onMouseLeave={handleMouseLevae}
+      onMouseLeave={handleMouseLeave}
       >
         {
           renderColHeader()
