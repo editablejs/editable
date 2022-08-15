@@ -121,7 +121,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     const { children } = element
     let height = 0
     for(let i = 0; i < children.length; i++) { 
-      height += children[i].height ?? 0
+      height += children[i].contentHeight ?? 0
     }
     return height
   }, [element])
@@ -163,7 +163,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     
     const { children } = element
     for(let i = 0; i < children.length; i++) { 
-      const rowHeight = children[i].height
+      const rowHeight = children[i].contentHeight
       height += rowHeight ?? 0
       const item = <div onMouseDown={e => handleMouseDown(e, i)} className={`${prefixCls}-rows-item`} style={{height: rowHeight}} key={i} />
       headers.push(item, 

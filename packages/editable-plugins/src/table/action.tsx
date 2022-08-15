@@ -111,7 +111,7 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
         const val = cY - y
         let h = height + val
         h = Math.max(h, TableEditor.getOptions(editor).minRowHeight)
-        Transforms.setNodes<TableRow>(editor, { height: h }, { at: path.concat(start) })
+        Transforms.setNodes<TableRow>(editor, { height: h, contentHeight: h }, { at: path.concat(start) })
       }
     }
   }, [dragRef, table, editor, path])

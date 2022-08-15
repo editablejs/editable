@@ -14,6 +14,7 @@ export interface TableRow extends Element {
   type: typeof TABLE_ROW_KEY,
   children: TableCell[]
   height?: number
+  contentHeight?: number
   rowspan?: number
 }
 
@@ -32,11 +33,14 @@ export const TableRowEditor = {
   },
 
   create: (row: Partial<Omit<TableRow, 'type' | 'children'>> = {}, cells: Partial<Omit<TableCell, 'type' | 'children'>>[]): TableRow => { 
+    const { height, contentHeight = height, ...rest } = row
     return {
       type: TABLE_ROW_KEY,
       children: cells.map(cell => TableCellEditor.create(cell)),
       rowspan: 1,
-      ...row
+      height,
+      contentHeight,
+      ...rest
     }
   }
 }
@@ -55,12 +59,12 @@ const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableR
   useLayoutEffect(() => {
     let maxHeight = defaultTableMinRowHeight
     for(let i = 0; i < cells.length; i++) {
-      const child = TableCellEditor.getInner(editor, cells[i])
+      const child = Editable.toDOMNode(editor, cells[i])
       const rect = child.getBoundingClientRect()
-      maxHeight = Math.max(maxHeight, rect.height + 2)
+      maxHeight = Math.max(maxHeight, rect.height)
     }
-    if(maxHeight !== element.height) {
-      Transforms.setNodes<TableRow>(editor, { height: maxHeight }, { 
+    if(maxHeight !== element.contentHeight) {
+      Transforms.setNodes<TableRow>(editor, { contentHeight: maxHeight }, { 
         at: Editable.findPath(editor, element) 
       })
     }
