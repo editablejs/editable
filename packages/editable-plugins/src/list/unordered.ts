@@ -39,8 +39,8 @@ export const UnOrderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,
-    render: ({ leval }: List) => {
-      const l = leval % 3
+    render: ({ level }: List) => {
+      const l = level % 3
       switch(l) { 
         case 1: return `○`
         case 2: return `■`

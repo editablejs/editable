@@ -75,8 +75,8 @@ export const OrderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,
-    render: ({ start, leval }: List) => {
-      const l = leval % 3
+    render: ({ start, level }: List) => {
+      const l = level % 3
       switch(l) { 
         case 1: return `${toABC(start)}.`
         case 2: return `${toRoman(start)}.`
@@ -88,17 +88,17 @@ export const OrderedListTemplates: ListTemplate[] = [
 ]
 
 const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { editor: Editable, element: List, template?: ListTemplate }) => { 
-  const { leval, key } = element
+  const { level, key } = element
   const ref = React.useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
     const { current: label } = ref
-    if(leval % template.depth > 0 && label) { 
+    if(level % template.depth > 0 && label) { 
       const path = Editable.findPath(editor, element)
       const [start, startPath] = ListEditor.findStartList(editor, {
         path,
         key,
-        leval,
+        level,
         kind: ORDERED_LIST_KEY
       })
       if(Path.equals(path, startPath)) return
@@ -120,7 +120,7 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
     } else if(label) {
       label.style.marginLeft = ''
     }
-  }, [editor, element, leval, key, template.depth])
+  }, [editor, element, level, key, template.depth])
 
   return <span ref={ref} className={`${prefixCls}-label`}>{template.render(element)}</span>
 }

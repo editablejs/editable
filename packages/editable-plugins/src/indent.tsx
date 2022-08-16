@@ -68,11 +68,11 @@ export const IndentEditor = {
           const options = INDENT_OPTIONS.get(editor) ?? {}
           const size = options.size ?? DEFAULT_SIZE
           const all = text + line
-          const leval = all < 1 ? 0 : (text + line) / size
+          const level = all < 1 ? 0 : (text + line) / size
           return {
             text,
             line,
-            leval
+            level
           }
         }
       }
@@ -344,7 +344,7 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
         match: newEditor.onIndentMatch
       })
       const active = IndentEditor.queryActive(newEditor)
-      if(active && active.leval > 0 && entry && Editor.isStart(editor, selection.focus, entry[1])){
+      if(active && active.level > 0 && entry && Editor.isStart(editor, selection.focus, entry[1])){
         newEditor.toggleOutdent()
         return
       }
