@@ -76,9 +76,20 @@
     background: @table-item-bg;
     cursor: pointer;
     border-bottom: 1px solid @table-border-color;
+    position: absolute;
+
+    &:hover, &-hover {
+      background: @table-item-hover-bg;
+      z-index: 2;
+    }
+  }
+
+  .@{cols-item}-full {
+    background: @table-split-bg;
+    z-index: 3;
 
     &:hover {
-      background: @table-item-hover-bg;
+      background: @table-split-bg;
     }
   }
 
@@ -87,7 +98,6 @@
     top: -@table-item-wh + 2px;
     line-height: 0;
     cursor: pointer;
-    z-index: 2;
 
     &-icon {
       display: flex;
@@ -118,6 +128,7 @@
     }
 
     &:hover {
+      z-index: 3;
       .@{cols-insert-plus} {
         display: flex;
       }
@@ -134,6 +145,7 @@
     height: @table-item-wh + 2px;
     padding: 0 1px;
     cursor: col-resize;
+    z-index: 1;
 
     .@{cols-split-line} {
       background-color: @table-border-color;
@@ -162,8 +174,20 @@
     background: @table-item-bg;
     cursor: pointer;
     border-right: 1px solid @table-border-color;
-    &:hover {
+    position: absolute;
+
+    &:hover, &-hover {
       background: @table-item-hover-bg;
+      z-index: 2;
+    }
+
+    &-full {
+      background: @table-split-bg;
+      z-index: 3;
+
+      &:hover {
+        background: @table-split-bg;
+      }
     }
   }
 
@@ -171,7 +195,6 @@
     position: absolute;
     left: -@table-item-wh + 2px;
     line-height: 0;
-    z-index: 2;
     cursor: pointer;
 
     &-icon {
@@ -203,6 +226,7 @@
     }
 
     &:hover {
+      z-index: 3;
       .@{rows-insert-plus} {
         display: flex;
       }
@@ -219,6 +243,7 @@
     width: @table-item-wh + 2px;
     padding: 1px 0;
     cursor: row-resize;
+    z-index: 1;
 
     .@{rows-split-line} {
       background-color: @table-border-color;
@@ -227,6 +252,8 @@
     }
 
     &-hover {
+      z-index: 3;
+
       .@{rows-split-line} {
         background-color: @table-split-bg;
       }
@@ -248,6 +275,16 @@
 
     &:hover {
       background: @table-item-hover-bg;
+    }
+
+    &-full {
+      background-color: @table-split-bg;
+      border-color: @table-split-bg;
+      border: none;
+
+      &:hover {
+        background-color: @table-split-bg;
+      }
     }
   }
 

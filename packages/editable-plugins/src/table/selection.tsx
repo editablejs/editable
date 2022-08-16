@@ -1,9 +1,8 @@
 import { Editable, useSelected } from "@editablejs/editor";
 import { Editor, Path, Range } from 'slate'
-import React, { useState } from "react";
-import { useContext, useLayoutEffect, useMemo } from "react";
+import React, { useState, useContext, useLayoutEffect, useMemo } from "react";
 import { TableCellEditor, TableCellPoint } from "./cell";
-import { TableContext, TableSelection } from "./context";
+import { TableContext, TableSelected, TableSelection } from "./context";
 import { Table, TableEditor } from "./editor";
 
 const prefixCls = 'editable-table';
@@ -38,7 +37,7 @@ const TableSelectionDefault: React.FC<TableSelectionProps> = ({ editor, table })
     const startRect = startEl.getBoundingClientRect()
     const endRect = endEl.getBoundingClientRect()
     const width = (endRect.left < startRect.left ? startRect.right - endRect.left : endRect.right - startRect.left)
-    const height = Math.max(endRect.bottom - startRect.top, startRect.height) 
+    const height = Math.max(endRect.bottom - startRect.top, startRect.height)
     const top = startRect.top - tableRect.top
     const left = Math.min(startRect.left - tableRect.left, endRect.left - tableRect.left)
     return new DOMRect(left, top, width, height)
@@ -61,8 +60,7 @@ const TableSelection = React.memo(TableSelectionDefault, (prev, next) => {
   return prev.editor === next.editor && prev.table === next.table
 })
 
-const useSelection = (editor: Editable) => {
-  const { rows: tableRows, cols: tableCols } = useContext(TableContext)
+const useSelection = (editor: Editable, tableRows: number, tableCols: number) => {
   // selection
   const [selection, setSelection] = useState<TableSelection | null>(null)
   const selectedTable = useSelected()
@@ -99,21 +97,34 @@ const useSelection = (editor: Editable) => {
   }, [editor, editor.selection, selectedTable])
 
   
-  const selected = useMemo(() => {
+  const selected: TableSelected = useMemo(() => {
     const {start, end} = selection ?? {start: [0, 0], end: [-1, -1]}
-    const rows: Record<number, boolean>[] = []
-    const cols: Record<number, boolean>[] = []
+    let startRow = start[0]
+    let endRow = end[0]
+    if(startRow > endRow && endRow > -1) {
+      startRow = end[0]
+      endRow = start[0]
+    }
+    let startCol = start[1]
+    let endCol = end[1]
+    if(startCol > endCol && endCol > -1) {
+      startCol = end[1]
+      endCol = start[1]
+    }
+
+    const rows: number[] = []
+    const cols: number[] = []
     const cells: TableCellPoint[] = []
-    const rowFull = start[1] === 0 && end[1] === tableCols - 1
-    const colFull = start[0] === 0 && end[0] === tableRows - 1
-    for(let i = start[0]; i <= end[0]; i++) { 
-      rows.push({[i]: rowFull})
-      for(let c = start[1]; c <= end[1]; c++) { 
+    const rowFull = startCol === 0 && endCol === tableCols - 1
+    const colFull = startRow === 0 && endRow === tableRows - 1
+    for(let i = startRow; i <= endRow; i++) { 
+      rows.push(i)
+      for(let c = startCol; c <= endCol; c++) { 
         cells.push([i, c])
       }
     }
-    for(let i = start[1]; i <= end[1]; i++) { 
-      cols.push({[i]: colFull})
+    for(let i = startCol; i <= endCol; i++) { 
+      cols.push(i)
     }
     return {
       rows,

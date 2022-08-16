@@ -1,7 +1,6 @@
 import { cancellablePromise, Editable, useCancellablePromises } from "@editablejs/editor";
 import classNames from "classnames";
-import React, { useRef, useState } from "react";
-import { useCallback, useContext, useMemo } from "react";
+import React, { useRef, useState, useCallback, useContext } from "react";
 import { Transforms } from "slate";
 import { Icon } from "../icon";
 import { TableContext } from "./context";

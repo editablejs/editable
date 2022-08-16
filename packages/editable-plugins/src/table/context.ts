@@ -1,8 +1,5 @@
-import { Editable } from '@editablejs/editor'
 import { createContext } from 'react'
-import { Path } from 'slate'
 import { TableCellPoint } from './cell'
-import { Table } from './editor'
 
 export interface TableDragOptions {
   type: 'cols' | 'rows' 
@@ -18,8 +15,8 @@ export interface TableSelection {
 }
 
 export interface TableSelected {
-  rows: Record<number, boolean>[]
-  cols: Record<number, boolean>[]
+  rows: number[]
+  cols: number[]
   rowFull: boolean
   colFull: boolean
   allFull: boolean

@@ -1,10 +1,9 @@
 import { Editable } from '@editablejs/editor';
-import React, { useCallback, useContext } from 'react'
+import classNames from 'classnames';
+import React, { useCallback, useContext, useMemo } from 'react'
 import { InsertAction, SplitAction } from './action';
 import { TableContext } from './context';
 import { Table, TableEditor } from './editor';
-import { useMemo } from 'react';
-
 export interface TableHeaderProps {
   editor: Editable,
   table: Table
@@ -32,14 +31,21 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     const { children } = table
     for(let i = 0; i < children.length; i++) { 
       const rowHeight = children[i].contentHeight
-      height += rowHeight ?? 0
-      const item = <div onMouseDown={e => handleMouseDown(e, i)} className={`${prefixRowsCls}-item`} style={{height: rowHeight}} key={i} />
-      headers.push(item, 
+      const currentHeight = height
+      const h = rowHeight ?? 0
+      height += h
+      const hover = ~selected.rows.indexOf(i)
+      headers.push(<div 
+      onMouseDown={e => handleMouseDown(e, i)} 
+      className={classNames(`${prefixRowsCls}-item`, {[`${prefixRowsCls}-item-hover`]: hover}, {[`${prefixRowsCls}-item-full`]: hover && selected.rowFull})} 
+      style={{height: h + 1, top: currentHeight}} 
+      key={i} 
+      />, 
       <InsertAction editor={editor} table={table} width={width} index={i + 1} top={height} key={`insert-${i}`} />, 
       <SplitAction editor={editor} table={table} index={i} width={width} top={height} key={`split-${i}`} />)
     }
     return headers
-  }, [editor, handleMouseDown, table, width])
+  }, [editor, handleMouseDown, selected.rowFull, selected.rows, table, width])
   
   return <div className={`${prefixRowsCls}-header`}>{headers}</div>
 }
@@ -49,7 +55,7 @@ const TableRowHeader = React.memo(TableRowHeaderDefault, (prev, next) => {
   const { editor: nextEditor, table: nextTable } = next;
   const { children } = table;
   const { children: nextChildren } = nextTable;
-  return editor === nextEditor && children.length === nextChildren.length && children.every((item, index) => item.contentHeight === nextChildren[index].contentHeight)
+  return editor === nextEditor && children.length === nextChildren.length && TableEditor.getColCount(editor, table) === TableEditor.getColCount(nextEditor, nextTable) && children.every((item, index) => item.contentHeight === nextChildren[index].contentHeight)
 })
 
 const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
@@ -71,30 +77,31 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     let width = 0;
     headers.push(<InsertAction editor={editor} table={table} index={0} height={height} left={0} key="insert--1" />)
     for(let i = 0; i < colsWidth.length; i++) { 
-      width += colsWidth[i]
-      const item = <div 
-      onMouseDown={e => handleMouseDown(e, i)} 
-      className={`${prefixColsCls}-item`} 
-      style={{width: colsWidth[i]}} 
-      key={i} 
-      />
-      headers.push(item, 
+      const cw = colsWidth[i]
+      const currentWidth = width
+      width += cw
+      const hover = ~selected.cols.indexOf(i)
+      headers.push(<div 
+        onMouseDown={e => handleMouseDown(e, i)} 
+        className={classNames(`${prefixColsCls}-item`, {[`${prefixColsCls}-item-hover`]: hover}, {[`${prefixColsCls}-item-full`]: hover && selected.colFull})} 
+        style={{width: cw + 1, left: currentWidth}} 
+        key={i} 
+        />, 
       <InsertAction editor={editor} table={table} index={i + 1} left={width} height={height} key={`insert-${i}`} />, 
       <SplitAction editor={editor} table={table} index={i} height={height} left={width} key={`split-${i}`} />)
     }
     return headers
-  }, [colsWidth, editor, handleMouseDown, height, table])
+  }, [colsWidth, editor, handleMouseDown, height, selected.colFull, selected.cols, table])
 
-  
   return <div className={`${prefixColsCls}-header`}>{headers}</div>
 }
 
 const TableColHeader = React.memo(TableColHeaderDefault, (prev, next) => {
   const { editor, table } = prev;
   const { editor: nextEditor, table: nextTable } = next;
-  const { colsWidth } = table;
-  const { colsWidth: nextColsWidth } = nextTable;
-  return editor === nextEditor && colsWidth?.length === nextColsWidth?.length && !!colsWidth?.every((item, index) => item === nextColsWidth?.[index])
+  const { colsWidth, children } = table;
+  const { colsWidth: nextColsWidth, children: nextChildren } = nextTable;
+  return editor === nextEditor && children.length === nextChildren.length && colsWidth?.length === nextColsWidth?.length && !!colsWidth?.every((item, index) => item === nextColsWidth?.[index])
 })
 
 export {

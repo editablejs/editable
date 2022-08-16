@@ -14,8 +14,6 @@ interface TableProps extends RenderElementProps<Table> {
 }
 
 const TableReact: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
-  // selection
-  const {selection, selected} = useSelection(editor)
   // drag
   const dragRef = useRef<TableDragOptions | null>(null)
 
@@ -54,12 +52,16 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     return TableEditor.getColCount(editor, element)
   }, [editor, element])
 
+  
+  // selection
+  const {selection, selected} = useSelection(editor, rows, cols)
+
   const renderAllHeader = () => { 
     const handleMouseDown = (e: React.MouseEvent) => {
       e.preventDefault()
       TableEditor.select(editor, element)
     }
-    return <div onMouseDown={handleMouseDown} className={`${prefixCls}-all-header`} />
+    return <div onMouseDown={handleMouseDown} className={classnames(`${prefixCls}-all-header`, {[`${prefixCls}-all-header-full`]: selected.allFull})} />
   }
 
   const [isHover, setHover] = useState(false)
@@ -72,9 +74,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     cancellablePromisesApi.appendPendingPromise(wait)
     wait.promise.then(() => {
       setHover(true)
-    }).catch(err => {
-
-    })
+    }).catch(err => { })
   }, [selected, cancellablePromisesApi])
 
   const handleMouseLeave = useCallback(() => { 
