@@ -692,6 +692,13 @@ export const Editable = {
     if(!offsetNode) return null
     const node = Editable.toSlateNode(editor, offsetNode)
     if(Text.isText(node)) {
+      const path =  Editable.findPath(editor, node)
+      if(node.text.length === 0) {
+        return {
+          path,
+          offset: 0
+        } 
+      }
       const textNodes = Editable.findLowestDOMElements(editor, node)
       let startOffset = 0
       for(let s = 0; s < textNodes.length; s++) { 
@@ -704,7 +711,7 @@ export const Editable = {
       const content = textNode.textContent ?? ''
       const offset = getTextOffset(textNode, left, top, 0, content.length, content.length)
       return {
-        path: Editable.findPath(editor, node),
+        path,
         offset: startOffset + offset
       }
     } else if(Element.isElement(node)) {

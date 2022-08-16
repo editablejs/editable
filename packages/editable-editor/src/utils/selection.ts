@@ -18,7 +18,8 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
     for(const lineKey of lineKeys) {
       const { top, bottom, right } = lineKey
       const prevs = lines.get(lineKey)
-      if((rect.top >= top && rect.bottom <= bottom || rect.top <= top && rect.bottom >= bottom) && rect.left <= (prevs ? prevs[prevs.length - 1].right : right) + 1) {
+      const last = prevs ? (prevs.concat().reverse().find(p => p.width > 0) ?? prevs[prevs.length - 1]) : null
+      if((rect.top >= top && rect.bottom <= bottom || rect.top <= top && rect.bottom >= bottom) && rect.left <= (last ? last.right : right) + 1) {
         return lineKey
       }
     }
@@ -132,13 +133,14 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
   const lineRects: DOMRect[] = []
   for(const [line, rects] of lines) {
     // 一行的最后rect的right 减去第一个rect的left 行得到宽度
-    let width = rects[rects.length - 1].right - rects[0].left
+    const last = rects.concat().reverse().find(r => r.width > 0) ?? rects[rects.length - 1]
+    let width = last.right - rects[0].left
     const lineRect = findMaxPosition(editor, domEl, line.top, line.bottom)
     line.top = lineRect.top
     line.height = lineRect.height
     line.bottom = lineRect.bottom
     // 空节点的宽度给个最小值
-    if(width === 0 && domRect.left === rects[0].left) {
+    if(width < 1 && domRect.left === rects[0].left) {
       width = minWidth
     }
     lineRects.push(new DOMRect(rects[0].left, line.top, width, line.height))
@@ -228,14 +230,15 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
     const blockRect = blockRects.find(r => (r.top >= line.top && r.bottom <= line.bottom || r.top <= line.top && r.bottom >= line.bottom) && line.left >= r.left && line.right <= r.right)
     const el = blockRect ? rectMap.get(blockRect) : null
     // 一行的最后rect的right 减去第一个rect的left 行得到宽度
-    let width = rects[rects.length - 1].right - rects[0].left
+    const last = rects.concat().reverse().find(r => r.width > 0) ?? rects[rects.length - 1]
+    let width = last.right - rects[0].left
     if(el) { 
       const lineRect = findMaxPosition(editor, el, line.top, line.bottom)
       line.top = lineRect.top
       line.height = lineRect.height
       line.bottom = lineRect.bottom
       // 空节点的宽度给个最小值
-      if(width === 0 && el.getBoundingClientRect().left === rects[0].left) {
+      if(width < 1 && el.getBoundingClientRect().left === rects[0].left) {
         width = minWidth
       }
     }
