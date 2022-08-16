@@ -13,6 +13,8 @@ const TYPE_COLS = 'cols'
 const TYPE_ROWS = 'rows'
 
 export interface TableActionProps {
+  editor: Editable
+  table: Table
   index: number
   left?: number
   top?: number
@@ -21,7 +23,7 @@ export interface TableActionProps {
 }
 
 // insert action
-export const InsertActionDefault: React.FC<TableActionProps> = ({ left, top, height, width, index }) => {
+const InsertActionDefault: React.FC<TableActionProps> = ({ editor, table, left, top, height, width, index }) => {
   if(left !== undefined) {
     left -= 1
   }
@@ -35,8 +37,6 @@ export const InsertActionDefault: React.FC<TableActionProps> = ({ left, top, hei
   if(width !== undefined) {
     width += 11
   }
-
-  const { editor, table } = useContext(TableContext)
 
   const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
   const cls = `${prefixCls}-${type}-insert`
@@ -70,7 +70,7 @@ export const InsertAction = React.memo(InsertActionDefault, (prev, next) => {
 });
 
 // split action
-export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, height, width, index }) => {
+const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, top, height, width, index }) => {
   if(height !== undefined) {
     height += 8
   }
@@ -86,19 +86,16 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
   }
   const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
   const cls = `${prefixCls}-${type}-split`
-
-  const { editor, table, dragRef } = useContext(TableContext)
+  
+  const { dragRef } = useContext(TableContext)
 
   const [isHover, setHover] = useState(false)
   const isDrag = useRef(false)
-  // table path
-  const path = useMemo(() => {
-    return Editable.findPath(editor, table)
-  }, [editor, table])
 
   const handleDragMove = useCallback((e: MouseEvent) => { 
     if(!dragRef.current) return
     const { type, x, y, start } = dragRef.current
+    const path = Editable.findPath(editor, table)
     if(type === 'cols') {
       const { colsWidth } = table
       if(!colsWidth) return
@@ -119,7 +116,7 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
         Transforms.setNodes<TableRow>(editor, { height: h, contentHeight: h }, { at: path.concat(start) })
       }
     }
-  }, [dragRef, table, editor, path])
+  }, [dragRef, table, editor])
 
   const handleDragUp = useCallback((e: MouseEvent) => { 
     dragRef.current = null
@@ -175,5 +172,9 @@ export const SplitActionDefault: React.FC<TableActionProps> = ({ left, top, heig
 }
 
 export const SplitAction = React.memo(SplitActionDefault, (prev, next) => {
-  return prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width
+  const { editor, table } = prev;
+  const { editor: nextEditor, table: nextTable } = next;
+  const { colsWidth } = table;
+  const { colsWidth: nextColsWidth } = nextTable;
+  return editor === nextEditor && prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width && colsWidth?.length === nextColsWidth?.length && !!colsWidth?.every((item, index) => item === nextColsWidth?.[index])
 });

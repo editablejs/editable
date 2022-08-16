@@ -1,11 +1,9 @@
-import { RenderElementProps, useSelected, Editable, useCancellablePromises, cancellablePromise } from "@editablejs/editor";
+import { RenderElementProps, useCancellablePromises, cancellablePromise } from "@editablejs/editor";
 import classnames from "classnames";
-import { useState, useRef, useEffect, useLayoutEffect, useMemo, useCallback } from "react";
-import { Editor, Path, Range } from "slate";
-import { InsertAction, SplitAction } from "./action";
-import { TableCellPoint, TableCellEditor } from "./cell";
-import { TableContext, TableDragOptions, TableSelection } from "./context";
+import { useState, useRef, useMemo, useCallback } from "react";
+import { TableContext, TableDragOptions } from "./context";
 import { Table, TableEditor } from "./editor";
+import { TableColHeader, TableRowHeader } from "./header";
 import { TableSelection as TableSelectionElement, useSelection } from "./selection";
 import './style.less'
 
@@ -48,53 +46,13 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     return height
   }, [element])
 
-  const renderColHeader = () => {
-    const headers = []
-    let width = 0;
+  const rows = useMemo(() => { 
+    return TableEditor.getRowCount(editor, element)
+  }, [editor, element])
 
-    const handleMouseDown = (e: React.MouseEvent, col: number) => {
-      e.preventDefault()
-      TableEditor.select(editor, element, {
-        start: [0, col],
-        end: [element.children.length - 1, col]
-      })
-    }
-
-    headers.push(<InsertAction index={0} height={tableHeight} left={0} key="insert--1" />)
-    for(let i = 0; i < colsWidth.length; i++) { 
-      width += colsWidth[i]
-      const item = <div onMouseDown={e => handleMouseDown(e, i)} className={`${prefixCls}-cols-item`} style={{width: colsWidth[i]}} key={i} />
-      headers.push(item, 
-      <InsertAction index={i + 1} left={width} height={tableHeight} key={`insert-${i}`} />, 
-      <SplitAction index={i} height={tableHeight} left={width} key={`split-${i}`} />)
-    }
-    return <div className={`${prefixCls}-cols-header`}>{headers}</div>
-  }
-
-  const renderRowHeader = () => {
-    const headers = []
-    let height = 0;
-    const handleMouseDown = (e: React.MouseEvent,row: number) => {
-      e.preventDefault()
-      TableEditor.select(editor, element, {
-        start: [row, 0],
-        end: [row, TableEditor.getColCount(editor, element) - 1]
-      })
-    }
-    headers.push(<InsertAction index={0} width={tableWidth} top={0} key="insert--1" />)
-    
-    const { children } = element
-    for(let i = 0; i < children.length; i++) { 
-      const rowHeight = children[i].contentHeight
-      height += rowHeight ?? 0
-      const item = <div onMouseDown={e => handleMouseDown(e, i)} className={`${prefixCls}-rows-item`} style={{height: rowHeight}} key={i} />
-      headers.push(item, 
-      <InsertAction width={tableWidth} index={i + 1} top={height} key={`insert-${i}`} />, 
-      <SplitAction index={i} width={tableWidth} top={height} key={`split-${i}`} />)
-    }
-   
-    return <div className={`${prefixCls}-rows-header`}>{headers}</div>
-  }
+  const cols = useMemo(() => {
+    return TableEditor.getColCount(editor, element)
+  }, [editor, element])
 
   const renderAllHeader = () => { 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -109,7 +67,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
 
   const handleMouseOver = useCallback(() => {
     cancellablePromisesApi.clearPendingPromises()
-    if(selected) return
+    if(~~selected.count) return
     const wait = cancellablePromise(cancellablePromisesApi.delay(200))
     cancellablePromisesApi.appendPendingPromise(wait)
     wait.promise.then(() => {
@@ -126,23 +84,22 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
 
   return (
     <TableContext.Provider value={{
-      editor,
-      table: element,
       dragRef,
-      selection
+      selection,
+      selected,
+      width: tableWidth,
+      height: tableHeight,
+      rows,
+      cols
     }}>
       <div 
-      className={classnames(prefixCls, {[`${prefixCls}-selected`]: selected, [`${prefixCls}-hover`]: isHover})}
+      className={classnames(prefixCls, {[`${prefixCls}-selected`]: ~~selected.count, [`${prefixCls}-hover`]: isHover})}
       {...attributes}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
       >
-        {
-          renderColHeader()
-        }
-        {
-          renderRowHeader()
-        }
+        <TableColHeader editor={editor} table={element} />
+        <TableRowHeader editor={editor} table={element} />
         {
           renderAllHeader()
         }

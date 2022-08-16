@@ -62,29 +62,29 @@ const TableSelection = React.memo(TableSelectionDefault, (prev, next) => {
 })
 
 const useSelection = (editor: Editable) => {
+  const { rows: tableRows, cols: tableCols } = useContext(TableContext)
   // selection
   const [selection, setSelection] = useState<TableSelection | null>(null)
-  const selected = useSelected()
-  // select table cell
+  const selectedTable = useSelected()
+
   useLayoutEffect(() => {
     const { selection: editorSelection } = editor
-    if(!selected) {
+    if(!selectedTable) {
       setSelection(null)
-    } else if (editorSelection && Range.isExpanded(editorSelection)) {
+    } else if (editorSelection) {
       const [start, end] = Range.edges(editorSelection)
       const [startEntry] = Editor.nodes(editor, {
         at: start,
         match: n => TableCellEditor.isTableCell(editor, n)
       })
       if(!startEntry) return setSelection(null)
-      const [endEntry] = Editor.nodes(editor, {
+      const [endEntry] = Range.isExpanded(editorSelection) ? Editor.nodes(editor, {
         at: end,
         match: n => TableCellEditor.isTableCell(editor, n)
-      })
+      }) : [startEntry]
       if(!endEntry) return setSelection(null)
       const [, startPath] = startEntry
       const [, endPath] = endEntry
-      if(Path.equals(startPath, endPath)) return setSelection(null)
       setSelection(prev => {
         const sel = {
           start: startPath.slice(startPath.length - 2) as TableCellPoint,
@@ -96,8 +96,35 @@ const useSelection = (editor: Editable) => {
     } else {
       setSelection(null)
     }
-  }, [editor, editor.selection, selected])
+  }, [editor, editor.selection, selectedTable])
 
+  
+  const selected = useMemo(() => {
+    const {start, end} = selection ?? {start: [0, 0], end: [-1, -1]}
+    const rows: Record<number, boolean>[] = []
+    const cols: Record<number, boolean>[] = []
+    const cells: TableCellPoint[] = []
+    const rowFull = start[1] === 0 && end[1] === tableCols - 1
+    const colFull = start[0] === 0 && end[0] === tableRows - 1
+    for(let i = start[0]; i <= end[0]; i++) { 
+      rows.push({[i]: rowFull})
+      for(let c = start[1]; c <= end[1]; c++) { 
+        cells.push([i, c])
+      }
+    }
+    for(let i = start[1]; i <= end[1]; i++) { 
+      cols.push({[i]: colFull})
+    }
+    return {
+      rows,
+      cols,
+      rowFull,
+      colFull,
+      allFull: rowFull && colFull,
+      cells,
+      count: cells.length
+    }
+  }, [selection, tableCols, tableRows])
   return {
     selection,
     selected

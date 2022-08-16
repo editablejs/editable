@@ -1,8 +1,9 @@
 import { Editable, RenderElementProps } from "@editablejs/editor";
-import React, { useLayoutEffect } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import { Editor, Node, Element, Transforms } from "slate";
 import { TableCell, TableCellEditor } from "./cell";
-import { defaultTableMinRowHeight } from "./editor";
+import { TableContext } from "./context";
+import { TableEditor } from "./editor";
 
 export const TABLE_ROW_KEY = 'table-row';
 
@@ -55,9 +56,11 @@ interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> 
 const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
   const { style, ref, ...rest } = attributes
   const { children: cells } = element
+  // 表格宽度变化导致挤压内容需要重新计算高度
+  const { width } = useContext(TableContext)
   // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
-    let maxHeight = defaultTableMinRowHeight
+    let maxHeight = TableEditor.getOptions(editor).minRowHeight
     for(let i = 0; i < cells.length; i++) {
       const child = Editable.toDOMNode(editor, cells[i])
       const rect = child.getBoundingClientRect()
@@ -69,7 +72,7 @@ const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableR
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, cells, ref])
+  }, [editor, cells, ref, width])
  
   return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
 }
