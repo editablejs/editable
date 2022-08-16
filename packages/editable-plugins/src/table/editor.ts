@@ -1,5 +1,5 @@
 import { Editable } from "@editablejs/editor"
-import { Editor, Transforms, NodeEntry, Element, Node } from "slate"
+import { Editor, Transforms, NodeEntry, Element, Node, Path } from "slate"
 import { TableCellEditor, TableCellPoint, TableCell, TableCellEdge } from "./cell"
 import { TableRow, TableRowEditor } from "./row"
 
@@ -103,26 +103,19 @@ export const TableEditor = {
     }
     TableEditor.focus(editor, {
       point: [0, index],
-      tableEntry: [table, path]
+      path
     })
   },
 
   insertRow: (editor: Editable, table: Table, index: number) => { 
-    const { children, colsWidth } = table
+    const { colsWidth } = table
     const path = Editable.findPath(editor, table)
-    const count = children.length
-    let rowHeight: number | undefined = 0
-    if(index === 0){
-      rowHeight = children[index].height
-    } else {
-      rowHeight = children[(index > count ? count : index) - 1].height
-    }
-    if(!rowHeight) rowHeight = TableEditor.getOptions(editor).minRowHeight
+    const rowHeight = TableEditor.getOptions(editor).minRowHeight
     const row = TableRowEditor.create({ height: rowHeight }, (colsWidth ?? [0]).map(() => TableCellEditor.create()))
     Transforms.insertNodes(editor, row, { at: path.concat([index]) })
     TableEditor.focus(editor, {
       point: [index, 0],
-      tableEntry: [table, path]
+      path
     })
   },
 
@@ -132,17 +125,18 @@ export const TableEditor = {
 
   focus: (editor: Editable, options: {
     point: TableCellPoint, 
-    tableEntry?: NodeEntry<Table>, 
+    path?: Path, 
     edge?: TableCellEdge
   }) => {
-    let { point, tableEntry, edge = 'start' } = options 
-    if(!tableEntry) {
-      [tableEntry] = Editor.nodes<Table>(editor, { 
+    let { point, path, edge = 'start' } = options 
+    let entry: NodeEntry | undefined = path ? [Node.get(editor, path), path] : undefined
+    if(!entry) {
+      [entry] = Editor.nodes<Table>(editor, { 
         match: n => TableEditor.isTable(editor, n),
       })
     }
-    if(tableEntry) {
-      const [table, gPath] = tableEntry
+    if(entry && TableEditor.isTable(editor, entry[0])) {
+      const [table, gPath] = entry
       const [rowIndex, cellIndex] = point
       const cell = Node.get(table, [rowIndex, cellIndex])
       if(TableCellEditor.isTableCell(editor, cell)) {

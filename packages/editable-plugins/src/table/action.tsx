@@ -66,7 +66,9 @@ const InsertActionDefault: React.FC<TableActionProps> = ({ editor, table, left, 
 }
 
 export const InsertAction = React.memo(InsertActionDefault, (prev, next) => {
-  return prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width
+  const { editor, table } = prev;
+  const { editor: nextEditor, table: nextTable } = next;
+  return editor === nextEditor && table === nextTable && prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width
 });
 
 // split action
@@ -107,23 +109,38 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
       newColsWidth[start] = width
       Transforms.setNodes<Table>(editor, { colsWidth: newColsWidth }, { at: path })
     } else if(type === 'rows') {
-      const { height } = table.children[start]
+      const { height, children: cells, contentHeight: ch = height } = table.children[start]
       if(height) {
         const cY = e.clientY
         const val = cY - y
-        let h = height + val
-        h = Math.max(h, TableEditor.getOptions(editor).minRowHeight)
+        const { minRowHeight } = TableEditor.getOptions(editor)
+        let h = Math.max(height, ch!) + val
+        h = Math.max(h, minRowHeight)
+        let contentHeight = 0
+        for(let i = 0; i < cells.length; i++) {
+          const child = Editable.toDOMNode(editor, cells[i]).firstElementChild
+          if(!child) continue
+          const rect = child.getBoundingClientRect()
+          contentHeight = Math.max(contentHeight, rect.height + 2, minRowHeight)
+        }
+        if(h < contentHeight) {
+          h = contentHeight
+        }
         Transforms.setNodes<TableRow>(editor, { height: h, contentHeight: h }, { at: path.concat(start) })
       }
     }
   }, [dragRef, table, editor])
 
+  const cancellablePromisesApi = useCancellablePromises()
+
   const handleDragUp = useCallback((e: MouseEvent) => { 
     dragRef.current = null
     isDrag.current = false
+    setHover(false)
+    cancellablePromisesApi.clearPendingPromises()
     window.removeEventListener('mousemove', handleDragMove)
     window.removeEventListener('mouseup', handleDragUp)
-  }, [dragRef, handleDragMove])
+  }, [cancellablePromisesApi, dragRef, handleDragMove])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -135,11 +152,10 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
       end: index
     }
     isDrag.current = true
+    setHover(true)
     window.addEventListener('mousemove', handleDragMove)
     window.addEventListener('mouseup', handleDragUp)
   }
-
-  const cancellablePromisesApi = useCancellablePromises()
 
   const handleMouseOver = useCallback(() => {
     cancellablePromisesApi.clearPendingPromises()
@@ -147,9 +163,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
     cancellablePromisesApi.appendPendingPromise(wait)
     wait.promise.then(() => {
       setHover(true)
-    }).catch(err => {
-
-    })
+    }).catch(err => { })
   }, [cancellablePromisesApi])
 
   const handleMouseLeave = useCallback(() => { 
@@ -174,7 +188,5 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
 export const SplitAction = React.memo(SplitActionDefault, (prev, next) => {
   const { editor, table } = prev;
   const { editor: nextEditor, table: nextTable } = next;
-  const { colsWidth } = table;
-  const { colsWidth: nextColsWidth } = nextTable;
-  return editor === nextEditor && prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width && colsWidth?.length === nextColsWidth?.length && !!colsWidth?.every((item, index) => item === nextColsWidth?.[index])
+  return editor === nextEditor && table === nextTable && prev.index === next.index && prev.left === next.left && prev.top === next.top && prev.height === next.height && prev.width === next.width
 });
