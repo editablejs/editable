@@ -16,7 +16,6 @@ export interface TableRow extends Element {
   children: TableCell[]
   height?: number
   contentHeight?: number
-  rowspan?: number
 }
 
 export interface TableRowEditor extends Editable { 
@@ -38,7 +37,6 @@ export const TableRowEditor = {
     return {
       type: TABLE_ROW_KEY,
       children: cells.map(cell => TableCellEditor.create(cell)),
-      rowspan: 1,
       height,
       contentHeight,
       ...rest
@@ -55,24 +53,19 @@ interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> 
 
 const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
   const { style, ref, ...rest } = attributes
-  const { children: cells } = element
   // 表格宽度变化导致挤压内容需要重新计算高度
   const { width } = useContext(TableContext)
   // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
     let maxHeight = TableEditor.getOptions(editor).minRowHeight
-    for(let i = 0; i < cells.length; i++) {
-      const child = Editable.toDOMNode(editor, cells[i])
-      const rect = child.getBoundingClientRect()
-      maxHeight = Math.max(maxHeight, rect.height)
-    }
+    const rect = ref.current.getBoundingClientRect()
+    maxHeight = Math.max(maxHeight, rect.height)
     if(maxHeight !== element.contentHeight) {
       Transforms.setNodes<TableRow>(editor, { contentHeight: maxHeight }, { 
         at: Editable.findPath(editor, element) 
       })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, cells, ref, width])
+  }, [editor, ref, width, element])
  
   return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
 }

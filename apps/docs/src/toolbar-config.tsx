@@ -132,13 +132,33 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
     }, 
     {
       type: 'button',
-      onActive: (editor) => { 
+      onDisabled: (editor) => { 
         return !!TableEditor.isActive(editor)
       },
       onToggle: (editor) => {
         if(TableEditor.isTableEditor(editor)) TableEditor.toggle(editor)
       },
       children: <Icon name="table" />
+    }, 
+    {
+      type: 'button',
+      onDisabled: (editor) => { 
+        return !TableEditor.canMerge(editor)
+      },
+      onToggle: (editor) => {
+        TableEditor.mergeCell(editor)
+      },
+      children: <Icon name="tableMerge" />
+    }, 
+    {
+      type: 'button',
+      onDisabled: (editor) => { 
+        return !TableEditor.canSplit(editor)
+      },
+      onToggle: (editor) => {
+        TableEditor.splitCell(editor)
+      },
+      children: <Icon name="tableSplit" />
     }
   ],
 ]

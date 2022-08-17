@@ -1,4 +1,4 @@
-import { RenderElementProps, useCancellablePromises, cancellablePromise } from "@editablejs/editor";
+import { RenderElementProps, useCancellablePromises, cancellablePromise, Editable } from "@editablejs/editor";
 import classnames from "classnames";
 import { useState, useRef, useMemo, useCallback } from "react";
 import { TableContext, TableDragOptions } from "./context";
@@ -44,22 +44,13 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
     return height
   }, [element])
 
-  const rows = useMemo(() => { 
-    return TableEditor.getRowCount(editor, element)
-  }, [editor, element])
-
-  const cols = useMemo(() => {
-    return TableEditor.getColCount(editor, element)
-  }, [editor, element])
-
-  
   // selection
-  const {selection, selected} = useSelection(editor, rows, cols)
+  const {selection, selected} = useSelection(element)
 
   const renderAllHeader = () => { 
     const handleMouseDown = (e: React.MouseEvent) => {
       e.preventDefault()
-      TableEditor.select(editor, element)
+      TableEditor.select(editor, Editable.findPath(editor, element))
     }
     return <div onMouseDown={handleMouseDown} className={classnames(`${prefixCls}-all-header`, {[`${prefixCls}-all-header-full`]: selected.allFull})} />
   }
@@ -89,8 +80,8 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
       selected,
       width: tableWidth,
       height: tableHeight,
-      rows,
-      cols
+      rows: element.children.length,
+      cols: element.colsWidth?.length ?? 0,
     }}>
       <div 
       className={classnames(prefixCls, {[`${prefixCls}-selected`]: ~~selected.count, [`${prefixCls}-hover`]: isHover})}

@@ -60,7 +60,7 @@ export interface ElementAttributes<T extends any = any> extends BaseAttributes {
   'data-slate-inline'?: true
   'data-slate-void'?: true
   dir?: 'rtl'
-  ref: React.Ref<T>
+  ref: React.MutableRefObject<T>
 }
 
 export interface TextAttributes extends BaseAttributes { 
@@ -461,7 +461,7 @@ export const Editable = {
 
     while(Element.isElement(node)) {
       const { children } = node
-      const index = Math.min(offset, children.length - 1)
+      const index = isPoint ? Math.min(offset, children.length - 1) : (edge === 'start' ? 0 : children.length - 1)
       node = children[index]
       path = path.concat(index)
       offset = edge === 'start' ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
@@ -717,8 +717,9 @@ export const Editable = {
     } else if(Element.isElement(node)) {
       const point = Editable.toSlatePoint(editor, [ offsetNode, 0 ], {
         exactMatch: false,
-        suppressThrow: false,
+        suppressThrow: true,
       })
+      if(!point) return Editable.toLowestPoint(editor, Editable.findPath(editor, node))
       return point
     }
     return null

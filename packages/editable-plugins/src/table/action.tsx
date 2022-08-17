@@ -43,9 +43,9 @@ const InsertActionDefault: React.FC<TableActionProps> = ({ editor, table, left, 
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault()
     if(type === TYPE_COLS) {
-      TableEditor.insertCol(editor, table, index)
+      TableEditor.insertCol(editor, Editable.findPath(editor, table), index)
     } else if(type === TYPE_ROWS) { 
-      TableEditor.insertRow(editor, table, index)
+      TableEditor.insertRow(editor, Editable.findPath(editor, table), index)
     }
   }
 

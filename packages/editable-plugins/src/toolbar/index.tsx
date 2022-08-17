@@ -12,30 +12,36 @@ export interface ToolbarProps {
   items: ToolbarItem[][]
 }
 
+const getActiveState = (editor: Editable, items: ToolbarItem[][]): GroupItem[][] => { 
+  return items.map(group => group.map(item => {
+    const { type, onActive } = item
+    switch(type) { 
+      case 'button':
+        const { onDisabled } = item
+        return { 
+          ...item, 
+          active: onActive ? onActive(editor) : false,
+          disabled: onDisabled ? onDisabled(editor) : false
+        }
+      case 'dropdown':
+        return { ...item, activeKey: onActive ? onActive(editor) : '' }
+    }
+  }))
+}
+
 const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ editor, items: itemProps, className, ...props }) => {
 
-  const setActiveState = useCallback((items: ToolbarItem[][]): GroupItem[][] => { 
-    return items.map(group => group.map(item => {
-      switch(item.type) { 
-        case 'button':
-          return { ...item, active: item.onActive ? item.onActive(editor) : false }
-        case 'dropdown':
-          return { ...item, activeKey: item.onActive ? item.onActive(editor) : '' }
-      }
-    }))
-  },[editor])
-
-  const [ items, setItems ] = useState<GroupItem[][]>(setActiveState(itemProps))
+  const [ items, setItems ] = useState<GroupItem[][]>(getActiveState(editor, itemProps))
 
   useEffect(() => {
     const { onSelectionChange } = editor
     editor.onSelectionChange = () => {
       onSelectionChange()
       setItems(items => {
-        return setActiveState(items)
+        return getActiveState(editor, items)
       })
     }
-  }, [editor, setActiveState])
+  }, [editor])
 
   return <div className={classNames('editable-toolbar', className)} {...props}>
   {

@@ -13,6 +13,7 @@ interface ButtonProps {
 
 export interface ToolbarButton extends Omit<ButtonProps, 'active' | 'editor'> {
   onActive?: <T extends Editable>(editor: T) => boolean
+  onDisabled?: <T extends Editable>(editor: T) => boolean
   type: 'button'
 } 
 

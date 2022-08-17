@@ -9,7 +9,9 @@ export interface TableCellOptions {
 
 export interface TableCell extends Element {
   type: typeof TABLE_CELL_KEY
-  colspan?: number
+  colspan: number
+  rowspan: number
+  span?: TableCellPoint
 }
 
 export interface TableCellEditor extends Editable { 
@@ -35,15 +37,32 @@ export const TableCellEditor = {
   create: (cell: Partial<Omit<TableCell, 'type' | 'children'>> = {}): TableCell => { 
     return {
       colspan: 1,
+      rowspan: 1,
       ...cell,
       type: TABLE_CELL_KEY,
       children: [{ children: [{text: ''}] }]
     }
   },
 
+  equal: (a: TableCellPoint, b: TableCellPoint) => { 
+    return a[0] === b[0] && a[1] === b[1]
+  },
+
   focus: (editor: TableCellEditor, [, path]: NodeEntry<TableCell>, edge: TableCellEdge = 'start') => { 
     const point = Editable.toLowestPoint(editor, path, edge)
     Transforms.select(editor, point)
+  },
+
+  edges: (selection: { start: TableCellPoint, end: TableCellPoint}): { start: TableCellPoint, end: TableCellPoint } => {
+    const {start, end} = selection
+    const startRow = Math.min(start[0], end[0])
+    const endRow = Math.max(start[0], end[0])
+    const startCol = Math.min(start[1], end[1])
+    const endCol = Math.max(start[1], end[1])
+    return {
+      start: [Math.max(startRow, 0), Math.max(startCol, 0)],
+      end: [Math.max(endRow, 0), Math.max(endCol, 0)]
+    }
   },
 
   getPoint: (editor: TableCellEditor, [, path]: NodeEntry<TableCell>): TableCellPoint => { 
@@ -70,7 +89,8 @@ export const withTableCell =  <T extends Editable>(editor: T, options: TableCell
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props
     if(TableCellEditor.isTableCell(newEditor, element)) {
-      return <td className={prefixCls} {...attributes}>
+      const { style, ...rest } = attributes
+      return <td rowSpan={element.rowspan ?? 1} colSpan={element.colspan ?? 1} style={{ ...style, display: element.span ? 'none' : ''}} className={prefixCls} {...rest}>
         <div className={`${prefixCls}-inner`}>
         { children }
         </div>

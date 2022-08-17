@@ -18,7 +18,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
 
   const handleMouseDown = useCallback((e: React.MouseEvent,row: number) => {
     e.preventDefault()
-    TableEditor.select(editor, table, {
+    TableEditor.select(editor, Editable.findPath(editor, table), {
       start: [row, 0],
       end: [row, cols - 1]
     })
@@ -55,7 +55,8 @@ const TableRowHeader = React.memo(TableRowHeaderDefault, (prev, next) => {
   const { editor: nextEditor, table: nextTable } = next;
   const { children } = table;
   const { children: nextChildren } = nextTable;
-  return editor === nextEditor && children.length === nextChildren.length && TableEditor.getColCount(editor, table) === TableEditor.getColCount(nextEditor, nextTable) && children.every((item, index) => item.contentHeight === nextChildren[index].contentHeight)
+  return editor === nextEditor && children.length === nextChildren.length && 
+  table.colsWidth?.length === nextTable.colsWidth?.length && children.every((item, index) => item.contentHeight === nextChildren[index].contentHeight)
 })
 
 const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
@@ -64,7 +65,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
 
   const handleMouseDown = useCallback((e: React.MouseEvent, col: number) => {
     e.preventDefault()
-    TableEditor.select(editor, table, {
+    TableEditor.select(editor, Editable.findPath(editor, table), {
       start: [0, col],
       end: [rows - 1, col]
     })
