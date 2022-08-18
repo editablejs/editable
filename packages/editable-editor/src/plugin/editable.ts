@@ -109,7 +109,17 @@ export interface RenderPlaceholderProps<T extends Node = Node> {
 export interface EditorElements {
   [key: string]: NodeEntry<Element>[]
 }
-
+const { withoutNormalizing } = Editor
+Editor.withoutNormalizing = (editor: Editor, fn: () => void) => { 
+  if(Editable.isEditor(editor)) {
+    editor.normalizeSelection(selection => {
+      editor.selection = selection
+      withoutNormalizing(editor, fn)
+    })
+  } else {
+    withoutNormalizing(editor, fn)
+  }
+}
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */

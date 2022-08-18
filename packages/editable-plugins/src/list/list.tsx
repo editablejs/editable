@@ -55,116 +55,118 @@ export const ListEditor = {
     return kindEntries
   },
 
-  toggle: (editor: ListEditor, kind: string, options: ToggleListOptions = {}) => { 
-    let { start = 1, template, values } = options
+  toggle: (editor: ListEditor, kind: string, options: ToggleListOptions = {}) => {
     const activeElements = ListEditor.queryActive(editor, kind)
-    if(activeElements) {
-      const startLists = new Map<string, NodeEntry<List>>()
-      for(const [element, path] of activeElements) { 
-        const { key } = element
-        if(!startLists.has(key)) {
-          const startList = ListEditor.findStartList(editor, {
+    Editor.withoutNormalizing(editor, () => {
+      let { start = 1, template, values } = options
+      if(activeElements) {
+        const startLists = new Map<string, NodeEntry<List>>()
+        for(const [element, path] of activeElements) { 
+          const { key } = element
+          if(!startLists.has(key)) {
+            const startList = ListEditor.findStartList(editor, {
+              path,
+              key,
+              level: element.level,
+              kind
+            }) ?? [element, path]
+            startLists.set(key, startList)
+          }
+        }
+        Transforms.unwrapNodes(editor, { 
+          match: n => ListEditor.isList(editor, n, kind),
+          split: true,
+        })
+        const { selection } = editor
+        if(!selection) return
+        for(const [key, [list, path]] of startLists) {
+          updateListStart(editor, kind, {
             path,
-            key,
-            level: element.level,
-            kind
-          }) ?? [element, path]
-          startLists.set(key, startList)
-        }
-      }
-      Transforms.unwrapNodes(editor, { 
-        match: n => ListEditor.isList(editor, n, kind),
-        split: true,
-      })
-      const { selection } = editor
-      if(!selection) return
-      for(const [key, [list, path]] of startLists) {
-        updateListStart(editor, kind, {
-          path,
-          key: key,
-          level: list.level,
-          start: list.start
-        })
-        const indent = list as Indent
-        Transforms.setNodes<Indent>(editor, { lineIndent: indent.lineIndent }, {
-          at: path
-        })
-      }
-    } else {
-      const { selection } = editor
-      if(!selection) return
-      const entrys = Editor.nodes<Element>(editor, { 
-        match: n => Editor.isBlock(editor, n),
-        mode: 'lowest'
-      })
-      const beforePath = Editor.before(editor, selection.anchor.path)
-      const afterPath = Editor.after(editor, selection.focus.path)
-      const [prev] = Editor.nodes<List>(editor, {
-        at: beforePath,
-        match: n => ListEditor.isList(editor, n, kind)
-      })
-      let key = ''
-      let next: NodeEntry<List> | undefined = undefined
-      if(prev) {
-        const prevList = prev[0]
-        key = prevList.key
-        start = prevList.start + 1
-      } else if(([next] = Editor.nodes<List>(editor, {
-        at: afterPath,
-        match: n => ListEditor.isList(editor, n, kind)
-      })) && next) {
-        const nextList = next[0]
-        key = nextList.key
-        start = Math.max(nextList.start - 1, 1)
-      } else {
-        key = generateRandomKey()
-      }
-      let nextPath: Path = []
-      for(const [node, path] of entrys) { 
-        const { lineIndent = 0, textIndent = 0 } = node as Indent
-        const level = ListEditor.calcLeval(editor, kind, {path, key: key})
-        const element: List & Indent = { 
-          type: LIST_KEY,
-          kind,
-          key, 
-          start, 
-          level, 
-          lineIndent: lineIndent + textIndent,
-          template,
-          ...values,
-          children: [] 
-        }
-        let list: NodeEntry<List> | undefined = undefined
-        if(ListEditor.isList(editor, node) || (list = Editor.above(editor, {
-          at: path,
-          match: n => ListEditor.isList(editor, n)
-        }))) {
-          const node = list ? list[0] : element
-          Transforms.setNodes(editor, {
-            ...element,
-            key: node.level > 0 ? node.key : element.key,
-            lineIndent: (node as Indent).lineIndent
-          }, {
-            at: list ? list[1] : path
+            key: key,
+            level: list.level,
+            start: list.start
           })
-        } else {
-          Transforms.setNodes<Indent>(editor, { lineIndent: 0, textIndent: 0 }, {
+          const indent = list as Indent
+          Transforms.setNodes<Indent>(editor, { lineIndent: indent.lineIndent }, {
             at: path
           })
-          Transforms.wrapNodes(editor, element, {
-            at: path 
+        }
+      } else {
+        const { selection } = editor
+        if(!selection) return
+        const entrys = Editor.nodes<Element>(editor, { 
+          match: n => Editor.isBlock(editor, n),
+          mode: 'lowest'
+        })
+        const beforePath = Editor.before(editor, selection.anchor.path)
+        const afterPath = Editor.after(editor, selection.focus.path)
+        const [prev] = Editor.nodes<List>(editor, {
+          at: beforePath,
+          match: n => ListEditor.isList(editor, n, kind)
+        })
+        let key = ''
+        let next: NodeEntry<List> | undefined = undefined
+        if(prev) {
+          const prevList = prev[0]
+          key = prevList.key
+          start = prevList.start + 1
+        } else if(([next] = Editor.nodes<List>(editor, {
+          at: afterPath,
+          match: n => ListEditor.isList(editor, n, kind)
+        })) && next) {
+          const nextList = next[0]
+          key = nextList.key
+          start = Math.max(nextList.start - 1, 1)
+        } else {
+          key = generateRandomKey()
+        }
+        let nextPath: Path = []
+        for(const [node, path] of entrys) { 
+          const { lineIndent = 0, textIndent = 0 } = node as Indent
+          const level = ListEditor.calcLeval(editor, kind, {path, key: key})
+          const element: List & Indent = { 
+            type: LIST_KEY,
+            kind,
+            key, 
+            start, 
+            level, 
+            lineIndent: lineIndent + textIndent,
+            template,
+            ...values,
+            children: [] 
+          }
+          let list: NodeEntry<List> | undefined = undefined
+          if(ListEditor.isList(editor, node) || (list = Editor.above(editor, {
+            at: path,
+            match: n => ListEditor.isList(editor, n)
+          }))) {
+            const node = list ? list[0] : element
+            Transforms.setNodes(editor, {
+              ...element,
+              key: node.level > 0 ? node.key : element.key,
+              lineIndent: (node as Indent).lineIndent
+            }, {
+              at: list ? list[1] : path
+            })
+          } else {
+            Transforms.setNodes<Indent>(editor, { lineIndent: 0, textIndent: 0 }, {
+              at: path
+            })
+            Transforms.wrapNodes(editor, element, {
+              at: path 
+            })
+          }
+          nextPath = path
+          start++
+        }
+        if(nextPath.length > 0) {
+          updateListStart(editor, kind, {
+            path: nextPath,
+            key
           })
         }
-        nextPath = path
-        start++
       }
-      if(nextPath.length > 0) {
-        updateListStart(editor, kind, {
-          path: nextPath,
-          key
-        })
-      }
-    }
+    })
   },
 
   addTemplate: (editor: ListEditor, kind: string, template: ListTemplate) => { 

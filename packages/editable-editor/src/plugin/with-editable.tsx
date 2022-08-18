@@ -270,6 +270,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.onChange = () => {
     let prevSelection: Range | undefined
+    EDITOR_ACTIVE_MARKS.delete(editor)
+    EDITOR_ACTIVE_ELEMENTS.delete(editor)
     // COMPAT: React doesn't batch `setState` hook calls, which means that the
     // children and selection can get out of sync for one render pass. So we
     // have to use this unstable API to ensure it batches them. (2019/12/03)
