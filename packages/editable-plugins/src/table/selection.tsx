@@ -1,9 +1,10 @@
-import { Editable, useSlate } from "@editablejs/editor";
-import { Path } from 'slate'
+import { Editable, useNode, useSlate } from "@editablejs/editor";
+import { Editor, Path, Range, Transforms } from 'slate'
 import React, { useState, useContext, useLayoutEffect, useMemo } from "react";
-import { TableCellEditor, TableCellPoint } from "./cell";
+import { TableCell, TableCellEditor, TableCellPoint } from "./cell";
 import { TableContext, TableSelected, TableSelection } from "./context";
 import { Table, TableEditor } from "./editor";
+import { TableRow, TableRowEditor } from "./row";
 
 const prefixCls = 'editable-table';
 
@@ -54,26 +55,27 @@ const TableSelection = React.memo(TableSelectionDefault, (prev, next) => {
   return prev.editor === next.editor && prev.table === next.table
 })
 
-const useSelection = (table: Table) => {
+const useSelection = (editor: Editable, table: Table) => {
   // selection
   const [selection, setSelection] = useState<TableSelection | null>(null)
-  const slateEditor = useSlate()
+  const { focused, selected: nodeSelected } = useNode()
   useLayoutEffect(() => {
-    const selection = TableEditor.getSelection(slateEditor, [table, Editable.findPath(slateEditor, table)])
+    if(!focused) return setSelection(null)
+    const selection = TableEditor.getSelection(editor, [table, Editable.findPath(editor, table)])
 
     if(selection) {
       setSelection(prev => {
         if(!prev || !Path.equals(prev.start, selection.start) || !Path.equals(prev.end, selection.end)) {
-          const path = Editable.findPath(slateEditor, table)
+          const path = Editable.findPath(editor, table)
           const startPath = path.concat(selection.start)
           const endPath = path.concat(selection.end)
-          const edgeSelection = TableEditor.edges(slateEditor, [table, path] , selection)
-          const {start: tableStart, end: tableEnd} = TableEditor.span(slateEditor, [table, path], edgeSelection)
+          const edgeSelection = TableEditor.edges(editor, [table, path] , selection)
+          const {start: tableStart, end: tableEnd} = TableEditor.span(editor, [table, path], edgeSelection)
           const selStart = path.concat(tableStart)
           const selEnd = path.concat(tableEnd)
           // 有合并的单元格时选择区域会变大，所以需要重新select
           if(!Path.equals(startPath, selStart) || !Path.equals(endPath, selEnd)) { 
-            TableEditor.select(slateEditor, [table, path], edgeSelection)
+            TableEditor.select(editor, [table, path], edgeSelection)
             return prev
           }
           return selection
@@ -84,10 +86,72 @@ const useSelection = (table: Table) => {
       setSelection(null)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slateEditor, slateEditor.selection])    
+  }, [editor, editor.selection, focused])    
+
+  /**
+   * 部分选中表格，让选中部分选中表格的整行
+   */
+  useLayoutEffect(() => {
+    const { selection } = editor
+    if(selection && nodeSelected && !focused) {
+      let {anchor, focus} = selection
+      const isBackward = Range.isBackward(selection)
+      const [startRow] = Editor.nodes<TableRow>(editor, { 
+        at: anchor.path,
+        match: n => TableRowEditor.isTableRow(editor, n) 
+      })
+      if(startRow) {
+        const [row, path] = startRow
+        const {children: cells } = row
+        const table = TableEditor.getTable(editor, path)
+        if(table) {
+          if(isBackward) {
+            const sel = TableEditor.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1]
+            })
+            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+          } else {
+            const sel = TableEditor.edges(editor, table, {
+              start: [path[path.length - 1], 0],
+              end: [table[0].children.length - 1, cells.length - 1]
+            })
+            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+          }
+        }
+        
+      }
+      const [endRow] = Editor.nodes<TableRow>(editor, { 
+        at: focus.path,
+        match: n => TableRowEditor.isTableRow(editor, n) 
+      })
+      if(endRow) {
+        const [row, path] = endRow
+        const {children: cells } = row
+        const table = TableEditor.getTable(editor, path)
+        if(table) {
+          if(isBackward) {
+            const sel = TableEditor.edges(editor, table, {
+              start: [table[0].children.length - 1, cells.length - 1],
+              end: [path[path.length - 1], 0]
+            })
+            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+          } else {
+            const sel = TableEditor.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1]
+            })
+            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+          }
+        }
+      }
+      const range = {anchor, focus}
+      if(!Range.equals(selection, range)) Transforms.select(editor, range)
+    }
+  }, [nodeSelected, focused, editor, editor.selection])
 
   const selected: TableSelected = useMemo(() => {
-    const {start, end} = selection ? TableEditor.edges(slateEditor, Editable.findPath(slateEditor, table), selection) : {start: [0, 0], end: [-1, -1]}
+    const {start, end} = selection ? TableEditor.edges(editor, Editable.findPath(editor, table), selection) : {start: [0, 0], end: [-1, -1]}
     const [startRow, startCol] = start
     const [endRow, endCol] = end
     const rows: number[] = []
@@ -115,7 +179,7 @@ const useSelection = (table: Table) => {
       cells,
       count: cells.length
     }
-  }, [slateEditor, selection, table])
+  }, [editor, selection, table])
   return {
     selection,
     selected

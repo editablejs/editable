@@ -113,7 +113,7 @@ const { withoutNormalizing } = Editor
 Editor.withoutNormalizing = (editor: Editor, fn: () => void) => { 
   if(Editable.isEditor(editor)) {
     editor.normalizeSelection(selection => {
-      editor.selection = selection
+      if(editor.selection !== selection) editor.selection = selection
       withoutNormalizing(editor, fn)
     })
   } else {

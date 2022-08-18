@@ -1,11 +1,11 @@
-import { Editor, Range, Element, Ancestor, Descendant } from 'slate'
+import { Editor, Range, Element, Ancestor, Descendant, Path } from 'slate'
 
 import ElementComponent from '../components/element'
 import TextComponent from '../components/text'
 import { Editable } from '..'
 import { useSlateStatic } from './use-slate-static'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
-import { SelectedContext } from './use-selected'
+import { NodeContext } from './use-node'
 
 /**
  * Children.
@@ -33,16 +33,20 @@ const useChildren = (props: {
     const key = Editable.findKey(editor, n)
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
-
+    const focus = selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
+    
     if (Element.isElement(n)) {
       children.push(
-        <SelectedContext.Provider key={`provider-${key.id}`} value={!!sel}>
+        <NodeContext.Provider key={`provider-${key.id}`} value={{
+          selected: !!sel,
+          focused: !!focus,
+        }}>
           <ElementComponent
             element={n}
             key={key.id}
             selection={sel}
           />
-        </SelectedContext.Provider>
+        </NodeContext.Provider>
       )
     } else {
       children.push(

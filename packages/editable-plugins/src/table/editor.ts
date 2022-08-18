@@ -1,5 +1,5 @@
 import { Editable } from "@editablejs/editor"
-import { Editor, Transforms, NodeEntry, Element, Node, Path, Range } from "slate"
+import { Editor, Transforms, NodeEntry, Element, Node, Path, Range, Location } from "slate"
 import { TableCellEditor, TableCellPoint, TableCell, TableCellEdge } from "./cell"
 import { TableSelection } from "./context"
 import { TableRow, TableRowEditor } from "./row"
@@ -62,7 +62,12 @@ export const TableEditor = {
     return options as Required<TableOptions>
   },
 
-  getTable: (editor: Editable, at?: Path): NodeEntry<Table> | undefined => {
+  getTable: (editor: Editable, at?: Location): NodeEntry<Table> | undefined => {
+    if(!at) {
+      const { selection } = editor
+      if(!selection) return
+      at = selection
+    }
     const [table] = Editor.nodes<Table>(editor, {
       at,
       match: n => TableEditor.isTable(editor, n)
@@ -80,7 +85,9 @@ export const TableEditor = {
     const [, path] = at
     if(!editorSelection) return
     const [start, end] = Range.edges(editorSelection)
-    if(Path.isBefore(start.path, path) || Path.isAfter(end.path, path)) return
+
+    const range = Editor.range(editor, path)
+    if(!Range.includes(range, editorSelection.anchor) || !Range.includes(range, editorSelection.focus)) return
     
     const [startEntry] = Editor.nodes<TableCell>(editor, {
       at: start,
@@ -433,7 +440,7 @@ export const TableEditor = {
     if(!selection) selection = TableEditor.getSelection(editor, at)
     if(!selection) return { start: [0, 0], end: [-1, -1] }
     const [ table ] = at
-    const { start, end } = selection
+    const { start, end } = TableCellEditor.edges(selection)
     let [startRow, startCol] = start
     let [endRow, endCol] = end
 

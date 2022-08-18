@@ -22,7 +22,9 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
   newEditor.normalizeSelection = (fn) => {
     const table = TableEditor.getTable(newEditor)
     if(table) {
-      const {start, end} = TableEditor.edges(newEditor, table)
+      const selection = TableEditor.getSelection(newEditor, table)
+      if(!selection) return normalizeSelection(fn)
+      let { start, end } = selection
       const [startRow, startCol] = start
       const [endRow, endCol] = end
   
@@ -30,12 +32,15 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
       const colCount = endCol - startCol
 
       if(rowCount > 0 || colCount > 0) {
+        const {selection: editorSelection} = editor
         const [, path] = table
+        const edgesSelection = TableEditor.edges(newEditor, table, selection)
+        const { start: edgeStart, end: edgeEnd } = edgesSelection
         const cells = TableEditor.cells(newEditor, table, {
-          startRow,
-          startCol,
-          endRow,
-          endCol
+          startRow: edgeStart[0],
+          startCol: edgeStart[1],
+          endRow: edgeEnd[0],
+          endCol: edgeEnd[1]
         })
         for(const [cell, row, col] of cells) {
           if(!cell.span) {
@@ -47,10 +52,8 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
             })
           }
         }
-        Transforms.select(newEditor, {
-          anchor: Editable.toLowestPoint(newEditor, path.concat([startRow, startCol])),
-          focus: Editable.toLowestPoint(newEditor, path.concat([endRow, endCol])),
-        })
+        // 恢复选区
+        Transforms.select(newEditor, editorSelection!)
         return
       }
     }
@@ -60,9 +63,7 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
 
   newEditor.toggleTable = (options) => {
     const table = TableEditor.create(newEditor, options)
-    Transforms.insertNodes(editor, table, {
-      select: false
-    })
+    Transforms.insertNodes(newEditor, table)
     TableEditor.focus(newEditor, {
       point: [0, 0]
     })

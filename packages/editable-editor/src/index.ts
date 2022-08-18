@@ -12,7 +12,7 @@ export { useEditor } from './hooks/use-editor'
 export { useSlateStatic } from './hooks/use-slate-static'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
-export { useSelected } from './hooks/use-selected'
+export { useNode } from './hooks/use-node'
 export { useSlate } from './hooks/use-slate'
 
 // Plugin

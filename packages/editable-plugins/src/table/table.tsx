@@ -45,7 +45,7 @@ const TableReact: React.FC<TableProps> = ({ editor, element, attributes, childre
   }, [element])
 
   // selection
-  const {selection, selected} = useSelection(element)
+  const {selection, selected} = useSelection(editor, element)
 
   const renderAllHeader = () => { 
     const handleMouseDown = (e: React.MouseEvent) => {
