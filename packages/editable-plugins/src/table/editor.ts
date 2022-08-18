@@ -457,14 +457,12 @@ export const TableEditor = {
           const spanCell = table.children[sRow].children[sCol]
           if (spanCell.span) continue
           if (
-            spanCell.colspan + sCol - 1 === startCol &&
             sCol < startCol
           ) {
             startCol = sCol;
             return edges();
           }
           if (
-            spanCell.rowspan + sRow - 1 === startRow &&
             sRow < startRow
           ) {
             startRow = sRow;
