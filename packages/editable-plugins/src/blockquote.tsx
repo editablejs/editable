@@ -68,7 +68,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   const { renderElement } = newEditor
 
   newEditor.renderElement = ({ element, attributes, children }) => {
-    if(element.type === BLOCKQUOTE_KEY) { 
+    if(BlockquoteEditor.isBlockquote(newEditor, element)) { 
       const Blockquote = BLOCKQUOTE_KEY
       return <Blockquote className="editable-blockquote" {...attributes}>{children}</Blockquote>
     }

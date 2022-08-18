@@ -49,11 +49,11 @@ export interface IndentEditor extends Editable {
 export type IndentMode = 'line' | 'auto'
 
 export const IndentEditor = {
-  isIndentEditor: (editor: Editable): editor is IndentEditor => {
+  isIndentEditor: (editor: Editor): editor is IndentEditor => {
     return !!(editor as IndentEditor).toggleIndent
   },
 
-  isIndent: (editor: Editable, node: Node): node is Indent => { 
+  isIndent: (editor: Editor, node: Node): node is Indent => { 
     return Element.isElement(node) && node.type === INDENT_KEY
   },
 
