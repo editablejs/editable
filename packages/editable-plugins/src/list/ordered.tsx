@@ -143,9 +143,12 @@ export const withOrderedList = <T extends Editable>(editor: T, options: OrderedL
   })
 
   newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => { 
-    ListEditor.toggle(editor, ORDERED_LIST_KEY,{
-      ...options,
-      template: options?.template ?? OrderedListTemplates[0].key
+    newEditor.normalizeSelection(selection => {
+      editor.selection = selection
+      ListEditor.toggle(editor, ORDERED_LIST_KEY,{
+        ...options,
+        template: options?.template ?? OrderedListTemplates[0].key
+      })
     })
   }
 

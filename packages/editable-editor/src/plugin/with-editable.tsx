@@ -286,7 +286,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.queryActiveMarks = <T extends Text>() => {
     const marks = EDITOR_ACTIVE_MARKS.get(editor)
     if(marks) return marks as Omit<T, 'text' | 'composition'>
-    const editorMarks: Omit<T, 'text' | 'composition'> = Editor.marks(editor) as any
+    const editorMarks: Omit<T, 'text' | 'composition'> = Editable.marks(e) as any
     if(editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
     return editorMarks ?? {}
   },
@@ -295,18 +295,20 @@ export const withEditable = <T extends Editor>(editor: T) => {
     let elements = EDITOR_ACTIVE_ELEMENTS.get(editor)
     if(elements) return elements
     elements = {}
-    const { selection } = editor
-    if(!selection) return {}
-    const nodeEntries = Editor.nodes<Element>(editor, {
-      at: selection,
-      match: n => !Editor.isEditor(n) && Element.isElement(n)
+    e.normalizeSelection(selection => {
+      if(!elements) return
+      const nodeEntries = Editor.nodes<Element>(editor, {
+        at: selection,
+        match: n => !Editor.isEditor(n) && Element.isElement(n)
+      })
+    
+      for(const entry of nodeEntries) {
+        const type = entry[0].type ?? 'paragraph'
+        if(elements[type]) elements[type].push(entry)
+        else elements[type] = [entry]
+      }
     })
-  
-    for(const entry of nodeEntries) {
-      const type = entry[0].type ?? 'paragraph'
-      if(elements[type]) elements[type].push(entry)
-      else elements[type] = [entry]
-    }
+    
     if(Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   },
@@ -701,6 +703,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if(setSelectionDraw) { 
       setSelectionDraw(true)
     }
+  }
+
+  e.normalizeSelection = (fn) => {
+    const { selection } = e
+    if(!selection) return
+    fn(selection)
   }
 
   return e

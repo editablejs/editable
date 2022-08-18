@@ -9,7 +9,7 @@ import {
   Range,
   Scrubber,
   Transforms,
-  NodeEntry,
+  NodeEntry
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -148,6 +148,7 @@ export interface Editable extends BaseEditor {
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
   clearSelectionDraw: () => void
   startSelectionDraw: () => void
+  normalizeSelection: (fn: (range: Range) => void) => void
 }
 
 export const Editable = {
@@ -182,6 +183,15 @@ export const Editable = {
 
   isCell(editor: Editable, value: any){
     return editor.isCell(value)
+  },
+
+  marks(editor: Editable): Omit<Text, 'text' | 'composition'> {
+    let marks: Omit<Text, 'text' | 'composition'> = {}
+    editor.normalizeSelection(selection => {
+      const editorMarks = Editor.marks({...editor, selection})
+      marks = Object.assign(marks, editorMarks)
+    })
+    return marks
   },
 
   /**

@@ -123,36 +123,38 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
   HEADING_OPTIONS.set(newEditor, options)
   
   newEditor.toggleHeading = (type) => { 
-    const { selection } = editor
-    if(!selection || type && type !== PARAGRAPH_KEY && !HeadingEditor.isEnabled(editor, type)) return
-    if(!type) type = PARAGRAPH_KEY
-    const activeType = HeadingEditor.queryHeading(editor)
-    if(!activeType && type === PARAGRAPH_KEY) return
-    type = activeType === type ? PARAGRAPH_KEY : type
+    newEditor.normalizeSelection(selection => {
+      editor.selection = selection
+      if(!selection || type && type !== PARAGRAPH_KEY && !HeadingEditor.isEnabled(editor, type)) return
+      if(!type) type = PARAGRAPH_KEY
+      const activeType = HeadingEditor.queryHeading(editor)
+      if(!activeType && type === PARAGRAPH_KEY) return
+      type = activeType === type ? PARAGRAPH_KEY : type
 
-    const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
-    for(const [_, path] of lowestBlocks) {
-      if(type !== PARAGRAPH_KEY) { 
-        const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
-        const mark: Partial<FontSize & Mark> = { }
-        if(FontSizeEditor.isFontSizeEditor(editor)) {
-          mark.fontSize = style.fontSize
+      const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
+      for(const [_, path] of lowestBlocks) {
+        if(type !== PARAGRAPH_KEY) { 
+          const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
+          const mark: Partial<FontSize & Mark> = { }
+          if(FontSizeEditor.isFontSizeEditor(editor)) {
+            mark.fontSize = style.fontSize
+          }
+          if(MarkEditor.isMarkEditor(editor)) { 
+            mark.bold = style.fontWeight
+          }
+          Transforms.setNodes<FontSize & Mark>(editor, mark, {
+            at: path,
+            match: n => Text.isText(n)
+          })
+        } else {
+          Transforms.setNodes<FontSize & Mark>(editor, { fontSize: '', bold: false}, {
+            at: path,
+            match: n => Text.isText(n)
+          })
         }
-        if(MarkEditor.isMarkEditor(editor)) { 
-          mark.bold = style.fontWeight
-        }
-        Transforms.setNodes<FontSize & Mark>(editor, mark, {
-          at: path,
-          match: n => Text.isText(n)
-        })
-      } else {
-        Transforms.setNodes<FontSize & Mark>(editor, { fontSize: '', bold: false}, {
-          at: path,
-          match: n => Text.isText(n)
-        })
+        Transforms.setNodes(editor, { type }, { at: path })
       }
-      Transforms.setNodes(editor, { type }, { at: path })
-    }
+    })
   }
 
   const { renderElement } = newEditor

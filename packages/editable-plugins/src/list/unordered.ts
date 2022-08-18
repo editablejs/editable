@@ -66,9 +66,12 @@ export const withUnOrderedList = <T extends Editable>(editor: T, options: UnOrde
   })
 
   newEditor.toggleUnOrderedList = (options?: ToggleUnOrderedListOptions) => { 
-    ListEditor.toggle(editor, UNORDERED_LIST_KEY, {
-      ...options,
-      template: options?.template ?? UnOrderedListTemplates[0].key
+    newEditor.normalizeSelection(selection => {
+      editor.selection = selection
+      ListEditor.toggle(editor, UNORDERED_LIST_KEY, {
+        ...options,
+        template: options?.template ?? UnOrderedListTemplates[0].key
+      })
     })
   }
 

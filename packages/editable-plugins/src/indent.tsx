@@ -234,49 +234,51 @@ export const renderIndentAttributes = (editor: Editable, { attributes, element }
 }
 
 const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'auto') => { 
-  const { selection } = editor
-  if(!selection) return
-  // 是否选中一行
-  const selectLine = Editable.getSelectLine(editor)
-  // 是否选中在一行的开始或结尾位置
-  const selectLineEdge = Editable.isSelectLineEdge(editor)
-  
-  const isCollapsed = Range.isCollapsed(selection)
-  // text indent
-  if(isCollapsed && (!selectLine || mode === 'line')) {
-    const entry = Editor.above(editor, { 
-      match: editor.onIndentMatch,
-      at: selection.anchor
-    })
-    if(!entry) return
-    const [_, path] = entry
-    // 在节点的开始位置，设置text indent
-    if(Editor.isStart(editor, selection.focus, path)) {
-      mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
-      return
-    } 
-    // 在一行的开始位置，设置line indent
-    else if(selectLineEdge) {
-      if(size > 0) {
-        setTextIndent(editor, entry, -size)
+  editor.normalizeSelection(selection => {
+    editor.selection = selection
+    if(!selection) return
+    // 是否选中一行
+    const selectLine = Editable.getSelectLine(editor)
+    // 是否选中在一行的开始或结尾位置
+    const selectLineEdge = Editable.isSelectLineEdge(editor)
+    
+    const isCollapsed = Range.isCollapsed(selection)
+    // text indent
+    if(isCollapsed && (!selectLine || mode === 'line')) {
+      const entry = Editor.above(editor, { 
+        match: editor.onIndentMatch,
+        at: selection.anchor
+      })
+      if(!entry) return
+      const [_, path] = entry
+      // 在节点的开始位置，设置text indent
+      if(Editor.isStart(editor, selection.focus, path)) {
+        mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
+        return
+      } 
+      // 在一行的开始位置，设置line indent
+      else if(selectLineEdge) {
+        if(size > 0) {
+          setTextIndent(editor, entry, -size)
+        }
+        setLineIndent(editor, entry, size)
       }
-      setLineIndent(editor, entry, size)
+    } 
+    // line indent
+    else if(selectLine) {
+      const blockEntrys = Editor.nodes<Indent>(editor, { 
+        match: editor.onIndentMatch,
+        mode: 'lowest'
+      })
+      if(!blockEntrys) return
+      for(const entry of blockEntrys) { 
+        setLineIndent(editor, entry, size)
+      }
+      return
     }
-  } 
-  // line indent
-  else if(selectLine) {
-    const blockEntrys = Editor.nodes<Indent>(editor, { 
-      match: editor.onIndentMatch,
-      mode: 'lowest'
-    })
-    if(!blockEntrys) return
-    for(const entry of blockEntrys) { 
-      setLineIndent(editor, entry, size)
-    }
-    return
-  }
 
-  IndentEditor.insertIndent(editor)
+    IndentEditor.insertIndent(editor)
+  })
 }
 
 export const withIndent = <T extends Editable>(editor: T, options: IndentOptions = {}) => {

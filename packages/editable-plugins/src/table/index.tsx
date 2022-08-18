@@ -13,10 +13,49 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
 
-  const { isGrid } = editor
+  const { isGrid, normalizeSelection } = editor
 
   newEditor.isGrid = (node: Node) => {
     return TableEditor.isTable(newEditor, node) || isGrid(node)
+  }
+
+  newEditor.normalizeSelection = (fn) => {
+    const table = TableEditor.getTable(newEditor)
+    if(table) {
+      const {start, end} = TableEditor.edges(newEditor, table)
+      const [startRow, startCol] = start
+      const [endRow, endCol] = end
+  
+      const rowCount = endRow - startRow
+      const colCount = endCol - startCol
+
+      if(rowCount > 0 || colCount > 0) {
+        const [, path] = table
+        const cells = TableEditor.cells(newEditor, table, {
+          startRow,
+          startCol,
+          endRow,
+          endCol
+        })
+        for(const [cell, row, col] of cells) {
+          if(!cell.span) {
+            const anchor = Editable.toLowestPoint(newEditor, path.concat([row, col]))
+            const focus = Editable.toLowestPoint(newEditor, path.concat([row, col]), 'end')
+            fn({
+              anchor,
+              focus
+            })
+          }
+        }
+        Transforms.select(newEditor, {
+          anchor: Editable.toLowestPoint(newEditor, path.concat([startRow, startCol])),
+          focus: Editable.toLowestPoint(newEditor, path.concat([endRow, endCol])),
+        })
+        return
+      }
+    }
+    
+    normalizeSelection(fn)
   }
 
   newEditor.toggleTable = (options) => {

@@ -63,7 +63,6 @@ export const TableEditor = {
   },
 
   getTable: (editor: Editable, at?: Path): NodeEntry<Table> | undefined => {
-    if(!TableEditor.isActive(editor)) return
     const [table] = Editor.nodes<Table>(editor, {
       at,
       match: n => TableEditor.isTable(editor, n)

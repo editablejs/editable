@@ -83,11 +83,14 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
   });
 
   newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => { 
-    ListEditor.toggle(editor, TASK_LIST_KEY, {
-      ...options,
-      values: {
-        checked: options?.checked ?? false
-      }
+    newEditor.normalizeSelection(selection => {
+      editor.selection = selection
+      ListEditor.toggle(editor, TASK_LIST_KEY, {
+        ...options,
+        values: {
+          checked: options?.checked ?? false
+        }
+      })
     })
   }
 
