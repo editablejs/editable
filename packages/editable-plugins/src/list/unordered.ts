@@ -1,5 +1,5 @@
 import { Editable, isHotkey } from "@editablejs/editor";
-import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./list";
+import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./base";
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 

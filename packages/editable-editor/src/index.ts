@@ -1,19 +1,20 @@
-// Components
-// Environment-dependent Editable
 import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
+import { BaseElement } from 'slate';
+
+export * from './plugin/custom'
 
 export {
   ContentEditable,
 } from './components/content'
-export { Slate } from './components/slate'
+export { EditableComposer } from './components/editable'
 
 // Hooks
 export { useEditor } from './hooks/use-editor'
-export { useSlateStatic } from './hooks/use-slate-static'
+export { useEditableStatic } from './hooks/use-editable-static'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
 export { useNode } from './hooks/use-node'
-export { useSlate } from './hooks/use-slate'
+export { useEditable } from './hooks/use-editable'
 
 // Plugin
 export { Editable } from './plugin/editable'
@@ -36,4 +37,4 @@ export {
   isHotkey,
   isCodeHotkey,
   isKeyHotkey
-} 
+}

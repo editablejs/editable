@@ -1,5 +1,4 @@
-import { Editable, isHotkey } from "@editablejs/editor";
-import { Transforms, Editor, Range, Element, Path, Node } from "slate";
+import { Editable, isHotkey, Transforms, Editor, Range, Element, Path, Node } from "@editablejs/editor";
 import './blockquote.less'
 
 export const BLOCKQUOTE_KEY = 'blockquote'

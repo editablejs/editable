@@ -1,7 +1,6 @@
-import { Editable, isHotkey } from "@editablejs/editor";
+import { Editable, isHotkey, Path } from "@editablejs/editor";
 import React, { useLayoutEffect } from "react";
-import { Path } from "slate";
-import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./list";
+import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./base";
 import './ordered.less'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)

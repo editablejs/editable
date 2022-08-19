@@ -32,7 +32,6 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       scripts: workspace:*
-      slate: ^0.82.0
       tsconfig: workspace:*
       typescript: ^4.5.3
       webpack: ^5.0.0
@@ -42,7 +41,6 @@ importers:
       next: 12.2.5_sfoxds7t5ydpegc3knd667wn6m
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      slate: 0.82.0
     devDependencies:
       '@types/node': 17.0.23
       '@types/react': 17.0.47
@@ -112,6 +110,7 @@ importers:
       is-plain-object: 5.0.0
       lodash: 4.17.21
       scroll-into-view-if-needed: 2.2.29
+      slate: 0.82.0
     devDependencies:
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
@@ -122,7 +121,6 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       scripts: link:../scripts
-      slate: 0.82.0
       tsconfig: link:../tsconfig
       tsup: 6.1.2_typescript@4.6.3
       typescript: 4.6.3
@@ -130,9 +128,6 @@ importers:
   packages/editable-plugins:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/is-hotkey': ^0.1.7
-      '@types/jest': ^26.0.22
-      '@types/lodash': ^4.14.149
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       classnames: ^2.3.1
@@ -142,7 +137,6 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       scripts: workspace:*
-      slate: ^0.82.0
       tsconfig: workspace:*
       tsup: ^6.1.2
       typescript: ^4.5.3
@@ -150,9 +144,6 @@ importers:
       classnames: 2.3.1
     devDependencies:
       '@editablejs/editor': link:../editable-editor
-      '@types/is-hotkey': 0.1.7
-      '@types/jest': 26.0.24
-      '@types/lodash': 4.14.182
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
       esbuild: 0.14.49
@@ -161,7 +152,6 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       scripts: link:../scripts
-      slate: 0.82.0
       tsconfig: link:../tsconfig
       tsup: 6.1.2_typescript@4.6.3
       typescript: 4.6.3
@@ -3414,6 +3404,7 @@ packages:
 
   /immer/9.0.15:
     resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
+    dev: false
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -3569,6 +3560,7 @@ packages:
   /is-plain-object/5.0.0:
     resolution: {integrity: sha512-VRSzKkbMm5jMDoKLbltAkFQ5Qr7VDiTFGXxYFXXowVj387GeGNOCsOH6Msy00SGZ3Fp84b1Naa1psqgcCIEP5Q==}
     engines: {node: '>=0.10.0'}
+    dev: false
 
   /is-potential-custom-element-name/1.0.1:
     resolution: {integrity: sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==}
@@ -5419,6 +5411,7 @@ packages:
       immer: 9.0.15
       is-plain-object: 5.0.0
       tiny-warning: 1.0.3
+    dev: false
 
   /slice-ansi/3.0.0:
     resolution: {integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==}
@@ -5789,6 +5782,7 @@ packages:
 
   /tiny-warning/1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
+    dev: false
 
   /tmp/0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}

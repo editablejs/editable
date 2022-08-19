@@ -1,5 +1,4 @@
-import { Editable, isHotkey } from "@editablejs/editor";
-import { Transforms, Text, Element, Editor, Range, Node, Path } from "slate";
+import { Editable, isHotkey, Transforms, Text, Element, Editor, Range, Node, Path } from "@editablejs/editor";
 import { FontSize, FontSizeEditor } from "./fontsize";
 import { Mark, MarkEditor } from "./mark";
 import "./heading.less"

@@ -1,6 +1,5 @@
-import { Editable, RenderLeafProps } from "@editablejs/editor";
+import { Editable, RenderLeafProps, Editor, Text } from "@editablejs/editor";
 import { CSSProperties } from 'react'
-import { Editor, Text } from "slate";
 
 export interface FontSizeOptions {
   defaultSize?: string

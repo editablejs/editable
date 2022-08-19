@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames';
 import { Editable } from '@editablejs/editor';
 import ToolbarGroup, { GroupItem } from './group';

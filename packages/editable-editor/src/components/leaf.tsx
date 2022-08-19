@@ -1,7 +1,7 @@
 import React from 'react'
 import { Element, Text } from 'slate'
 import String from './string'
-import { useSlateStatic } from '../hooks/use-slate-static'
+import { useEditableStatic } from '../hooks/use-editable-static'
 import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
 import { TextAttributes } from '../plugin/editable'
 
@@ -24,7 +24,7 @@ const Leaf = (props: {
     <String isLast={isLast} parent={parent} text={text} />
   )
   
-  const editor = useSlateStatic()
+  const editor = useEditableStatic()
   const placeholder = EDITOR_TO_PLACEHOLDER.get(editor)
   if (placeholder) {
     const placeholderComponent = editor.renderPlaceholder({ attributes: {'data-slate-placeholder': true}, node: text, children: placeholder })

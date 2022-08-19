@@ -1,10 +1,9 @@
-import { Editable, isHotkey, RenderElementProps } from "@editablejs/editor"
+import { Editable, isHotkey, RenderElementProps, Editor, Transforms, Element, Node, Path, Range, NodeEntry } from "@editablejs/editor"
 import React from 'react'
-import { Editor, Transforms, Element, Node, Path, Range, NodeEntry } from "slate"
 import { HeadingEditor } from "../heading"
 import { Indent, IndentEditor, IndentMode } from "../indent"
 import { generateRandomKey } from "../utils"
-import './list.less'
+import './base.less'
 
 interface ListNode {
   kind: string

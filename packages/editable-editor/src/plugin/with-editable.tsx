@@ -20,7 +20,6 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
-import { Transforms as EditableTransforms } from './transforms'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -288,7 +287,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.queryActiveMarks = <T extends Text>() => {
     const marks = EDITOR_ACTIVE_MARKS.get(editor)
     if(marks) return marks as Omit<T, 'text' | 'composition'>
-    const editorMarks: Omit<T, 'text' | 'composition'> = Editable.marks(e) as any
+    const editorMarks: Omit<T, 'text' | 'composition'> = Editor.marks(e) as any
     if(editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
     return editorMarks ?? {}
   },
@@ -356,13 +355,13 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isExtendForward(event)) {
       event.preventDefault()
-      EditableTransforms.move(e, { edge: 'focus' })
+      Transforms.move(e, { edge: 'focus' })
       return
     }
 
     if (Hotkeys.isExtendBackward(event)) {
       event.preventDefault()
-      EditableTransforms.move(e, { edge: 'focus', reverse: true })
+      Transforms.move(e, { edge: 'focus', reverse: true })
       return
     }
 
@@ -402,7 +401,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isExtendLineBackward(event)) {
       event.preventDefault()
-      EditableTransforms.move(e, {
+      Transforms.move(e, {
         unit: 'line',
         edge: 'focus',
         reverse: true,
@@ -412,7 +411,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isExtendLineForward(event)) {
       event.preventDefault()
-      EditableTransforms.move(e, { unit: 'line', edge: 'focus' })
+      Transforms.move(e, { unit: 'line', edge: 'focus' })
       return
     }
 
@@ -426,7 +425,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         const { focus } = selection
         const { path: focusPath } = focus
         if(Editor.isStart(editor, focus, focusPath)) {
-          EditableTransforms.move(e, { reverse: !isRTL })
+          Transforms.move(e, { reverse: !isRTL })
           return
         }
         const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
@@ -437,7 +436,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           return
         }
       }
-      EditableTransforms.move(e, { unit: 'word', reverse: !isRTL })
+      Transforms.move(e, { unit: 'word', reverse: !isRTL })
       return
     }
 
@@ -451,7 +450,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         const { focus } = selection
         const { path: focusPath } = focus
         if(Editor.isEnd(editor, focus, focusPath)) {
-          EditableTransforms.move(e, { reverse: isRTL })
+          Transforms.move(e, { reverse: isRTL })
           return
         }
         const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
@@ -461,7 +460,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           return
         }
       }
-      EditableTransforms.move(e, { unit: 'word', reverse: isRTL })
+      Transforms.move(e, { unit: 'word', reverse: isRTL })
       return
     }
 
@@ -474,7 +473,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       event.preventDefault()
 
       if (selection && Range.isCollapsed(selection)) {
-        EditableTransforms.move(e, { reverse: !isRTL })
+        Transforms.move(e, { reverse: !isRTL })
       } else {
         Transforms.collapse(editor, { edge: 'start' })
       }
@@ -486,7 +485,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       event.preventDefault()
 
       if (selection && Range.isCollapsed(selection)) {
-        EditableTransforms.move(e, { reverse: isRTL })
+        Transforms.move(e, { reverse: isRTL })
       } else {
         Transforms.collapse(editor, { edge: 'end' })
       }

@@ -4,7 +4,7 @@ import { Editor, Node, Range, Element as SlateElement } from 'slate'
 
 import Text from './text'
 import useChildren from '../hooks/use-children'
-import { Editable, useSlateStatic, useReadOnly, ElementAttributes } from '..'
+import { Editable, useEditableStatic, useReadOnly, ElementAttributes } from '..'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   NODE_TO_ELEMENT,
@@ -27,7 +27,7 @@ const Element = (props: {
     selection,
   } = props
   const ref = useRef<HTMLElement>(null)
-  const editor = useSlateStatic()
+  const editor = useEditableStatic()
   const readOnly = useReadOnly()
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)

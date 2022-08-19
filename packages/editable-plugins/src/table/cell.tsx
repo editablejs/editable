@@ -1,5 +1,4 @@
-import { Editable } from "@editablejs/editor";
-import { Editor, Node, Element, Range, Point, Transforms, NodeEntry } from "slate";
+import { Editable, Editor, Node, Element, Range, Point, Transforms, NodeEntry } from "@editablejs/editor";
 
 export const TABLE_CELL_KEY = 'table-cell';
 

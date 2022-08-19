@@ -6,17 +6,17 @@ import { Editable } from '../plugin/editable'
  * context whenever changes occur.
  */
 
-export const SlateContext = createContext<[Editable] | null>(null)
+export const EditableContext = createContext<[Editable] | null>(null)
 
 /**
  * Get the current editor object from the React context.
  */
-export const useSlate = (): Editable => {
-  const context = useContext(SlateContext)
+export const useEditable = (): Editable => {
+  const context = useContext(EditableContext)
 
   if (!context) {
     throw new Error(
-      `The \`useSlate\` hook must be used inside the <Slate> component's context.`
+      `The \`useEditable\` hook must be used inside the <Slate> component's context.`
     )
   }
 

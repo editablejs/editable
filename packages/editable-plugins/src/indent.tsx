@@ -1,6 +1,5 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps } from "@editablejs/editor"
+import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps, Editor, Transforms, Node, Element, NodeEntry, Path, Range } from "@editablejs/editor"
 import { CSSProperties } from "react"
-import { Editor, Transforms, Node, Element, NodeEntry, Path, Range } from "slate"
 import './indent.less'
 
 export interface Indent extends Element {

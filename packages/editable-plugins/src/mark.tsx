@@ -1,6 +1,5 @@
-import { Editable, RenderLeafProps, isHotkey } from "@editablejs/editor";
+import { Editable, RenderLeafProps, isHotkey, Editor, Text } from "@editablejs/editor";
 import { CSSProperties } from 'react'
-import { Editor, Text } from "slate";
 import './mark.less'
 
 type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>

@@ -1,6 +1,5 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementProps } from "@editablejs/editor";
-import { Transforms, Node } from "slate";
-import { List, ListEditor, ToggleListOptions, withList } from "./list";
+import { Editable, ElementAttributes, isHotkey, RenderElementProps, Transforms, Node } from "@editablejs/editor";
+import { List, ListEditor, ToggleListOptions, withList } from "./base";
 import './task.less'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)

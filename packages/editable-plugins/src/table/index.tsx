@@ -1,5 +1,4 @@
-import { Editable, RenderElementProps } from "@editablejs/editor"
-import { Transforms, Node } from "slate"
+import { Editable, RenderElementProps, Transforms, Node } from "@editablejs/editor"
 import { withTableCell } from "./cell"
 import { Table, TableEditor, TableOptions, TABLE_OPTIONS_WEAKMAP } from "./editor"
 import { withTableRow } from "./row"

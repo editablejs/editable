@@ -7,6 +7,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   esbuildOptions(options) {
-    options.external = ["react", "react-dom", "slate"]
+    options.external = ["react", "react-dom"]
   },
 })

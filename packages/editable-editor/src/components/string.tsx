@@ -1,7 +1,7 @@
 import React from 'react'
 import { Editor, Text, Path, Element, Node } from 'slate'
 
-import { Editable, useSlateStatic } from '..'
+import { Editable, useEditableStatic } from '..'
 
 /**
  * Leaf content strings.
@@ -12,7 +12,7 @@ const String: React.FC<{
   text: Text
 }> = (props) => {
   const { isLast, parent, text } = props
-  const editor = useSlateStatic()
+  const editor = useEditableStatic()
   const path = Editable.findPath(editor, text)
   const parentPath = Path.parent(path)
 

@@ -1,6 +1,5 @@
-import { Editable, RenderElementProps } from "@editablejs/editor";
+import { Editable, RenderElementProps, Editor, Node, Element, Transforms } from "@editablejs/editor";
 import React, { useContext, useLayoutEffect } from "react";
-import { Editor, Node, Element, Transforms } from "slate";
 import { TableCell, TableCellEditor } from "./cell";
 import { TableContext } from "./context";
 import { TableEditor } from "./editor";

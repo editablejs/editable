@@ -3,7 +3,7 @@ import { Editor, Range, Element, Ancestor, Descendant, Path } from 'slate'
 import ElementComponent from '../components/element'
 import TextComponent from '../components/text'
 import { Editable } from '..'
-import { useSlateStatic } from './use-slate-static'
+import { useEditableStatic } from './use-editable-static'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
 import { NodeContext } from './use-node'
 
@@ -19,7 +19,7 @@ const useChildren = (props: {
     node,
     selection,
   } = props
-  const editor = useSlateStatic()
+  const editor = useEditableStatic()
   const path = Editable.findPath(editor, node)
   const children = []
   const isLeafBlock =
@@ -34,7 +34,7 @@ const useChildren = (props: {
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
     const focus = selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
-    
+
     if (Element.isElement(n)) {
       children.push(
         <NodeContext.Provider key={`provider-${key.id}`} value={{

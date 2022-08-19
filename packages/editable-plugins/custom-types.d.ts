@@ -1,6 +1,6 @@
-import { BaseElement, BaseText } from 'slate'
+import { BaseElement, BaseText } from '@editablejs/editor'
 
-declare module 'slate' {
+declare module '@editablejs/editor' {
   interface CustomTypes {
     Element: BaseElement & {
       type?: string

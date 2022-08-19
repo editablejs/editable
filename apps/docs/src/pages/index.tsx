@@ -1,6 +1,5 @@
-import { Slate, ContentEditable, withEditable } from '@editablejs/editor';
+import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor';
 import { Toolbar, withPlugins } from '@editablejs/editor-plugins'
-import { createEditor } from 'slate';
 import React, { useState } from 'react';
 import styles from './index.module.css'
 import '@editablejs/editor-plugins/dist/index.css'
@@ -32,7 +31,7 @@ const initialValue = [
 ]
 
 export default function Docs() {
-  const [ editor ] = useState(() => withPlugins(withEditable(createEditor()), { 
+  const [ editor ] = useState(() => withPlugins(createEditor(), { 
     fontSize: { defaultSize: '14px'}
   }))
   
@@ -40,7 +39,9 @@ export default function Docs() {
     <div className={styles.wrapper}>
       <Toolbar className={styles.toolbar} editor={editor} items={defaultToolbarConfig} />
       <div className={styles.container}>
-        <Slate editor={editor} value={initialValue}><ContentEditable placeholder='Please enter content...' /></Slate>
+        <EditableComposer editor={editor} value={initialValue}>
+          <ContentEditable placeholder='Please enter content...' />
+        </EditableComposer>
       </div>
     </div>
   );

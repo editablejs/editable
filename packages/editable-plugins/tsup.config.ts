@@ -10,6 +10,6 @@ export default defineConfig({
   esbuildPlugins: [lessLoader()],
   esbuildOptions(options) {
     options.bundle = true
-    options.external = ["react", "react-dom", "slate", "@editablejs/editor"]
+    options.external = ["react", "react-dom", "@editablejs/editor"]
   },
 })

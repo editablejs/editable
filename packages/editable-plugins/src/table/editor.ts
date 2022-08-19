@@ -1,5 +1,4 @@
-import { Editable } from "@editablejs/editor"
-import { Editor, Transforms, NodeEntry, Element, Node, Path, Range, Location } from "slate"
+import { Editable, Editor, Transforms, NodeEntry, Element, Node, Path, Range, Location } from "@editablejs/editor"
 import { TableCellEditor, TableCellPoint, TableCell, TableCellEdge } from "./cell"
 import { TableSelection } from "./context"
 import { TableRow, TableRowEditor } from "./row"

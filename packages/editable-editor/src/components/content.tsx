@@ -12,7 +12,7 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import useChildren from '../hooks/use-children'
 import { Editable } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
-import { useSlate } from '../hooks/use-slate'
+import { useEditable } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   DOMRange,
@@ -86,7 +86,7 @@ export const ContentEditable = (props: EditableProps) => {
     selectionStyle,
     ...attributes
   } = props
-  const editor = useSlate()
+  const editor = useEditable()
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [currentSelection, setCurrentSelection] = useState<BaseSelection>()
   const [drawSelectionStyle, setDrawSelectionStyle] = useState(mergeSelectionStyle(selectionStyle ?? {}))

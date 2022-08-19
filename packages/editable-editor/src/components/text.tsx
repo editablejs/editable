@@ -8,7 +8,7 @@ import {
   ELEMENT_TO_NODE,
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
-import { useSlateStatic } from '../hooks/use-slate-static'
+import { useEditableStatic } from '../hooks/use-editable-static'
 import { Editable } from '../plugin/editable'
 
 /**
@@ -24,7 +24,7 @@ const Text = (props: {
     parent,
     text,
   } = props
-  const editor = useSlateStatic()
+  const editor = useEditableStatic()
   const ref = useRef<HTMLSpanElement>(null)
   const key = Editable.findKey(editor, text)
 

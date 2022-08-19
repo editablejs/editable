@@ -1,7 +1,6 @@
-import { Editable, useNode, useSlate } from "@editablejs/editor";
-import { Editor, Path, Range, Transforms } from 'slate'
+import { Editable, useNode, Editor, Path, Range, Transforms } from "@editablejs/editor";
 import React, { useState, useContext, useLayoutEffect, useMemo } from "react";
-import { TableCell, TableCellEditor, TableCellPoint } from "./cell";
+import { TableCellEditor, TableCellPoint } from "./cell";
 import { TableContext, TableSelected, TableSelection } from "./context";
 import { Table, TableEditor } from "./editor";
 import { TableRow, TableRowEditor } from "./row";
