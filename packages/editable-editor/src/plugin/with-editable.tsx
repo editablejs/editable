@@ -751,7 +751,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if(!selection) return
     const grid = Grid.findGrid(e)
     if(grid && !SELECTION_NORMALIZING.get(selection)) {
-      const isOperating = Grid.isOperating(grid[0])
+      const isOperating = Grid.isOperating(e)
       const sel = Grid.getSelection(e, grid)
       if(sel && !isOperating){
         let { start, end } = sel
@@ -774,13 +774,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
           
           SELECTION_NORMALIZING.set(selection, true)
           for(const [cell, row, col] of cells) {
+            if(!cell) break
             if(!cell.span) {
               const anchor = Editable.toLowestPoint(e, path.concat([row, col]))
               const focus = Editable.toLowestPoint(e, path.concat([row, col]), 'end')
-              fn({
-                anchor,
-                focus
-              })
+              const range = {anchor, focus}
+              SELECTION_NORMALIZING.set(range, true)
+              fn(range)
+              SELECTION_NORMALIZING.delete(range)
             }
           }
           // 恢复选区
@@ -788,11 +789,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
           SELECTION_NORMALIZING.delete(selection)
           return
         }
-      } else if(isOperating) {
-        Grid.setOperating(grid[0], false)
       }
     }
     fn(selection)
+    Grid.setOperating(e, false)
   }
 
   return e

@@ -43,12 +43,12 @@ export interface GridGeneratorCellsOptions {
 }
 
 export const Grid = { 
-  isOperating: (grid: Grid): boolean => { 
-    return !!GRID_OPERATING.get(grid)
+  isOperating: (editor: Editable): boolean => { 
+    return !!GRID_OPERATING.get(editor)
   },
 
-  setOperating: (grid: Grid, value: boolean) => { 
-    GRID_OPERATING.set(grid, value)
+  setOperating: (editor: Editable, value: boolean) => { 
+    GRID_OPERATING.set(editor, value)
   },
 
   findGrid: (editor: Editable, at?: Location): NodeEntry<Grid> | undefined => {
@@ -174,8 +174,8 @@ export const Grid = {
       if(!entry) return
       at = entry
     }
-    const [grid, path] = at
-    Grid.setOperating(grid, true)
+    const [, path] = at
+    Grid.setOperating(editor, true)
     Transforms.removeNodes(editor, {
       at: path
     })
@@ -189,17 +189,18 @@ export const Grid = {
     }
     const [grid, path] = at
     const { children, colsWidth } = grid
-    const newColsWidth = colsWidth?.concat() ?? []
+    let newColsWidth = colsWidth?.concat() ?? []
     // 只有一列删除表格
     if(newColsWidth.length === 1) {
       Grid.remove(editor, at)
       return
     }
     // 重新设置列宽度
-    newColsWidth.splice(index)
+    newColsWidth.splice(index, 1)
+    Grid.setOperating(editor, true)
     Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
     // 遍历行，删除列
-    for(let r = 0; r < children.length; r++) {
+    for(let r = children.length - 1; r >= 0; r--) {
       const cells = children[r].children
       const cell = cells[index]
       // 被合并的列
@@ -242,7 +243,7 @@ export const Grid = {
             at: path.concat([r, nextIndex])
           })
         } else {
-          Grid.setOperating(grid, true)
+          Grid.setOperating(editor, true)
           Transforms.removeNodes(editor, {
             at: path.concat(r, index)
           })
@@ -306,7 +307,7 @@ export const Grid = {
         }
       }
     }
-    Grid.setOperating(grid, true)
+    Grid.setOperating(editor, true)
     Transforms.removeNodes(editor, {
       at: path.concat(index)
     })
@@ -559,13 +560,13 @@ export const Grid = {
     const [ table ] = at
     const { children } = table
     const { startRow = 0, startCol = 0, endRow = children.length - 1, reverse = false } = opitons
-    let r = reverse ? endRow : startRow
+    let r = reverse ? Math.max(endRow, children.length - 1) : startRow
     while(reverse ? r >= 0 : r <= endRow) {
       const row = children[r]
       if(!row) break
       const { children: cells } = row
-      const endCol = opitons.endCol ?? cells.length - 1
-      let c = reverse ? endCol : startCol
+      const { endCol = cells.length - 1 } = opitons
+      let c = reverse ? Math.max(endCol, cells.length - 1) : startCol
       while(reverse ? c >= 0 : c <= endCol) { 
         const cell = cells[c]
         yield [cell, r, c]
@@ -626,6 +627,9 @@ export const Grid = {
         endRow
       })
       for(const [cell, row, col] of cells) {
+        if(!cell) {
+          break
+        }
         if(cell.span) {
           const [sRow, sCol] = cell.span
           const spanCell = table.children[sRow].children[sCol]

@@ -125,11 +125,11 @@ Transforms.delete = (editor, options = {}) => {
           Grid.remove(editor, grid)
         } else if(rowFull){
           for(let r = rows.length - 1; r >= 0; r--) { 
-            Grid.removeRow(editor, grid[1], r)
+            Grid.removeRow(editor, grid[1], rows[r])
           }
         } else if(colFull){
           for(let c = cols.length - 1; c >= 0; c--) { 
-            Grid.removeCol(editor, grid[1], c)
+            Grid.removeCol(editor, grid[1], cols[c])
           }
         } else {
           // 设置 selection 到 anchor
