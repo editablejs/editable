@@ -1,10 +1,10 @@
-import { cancellablePromise, Editable, useCancellablePromises, Transforms } from "@editablejs/editor";
+import { cancellablePromise, Editable, useCancellablePromises, Transforms, Grid } from "@editablejs/editor";
 import classNames from "classnames";
 import React, { useRef, useState, useCallback, useContext } from "react";
 import { Icon } from "../icon";
+import { TABLE_CELL_KEY } from "./cell";
 import { TableContext } from "./context";
-import { Table, TableEditor } from "./editor";
-import { TableRow } from "./row";
+import { TableRow, TABLE_ROW_KEY } from "./row";
 
 const prefixCls = 'editable-table';
 const TYPE_COLS = 'cols'
@@ -12,7 +12,7 @@ const TYPE_ROWS = 'rows'
 
 export interface TableActionProps {
   editor: Editable
-  table: Table
+  table: Grid
   index: number
   left?: number
   top?: number
@@ -39,12 +39,15 @@ const InsertActionDefault: React.FC<TableActionProps> = ({ editor, table, left, 
   const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
   const cls = `${prefixCls}-${type}-insert`
 
+  const { getOptions } = useContext(TableContext)
+
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault()
+    const options = getOptions()
     if(type === TYPE_COLS) {
-      TableEditor.insertCol(editor, Editable.findPath(editor, table), index)
+      Grid.insertCol(editor, Editable.findPath(editor, table), index, { type: TABLE_CELL_KEY}, options.minColWidth)
     } else if(type === TYPE_ROWS) { 
-      TableEditor.insertRow(editor, Editable.findPath(editor, table), index)
+      Grid.insertRow(editor, Editable.findPath(editor, table), index, { type: TABLE_ROW_KEY }, { type: TABLE_CELL_KEY}, options.minRowHeight)
     }
   }
 
@@ -87,7 +90,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
   const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
   const cls = `${prefixCls}-${type}-split`
   
-  const { dragRef } = useContext(TableContext)
+  const { dragRef, getOptions } = useContext(TableContext)
 
   const [isHover, setHover] = useState(false)
   const isDrag = useRef(false)
@@ -96,6 +99,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
     if(!dragRef.current) return
     const { type, x, y, start } = dragRef.current
     const path = Editable.findPath(editor, table)
+    const options = getOptions()
     if(type === 'cols') {
       const { colsWidth } = table
       if(!colsWidth) return
@@ -103,15 +107,15 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
       const val = cX - x
       const newColsWidth = colsWidth.concat()
       let width = newColsWidth[start] + val
-      width = Math.max(width, TableEditor.getOptions(editor).minColWidth)
+      width = Math.max(width, options.minColWidth)
       newColsWidth[start] = width
-      Transforms.setNodes<Table>(editor, { colsWidth: newColsWidth }, { at: path })
+      Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
     } else if(type === 'rows') {
       const { height, children: cells, contentHeight: ch = height } = table.children[start]
       if(height) {
         const cY = e.clientY
         const val = cY - y
-        const { minRowHeight } = TableEditor.getOptions(editor)
+        const { minRowHeight } = options
         let h = Math.max(height, ch!) + val
         h = Math.max(h, minRowHeight)
         let contentHeight = 0
@@ -127,7 +131,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({ editor, table, left, t
         Transforms.setNodes<TableRow>(editor, { height: h, contentHeight: h }, { at: path.concat(start) })
       }
     }
-  }, [dragRef, table, editor])
+  }, [dragRef, editor, table, getOptions])
 
   const cancellablePromisesApi = useCancellablePromises()
 

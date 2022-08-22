@@ -1,5 +1,5 @@
+import { GridSelected, GridSelection } from '@editablejs/editor'
 import { createContext } from 'react'
-import { TableCellPoint } from './cell'
 
 export interface TableDragOptions {
   type: 'cols' | 'rows' 
@@ -9,19 +9,9 @@ export interface TableDragOptions {
   end: number
 }
 
-export interface TableSelection {
-  start: TableCellPoint
-  end: TableCellPoint
-}
-
-export interface TableSelected {
-  rows: number[]
-  cols: number[]
-  rowFull: boolean
-  colFull: boolean
-  allFull: boolean
-  cells: TableCellPoint[]
-  count: number
+export interface TableOptions {
+  minRowHeight?: number
+  minColWidth?: number
 }
 
 export interface TableContextInterface { 
@@ -30,8 +20,9 @@ export interface TableContextInterface {
   rows: number
   cols: number
   dragRef: React.MutableRefObject<TableDragOptions | null>
-  selection: TableSelection | null
-  selected: TableSelected
+  selection: GridSelection | null
+  selected: GridSelected
+  getOptions: () => Required<TableOptions>
 }
 
 const TableContext = createContext<TableContextInterface>({} as any);

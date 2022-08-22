@@ -1,4 +1,5 @@
 import { Ancestor, Editor, Node, RangeRef } from 'slate'
+import { Grid } from '../interfaces/grid'
 import { Key } from './key'
 
 /**
@@ -48,3 +49,5 @@ export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
 
 
 export const DRAW_SELECTION_TO_EDITOR: WeakMap<Editor, (draw: boolean) => void> = new WeakMap()
+
+export const GRID_OPERATING = new WeakMap<Grid, boolean>();

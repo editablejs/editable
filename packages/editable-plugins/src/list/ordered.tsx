@@ -17,6 +17,9 @@ export interface ToggleOrderedListOptions extends ToggleListOptions {
 
 }
 
+export interface Ordered extends List {
+  type: typeof ORDERED_LIST_KEY
+}
 export interface OrderedListEditor extends Editable {
   toggleOrderedList: (options?: ToggleOrderedListOptions) => void
 }
@@ -24,6 +27,10 @@ export interface OrderedListEditor extends Editable {
 export const OrderedListEditor = {
   isListEditor: (editor: Editable): editor is OrderedListEditor => { 
     return !!(editor as OrderedListEditor).toggleOrderedList
+  },
+
+  isOrdered: (editor: Editable, value: any): value is Ordered => {
+    return ListEditor.isList(editor, value, ORDERED_LIST_KEY) && value.type === ORDERED_LIST_KEY
   },
 
   queryActive: (editor: Editable) => {
@@ -98,7 +105,7 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
         path,
         key,
         level,
-        kind: ORDERED_LIST_KEY
+        type: ORDERED_LIST_KEY
       })
       if(Path.equals(path, startPath)) return
       const startDom = Editable.toDOMNode(editor, start)
@@ -129,17 +136,31 @@ export const withOrderedList = <T extends Editable>(editor: T, options: OrderedL
 
   const e = editor as  T & OrderedListEditor
 
-  const newEditor = withList(e, { 
-    kind: ORDERED_LIST_KEY,
-    className: prefixCls,
-    onRenderLabel: (element, template) => { 
-      return <LabelElement element={element} editor={newEditor} template={template} />
-    }
-  });
+  const newEditor = withList(e, ORDERED_LIST_KEY);
+
+  const { renderElement } = newEditor
 
   OrderedListTemplates.forEach(template => {
     ListEditor.addTemplate(newEditor, ORDERED_LIST_KEY, template)
   })
+
+  newEditor.renderElement = (props) => {
+    const { element, attributes, children } = props
+    if(ListEditor.isList(newEditor, element, ORDERED_LIST_KEY)) {
+      return ListEditor.render(newEditor, {
+        props: {
+          element,
+          attributes,
+          children,
+        },
+        className: prefixCls,
+        onRenderLabel: (element, template) => { 
+          return <LabelElement element={element} editor={newEditor} template={template} />
+        }
+      })
+    }
+    return renderElement(props)
+  }
 
   newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => { 
     ListEditor.toggle(editor, ORDERED_LIST_KEY,{

@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import React, { useCallback, useContext, useMemo } from 'react'
 import { InsertAction, SplitAction } from './action';
 import { TableContext } from './context';
-import { Table, TableEditor } from './editor';
+import { Grid } from '@editablejs/editor';
 export interface TableHeaderProps {
   editor: Editable,
-  table: Table
+  table: Grid
 }
 
 const prefixCls = 'editable-table';
@@ -18,7 +18,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
 
   const handleMouseDown = useCallback((e: React.MouseEvent,row: number) => {
     e.preventDefault()
-    TableEditor.select(editor, Editable.findPath(editor, table), {
+    Grid.select(editor, Editable.findPath(editor, table), {
       start: [row, 0],
       end: [row, cols - 1]
     })
@@ -65,7 +65,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
 
   const handleMouseDown = useCallback((e: React.MouseEvent, col: number) => {
     e.preventDefault()
-    TableEditor.select(editor, Editable.findPath(editor, table), {
+    Grid.select(editor, Editable.findPath(editor, table), {
       start: [0, col],
       end: [rows - 1, col]
     })

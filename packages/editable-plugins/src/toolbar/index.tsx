@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import classNames from 'classnames';
-import { Editable } from '@editablejs/editor';
+import { Editable, useEditable } from '@editablejs/editor';
 import ToolbarGroup, { GroupItem } from './group';
 import { ToolbarButton } from './button';
 import { ToolbarDropdown } from './dropdown';
@@ -8,7 +8,6 @@ import './style.less'
 
 export type ToolbarItem = ToolbarButton | ToolbarDropdown
 export interface ToolbarProps {
-  editor: Editable
   items: ToolbarItem[][]
 }
 
@@ -29,7 +28,9 @@ const getActiveState = (editor: Editable, items: ToolbarItem[][]): GroupItem[][]
   }))
 }
 
-const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ editor, items: itemProps, className, ...props }) => {
+const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ items: itemProps, className, ...props }) => {
+
+  const editor = useEditable()
 
   const [ items, setItems ] = useState<GroupItem[][]>(getActiveState(editor, itemProps))
 

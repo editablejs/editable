@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom'
-import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks } from 'slate'
+import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks, Point } from 'slate'
 import getDirection from 'direction'
 import { Editable, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable'
 import { Key } from '../utils/key'
@@ -20,10 +20,15 @@ import {
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
+import { Grid } from '../interfaces/grid';
+import { GridRow } from '../interfaces/row'
+import { GridCell } from '../interfaces/cell';
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
 const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
+
+const SELECTION_NORMALIZING = new WeakMap<Range, boolean>()
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -35,7 +40,7 @@ const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
  */
 export const withEditable = <T extends Editor>(editor: T) => {
   const e = editor as T & Editable
-  const { apply, onChange, deleteBackward } = e
+  const { apply, onChange, deleteBackward, deleteForward } = e
 
   // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
   // avoid collisions between editors in the DOM that share the same value.
@@ -45,21 +50,56 @@ export const withEditable = <T extends Editor>(editor: T) => {
     return true
   }
 
-  e.isGrid = (value: any) => false,
+  e.isGrid = (value: any): value is Grid => false,
   
-  e.isRow = (value: any) => false,
+  e.isRow = (value: any): value is GridRow => false,
 
-  e.isCell = (value: any) => false,
+  e.isCell = (value: any): value is GridCell => false,
+
+  e.deleteForward = unit => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const [cell] = Editor.nodes(editor, {
+        match: n => e.isCell(n)
+      })
+
+      if (cell) {
+        const [, cellPath] = cell
+        const end = Editor.end(editor, cellPath)
+        if (Point.equals(selection.anchor, end)) {
+          return
+        }
+      }
+    }
+    deleteForward(unit)
+  }
 
   e.deleteBackward = unit => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const [cell] = Editor.nodes(editor, {
+        match: n => e.isCell(n)
+      })
+
+      if (cell) {
+        const [, cellPath] = cell
+        const start = Editor.start(editor, cellPath)
+
+        if (Point.equals(selection.anchor, start)) {
+          return
+        }
+      }
+    }
     if (unit !== 'line') {
       return deleteBackward(unit)
     }
 
-    if (editor.selection && Range.isCollapsed(editor.selection)) {
+    if (selection && Range.isCollapsed(selection)) {
       const parentBlockEntry = Editor.above(editor, {
         match: n => Editor.isBlock(editor, n),
-        at: editor.selection,
+        at: selection,
       })
 
       if (parentBlockEntry) {
@@ -67,7 +107,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         const parentElementRange = Editor.range(
           editor,
           parentBlockPath,
-          editor.selection.anchor
+          selection.anchor
         )
 
         const currentLineRange = findCurrentLineRange(e, parentElementRange)
@@ -709,6 +749,49 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.normalizeSelection = (fn) => {
     const { selection } = e
     if(!selection) return
+    const grid = Grid.findGrid(e)
+    if(grid && !SELECTION_NORMALIZING.get(selection)) {
+      const isOperating = Grid.isOperating(grid[0])
+      const sel = Grid.getSelection(e, grid)
+      if(sel && !isOperating){
+        let { start, end } = sel
+        const [startRow, startCol] = start
+        const [endRow, endCol] = end
+    
+        const rowCount = endRow - startRow
+        const colCount = endCol - startCol
+
+        if(rowCount > 0 || colCount > 0) {
+          const [, path] = grid
+          const edgesSelection = Grid.edges(e, grid, sel)
+          const { start: edgeStart, end: edgeEnd } = edgesSelection
+          const cells = Grid.cells(e, grid, {
+            startRow: edgeStart[0],
+            startCol: edgeStart[1],
+            endRow: edgeEnd[0],
+            endCol: edgeEnd[1]
+          })
+          
+          SELECTION_NORMALIZING.set(selection, true)
+          for(const [cell, row, col] of cells) {
+            if(!cell.span) {
+              const anchor = Editable.toLowestPoint(e, path.concat([row, col]))
+              const focus = Editable.toLowestPoint(e, path.concat([row, col]), 'end')
+              fn({
+                anchor,
+                focus
+              })
+            }
+          }
+          // 恢复选区
+          Transforms.select(e, selection)
+          SELECTION_NORMALIZING.delete(selection)
+          return
+        }
+      } else if(isOperating) {
+        Grid.setOperating(grid[0], false)
+      }
+    }
     fn(selection)
   }
 

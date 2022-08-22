@@ -1,8 +1,7 @@
-import { Editable, RenderElementProps, Editor, Node, Element, Transforms } from "@editablejs/editor";
+import { Editable, RenderElementProps, Editor, Node, Element, Transforms, GridRow } from "@editablejs/editor";
 import React, { useContext, useLayoutEffect } from "react";
 import { TableCell, TableCellEditor } from "./cell";
 import { TableContext } from "./context";
-import { TableEditor } from "./editor";
 
 export const TABLE_ROW_KEY = 'table-row';
 
@@ -46,17 +45,17 @@ export const TableRowEditor = {
 const prefixCls = 'editable-table-row';
 
 interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> {
-  editor: TableRowEditor
+  editor: Editable
   element: TableRow
 }
 
-const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
+const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowElement>> = ({ editor, element, attributes, children }) => { 
   const { style, ref, ...rest } = attributes
   // 表格宽度变化导致挤压内容需要重新计算高度
-  const { width } = useContext(TableContext)
+  const { width, getOptions } = useContext(TableContext)
   // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
-    let maxHeight = TableEditor.getOptions(editor).minRowHeight
+    let maxHeight = getOptions().minRowHeight
     const rect = ref.current.getBoundingClientRect()
     maxHeight = Math.max(maxHeight, rect.height)
     if(maxHeight !== element.contentHeight) {
@@ -64,7 +63,7 @@ const TableRow: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableR
         at: Editable.findPath(editor, element) 
       })
     }
-  }, [editor, ref, width, element])
+  }, [editor, ref, width, element, getOptions])
  
   return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
 }
@@ -73,14 +72,14 @@ export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOp
   const newEditor = editor as T & TableRowEditor
   const { renderElement, isRow } = editor
 
-  newEditor.isRow = (node: Node) => {
+  newEditor.isRow = (node: Node): node is GridRow => {
     return TableRowEditor.isTableRow(newEditor, node) || isRow(node)
   }
 
   newEditor.renderElement = (props) => { 
     const { element, attributes, children } = props
     if(TableRowEditor.isTableRow(newEditor, element)) {
-      return <TableRow editor={editor} element={element} attributes={attributes}>{ children }</TableRow>
+      return <Row editor={editor} element={element} attributes={attributes}>{ children }</Row>
     }
     return renderElement(props)
   }

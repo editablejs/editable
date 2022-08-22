@@ -1,3 +1,4 @@
+import { Grid } from '@editablejs/editor'
 import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, Icon, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor, TableEditor } from "@editablejs/editor-plugins"
 
 const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
@@ -143,20 +144,20 @@ export const defaultToolbarConfig: ToolbarItem[][] = [
     {
       type: 'button',
       onDisabled: (editor) => { 
-        return !TableEditor.canMerge(editor)
+        return !Grid.canMerge(editor)
       },
       onToggle: (editor) => {
-        TableEditor.mergeCell(editor)
+        Grid.mergeCell(editor)
       },
       children: <Icon name="tableMerge" />
     }, 
     {
       type: 'button',
       onDisabled: (editor) => { 
-        return !TableEditor.canSplit(editor)
+        return !Grid.canSplit(editor)
       },
       onToggle: (editor) => {
-        TableEditor.splitCell(editor)
+        Grid.splitCell(editor)
       },
       children: <Icon name="tableSplit" />
     }

@@ -45,6 +45,10 @@ import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
 import findClosestNode, { isAlignY } from '../utils/closest'
 import { getTextOffset } from '../utils/string'
 import { getLineRectsByNode, getLineRectsByRange } from '../utils/selection'
+import { SelectionEdge } from 'slate/dist/interfaces/types'
+import { GridCell } from '../interfaces/cell'
+import { GridRow } from '../interfaces/row'
+import { Grid } from '../interfaces/grid'
 
 export interface SelectionStyle {
   focusBgColor?: string
@@ -115,9 +119,9 @@ export interface EditorElements {
  */
 export interface Editable extends BaseEditor {
   canFocusVoid: (element: Element) => boolean
-  isGrid: (value: any) => boolean
-  isRow: (value: any) => boolean
-  isCell: (value: any) => boolean
+  isGrid: (value: any) => value is Grid
+  isRow: (value: any) => value is GridRow
+  isCell: (value: any) => value is GridCell
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
   insertTextData: (data: DataTransfer) => boolean
@@ -223,7 +227,7 @@ export const Editable = {
    * @param options 
    * @returns 
    */
-  isSelectLineEdge(editor: Editable, options: { point?: Point, edge?: 'start' | 'end' } = {}): boolean { 
+  isSelectLineEdge(editor: Editable, options: { point?: Point, edge?: SelectionEdge } = {}): boolean { 
     const { point = editor.selection?.focus, edge = 'start' } = options
     if(!point) return false
     const entry = Editor.above(editor, { at: point, match: n => Editor.isBlock(editor, n) })
@@ -234,9 +238,9 @@ export const Editable = {
     const rangeLine = rangeLines[0]
     const lines = getLineRectsByNode(editor, block)
     for(const line of lines) {
-      if(edge === 'start' && line.left === rangeLine.left && line.top === rangeLine.top) {
+      if(~['start', 'anchor'].indexOf(edge) && line.left === rangeLine.left && line.top === rangeLine.top) {
         return true
-      } else if(edge === 'end' && line.right === rangeLine.right && line.top === rangeLine.top) {
+      } else if(~['end', 'focus'].indexOf(edge) && line.right === rangeLine.right && line.top === rangeLine.top) {
         return true
       }
     }
@@ -454,7 +458,7 @@ export const Editable = {
     return offsetNode
   },
 
-  toLowestPoint(editor: Editable, at: Point | Path, edge: 'start' | 'end' = 'start'): Point { 
+  toLowestPoint(editor: Editable, at: Point | Path, edge: SelectionEdge = 'start'): Point { 
     const isPoint = Point.isPoint(at)
     let path = isPoint ? at.path : at
     let offset = isPoint ? at.offset : 0
@@ -462,10 +466,11 @@ export const Editable = {
 
     while(Element.isElement(node)) {
       const { children } = node
-      const index = isPoint ? Math.min(offset, children.length - 1) : (edge === 'start' ? 0 : children.length - 1)
+      const isStart = ~['start', 'anchor'].indexOf(edge)
+      const index = isPoint ? Math.min(offset, children.length - 1) : (isStart ? 0 : children.length - 1)
       node = children[index]
       path = path.concat(index)
-      offset = edge === 'start' ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
+      offset = isStart ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
     }
     return {
       path,

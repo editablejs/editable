@@ -1,5 +1,8 @@
 import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
-import { BaseElement } from 'slate';
+
+export * from './interfaces/cell'
+export * from './interfaces/row'
+export * from './interfaces/grid'
 
 export * from './plugin/custom'
 
@@ -8,8 +11,6 @@ export {
 } from './components/content'
 export { EditableComposer } from './components/editable'
 
-// Hooks
-export { useEditor } from './hooks/use-editor'
 export { useEditableStatic } from './hooks/use-editable-static'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'

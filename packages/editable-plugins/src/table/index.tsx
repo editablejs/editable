@@ -1,8 +1,8 @@
-import { Editable, RenderElementProps, Transforms, Node } from "@editablejs/editor"
+import { Editable, RenderElementProps, Transforms, Node, Grid } from "@editablejs/editor"
 import { withTableCell } from "./cell"
-import { Table, TableEditor, TableOptions, TABLE_OPTIONS_WEAKMAP } from "./editor"
+import { TableOptions } from "./context"
 import { withTableRow } from "./row"
-import { TableReact } from "./table"
+import { TableEditor, TableComponent, TABLE_OPTIONS_WEAKMAP, Table } from "./table"
 
 export const withTable =  <T extends Editable>(editor: T, options: TableOptions = {}) => {
   let newEditor = editor as T & TableEditor
@@ -12,58 +12,16 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
 
-  const { isGrid, normalizeSelection } = editor
+  const { isGrid } = editor
 
-  newEditor.isGrid = (node: Node) => {
+  newEditor.isGrid = (node: Node): node is Table => {
     return TableEditor.isTable(newEditor, node) || isGrid(node)
-  }
-
-  newEditor.normalizeSelection = (fn) => {
-    const table = TableEditor.getTable(newEditor)
-    if(table) {
-      const selection = TableEditor.getSelection(newEditor, table)
-      if(!selection) return normalizeSelection(fn)
-      let { start, end } = selection
-      const [startRow, startCol] = start
-      const [endRow, endCol] = end
-  
-      const rowCount = endRow - startRow
-      const colCount = endCol - startCol
-
-      if(rowCount > 0 || colCount > 0) {
-        const {selection: editorSelection} = editor
-        const [, path] = table
-        const edgesSelection = TableEditor.edges(newEditor, table, selection)
-        const { start: edgeStart, end: edgeEnd } = edgesSelection
-        const cells = TableEditor.cells(newEditor, table, {
-          startRow: edgeStart[0],
-          startCol: edgeStart[1],
-          endRow: edgeEnd[0],
-          endCol: edgeEnd[1]
-        })
-        for(const [cell, row, col] of cells) {
-          if(!cell.span) {
-            const anchor = Editable.toLowestPoint(newEditor, path.concat([row, col]))
-            const focus = Editable.toLowestPoint(newEditor, path.concat([row, col]), 'end')
-            fn({
-              anchor,
-              focus
-            })
-          }
-        }
-        // 恢复选区
-        Transforms.select(newEditor, editorSelection!)
-        return
-      }
-    }
-    
-    normalizeSelection(fn)
   }
 
   newEditor.toggleTable = (options) => {
     const table = TableEditor.create(newEditor, options)
     Transforms.insertNodes(newEditor, table)
-    TableEditor.focus(newEditor, {
+    Grid.focus(newEditor, {
       point: [0, 0]
     })
   }
@@ -72,11 +30,17 @@ export const withTable =  <T extends Editable>(editor: T, options: TableOptions 
 
   newEditor.renderElement = (props) => { 
     if(TableEditor.isTable(newEditor, props.element)) {
-      return <TableReact editor={newEditor} {...(props as RenderElementProps<Table>)}/>
+      return <TableComponent editor={newEditor} {...(props as RenderElementProps<Table>)}/>
     }
     return renderElement(props)
   }
   return newEditor
 }
 
-export * from './editor'
+export {
+  TableEditor,
+}
+
+export type {
+  TableOptions
+}

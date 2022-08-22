@@ -15,6 +15,7 @@ export interface TaskListOptions {
 }
 
 export interface Task extends List {
+  type: typeof TASK_LIST_KEY
   checked?: boolean
 }
 
@@ -32,7 +33,7 @@ export const TaskListEditor = {
   },
 
   isTask: (editor: Editable, n: Node): n is Task => { 
-    return ListEditor.isList(editor, n, TASK_LIST_KEY) && n.kind === TASK_LIST_KEY
+    return ListEditor.isList(editor, n, TASK_LIST_KEY) && n.type === TASK_LIST_KEY
   },
 
   queryActive: (editor: Editable) => {
@@ -69,17 +70,32 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
 
   const e = editor as  T & TaskListEditor
 
-  const newEditor = withList(e, { 
-    kind: TASK_LIST_KEY,
-    className: prefixCls,
-    onRenderLabel: (element) => { 
-      const { checked } = element as Task
-      const onChange = (checked: boolean) => { 
-        Transforms.setNodes<Task>(editor, { checked }, { at: Editable.findPath(editor, element) })
-      }
-      return <TaskElement checked={checked ?? false} onChange={onChange} />
+  const newEditor = withList(e, TASK_LIST_KEY);
+
+  const { renderElement } = newEditor
+
+  newEditor.renderElement = (props: RenderTaskElementProps) => {
+    const { element, attributes, children } = props
+    if(TaskListEditor.isTask(newEditor, element)) {
+      attributes[DATA_TASK_CHECKED_KEY] = element.checked ?? false
+      return ListEditor.render(newEditor, {
+        props: {
+          element,
+          attributes,
+          children,
+        },
+        className: prefixCls,
+        onRenderLabel: (element) => { 
+          const { checked } = element as Task
+          const onChange = (checked: boolean) => { 
+            Transforms.setNodes<Task>(editor, { checked }, { at: Editable.findPath(editor, element) })
+          }
+          return <TaskElement checked={checked ?? false} onChange={onChange} />
+        }
+      })
     }
-  });
+    return renderElement(props)
+  }
 
   newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => { 
     ListEditor.toggle(editor, TASK_LIST_KEY, {
@@ -91,16 +107,6 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
   }
 
   const { onKeydown } = newEditor
-
-  const { renderElement } = newEditor
-
-  newEditor.renderElement = ({ element, attributes, children }: RenderTaskElementProps) => {
-    
-    if(TaskListEditor.isTask(editor, element)) { 
-      attributes[DATA_TASK_CHECKED_KEY] = element.checked ?? false
-    }
-    return renderElement({ attributes, children, element })
-  }
 
   newEditor.onKeydown = (e: KeyboardEvent) => { 
     const toggle = () => {

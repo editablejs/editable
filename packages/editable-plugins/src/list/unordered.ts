@@ -15,6 +15,10 @@ export interface ToggleUnOrderedListOptions extends Omit<ToggleListOptions, 'sta
 
 }
 
+export interface UnOrdered extends List {
+  type: typeof UNORDERED_LIST_KEY
+}
+
 export interface UnOrderedListEditor extends Editable {
   toggleUnOrderedList: (options?: ToggleUnOrderedListOptions) => void
 }
@@ -22,6 +26,10 @@ export interface UnOrderedListEditor extends Editable {
 export const UnOrderedListEditor = {
   isListEditor: (editor: Editable): editor is UnOrderedListEditor => { 
     return !!(editor as UnOrderedListEditor).toggleUnOrderedList
+  },
+
+  isUnOrderedList: (editor: Editable, value: any): value is UnOrdered => { 
+    return value && value.type === UNORDERED_LIST_KEY
   },
 
   queryActive: (editor: Editable) => {
@@ -56,14 +64,28 @@ export const withUnOrderedList = <T extends Editable>(editor: T, options: UnOrde
 
   const e = editor as  T & UnOrderedListEditor
 
-  const newEditor = withList(e, { 
-    kind: UNORDERED_LIST_KEY,
-    className: prefixCls
-  });
+  const newEditor = withList(e, UNORDERED_LIST_KEY);
 
   UnOrderedListTemplates.forEach(template => {
     ListEditor.addTemplate(newEditor, UNORDERED_LIST_KEY, template)
   })
+
+  const { renderElement } = newEditor
+
+  newEditor.renderElement = (props) => {
+    const { element, attributes, children } = props
+    if(ListEditor.isList(newEditor, element, UNORDERED_LIST_KEY)) {
+      return ListEditor.render(newEditor, {
+        props: {
+          element,
+          attributes,
+          children,
+        },
+        className: prefixCls
+      })
+    }
+    return renderElement(props)
+  }
 
   newEditor.toggleUnOrderedList = (options?: ToggleUnOrderedListOptions) => { 
     ListEditor.toggle(editor, UNORDERED_LIST_KEY, {

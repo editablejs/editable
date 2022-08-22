@@ -37,12 +37,12 @@ export default function Docs() {
   
   return (
     <div className={styles.wrapper}>
-      <Toolbar className={styles.toolbar} editor={editor} items={defaultToolbarConfig} />
-      <div className={styles.container}>
-        <EditableComposer editor={editor} value={initialValue}>
-          <ContentEditable placeholder='Please enter content...' />
-        </EditableComposer>
-      </div>
+       <EditableComposer editor={editor} value={initialValue}>
+        <Toolbar className={styles.toolbar} items={defaultToolbarConfig} />
+        <div className={styles.container}>
+            <ContentEditable placeholder='Please enter content...' />
+        </div>
+      </EditableComposer>
     </div>
   );
 }
