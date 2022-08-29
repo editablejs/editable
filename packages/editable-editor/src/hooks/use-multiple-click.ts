@@ -6,62 +6,66 @@ import {
 } from './use-cancellable-promises';
 
 const useMultipleClick = (options: {
-  onClick?: (event: React.MouseEvent) => void
-  onMultipleClick: (event: React.MouseEvent, count: number) => boolean | void
+  onClick?: (event: React.MouseEvent) => void;
+  onMultipleClick: (event: React.MouseEvent, count: number) => boolean | void;
 }) => {
-  const { onClick, onMultipleClick } = options
+  const { onClick, onMultipleClick } = options;
   const api = useCancellablePromises();
   const pointRef = useRef<{ x: number; y: number }>();
-  const countRef = useRef(0)
+  const countRef = useRef(0);
 
-  const isSamePoint = (event: React.MouseEvent | MouseEvent) => { 
+  const isSamePoint = (event: React.MouseEvent | MouseEvent) => {
     const point = pointRef.current;
-    return point ? Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10 : false;
-  }
+    return point
+      ? Math.abs(event.clientY - point.y) < 10 &&
+          Math.abs(event.clientX - point.x) < 10
+      : false;
+  };
 
   const clear = () => {
     api.clearPendingPromises();
-    pointRef.current = undefined
-  }
+    pointRef.current = undefined;
+  };
 
+  // @ts-expect-error
   const handleMultipleClick = (event: React.MouseEvent) => {
-    if (event.button === 2) return
+    if (event.button === 2) return;
     const point = pointRef.current;
-    if(point) {
-      if(isSamePoint(event)) {
+    if (point) {
+      if (isSamePoint(event)) {
         api.clearPendingPromises();
-        countRef.current += 1
-        if(onMultipleClick(event, countRef.current) === false) {
-          clear()
-          return
+        countRef.current += 1;
+        if (onMultipleClick(event, countRef.current) === false) {
+          clear();
+          return;
         }
       } else {
-        clear()
+        clear();
       }
     } else {
-      countRef.current = 1
+      countRef.current = 1;
       pointRef.current = {
         x: event.clientX,
-        y: event.clientY
-      }
+        y: event.clientY,
+      };
     }
-    if(countRef.current === 1 && onMultipleClick(event, 1) === false) {
-      clear()
+    if (countRef.current === 1 && onMultipleClick(event, 1) === false) {
+      clear();
     } else {
       const waitForClick = cancellablePromise(api.delay(500));
       api.appendPendingPromise(waitForClick);
       return waitForClick.promise
-      .then(() => {
-        api.removePendingPromise(waitForClick);
-        if(onClick) onClick(event);
-        pointRef.current = undefined
-      })
-      .catch((errorInfo) => {
-        api.removePendingPromise(waitForClick);
-        if (!errorInfo.isCanceled) {
-          throw errorInfo.error;
-        }
-      });
+        .then(() => {
+          api.removePendingPromise(waitForClick);
+          if (onClick) onClick(event);
+          pointRef.current = undefined;
+        })
+        .catch((errorInfo) => {
+          api.removePendingPromise(waitForClick);
+          if (!errorInfo.isCanceled) {
+            throw errorInfo.error;
+          }
+        });
     }
   };
 

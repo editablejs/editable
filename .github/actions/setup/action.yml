@@ -1,0 +1,49 @@
+name: Setup
+
+description: Setup Node.js, cache and install dependencies
+
+inputs:
+  node_version:
+    description: Node.js version
+    required: false
+    default: '16'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout all commits
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup git user to "🤖 JSCutlery Bot"
+      shell: bash
+      run: git config user.email "-" && git config user.name "🤖 JSCutlery Bot"
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
+        # This doesn't just set the registry url, but also sets
+        # the right configuration in .npmrc that reads NPM token
+        # from NPM_AUTH_TOKEN environment variable.
+        # It actually creates a .npmrc in a temporary folder
+        # and sets the NPM_CONFIG_USERCONFIG environment variable.
+        registry-url: https://registry.npmjs.org
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      shell: bash
+      run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+    - uses: actions/cache@v3
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: yarn install
+      shell: bash
+      run: yarn install

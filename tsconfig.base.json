@@ -1,0 +1,34 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "Node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2017",
+    "module": "ESNext",
+    "lib": ["ES2017", "DOM", "DOM.Iterable"],
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@editablejs/editable-breaker": [
+        "packages/editable-breaker/src/index.ts"
+      ],
+      "@editablejs/editable-breaker/*": ["packages/editable-breaker/src/*"],
+      "@editablejs/editable-editor": ["packages/editable-editor/src/index.ts"],
+      "@editablejs/editable-editor/*": ["packages/editable-editor/src/*"],
+      "@editablejs/editable-plugins": [
+        "packages/editable-plugins/src/index.ts"
+      ],
+      "@editablejs/editable-plugins/src/*": ["packages/editable-plugins/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

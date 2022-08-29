@@ -1,0 +1,52 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/editable-breaker/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/editable-breaker",
+        "main": "packages/editable-breaker/src/index.ts",
+        "tsConfig": "packages/editable-breaker/tsconfig.lib.json",
+        "assets": ["packages/editable-breaker/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/editable-breaker/src/**/*.{ts,js,tsx,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/editable-breaker"],
+      "options": {
+        "jestConfig": "packages/editable-breaker/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "publish-npm": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "public"
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "preset": "conventional",
+        "push": true,
+        "trackDeps": true,
+        "postTargets": ["auth:publish-npm"],
+        "commitMessageFormat": "release(${projectName}): 🎸 cut release to ${version}"
+      }
+    }
+  },
+  "tags": []
+}

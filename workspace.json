@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "docs": "apps/docs",
+    "editable-breaker": "packages/editable-breaker",
+    "editable-editor": "packages/editable-editor",
+    "editable-plugins": "packages/editable-plugins",
+    "website": "apps/website"
+  }
+}

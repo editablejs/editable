@@ -1,0 +1,20 @@
+name: Test
+
+description: Test
+
+runs:
+  using: composite
+
+  steps:
+    - name: Commitlint
+      shell: bash
+      run: yarn commitlint --from=last-release
+    - name: Format Check
+      shell: bash
+      run: yarn nx format:check
+    - name: Lint
+      shell: bash
+      run: yarn nx affected --base=last-release --target=lint
+    - name: Test
+      shell: bash
+      run: yarn nx affected --base=last-release --target=test --ci
