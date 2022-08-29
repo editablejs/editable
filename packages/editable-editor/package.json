@@ -18,13 +18,13 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
+    "@editablejs/breaker": "workspace:*",
     "direction": "^1.0.3",
     "is-hotkey": "^0.1.6",
     "is-plain-object": "^5.0.0",
     "lodash": "^4.17.4",
     "scroll-into-view-if-needed": "^2.2.20",
-    "slate": "^0.82.0",
-    "@editablejs/breaker": "workspace:*"
+    "slate": "^0.82.0"
   },
   "devDependencies": {
     "@types/is-hotkey": "^0.1.7",
@@ -33,12 +33,12 @@
     "@types/react": "^17.x",
     "@types/react-dom": "^17.x",
     "jest": "^27.5.1",
+    "react": "^17.x",
+    "react-dom": "^17.x",
     "scripts": "workspace:*",
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
-    "typescript": "^4.5.3",
-    "react": "^17.x",
-    "react-dom": "^17.x"
+    "typescript": "^4.5.3"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

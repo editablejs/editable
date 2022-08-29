@@ -48,12 +48,15 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
   FONTSIZE_OPTIONS.set(newEditor, options)
   
   newEditor.toggleFontSize = (size: string) => { 
-    const defaultSize = FontSizeEditor.getOptions(editor)
-    if (defaultSize && size === defaultSize) {
-      Editor.removeMark(editor, FONTSIZE_KEY)
-    } else {
-      Editor.addMark(editor, FONTSIZE_KEY, size)
-    }
+    editor.normalizeSelection(selection => {
+      if(editor.selection !== selection) editor.selection = selection
+      const defaultSize = FontSizeEditor.getOptions(editor)
+      if (defaultSize && size === defaultSize) {
+        Editor.removeMark(editor, FONTSIZE_KEY)
+      } else {
+        Editor.addMark(editor, FONTSIZE_KEY, size)
+      }
+    })
   }
 
   const { renderLeaf } = newEditor

@@ -79,17 +79,21 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
   newEditor.toggleMark = (format: MarkFormat) => { 
     if(!MarkEditor.isEnabled(editor, format)) return
     const active = MarkEditor.isActive(editor, format)
-  
-    if (active) {
-      Editor.removeMark(newEditor, format)
-    } else {
-      if(format === 'sub') {
-        Editor.removeMark(newEditor, 'sup')
-      } else if(format === 'sup') {
-        Editor.removeMark(newEditor, 'sub')
+    
+    newEditor.normalizeSelection(selection => {
+      if(newEditor.selection !== selection) newEditor.selection = selection
+
+      if (active) {
+        Editor.removeMark(newEditor, format)
+      } else {
+        if(format === 'sub') {
+          Editor.removeMark(newEditor, 'sup')
+        } else if(format === 'sup') {
+          Editor.removeMark(newEditor, 'sub')
+        }
+        Editor.addMark(newEditor, format, true)
       }
-      Editor.addMark(newEditor, format, true)
-    }
+    })
   }
 
   newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<Mark>) => {

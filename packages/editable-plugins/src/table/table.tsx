@@ -77,7 +77,7 @@ export const TableEditor = {
     for(let r = 0; r < rows; r++) {
       tableRows.push(TableRowEditor.create({ height: rowHeight }, tableColsWdith.map(() => TableCellEditor.create())))
     }
-    return Grid.create<Table, TableRow, TableCell>(editor, { 
+    return Grid.create<Table, TableRow, TableCell>({ 
       type: TABLE_KEY,
       colsWidth: tableColsWdith,
     }, ...tableRows)

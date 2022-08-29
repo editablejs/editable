@@ -49,5 +49,3 @@ export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
 
 
 export const DRAW_SELECTION_TO_EDITOR: WeakMap<Editor, (draw: boolean) => void> = new WeakMap()
-
-export const GRID_OPERATING = new WeakMap<Editor, boolean>();

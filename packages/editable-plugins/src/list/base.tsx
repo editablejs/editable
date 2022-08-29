@@ -71,7 +71,8 @@ export const ListEditor = {
 
   toggle: (editor: Editable, type: string, options: ToggleListOptions = {}) => {
     const activeElements = ListEditor.queryActive(editor, type)
-    Editor.withoutNormalizing(editor, () => {
+    editor.normalizeSelection(selection => {
+      if(editor.selection !== selection) editor.selection = selection
       let { start = 1, template, values } = options
       if(activeElements) {
         const startLists = new Map<string, NodeEntry<List>>()

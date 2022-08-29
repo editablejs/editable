@@ -9,7 +9,8 @@ import {
   Range,
   Scrubber,
   Transforms,
-  NodeEntry
+  NodeEntry,
+  Selection
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -152,7 +153,7 @@ export interface Editable extends BaseEditor {
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
   clearSelectionDraw: () => void
   startSelectionDraw: () => void
-  normalizeSelection: (fn: (range: Range) => void) => void
+  normalizeSelection: (fn: (selection: Selection) => void) => void
 }
 
 export const Editable = {

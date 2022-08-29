@@ -28,8 +28,6 @@ const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
 const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
 
-const SELECTION_NORMALIZING = new WeakMap<Range, boolean>()
-
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
  *
@@ -337,7 +335,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if(elements) return elements
     elements = {}
     e.normalizeSelection(selection => {
-      if(!elements) return
+      if(!elements || selection === null) return
       const nodeEntries = Editor.nodes<Element>(editor, {
         at: selection,
         match: n => !Editor.isEditor(n) && Element.isElement(n)
@@ -748,12 +746,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.normalizeSelection = (fn) => {
     const { selection } = e
-    if(!selection) return
     const grid = Grid.findGrid(e)
-    if(grid && !SELECTION_NORMALIZING.get(selection)) {
-      const isOperating = Grid.isOperating(e)
+    if(grid && selection) {
       const sel = Grid.getSelection(e, grid)
-      if(sel && !isOperating){
+      if(sel){
         let { start, end } = sel
         const [startRow, startCol] = start
         const [endRow, endCol] = end
@@ -772,27 +768,22 @@ export const withEditable = <T extends Editor>(editor: T) => {
             endCol: edgeEnd[1]
           })
           
-          SELECTION_NORMALIZING.set(selection, true)
           for(const [cell, row, col] of cells) {
             if(!cell) break
             if(!cell.span) {
               const anchor = Editable.toLowestPoint(e, path.concat([row, col]))
               const focus = Editable.toLowestPoint(e, path.concat([row, col]), 'end')
               const range = {anchor, focus}
-              SELECTION_NORMALIZING.set(range, true)
               fn(range)
-              SELECTION_NORMALIZING.delete(range)
             }
           }
           // 恢复选区
           Transforms.select(e, selection)
-          SELECTION_NORMALIZING.delete(selection)
           return
         }
       }
     }
     fn(selection)
-    Grid.setOperating(e, false)
   }
 
   return e

@@ -51,17 +51,20 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   BLOCKQUOTE_OPTIONS.set(newEditor, options)
 
   newEditor.toggleBlockquote = () => { 
-    if(BlockquoteEditor.isActive(editor)) {
-      Transforms.unwrapNodes(editor, { 
-        match: n => Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY,
-        split: true,
-      })
-    } else {
-      Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
-        mode: 'highest',
-        match: n => Editor.isBlock(editor, n) && !editor.isGrid(n) && !editor.isRow(n) && !editor.isCell(n)
-      })
-    }
+    editor.normalizeSelection(selection => {
+      if(editor.selection !== selection) editor.selection = selection
+      if(BlockquoteEditor.isActive(editor)) {
+        Transforms.unwrapNodes(editor, { 
+          match: n => Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY,
+          split: true,
+        })
+      } else {
+        Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
+          mode: 'highest',
+          match: n => Editor.isBlock(editor, n) && !editor.isGrid(n) && !editor.isRow(n) && !editor.isCell(n)
+        })
+      }
+    })
   }
 
   const { renderElement } = newEditor

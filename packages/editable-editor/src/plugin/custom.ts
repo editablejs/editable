@@ -3,23 +3,13 @@ import { Editable } from "./editable"
 import { withEditable } from "./with-editable"
 import { Transforms } from './transforms'
 
-const { withoutNormalizing, marks: slateMarks} = Editor
-
-Editor.withoutNormalizing = (editor: Editor, fn: () => void) => { 
-  if(Editable.isEditor(editor)) {
-    editor.normalizeSelection(selection => {
-      if(editor.selection !== selection) editor.selection = selection
-      withoutNormalizing(editor, fn)
-    })
-  } else {
-    withoutNormalizing(editor, fn)
-  }
-}
+const { marks: slateMarks} = Editor
 
 Editor.marks = (editor: Editor): Omit<Text, 'text' | 'composition'> => {
   let marks: Omit<Text, 'text' | 'composition'> = {}
   if(Editable.isEditor(editor)) {
     editor.normalizeSelection(selection => {
+      if(!selection) return
       const editorMarks = slateMarks({...editor, selection})
       marks = Object.assign(marks, editorMarks)
     })

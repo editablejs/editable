@@ -101,6 +101,11 @@ const getOperationGrid = (editor: Editor, at: Location | null = editor.selection
     })
     value.end = endCell
     if (startCell && endCell) {
+      if(Path.equals(startCell[1], endCell[1])) { 
+        value.start = undefined
+        value.end = undefined
+        return value
+      }
       const [, startPath] = startCell
       const [, endPath] = endCell
       const gridPath = Path.common(startPath, endPath)
