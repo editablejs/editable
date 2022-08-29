@@ -29,7 +29,7 @@ export const GridCell = {
     return a[0] === b[0] && a[1] === b[1]
   },
 
-  focus: (editor: Editable, [, path]: NodeEntry<GridCell>, edge: SelectionEdge = 'start') => { 
+  focus: (editor: Editable, path: Path, edge: SelectionEdge = 'start') => { 
     const point = Editable.toLowestPoint(editor, path, edge)
     Transforms.select(editor, point)
   },

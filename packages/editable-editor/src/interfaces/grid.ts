@@ -3,7 +3,6 @@ import { Editable } from "../plugin/editable"
 import { CellPoint, GridCell } from "./cell"
 import { GridRow } from "./row"
 import { SelectionEdge } from 'slate/dist/interfaces/types';
-import { GRID_OPERATING } from "../utils/weak-maps";
 
 export interface GridSelection {
   start: CellPoint
@@ -42,14 +41,19 @@ export interface GridGeneratorCellsOptions {
   reverse?: boolean
 }
 
-export const Grid = { 
-  isOperating: (editor: Editable): boolean => { 
-    return !!GRID_OPERATING.get(editor)
-  },
+export interface GridMoveOptions {
+  at?: GridLocation
+  move: number
+  to: number
+}
 
-  setOperating: (editor: Editable, value: boolean) => { 
-    GRID_OPERATING.set(editor, value)
-  },
+export interface GridMoveRange {
+  move: [number, number]
+  to: number
+  isBackward: boolean
+}
+
+export const Grid = {
 
   findGrid: (editor: Editable, at?: Location): NodeEntry<Grid> | undefined => {
     if(!at) {
@@ -115,7 +119,8 @@ export const Grid = {
     const cells: CellPoint[] = []
     const [grid] = at
     const gridRows = grid.children.length
-    const gridCols = grid.colsWidth?.length ?? 0
+    const gridCols = grid.colsWidth?.length ?? grid.children[0].children.length
+   
     const rowFull = startCol === 0 && endCol === gridCols - 1
     const colFull = startRow === 0 && endRow === gridRows - 1
     for(let i = startRow; i <= endRow; i++) { 
@@ -138,28 +143,8 @@ export const Grid = {
     }
   },
 
-  create: <G extends Grid, R extends GridRow, C extends GridCell>(editor: Editable, grid: Partial<Omit<G, 'children'>>, ...rows: (Omit<R, 'children'> & Record<'children', C[]>)[]): G => { 
-    const editorElement = Editable.toDOMNode(editor, editor)
-    const rect = editorElement.getBoundingClientRect()
-    const width = rect.width - 1
-    const gridColsWdith: number[] = grid.colsWidth ?? []
-    if(!grid.colsWidth) {
-      const cols = gridColsWdith.length
-      const colWidth = Math.max(5, Math.floor(width / cols))
-      let colsWidth = 0
-      for(let c = 0; c < cols; c++) { 
-        const cws = colsWidth + colWidth
-        if(c === cols - 1 && cws < width) { 
-          const cw = width - colsWidth
-          colsWidth += cw
-          gridColsWdith.push(cw)
-        } else {
-          colsWidth = cws
-          gridColsWdith.push(colWidth)
-        }
-      }
-    }
-    
+  create: <G extends Grid, R extends GridRow, C extends GridCell>(grid: Partial<Omit<G, 'children'>>, ...rows: (Omit<R, 'children'> & Record<'children', C[]>)[]): G => { 
+    const gridColsWdith: number[] = grid.colsWidth ?? rows[0].children.map(() => 35)
     return {
       type: 'grid',
       children: rows,
@@ -175,7 +160,6 @@ export const Grid = {
       at = entry
     }
     const [, path] = at
-    Grid.setOperating(editor, true)
     Transforms.removeNodes(editor, {
       at: path
     })
@@ -189,7 +173,7 @@ export const Grid = {
     }
     const [grid, path] = at
     const { children, colsWidth } = grid
-    let newColsWidth = colsWidth?.concat() ?? []
+    let newColsWidth = colsWidth?.concat() ?? children[0].children.map(() => 35)
     // 只有一列删除表格
     if(newColsWidth.length === 1) {
       Grid.remove(editor, at)
@@ -197,59 +181,50 @@ export const Grid = {
     }
     // 重新设置列宽度
     newColsWidth.splice(index, 1)
-    Grid.setOperating(editor, true)
     Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
     // 遍历行，删除列
     for(let r = children.length - 1; r >= 0; r--) {
       const cells = children[r].children
       const cell = cells[index]
+      const nextIndex = index + 1
       // 被合并的列
       if(cell.span) {
-        // 被合并的列在当前行，修改 colspan
-        if(cell.span[0] === r) {
-          // 找到合并的列，并让其 colspan - 1
-          const spanCell = Grid.getCell(editor, at, cell.span)
-          if(spanCell) {
+        // 找到合并的列，并让其 colspan - 1
+        const spanCell = Grid.getCell(editor, at, cell.span)
+        if(spanCell) {
+          // 被合并的列在当前行，修改 colspan
+          if(cell.span[0] === r) {
             const [span, path] = spanCell
             Transforms.setNodes<GridCell>(editor, { colspan: span.colspan - 1 }, {
               at: path
             })
           }
-        } else {
-          // 非当前行，删除
-          Transforms.removeNodes(editor, {
-            at: path.concat(r, index)
-          })
         }
       } else {
         // 合并了多个列
         if(cell.colspan > 1 ) {
-          const cells = Grid.cells(editor, at, {
-            startRow: r,
-            startCol: index
-          })
-          const nextIndex = index + 1
-          // 大于两个则更新后续被合并列的span位置
-          const newSpan: CellPoint | undefined = cell.colspan > 2 ? [r, nextIndex] : undefined
-          for(const [child, row, col] of cells) {
-            if(child.span && GridCell.equal(child.span, [r, index])) {
-              Transforms.setNodes<GridCell>(editor, { span: newSpan }, {
-                at: path.concat([row, col])
-              })
-            }
-          }
           // 设置下一个列的 colspan
           Transforms.setNodes<GridCell>(editor, { colspan: cell.colspan - 1, rowspan: cell.rowspan, span: undefined }, {
             at: path.concat([r, nextIndex])
           })
-        } else {
-          Grid.setOperating(editor, true)
-          Transforms.removeNodes(editor, {
-            at: path.concat(r, index)
+        }
+      }
+      const currentSpan: CellPoint = cell.span ? cell.span : [r, index]
+      // 由于删除了一列，需要更新后续 span 位置
+      for(let c = nextIndex; c < cells.length; c++) { 
+        const cell = cells[c]
+        if(cell.span && cell.span[1] !== currentSpan[1]) {
+          Transforms.setNodes<GridCell>(editor, { span: [cell.span[0], cell.span[1] - 1] }, {
+            at: path.concat([r, c])
           })
         }
       }
+
+      Transforms.removeNodes(editor, {
+        at: path.concat(r, index)
+      })
     }
+    
     Grid.focus(editor, {
       point: [0, Math.max(index >= newColsWidth.length ? index - 1 : index, 0)],
       at: path
@@ -270,13 +245,15 @@ export const Grid = {
       return
     }
     const cells = children[index].children
+    const nextIndex = index + 1
+
     for(let c = 0; c < cells.length; c++) { 
       const cell = cells[c]
       if(cell.span) {
-        if(cell.span[1] === c) {
-          // 找到合并的行，并让其 rowspan - 1
-          const spanCell = Grid.getCell(editor, at, cell.span)
-          if(spanCell) {
+        // 找到合并的行，并让其 rowspan - 1
+        const spanCell = Grid.getCell(editor, at, cell.span)
+        if(spanCell) {
+          if(cell.span[1] === c) {
             const [span, path] = spanCell
             Transforms.setNodes<GridCell>(editor, { rowspan: span.rowspan - 1 }, {
               at: path
@@ -286,30 +263,235 @@ export const Grid = {
       } else {
         // 合并了多个列
         if(cell.rowspan > 1 ) {
-          const cells = Grid.cells(editor, at, {
-            startRow: index,
-            startCol: 0
-          })
-          const nextIndex = index + 1
-          // 大于两个则更新后续被合并列的span位置
-          const newSpan: CellPoint | undefined = cell.rowspan > 2 ? [nextIndex, c] : undefined
-          for(const [child, row, col] of cells) {
-            if(child.span && GridCell.equal(child.span, [index, c])) {
-              Transforms.setNodes<GridCell>(editor, { span: newSpan }, {
-                at: path.concat([row, col])
-              })
-            }
-          }
           // 设置下一个列的 rowspan
           Transforms.setNodes<GridCell>(editor, { colspan: cell.colspan, rowspan: cell.rowspan - 1, span: undefined }, {
             at: path.concat([nextIndex, c])
           })
         }
       }
+      const currentSpan: CellPoint = cell.span ? cell.span : [index, c]
+      // 由于删除了一行，需要更新后续 span 位置
+      for(let r = nextIndex; r < children.length; r++) { 
+        const cell = children[r].children[c]
+        if(cell.span && cell.span[0] !== currentSpan[0]) {
+          Transforms.setNodes<GridCell>(editor, { span: [cell.span[0]- 1, cell.span[1]] }, {
+            at: path.concat([r, c])
+          })
+        }
+      }
     }
-    Grid.setOperating(editor, true)
     Transforms.removeNodes(editor, {
       at: path.concat(index)
+    })
+  },
+
+  getRangeOfMoveCol: (editor: Editable, options: GridMoveOptions): GridMoveRange | undefined => {  
+    let { at } = options
+    if(!at || Path.isPath(at)) {
+      const entry = Grid.findGrid(editor, at)
+      if(!entry) return
+      at = entry
+    }
+    const { move, to } = options
+    if(move === to) return
+    const isBackward = to < move
+    const [table] = at
+    const endRow = table.children.length - 1
+    // 找到需要移动列的包含合并列的范围
+    const moveSelection = Grid.edges(editor, at, {
+      start: [0, move],
+      end: [endRow, move]
+    })
+    
+    // 找到移动目标索引列的包含合并列的范围
+    const toSelection = Grid.edges(editor, at, {
+      start: [0, to],
+      end: [endRow, to]
+    })
+    const { start: moveStart, end: moveEnd } = moveSelection
+    const { start: toStart, end: toEnd } = toSelection
+    let toIndex = isBackward ? toStart[1] : Math.max(toStart[1], toEnd[1])
+    if(isBackward && toIndex > moveStart[1]) {
+      toIndex = Math.max(moveStart[1] - 1, 0)
+    } else if(!isBackward && toIndex < moveEnd[1]) { 
+      toIndex = moveEnd[1] + 1
+    }
+    if(toIndex === moveStart[1] || toIndex === moveEnd[1]) return
+    return {
+      move: [moveStart[1], moveEnd[1]],
+      to: toIndex,
+      isBackward
+    }
+  },
+
+  moveCol: (editor: Editable, options: GridMoveOptions) => { 
+    let { at } = options
+    if(!at || Path.isPath(at)) {
+      const entry = Grid.findGrid(editor, at)
+      if(!entry) return
+      at = entry
+    }
+    const range = Grid.getRangeOfMoveCol(editor, {
+      ...options,
+      at
+    })
+    if(!range) return
+    const [table, path] = at
+    const { move, to, isBackward } = range
+    const { colsWidth, children: rows } = table
+    const moveCount = move[1] - move[0] + 1
+    if(colsWidth) {
+      const newColsWidth = colsWidth.concat()
+      const moveCols = newColsWidth.slice(move[0], move[0] + moveCount)
+      if(isBackward) {
+        newColsWidth.splice(move[0], moveCount)
+        newColsWidth.splice(to, 0, ...moveCols)
+      } else {
+        newColsWidth.splice(to + 1, 0, ...moveCols)
+        newColsWidth.splice(move[0], moveCount)
+      }
+
+      Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, {
+        at: path
+      })
+    }
+    
+    for (let r = rows.length - 1; r >= 0; r--) {
+      const cells = rows[r].children
+      
+      for (let c = cells.length - 1; c >= 0; c--) {
+        const cell = cells[c]
+        const { span } = cell
+        if(!span) continue
+        if(isBackward && span[1] < move[0] && span[1] >= to) {
+          Transforms.setNodes<GridCell>(editor, { span: [span[0], span[1] + moveCount] }, {
+            at: path.concat([r, c])
+          })
+        } else if(!isBackward && span[1] >= move[1] && span[1] < to) {
+          Transforms.setNodes<GridCell>(editor, { span: [span[0], span[1] - moveCount] }, {
+            at: path.concat([r, c])
+          })
+        }
+      }
+      for(let c = isBackward ? move[1] : move[0]; isBackward ? c >= move[0] : c <= move[1]; isBackward ? c-- : c++) {
+        const cell = cells[c]
+        // 多个列移动后列索引会发生变化，所以这里不能取c的值
+        const cellPath = path.concat([r, isBackward ? move[1] : move[0]])
+        if(cell.span) { 
+          const spanCell = Grid.getCell(editor, at, cell.span)
+          if(spanCell) {
+            Transforms.setNodes<GridCell>(editor, { 
+              span: [cell.span[0], isBackward ? to : to - 1] 
+            }, { 
+              at: cellPath
+            })
+          }
+        }
+        Transforms.moveNodes(editor, {
+          at: cellPath,
+          to: path.concat(r, to)
+        })
+      }
+    }
+    Grid.select(editor, path, {
+      start: [0, isBackward ? to : to - moveCount + 1],
+      end: [rows.length - 1, isBackward ? to + moveCount - 1 : to]
+    })
+  },
+
+  getRangeOfMoveRow: (editor: Editable, options: GridMoveOptions): GridMoveRange | undefined => {  
+    let { at } = options
+    if(!at || Path.isPath(at)) {
+      const entry = Grid.findGrid(editor, at)
+      if(!entry) return
+      at = entry
+    }
+    const { move, to } = options
+    if(move === to) return
+    const isBackward = to < move
+    const endCol = Grid.getColCount(editor, at) - 1
+    // 找到需要移动行的包含合并行的范围
+    const moveSelection = Grid.edges(editor, at, {
+      start: [move, 0],
+      end: [move, endCol]
+    })
+    
+    // 找到移动目标索引行的包含合并行的范围
+    const toSelection = Grid.edges(editor, at, {
+      start: [to, 0],
+      end: [to, endCol]
+    })
+    const { start: moveStart, end: moveEnd } = moveSelection
+    const { start: toStart, end: toEnd } = toSelection
+    let toIndex = isBackward ? toStart[0] : Math.max(toStart[0], toEnd[0])
+    if(isBackward && toIndex > moveStart[0]) {
+      toIndex = Math.max(moveStart[0] - 1, 0)
+    } else if(!isBackward && toIndex < moveEnd[0]) { 
+      toIndex = moveEnd[0] + 0
+    }
+    if(toIndex === moveStart[0] || toIndex === moveEnd[0]) return
+    return {
+      move: [moveStart[0], moveEnd[0]],
+      to: toIndex,
+      isBackward
+    }
+  },
+
+  moveRow: (editor: Editable, options: GridMoveOptions) => { 
+    let { at } = options
+    if(!at || Path.isPath(at)) {
+      const entry = Grid.findGrid(editor, at)
+      if(!entry) return
+      at = entry
+    }
+    const [table, path] = at
+    const range = Grid.getRangeOfMoveRow(editor, {
+      ...options,
+      at
+    })
+    if(!range) return
+    const { move, to, isBackward } = range
+    const { children: rows } = table
+    const moveCount = move[1] - move[0] + 1
+    const colCount = Grid.getColCount(editor, at)
+    for (let r = rows.length - 1; r >= 0; r--) {
+      const cells = rows[r].children
+      
+      for (let c = cells.length - 1; c >= 0; c--) {
+        const cell = cells[c]
+        const { span } = cell
+        if(!span) continue
+        if(isBackward && span[0] < move[0] && span[0] >= to) {
+          Transforms.setNodes<GridCell>(editor, { span: [span[0] + moveCount, span[1]] }, {
+            at: path.concat([r, c])
+          })
+        } else if(!isBackward && span[0] >= move[0] && span[0] < to) {
+          Transforms.setNodes<GridCell>(editor, { span: [span[0] - moveCount, span[1]] }, {
+            at: path.concat([r, c])
+          })
+        }
+      }
+    }
+    
+    for(let r = isBackward ? move[1] : move[0]; isBackward ? r >= move[0] : r <= move[1]; isBackward ? r-- : r++) {
+      for(let c = colCount - 1; c >= 0; c--) { 
+        const cell = rows[r].children[c]
+        // 多个列移动后列索引会发生变化，所以这里不能取c的值
+        const cellPath = path.concat([isBackward ? move[1] : move[0], c])
+        if(cell.span) {
+          Transforms.setNodes<GridCell>(editor, { span: [isBackward ? to : to - 1, cell.span[1]] }, { 
+            at: cellPath
+          })
+        }
+      }
+      Transforms.moveNodes(editor, {
+        at: path.concat(isBackward ? move[1] : move[0]),
+        to: path.concat(to)
+      })
+    }
+    Grid.select(editor, path, {
+      start: [isBackward ? to : to - moveCount + 1, 0],
+      end: [isBackward ? to + moveCount - 1 : to, colCount - 1]
     })
   },
 
@@ -560,14 +742,14 @@ export const Grid = {
     const [ table ] = at
     const { children } = table
     const { startRow = 0, startCol = 0, endRow = children.length - 1, reverse = false } = opitons
-    let r = reverse ? Math.max(endRow, children.length - 1) : startRow
-    while(reverse ? r >= 0 : r <= endRow) {
+    let r = reverse ? Math.min(endRow, children.length - 1) : startRow
+    while(reverse ? r >= startRow : r <= endRow) {
       const row = children[r]
       if(!row) break
       const { children: cells } = row
       const { endCol = cells.length - 1 } = opitons
-      let c = reverse ? Math.max(endCol, cells.length - 1) : startCol
-      while(reverse ? c >= 0 : c <= endCol) { 
+      let c = reverse ? Math.min(endCol, cells.length - 1) : startCol
+      while(reverse ? c >= startCol : c <= endCol) { 
         const cell = cells[c]
         yield [cell, r, c]
         c = reverse ? c - 1 : c + 1
@@ -633,7 +815,7 @@ export const Grid = {
         if(cell.span) {
           const [sRow, sCol] = cell.span
           const spanCell = table.children[sRow].children[sCol]
-          if (spanCell.span) continue
+          if (!spanCell || spanCell.span) continue
           if (
             sCol < startCol
           ) {
@@ -717,7 +899,7 @@ export const Grid = {
       const [table, path] = at
       const cell = Node.get(table, point)
       if(editor.isCell(cell)) {
-        GridCell.focus(editor, [cell, path.concat(point)], edge)
+        GridCell.focus(editor, path.concat(point), edge)
       }
     }
   },
@@ -770,6 +952,9 @@ export const Grid = {
       at = entry
     }
     const [table] = at
-    return table.colsWidth?.length ?? 0
+    const { colsWidth, children } = table
+    if(colsWidth) return colsWidth.length
+    if(children.length > 0) return children[0].children.length
+    return 0
   }
 }
