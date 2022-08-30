@@ -108,5 +108,28 @@
   "peerDependencies": {
     "react": "^16.8.0 || ^17.x || ^18.x",
     "react-dom": "^16.8.0 || ^17.x || ^18.x"
+  },
+  "packageManager": "yarn@3.2.3",
+  "engines": {
+    "node": ">= ^16.16.0",
+    "yarn": "^3.2.3",
+    "npm": "use yarn instead"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "browserslist": {
+    "production": [
+      "last 3 versions",
+      "Chrome >= 90",
+      "Safari >= 13"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
