@@ -1,4 +1,4 @@
-[![zh-CN](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg?longCache=true&style=flat-square "zh-CN")](README.zh-CN.md)
+[![zh-CN](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg?longCache=true&style=flat-square 'zh-CN')](README.zh-CN.md)
 
 # Editable
 
@@ -6,7 +6,7 @@ An experimental rich text editor framework which aims to replace the native `con
 
 ## Development
 
-Use `nextjs` & `turbo` to build a development environment, use `typescript` for development, and use jest for unit testing.
+Use `nextjs` & `turbo` to build a development environment, use `typescript` for development, and use vitest for unit testing.
 
 ```bash
 # Install

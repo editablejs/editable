@@ -49,10 +49,14 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/website"],
+      "executor": "@nxext/vitest:vitest",
+      "configurations": {
+        "watch": {
+          "command": "watch"
+        }
+      },
       "options": {
-        "jestConfig": "apps/website/jest.config.ts",
+        "command": "run",
         "passWithNoTests": true
       }
     }

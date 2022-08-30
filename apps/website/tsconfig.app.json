@@ -6,5 +6,10 @@
     "types": []
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["jest.config.ts", "**/__tests__", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": [
+    "vitest.config.ts",
+    "**/__tests__",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }
