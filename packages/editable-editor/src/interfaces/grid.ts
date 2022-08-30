@@ -295,8 +295,8 @@ export const Grid = {
     const { move, to } = options
     if(move === to) return
     const isBackward = to < move
-    const [table] = at
-    const endRow = table.children.length - 1
+    const [grid] = at
+    const endRow = grid.children.length - 1
     // 找到需要移动列的包含合并列的范围
     const moveSelection = Grid.edges(editor, at, {
       start: [0, move],
@@ -336,9 +336,9 @@ export const Grid = {
       at
     })
     if(!range) return
-    const [table, path] = at
+    const [grid, path] = at
     const { move, to, isBackward } = range
-    const { colsWidth, children: rows } = table
+    const { colsWidth, children: rows } = grid
     const moveCount = move[1] - move[0] + 1
     if(colsWidth) {
       const newColsWidth = colsWidth.concat()
@@ -444,14 +444,14 @@ export const Grid = {
       if(!entry) return
       at = entry
     }
-    const [table, path] = at
+    const [grid, path] = at
     const range = Grid.getRangeOfMoveRow(editor, {
       ...options,
       at
     })
     if(!range) return
     const { move, to, isBackward } = range
-    const { children: rows } = table
+    const { children: rows } = grid
     const moveCount = move[1] - move[0] + 1
     const colCount = Grid.getColCount(editor, at)
     for (let r = rows.length - 1; r >= 0; r--) {
@@ -501,8 +501,8 @@ export const Grid = {
       if(!entry) return
       at = entry
     }
-    const [table, path] = at
-    const { children, colsWidth } = table
+    const [grid, path] = at
+    const { children, colsWidth } = grid
     let colWidth = width
     if(!colWidth && colsWidth) {
       if(index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
@@ -561,8 +561,8 @@ export const Grid = {
       if(!entry) return
       at = entry
     }
-    const [table, path] = at
-    const { colsWidth, children: rows } = table
+    const [grid, path] = at
+    const { colsWidth, children: rows } = grid
 
     const prevRow = rows[index - 1]
     const nextRow = rows[index]
@@ -743,8 +743,8 @@ export const Grid = {
       if(!entry) return
       at = entry
     }
-    const [ table ] = at
-    const { children } = table
+    const [ grid ] = at
+    const { children } = grid
     const { startRow = 0, startCol = 0, endRow = children.length - 1, reverse = false } = opitons
     let r = reverse ? Math.min(endRow, children.length - 1) : startRow
     while(reverse ? r >= startRow : r <= endRow) {
@@ -795,12 +795,12 @@ export const Grid = {
   edges: (editor: Editable, at: GridLocation, selection?: GridSelection): GridSelection => {
     if(Path.isPath(at)) {
       const entry = Grid.findGrid(editor, at)
-      if(!entry) throw new Error('invalid table')
+      if(!entry) throw new Error('invalid grid')
       at = entry
     }
     if(!selection) selection = Grid.getSelection(editor, at)
     if(!selection) return { start: [0, 0], end: [-1, -1] }
-    const [ table ] = at
+    const [ grid ] = at
     const { start, end } = GridCell.edges(selection)
     let [startRow, startCol] = start
     let [endRow, endCol] = end
@@ -818,7 +818,7 @@ export const Grid = {
         }
         if(cell.span) {
           const [sRow, sCol] = cell.span
-          const spanCell = table.children[sRow].children[sCol]
+          const spanCell = grid.children[sRow].children[sCol]
           if (!spanCell || spanCell.span) continue
           if (
             sCol < startCol
@@ -900,8 +900,8 @@ export const Grid = {
       at = entry
     }
     if(at) {
-      const [table, path] = at
-      const cell = Node.get(table, point)
+      const [grid, path] = at
+      const cell = Node.get(grid, point)
       if(editor.isGridCell(cell)) {
         const sel = Grid.edges(editor, at, { start: point, end: point })
         const { start } = Grid.span(editor, at, sel)
@@ -933,8 +933,8 @@ export const Grid = {
       at = entry
     }
     const [row, col] = point
-    const [table, path] = at
-    const rowElement = table.children[row]
+    const [grid, path] = at
+    const rowElement = grid.children[row]
     if(!editor.isGridRow(rowElement)) return
     const cellElment = rowElement.children[col]
     if(!editor.isGridCell(cellElment)) return
@@ -947,8 +947,8 @@ export const Grid = {
       if(!entry) return 0
       at = entry
     }
-    const [table] = at
-    return table.children.filter(child => editor.isGridRow(child)).length
+    const [grid] = at
+    return grid.children.filter(child => editor.isGridRow(child)).length
   },
 
   getColCount: (editor: Editable, at: GridLocation): number => { 
@@ -957,8 +957,8 @@ export const Grid = {
       if(!entry) return 0
       at = entry
     }
-    const [table] = at
-    const { colsWidth, children } = table
+    const [grid] = at
+    const { colsWidth, children } = grid
     if(colsWidth) return colsWidth.length
     if(children.length > 0) return children[0].children.length
     return 0
