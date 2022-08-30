@@ -503,15 +503,8 @@ export const Grid = {
     }
     const [grid, path] = at
     const { children, colsWidth } = grid
-    let colWidth = width
-    if(!colWidth && colsWidth) {
-      if(index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
-      else {
-        colWidth = colsWidth[index]
-      }
-    }
     const newColsWidth = colsWidth?.concat() ?? []
-    newColsWidth.splice(index, 0, colWidth ?? 5)
+    newColsWidth.splice(index, 0, width ?? 5)
     Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
     for(let r = 0; r < children.length; r++) {
       const insertCell = GridCell.create(cell)

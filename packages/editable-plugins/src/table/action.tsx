@@ -45,7 +45,15 @@ const InsertActionDefault: React.FC<TableActionProps> = ({ editor, table, left, 
     event.preventDefault()
     const options = getOptions()
     if(type === TYPE_COLS) {
-      Grid.insertCol(editor, Editable.findPath(editor, table), index, { type: TABLE_CELL_KEY})
+      let colWidth = options.minColWidth
+      const { colsWidth } = table
+      if(colsWidth) {
+        if(index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
+        else {
+          colWidth = colsWidth[index]
+        }
+      }
+      Grid.insertCol(editor, Editable.findPath(editor, table), index, { type: TABLE_CELL_KEY }, colWidth)
     } else if(type === TYPE_ROWS) { 
       Grid.insertRow(editor, Editable.findPath(editor, table), index, { type: TABLE_ROW_KEY }, { type: TABLE_CELL_KEY}, options.minRowHeight)
     }
