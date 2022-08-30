@@ -1,4 +1,4 @@
-import { Editor, Element, NodeEntry, Location, Range, Path, Transforms, Node } from "slate"
+import { Editor, Element, NodeEntry, Location, Range, Path, Transforms, Node, Text } from "slate"
 import { Editable } from "../plugin/editable"
 import { CellPoint, GridCell } from "./cell"
 import { GridRow } from "./row"
@@ -495,7 +495,7 @@ export const Grid = {
     })
   },
 
-  insertCol: <C extends GridCell>(editor: Editable, at: GridLocation, index: number, cell: Partial<Omit<C, 'children'>>, width = 5) => {
+  insertCol: <C extends GridCell>(editor: Editable, at: GridLocation, index: number, cell: Partial<Omit<C, 'children'>>, width?: number) => {
     if(Path.isPath(at)) {
       const entry = Grid.findGrid(editor, at)
       if(!entry) return
@@ -504,14 +504,14 @@ export const Grid = {
     const [table, path] = at
     const { children, colsWidth } = table
     let colWidth = width
-    if(colsWidth) {
+    if(!colWidth && colsWidth) {
       if(index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
       else {
         colWidth = colsWidth[index]
       }
     }
     const newColsWidth = colsWidth?.concat() ?? []
-    newColsWidth.splice(index, 0, colWidth)
+    newColsWidth.splice(index, 0, colWidth ?? 5)
     Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
     for(let r = 0; r < children.length; r++) {
       const insertCell = GridCell.create(cell)
@@ -525,10 +525,10 @@ export const Grid = {
         const { span: nSpan } = nextCell
         if(nSpan && (pSpan && GridCell.equal(pSpan, nSpan) || pColspan > 1)) {
           insertCell.span = nSpan
-          const spanIndex = nSpan[1]
-          const spanCell = cells[spanIndex]
+          const [spanRow, spanCol] = nSpan
+          const spanCell = children[spanRow].children[spanCol]
           Transforms.setNodes<GridCell>(editor, { colspan: spanCell.colspan + 1 }, {
-            at: path.concat([r, spanIndex])
+            at: path.concat([spanRow, spanCol])
           })
         }
       }
@@ -544,6 +544,7 @@ export const Grid = {
           }
         }
       }
+
       Transforms.insertNodes(editor, insertCell, {
         at: path.concat([r, index])
       })
@@ -554,7 +555,7 @@ export const Grid = {
     })
   },
 
-  insertRow: <R extends GridRow, C extends GridCell>(editor: Editable, at: GridLocation, index: number, row: Partial<Omit<R, 'children'>>, cell: Partial<Omit<C, 'children'>>, height = 5) => { 
+  insertRow: <R extends GridRow, C extends GridCell>(editor: Editable, at: GridLocation, index: number, row: Partial<Omit<R, 'children'>>, cell: Partial<Omit<C, 'children'>>, height?: number) => { 
     if(Path.isPath(at)) {
       const entry = Grid.findGrid(editor, at)
       if(!entry) return
@@ -575,10 +576,10 @@ export const Grid = {
         const { span: nSpan } = nextCells[col]
         if(nSpan && (pSpan && GridCell.equal(pSpan, nSpan) || pRowspan > 1)) {
           cell.span = nSpan
-          const spanIndex = nSpan[0]
-          const spanCell = rows[spanIndex].children[col]
+          const [spanRow, spanCol] = nSpan
+          const spanCell = rows[spanRow].children[spanCol]
           Transforms.setNodes<GridCell>(editor, { rowspan: spanCell.rowspan + 1 }, {
-            at: path.concat([spanIndex, col])
+            at: path.concat([spanRow, spanCol])
           })
         }
       }
@@ -586,9 +587,9 @@ export const Grid = {
       for(let r = index; r < rows.length; r++) { 
         const cell = rows[r].children[col]
         if(cell.span) {
-          const [row, col] = cell.span
-          if(index <= row) {
-            Transforms.setNodes<GridCell>(editor, { span: [row + 1, col] }, {
+          const [spanRow, spanCol] = cell.span
+          if(index <= spanRow) {
+            Transforms.setNodes<GridCell>(editor, { span: [spanRow + 1, spanCol] }, {
               at: path.concat([r, col])
             })
           }
@@ -597,7 +598,7 @@ export const Grid = {
       return cell
     }
 
-    const rowHeight = height
+    const rowHeight = height ?? 5
     const newRow = GridRow.create({ ...row, height: rowHeight }, (colsWidth ?? [0]).map((_, index) => setCell(GridCell.create(cell), index)))
     Transforms.insertNodes(editor, newRow, { at: path.concat([index]) })
     Grid.focus(editor, {
@@ -651,7 +652,7 @@ export const Grid = {
           }
         )
       } else {
-        if(!Editable.isEmpty(editor, cell)) {
+        if(!cell.span && !Editable.isEmpty(editor, cell)) {
           cell.children.forEach((_, index) => {
             Transforms.moveNodes(editor, {
               at: cellPath.concat(index),
@@ -662,8 +663,8 @@ export const Grid = {
         }
         
         Transforms.setNodes<GridCell>(editor, { 
-          rowspan: 1,
-          colspan: 1,
+          rowspan: undefined,
+          colspan: undefined,
           span: [startRow, startCol] 
         }, {
           at: cellPath
@@ -720,11 +721,14 @@ export const Grid = {
         Transforms.setNodes<GridCell>(editor, { span: undefined }, {
           at: cellPath
         })
-        if(cell.children.length === 0) {
-          Transforms.insertNodes(editor, { children: [{text: ''}] }, {
-            at: cellPath
+        for(let i = 0; i < cell.children.length; i++) { 
+          Transforms.delete(editor, {
+            at: cellPath.concat(i)
           })
         }
+        Transforms.insertNodes(editor, { children: [{text: ''}] }, {
+          at: cellPath.concat(0)
+        })
       } else if(cell.rowspan > 1 || cell.colspan > 1) {
         Transforms.setNodes<GridCell>(editor, { rowspan: 1, colspan: 1 }, {
           at: cellPath
@@ -899,7 +903,9 @@ export const Grid = {
       const [table, path] = at
       const cell = Node.get(table, point)
       if(editor.isCell(cell)) {
-        GridCell.focus(editor, path.concat(point), edge)
+        const sel = Grid.edges(editor, at, { start: point, end: point })
+        const { start } = Grid.span(editor, at, sel)
+        GridCell.focus(editor, path.concat(start), edge)
       }
     }
   },
