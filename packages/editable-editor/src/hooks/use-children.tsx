@@ -1,16 +1,17 @@
-import { Editor, Range, Element, Ancestor, Descendant, Path } from 'slate'
+import { Editor, Range, Element, Ancestor, Descendant } from 'slate'
 
 import ElementComponent from '../components/element'
 import TextComponent from '../components/text'
 import { Editable } from '..'
 import { useEditableStatic } from './use-editable-static'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
-import { NodeContext } from './use-node'
+import { NodeSelectedContext } from './use-node-selected'
+import { NodeFocusedContext } from './use-node-focused';
+import { GridContext } from './use-grid'
 
 /**
  * Children.
  */
-
 const useChildren = (props: {
   node: Ancestor
   selection: Range | null
@@ -33,21 +34,23 @@ const useChildren = (props: {
     const key = Editable.findKey(editor, n)
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
-    const focus = selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
+    const focused = selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
 
     if (Element.isElement(n)) {
-      children.push(
-        <NodeContext.Provider key={`provider-${key.id}`} value={{
-          selected: !!sel,
-          focused: !!focus,
-        }}>
-          <ElementComponent
-            element={n}
-            key={key.id}
-            selection={sel}
-          />
-        </NodeContext.Provider>
-      )
+      const element = <NodeSelectedContext.Provider key={`selected-provider-${key.id}`} value={!!sel}>
+      <NodeFocusedContext.Provider key={`focused-provider-${key.id}`} value={focused ?? false}>
+        <ElementComponent
+          element={n}
+          key={key.id}
+          selection={sel}
+        />
+      </NodeFocusedContext.Provider>
+    </NodeSelectedContext.Provider>
+      if(Editable.isGrid(editor, n)) { 
+        children.push(<GridContext.Provider key={`grid-provider-${key.id}`} value={n}>{element}</GridContext.Provider>)
+      } else {
+        children.push(element)
+      }
     } else {
       children.push(
         <TextComponent

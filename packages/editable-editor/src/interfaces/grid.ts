@@ -88,12 +88,12 @@ export const Grid = {
     
     const [startEntry] = Editor.nodes<GridCell>(editor, {
       at: start,
-      match: n => editor.isCell(n)
+      match: n => editor.isGridCell(n)
     })
     if(!startEntry) return
     const [endEntry] = Range.isExpanded(editorSelection) ? Editor.nodes<GridCell>(editor, {
       at: end,
-      match: n => editor.isCell(n)
+      match: n => editor.isGridCell(n)
     }) : [startEntry]
     if(!endEntry) return
     const [, startPath] = startEntry
@@ -902,7 +902,7 @@ export const Grid = {
     if(at) {
       const [table, path] = at
       const cell = Node.get(table, point)
-      if(editor.isCell(cell)) {
+      if(editor.isGridCell(cell)) {
         const sel = Grid.edges(editor, at, { start: point, end: point })
         const { start } = Grid.span(editor, at, sel)
         GridCell.focus(editor, path.concat(start), edge)
@@ -935,9 +935,9 @@ export const Grid = {
     const [row, col] = point
     const [table, path] = at
     const rowElement = table.children[row]
-    if(!editor.isRow(rowElement)) return
+    if(!editor.isGridRow(rowElement)) return
     const cellElment = rowElement.children[col]
-    if(!editor.isCell(cellElment)) return
+    if(!editor.isGridCell(cellElment)) return
     return [cellElment, path.concat(point)]
   },
 
@@ -948,7 +948,7 @@ export const Grid = {
       at = entry
     }
     const [table] = at
-    return table.children.filter(child => editor.isRow(child)).length
+    return table.children.filter(child => editor.isGridRow(child)).length
   },
 
   getColCount: (editor: Editable, at: GridLocation): number => { 

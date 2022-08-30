@@ -50,16 +50,16 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.isGrid = (value: any): value is Grid => false,
   
-  e.isRow = (value: any): value is GridRow => false,
+  e.isGridRow = (value: any): value is GridRow => false,
 
-  e.isCell = (value: any): value is GridCell => false,
+  e.isGridCell = (value: any): value is GridCell => false,
 
   e.deleteForward = unit => {
     const { selection } = editor
 
     if (selection && Range.isCollapsed(selection)) {
       const [cell] = Editor.nodes(editor, {
-        match: n => e.isCell(n)
+        match: n => e.isGridCell(n)
       })
 
       if (cell) {
@@ -78,7 +78,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (selection && Range.isCollapsed(selection)) {
       const [cell] = Editor.nodes(editor, {
-        match: n => e.isCell(n)
+        match: n => e.isGridCell(n)
       })
 
       if (cell) {

@@ -70,10 +70,10 @@ const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowEle
 
 export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOptions = {}) => { 
   const newEditor = editor as T & TableRowEditor
-  const { renderElement, isRow } = editor
+  const { renderElement, isGridRow } = editor
 
-  newEditor.isRow = (node: Node): node is GridRow => {
-    return TableRowEditor.isTableRow(newEditor, node) || isRow(node)
+  newEditor.isGridRow = (node: Node): node is GridRow => {
+    return TableRowEditor.isTableRow(newEditor, node) || isGridRow(node)
   }
 
   newEditor.renderElement = (props) => { 
