@@ -11,11 +11,19 @@ export {
 } from './components/content'
 export { EditableComposer } from './components/editable'
 
+export { useIsomorphicLayoutEffect } from './hooks/use-isomorphic-layout-effect'
 export { useEditableStatic } from './hooks/use-editable-static'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
-export { useNode } from './hooks/use-node'
+export { useNodeSelected } from './hooks/use-node-selected'
+export { useNodeFocused } from './hooks/use-node-focused'
 export { useEditable } from './hooks/use-editable'
+
+// Grid
+export { useGrid } from './hooks/use-grid'
+export { useGridSelection } from './hooks/use-grid-selection'
+export { useGridSelectionRect } from './hooks/use-grid-selection-rect'
+export { useGridSelected } from './hooks/use-grid-selected'
 
 // Plugin
 export { Editable } from './plugin/editable'

@@ -62,15 +62,19 @@ export const withEditable = <T extends Editor>(editor: T) => {
   // avoid collisions between editors in the DOM that share the same value.
   EDITOR_TO_KEY_TO_ELEMENT.set(e, new WeakMap());
 
-  e.canFocusVoid = (element: Element) => {
-    return true;
-  };
+  e.isGrid = (value: any): value is Grid => false,
+  
+  e.isGridRow = (value: any): value is GridRow => false,
 
-  (e.isGrid = (value: any): value is Grid => false),
-    (e.isRow = (value: any): value is GridRow => false),
-    (e.isCell = (value: any): value is GridCell => false),
-    (e.deleteForward = (unit) => {
-      const { selection } = editor;
+  e.isGridCell = (value: any): value is GridCell => false,
+
+  e.deleteForward = unit => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const [cell] = Editor.nodes(editor, {
+        match: n => e.isGridCell(n)
+      })
 
       if (selection && Range.isCollapsed(selection)) {
         const [cell] = Editor.nodes(editor, {
@@ -93,8 +97,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (selection && Range.isCollapsed(selection)) {
       const [cell] = Editor.nodes(editor, {
-        match: (n) => e.isCell(n),
-      });
+        match: n => e.isGridCell(n)
+      })
 
       if (cell) {
         const [, cellPath] = cell;

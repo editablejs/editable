@@ -32,33 +32,23 @@ export const TableCellEditor = {
     });
   },
 };
+export const withTableCell =  <T extends Editable>(editor: T, options: TableCellOptions = {}) => { 
+  const newEditor = editor as T & TableCellEditor
+  const { renderElement, isGridCell } = editor
 
-export const withTableCell = <T extends Editable>(
-  editor: T,
-  options: TableCellOptions = {}
-) => {
-  const newEditor = editor as T & TableCellEditor;
-  const { renderElement, isCell } = editor;
-
-  newEditor.isCell = (node: Node): node is GridCell => {
-    return TableCellEditor.isTableCell(newEditor, node) || isCell(node);
-  };
-
-  newEditor.renderElement = (props) => {
-    const { element, attributes, children } = props;
-    if (TableCellEditor.isTableCell(newEditor, element)) {
-      const { style, ...rest } = attributes;
-      return (
-        <td
-          rowSpan={element.rowspan ?? 1}
-          colSpan={element.colspan ?? 1}
-          style={{ ...style, display: element.span ? 'none' : '' }}
-          className={prefixCls}
-          {...rest}
-        >
-          <div className={`${prefixCls}-inner`}>{children}</div>
-        </td>
-      );
+  newEditor.isGridCell = (node: Node): node is GridCell => {
+    return TableCellEditor.isTableCell(newEditor, node) || isGridCell(node)
+  }
+  
+  newEditor.renderElement = (props) => { 
+    const { element, attributes, children } = props
+    if(TableCellEditor.isTableCell(newEditor, element)) {
+      const { style, ...rest } = attributes
+      return <td rowSpan={element.rowspan ?? 1} colSpan={element.colspan ?? 1} style={{ ...style, display: element.span ? 'none' : ''}} className={prefixCls} {...rest}>
+        <div className={`${prefixCls}-inner`}>
+        { children }
+        </div>
+      </td>
     }
     return renderElement(props);
   };

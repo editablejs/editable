@@ -92,12 +92,12 @@ const getOperationGrid = (editor: Editor, at: Location | null = editor.selection
     const [anchor, focus] = Range.edges(at)
     const [startCell] = Editor.nodes<GridCell>(editor, { 
       at: anchor.path,
-      match: n => editor.isCell(n)
+      match: n => editor.isGridCell(n)
     })
     value.start = startCell
     const [endCell] = Editor.nodes<GridCell>(editor, {
       at: focus.path,
-      match: n => editor.isCell(n)
+      match: n => editor.isGridCell(n)
     })
     value.end = endCell
     if (startCell && endCell) {

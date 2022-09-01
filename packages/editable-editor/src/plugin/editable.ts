@@ -125,13 +125,13 @@ export interface EditorElements {
  * A React and DOM-specific version of the `Editor` interface.
  */
 export interface Editable extends BaseEditor {
-  canFocusVoid: (element: Element) => boolean;
-  isGrid: (value: any) => value is Grid;
-  isRow: (value: any) => value is GridRow;
-  isCell: (value: any) => value is GridCell;
-  insertData: (data: DataTransfer) => void;
-  insertFragmentData: (data: DataTransfer) => boolean;
-  insertTextData: (data: DataTransfer) => boolean;
+  canFocusVoid: (element: Element) => boolean
+  isGrid: (value: any) => value is Grid
+  isGridRow: (value: any) => value is GridRow
+  isGridCell: (value: any) => value is GridCell
+  insertData: (data: DataTransfer) => void
+  insertFragmentData: (data: DataTransfer) => boolean
+  insertTextData: (data: DataTransfer) => boolean
   setFragmentData: (
     data: DataTransfer,
     originEvent?: 'drag' | 'copy' | 'cut'
@@ -195,16 +195,16 @@ export const Editable = {
     }
   },
 
-  isGrid(editor: Editable, value: any) {
-    return editor.isGrid(value);
+  isGrid(editor: Editable, value: any): value is Grid {
+    return editor.isGrid(value)
   },
 
-  isRow(editor: Editable, value: any) {
-    return editor.isRow(value);
+  isGridRow(editor: Editable, value: any): value is GridRow{
+    return editor.isGridRow(value)
   },
 
-  isCell(editor: Editable, value: any) {
-    return editor.isCell(value);
+  isGridCell(editor: Editable, value: any): value is GridCell{
+    return editor.isGridCell(value)
   },
 
   /**
@@ -703,8 +703,7 @@ export const Editable = {
           const isGrid = Editable.isGrid(editor, node);
           const nodes = Editor.nodes(editor, {
             at: Editable.findPath(editor, node),
-            match: (n) =>
-              (isGrid && Editable.isCell(editor, n)) || Text.isText(n),
+            match: n => isGrid && Editable.isGridCell(editor, n) || Text.isText(n),
             mode: 'highest',
           });
           for (const [child] of nodes) {

@@ -77,39 +77,23 @@ const Row: React.FC<
         }
       );
     }
-  }, [editor, ref, width, element, getOptions]);
+  }, [editor, ref, width, element, getOptions])
+ 
+  return <tr ref={ref} style={{ height: element.height, ...style }} className={prefixCls} {...rest}>{ children }</tr>
+}
 
-  return (
-    <tr
-      ref={ref}
-      style={{ height: element.height, ...style }}
-      className={prefixCls}
-      {...rest}
-    >
-      {children}
-    </tr>
-  );
-};
+export const withTableRow =  <T extends Editable>(editor: T, options: TableRowOptions = {}) => { 
+  const newEditor = editor as T & TableRowEditor
+  const { renderElement, isGridRow } = editor
 
-export const withTableRow = <T extends Editable>(
-  editor: T,
-  options: TableRowOptions = {}
-) => {
-  const newEditor = editor as T & TableRowEditor;
-  const { renderElement, isRow } = editor;
+  newEditor.isGridRow = (node: Node): node is GridRow => {
+    return TableRowEditor.isTableRow(newEditor, node) || isGridRow(node)
+  }
 
-  newEditor.isRow = (node: Node): node is GridRow => {
-    return TableRowEditor.isTableRow(newEditor, node) || isRow(node);
-  };
-
-  newEditor.renderElement = (props) => {
-    const { element, attributes, children } = props;
-    if (TableRowEditor.isTableRow(newEditor, element)) {
-      return (
-        <Row editor={editor} element={element} attributes={attributes}>
-          {children}
-        </Row>
-      );
+  newEditor.renderElement = (props) => { 
+    const { element, attributes, children } = props
+    if(TableRowEditor.isTableRow(newEditor, element)) {
+      return <Row editor={editor} element={element} attributes={attributes}>{ children }</Row>
     }
     return renderElement(props);
   };

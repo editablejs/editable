@@ -70,18 +70,10 @@ export const withBlockquote = <T extends Editable>(
           split: true,
         });
       } else {
-        Transforms.wrapNodes(
-          editor,
-          { type: BLOCKQUOTE_KEY, children: [] },
-          {
-            mode: 'highest',
-            match: (n) =>
-              Editor.isBlock(editor, n) &&
-              !editor.isGrid(n) &&
-              !editor.isRow(n) &&
-              !editor.isCell(n),
-          }
-        );
+        Transforms.wrapNodes(editor, { type: BLOCKQUOTE_KEY, children: [] }, {
+          mode: 'highest',
+          match: n => Editor.isBlock(editor, n) && !editor.isGrid(n) && !editor.isGridRow(n) && !editor.isGridCell(n)
+        })
       }
     });
   };
