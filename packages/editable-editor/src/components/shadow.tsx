@@ -2,7 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle } from "react"
 import ReactDOM from "react-dom";
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect';
 
-export interface DrawRect {
+export interface ShadowRect {
   left: number
   top: number
   width: number
@@ -11,15 +11,11 @@ export interface DrawRect {
   style?: React.CSSProperties
 }
 
-type ShadowBoxProps = { 
-  rect: DrawRect
+type ShadowRectProps = { 
+  rect: ShadowRect
 } & React.HTMLAttributes<HTMLDivElement>
 
-export function ShadowContent({ root, children }: { root: ShadowRoot, children: React.ReactNode }) {
-  return ReactDOM.createPortal(children, root);
-}
-
-export const ShadowBox: React.FC<ShadowBoxProps & React.RefAttributes<HTMLDivElement>> = forwardRef<HTMLDivElement, ShadowBoxProps>(({ children, rect, style, ...props }, ref) => (
+export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<HTMLDivElement>> = forwardRef<HTMLDivElement, ShadowRectProps>(({ children, rect, style, ...props }, ref) => (
   <div 
   ref={ref}
   style={{ 
@@ -34,14 +30,17 @@ export const ShadowBox: React.FC<ShadowBoxProps & React.RefAttributes<HTMLDivEle
   }} {...props}>{ children }</div>
 ))
 
-ShadowBox.displayName = 'ShadowBox'
+ShadowRectDefault.displayName = 'ShadowRect'
+
+export const ShadowRect = React.memo(ShadowRectDefault, (prev, next) => {
+  return prev.rect.left === next.rect.left && prev.rect.top === next.rect.top && prev.rect.width === next.rect.width && prev.rect.height === next.rect.height && prev.rect.color === next.rect.color
+})
 
 interface ShadowProps {
   children?: React.ReactNode
 }
 
 const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardRef<ShadowRoot, ShadowProps>(({ children }, ref) => {
-  const [ shadow, setShadow ] = useState<HTMLDivElement | null>(null)
   const [ root, setRoot ] = useState<ShadowRoot>()
 
   useIsomorphicLayoutEffect(() => {
@@ -50,7 +49,6 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
     shadow.setAttribute('data-slate-shadow', 'true')
     document.body.appendChild(shadow)
     const root = shadow.attachShadow({mode: 'open'})
-    setShadow(shadow)
     setRoot(root)
     return () => {
       document.body.removeChild(shadow)
@@ -59,16 +57,7 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
 
   useImperativeHandle(ref, () => root!, [root])
 
-  useIsomorphicLayoutEffect(() => {
-    if(!root || !shadow) return
-    ReactDOM.render(<ShadowContent root={root} >
-      <div style={{ pointerEvents: 'none' }}>
-        { children }
-      </div>
-      </ShadowContent>, shadow)
-  }, [shadow, root, children])
-
-  return null
+  return root ? ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{ children }</div>, root) : null;
 })
 
 Shadow.displayName = "Shadow"

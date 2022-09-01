@@ -1,5 +1,4 @@
-import { Ancestor, Editor, Node, RangeRef } from 'slate'
-import { Grid } from '../interfaces/grid'
+import { Ancestor, Editor, Node } from 'slate'
 import { Key } from './key'
 
 /**
@@ -17,7 +16,7 @@ export const NODE_TO_PARENT: WeakMap<Node, Ancestor> = new WeakMap()
 export const EDITOR_TO_WINDOW: WeakMap<Editor, Window> = new WeakMap()
 export const EDITOR_TO_ELEMENT: WeakMap<Editor, HTMLElement> = new WeakMap()
 export const EDITOR_TO_PLACEHOLDER: WeakMap<Editor, string> = new WeakMap()
-export const EDITOR_TO_TEXTAREA: WeakMap<Editor, HTMLTextAreaElement> = new WeakMap()
+export const EDITOR_TO_INPUT: WeakMap<Editor, HTMLTextAreaElement> = new WeakMap()
 export const EDITOR_TO_SHADOW: WeakMap<Editor, ShadowRoot | null> = new WeakMap()
 export const ELEMENT_TO_NODE: WeakMap<HTMLElement, Node> = new WeakMap()
 export const NODE_TO_ELEMENT: WeakMap<Node, HTMLElement> = new WeakMap()
@@ -30,7 +29,6 @@ export const EDITOR_TO_KEY_TO_ELEMENT: WeakMap<
 /**
  * Weak maps for storing editor-related state.
  */
-
 export const IS_READ_ONLY: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_FOCUSED: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_DRAGGING: WeakMap<Editor, boolean> = new WeakMap()
@@ -38,14 +36,10 @@ export const IS_CLICKING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_COMPOSING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_ON_COMPOSITION_END: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_SHIFT_PRESSED: WeakMap<Editor, boolean> = new WeakMap()
-
-export const SET_IS_FOCUSED: WeakMap<Editor, (focused: boolean) => void> = new WeakMap()
-export const EDITOR_TO_USER_SELECTION: WeakMap<Editor, RangeRef> = new WeakMap()
+export const IS_MOUSEDOWN: WeakMap<Editor, boolean> = new WeakMap()
+export const IS_DRAW_SELECTION: WeakMap<Editor, (draw: boolean) => void> = new WeakMap()
 
 /**
  * Weak map for associating the context `onChange` context with the plugin.
  */
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
-
-
-export const DRAW_SELECTION_TO_EDITOR: WeakMap<Editor, (draw: boolean) => void> = new WeakMap()

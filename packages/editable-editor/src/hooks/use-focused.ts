@@ -1,15 +1,9 @@
 import { createContext, useContext } from 'react'
 
-/**
- * A React context for sharing the `focused` state of the editor.
- */
+type FocusedContext = [boolean, (focused: boolean) => void]
 
-export const FocusedContext = createContext(false)
+export const FocusedContext = createContext<FocusedContext>(null as any)
 
-/**
- * Get the current `focused` state of the editor.
- */
-
-export const useFocused = (): boolean => {
+export const useFocused = (): FocusedContext => {
   return useContext(FocusedContext)
 }

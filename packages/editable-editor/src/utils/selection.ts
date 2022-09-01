@@ -247,3 +247,16 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   }
   return lineRects
 }
+
+const RANGE_WEAK_MAP = new WeakMap<Range, DOMRect[]>()
+
+export const getRectsByCache = (editor: Editable, range: Range) => { 
+  const cache = RANGE_WEAK_MAP.get(range)
+  if(cache) return cache
+  if (Range.isCollapsed(range)) { 
+    const domRange = Editable.toDOMRange(editor, range)
+    return [domRange.getBoundingClientRect()]
+  } else {
+    return getLineRectsByRange(editor, range)
+  }
+}

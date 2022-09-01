@@ -4,7 +4,7 @@ import { Editable } from '../plugin/editable'
 import { FocusedContext } from '../hooks/use-focused'
 import { EditorContext } from '../hooks/use-editable-static'
 import { EditableContext } from '../hooks/use-editable'
-import { IS_FOCUSED, SET_IS_FOCUSED } from '../utils/weak-maps'
+import { IS_FOCUSED } from '../utils/weak-maps'
 
 /**
  * A wrapper around the provider to handle `onChange` events, because the editor
@@ -38,6 +38,22 @@ export const EditableComposer = (props: {
     return [editor]
   })
 
+  const [focused, setFocused] = useState(false)
+
+  useEffect(() => {
+    IS_FOCUSED.set(editor, focused)
+  }, [editor, focused])
+
+  const changeFocused = (value: boolean) => { 
+    if(value === focused) return
+    if(value) {
+      editor.onFocus()
+    } else {
+      editor.onBlur()
+    }
+    setFocused(value)
+  }
+
   useEffect(() => {
     const { onChange: editorChange } = editor
     editor.onChange = () => {
@@ -52,18 +68,10 @@ export const EditableComposer = (props: {
     }
   }, [editor, onChange])
 
-  const [isFocused, setIsFocused] = useState(false)
-
-  SET_IS_FOCUSED.set(editor, setIsFocused)
-
-  useEffect(() => {
-    IS_FOCUSED.set(editor, isFocused)
-  }, [editor, isFocused])
-
   return (
     <EditableContext.Provider value={context}>
       <EditorContext.Provider value={editor}>
-        <FocusedContext.Provider value={isFocused}>
+        <FocusedContext.Provider value={[focused, changeFocused]}>
           {children}
         </FocusedContext.Provider>
       </EditorContext.Provider>

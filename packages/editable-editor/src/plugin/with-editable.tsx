@@ -6,11 +6,11 @@ import { Key } from '../utils/key'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
   NODE_TO_KEY,
-  EDITOR_TO_USER_SELECTION,
   IS_SHIFT_PRESSED,
   IS_COMPOSING,
-  SET_IS_FOCUSED,
-  DRAW_SELECTION_TO_EDITOR,
+  IS_DRAW_SELECTION,
+  EDITOR_TO_INPUT,
+  EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
 import {
   isDOMText,
@@ -19,7 +19,7 @@ import {
 } from '../utils/dom'
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
-import { getWordOffsetBackward, getWordOffsetForward } from '../utils/string'
+import { getWordOffsetBackward, getWordOffsetForward } from '../utils/text'
 import { Grid } from '../interfaces/grid';
 import { GridRow } from '../interfaces/row'
 import { GridCell } from '../interfaces/cell';
@@ -132,9 +132,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
 
       case 'set_selection': {
-        // Selection was manually set, don't restore the user selection after the change.
-        EDITOR_TO_USER_SELECTION.get(editor)?.unref()
-        EDITOR_TO_USER_SELECTION.delete(editor)
         break
       }
 
@@ -164,8 +161,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
 
     if(!Editable.isFocused(e)) {
-      const setIsFocused = SET_IS_FOCUSED.get(e)
-      if(setIsFocused) setIsFocused(true)
+      e.focus()
     }
 
     apply(op)
@@ -321,6 +317,25 @@ export const withEditable = <T extends Editor>(editor: T) => {
       onChange()
     })
   }
+
+  e.blur = (): void => {
+    const shadow = EDITOR_TO_SHADOW.get(editor)
+    const textarea = EDITOR_TO_INPUT.get(editor)
+    if (textarea && shadow && shadow.activeElement !== textarea) {
+      textarea.blur()
+    }
+  },
+
+  /**
+   * Focus the editor.
+   */
+  e.focus = (): void => {
+    const shadow = EDITOR_TO_SHADOW.get(editor)
+    const textarea = EDITOR_TO_INPUT.get(editor)
+    if (textarea && shadow && shadow.activeElement !== textarea) {
+      textarea.focus({ preventScroll: true })
+    }
+  },
 
   e.queryActiveMarks = <T extends Text>() => {
     const marks = EDITOR_ACTIVE_MARKS.get(editor)
@@ -731,14 +746,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.clearSelectionDraw = () => {
-    const setSelectionDraw = DRAW_SELECTION_TO_EDITOR.get(e)
+    const setSelectionDraw = IS_DRAW_SELECTION.get(e)
     if(setSelectionDraw) { 
       setSelectionDraw(false)
     }
   }
 
   e.startSelectionDraw = () => { 
-    const setSelectionDraw = DRAW_SELECTION_TO_EDITOR.get(e)
+    const setSelectionDraw = IS_DRAW_SELECTION.get(e)
     if(setSelectionDraw) { 
       setSelectionDraw(true)
     }
