@@ -95,6 +95,7 @@ const InputComponent: FC<InputProps> = ({ selection }) => {
       <textarea 
       ref={current => {
         if(current) EDITOR_TO_INPUT.set(editor, current)
+        else EDITOR_TO_INPUT.delete(editor)
       }}
       rows={1} 
       style={{
