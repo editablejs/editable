@@ -1,6 +1,8 @@
 import ReactDOM from 'react-dom'
-import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks, Point } from 'slate'
+import { Editor, Node, Path, Operation, Transforms, Range, Text, Element, EditorMarks, Point, Descendant } from 'slate'
 import getDirection from 'direction'
+import escapeHtml from 'escape-html'
+import { jsx } from 'slate-hyperscript'
 import { Editable, EditorElements, RenderElementProps, RenderLeafProps, SelectionStyle } from './editable'
 import { Key } from '../utils/key'
 import {
@@ -16,6 +18,7 @@ import {
   isDOMText,
   getPlainText,
   getSlateFragmentAttribute,
+  DOMNode,
 } from '../utils/dom'
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
@@ -799,6 +802,35 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
     }
     fn(selection)
+  }
+
+  e.serializeHtml = (node: Descendant, children?: string)  => {
+    if(Text.isText(node)) return escapeHtml(node.text)
+    const html = node.children.map(n => e.serializeHtml(n, children)).join('')
+    return `<${node.type}>${html}</${node.type}>`
+  },
+
+  e.deserializeHtml = (el: DOMNode, attributes = {}) => {
+    if (el.nodeType === globalThis.Node.TEXT_NODE) {
+      return jsx('text', attributes, el.textContent)
+    }
+  
+    const nodeAttributes = { ...attributes }
+  
+    const children = Array.from(el.childNodes)
+      .map(node => e.deserializeHtml(node, nodeAttributes))
+      .flat()
+  
+    if (children.length === 0) {
+      children.push(jsx('text', nodeAttributes, ''))
+    }
+  
+    switch (el.nodeName) {
+      case 'BODY':
+        return jsx('fragment', {}, children)
+      default:
+        return jsx('element', { type: 'paragraph' }, children)
+    }
   }
 
   return e
