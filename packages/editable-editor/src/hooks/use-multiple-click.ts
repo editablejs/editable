@@ -71,4 +71,4 @@ const useMultipleClick = (options: {
   return { handleMultipleClick, isSamePoint };
 };
 
-export default useMultipleClick;
+export { useMultipleClick };

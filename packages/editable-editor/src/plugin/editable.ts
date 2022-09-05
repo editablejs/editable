@@ -25,7 +25,7 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
-  EDITOR_TO_TEXTAREA,
+  EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
 } from '../utils/weak-maps';
 import {
@@ -44,7 +44,7 @@ import {
 } from '../utils/dom';
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment';
 import findClosestNode, { isAlignY } from '../utils/closest';
-import { getTextOffset } from '../utils/string';
+import { getTextOffset } from '../utils/text';
 import { getLineRectsByNode, getLineRectsByRange } from '../utils/selection';
 import { SelectionEdge } from 'slate/dist/interfaces/types';
 import { GridCell } from '../interfaces/cell';
@@ -52,8 +52,8 @@ import { GridRow } from '../interfaces/row';
 import { Grid } from '../interfaces/grid';
 
 export interface SelectionStyle {
-  focusBgColor?: string;
-  blurBgColor?: string;
+  focusColor?: string;
+  blurColor?: string;
   caretColor?: string;
   caretWidth?: number;
 }
@@ -137,6 +137,8 @@ export interface Editable extends BaseEditor {
     originEvent?: 'drag' | 'copy' | 'cut'
   ) => void;
   hasRange: (editor: Editable, range: Range) => boolean;
+  blur(): void;
+  focus(): void;
   queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>;
   queryActiveElements: () => EditorElements;
   onKeydown: (event: KeyboardEvent) => void;
@@ -394,22 +396,14 @@ export const Editable = {
    */
 
   blur(editor: Editable): void {
-    const shadow = EDITOR_TO_SHADOW.get(editor);
-    const textarea = EDITOR_TO_TEXTAREA.get(editor);
-    if (textarea && shadow && shadow.activeElement !== textarea) {
-      textarea.blur();
-    }
+    editor.blur();
   },
 
   /**
    * Focus the editor.
    */
   focus(editor: Editable): void {
-    const shadow = EDITOR_TO_SHADOW.get(editor);
-    const textarea = EDITOR_TO_TEXTAREA.get(editor);
-    if (textarea && shadow && shadow.activeElement !== textarea) {
-      textarea.focus({ preventScroll: true });
-    }
+    editor.focus();
   },
 
   deselect(editor: Editable): void {
@@ -668,7 +662,7 @@ export const Editable = {
     const domEl = isDOMElement(domNode) ? domNode : domNode.parentElement;
     if (!domEl) return null;
     const elements: DOMElement[] = [];
-    let element: DOMElement | null = domEl.hasAttribute('data-slate-node')
+    const element: DOMElement | null = domEl.hasAttribute('data-slate-node')
       ? domEl
       : domEl.closest(`[data-slate-node]`);
 
@@ -976,7 +970,7 @@ export const Editable = {
     editor: Editable,
     path: Path,
     offset: number,
-    moveNext: boolean = false
+    moveNext = false
   ) {
     const blockEntry = Editor.above(editor, {
       match: (n) => Editor.isBlock(editor, n),

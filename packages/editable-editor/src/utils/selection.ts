@@ -68,7 +68,7 @@ const findMaxPosition = (
   top: number,
   bottom: number
 ) => {
-  let height = bottom - top;
+  const height = bottom - top;
   const lineReact = {
     top: top,
     height: height,
@@ -214,8 +214,8 @@ export const getLineRectsByRange = (
   const blockRects: DOMRect[] = [];
   const rectMap: Map<DOMRect, DOMElement> = new Map();
 
-  let [startBlock, startPath] = anchorEntry;
-  let [_, endPath] = focusEntry;
+  const [startBlock, startPath] = anchorEntry;
+  const [_, endPath] = focusEntry;
   const ranges: DOMRange[] = [];
   let isStart = true;
   let next: NodeEntry<Element> | undefined = anchorEntry;
@@ -304,4 +304,17 @@ export const getLineRectsByRange = (
     lineRects.push(lineRect);
   }
   return lineRects;
+};
+
+const RANGE_WEAK_MAP = new WeakMap<Range, DOMRect[]>();
+
+export const getRectsByCache = (editor: Editable, range: Range) => {
+  const cache = RANGE_WEAK_MAP.get(range);
+  if (cache) return cache;
+  if (Range.isCollapsed(range)) {
+    const domRange = Editable.toDOMRange(editor, range);
+    return [domRange.getBoundingClientRect()];
+  } else {
+    return getLineRectsByRange(editor, range);
+  }
 };
