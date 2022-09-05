@@ -306,15 +306,13 @@ export const getLineRectsByRange = (
   return lineRects;
 };
 
-const RANGE_WEAK_MAP = new WeakMap<Range, DOMRect[]>();
-
-export const getRectsByCache = (editor: Editable, range: Range) => {
-  const cache = RANGE_WEAK_MAP.get(range);
-  if (cache) return cache;
+export const getRectsByRange = (editor: Editable, range: Range) => {
+  let rects: DOMRect[] = [];
   if (Range.isCollapsed(range)) {
     const domRange = Editable.toDOMRange(editor, range);
-    return [domRange.getBoundingClientRect()];
+    rects = [domRange.getBoundingClientRect()];
   } else {
-    return getLineRectsByRange(editor, range);
+    rects = getLineRectsByRange(editor, range);
   }
+  return rects;
 };

@@ -9,7 +9,7 @@ import {
 import { useEditable } from '../hooks/use-editable';
 import { useFocused } from '../hooks/use-focused';
 import { ShadowRect } from './shadow';
-import { getRectsByCache } from '../utils/selection';
+import { getRectsByRange } from '../utils/selection';
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect';
 
 interface InputProps {
@@ -77,7 +77,7 @@ const InputComponent: FC<InputProps> = ({ selection }) => {
 
   useIsomorphicLayoutEffect(() => {
     if (!selection || !focused) return setRect(null);
-    const rects = getRectsByCache(editor, selection);
+    const rects = getRectsByRange(editor, selection);
     if (rects.length === 0) return setRect(null);
     if (Range.isCollapsed(selection)) {
       setRect(rects[0].toJSON());

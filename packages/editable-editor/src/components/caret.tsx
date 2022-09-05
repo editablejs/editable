@@ -3,7 +3,7 @@ import { Selection, Range } from 'slate';
 import { useEditable } from '../hooks/use-editable';
 import { useFocused } from '../hooks/use-focused';
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect';
-import { getRectsByCache } from '../utils/selection';
+import { getRectsByRange } from '../utils/selection';
 import { IS_MOUSEDOWN } from '../utils/weak-maps';
 import { ShadowRect } from './shadow';
 
@@ -32,7 +32,7 @@ const CaretComponent: FC<CaretProps> = ({
 
   useIsomorphicLayoutEffect(() => {
     if (selection && Range.isCollapsed(selection) && focused) {
-      const rects = getRectsByCache(editor, selection);
+      const rects = getRectsByRange(editor, selection);
       if (rects.length === 0) return setRect(null);
       setRect(rects[0].toJSON());
     } else {
