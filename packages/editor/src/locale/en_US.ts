@@ -1,4 +1,4 @@
-import type { Locale } from '../locale-provider';
+import { Locale } from '../hooks/use-locale';
 import localeData from './en_US.json';
 
 const localeValue: Locale = {

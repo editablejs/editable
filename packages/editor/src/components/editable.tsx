@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Editor, Node, Descendant, Scrubber } from 'slate'
 import { Editable } from '../plugin/editable'
 import { FocusedContext } from '../hooks/use-focused'
 import { EditorContext } from '../hooks/use-editable-static'
 import { EditableContext } from '../hooks/use-editable'
 import { IS_FOCUSED } from '../utils/weak-maps'
+import { Locale, LocaleContext } from '../hooks/use-locale'
 
-/**
- * A wrapper around the provider to handle `onChange` events, because the editor
- * is a mutable singleton so it won't ever register as "changed" otherwise.
- */
+export const defaultPrefixCls = 'editable';
 
 export const EditableComposer = (props: {
   editor: Editable
   value: Descendant[]
   children: React.ReactNode
+  lang?: string
+  prefixCls?: string
   onChange?: (value: Descendant[]) => void
 }) => {
   
-  const { editor, children, onChange, value, ...rest } = props
+  const { editor, children, onChange, value, lang, prefixCls, ...rest } = props
 
   const [context, setContext] = useState<[Editable]>(() => {
     if (!Node.isNodeList(value)) {
@@ -68,13 +68,29 @@ export const EditableComposer = (props: {
     }
   }, [editor, onChange])
 
+  const getPrefixCls = useCallback(
+    (suffixCls?: string, customizePrefixCls?: string) => {
+      if (customizePrefixCls) return customizePrefixCls;
+
+      const mergedPrefixCls = prefixCls || defaultPrefixCls;
+
+      return suffixCls ? `${mergedPrefixCls}-${suffixCls}` : mergedPrefixCls;
+    },
+    [prefixCls],
+  );
+
   return (
-    <EditableContext.Provider value={context}>
-      <EditorContext.Provider value={editor}>
-        <FocusedContext.Provider value={[focused, changeFocused]}>
-          {children}
-        </FocusedContext.Provider>
-      </EditorContext.Provider>
-    </EditableContext.Provider>
+    <LocaleContext.Provider value={{
+      locale: Locale.get(lang ?? 'en-US'),
+      getPrefixCls
+    }}>
+      <EditableContext.Provider value={context}>
+        <EditorContext.Provider value={editor}>
+          <FocusedContext.Provider value={[focused, changeFocused]}>
+            {children}
+          </FocusedContext.Provider>
+        </EditorContext.Provider>
+      </EditableContext.Provider>
+    </LocaleContext.Provider>
   )
 }

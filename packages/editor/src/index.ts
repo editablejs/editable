@@ -6,6 +6,9 @@ export * from './interfaces/grid'
 
 export * from './plugin/custom'
 
+// Locale
+export * from './hooks/use-locale'
+
 export {
   ContentEditable,
 } from './components/content'
