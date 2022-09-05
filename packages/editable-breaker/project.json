@@ -53,7 +53,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "preset": "conventional",
-        "push": false,
+        "push": true,
         "trackDeps": true,
         "postTargets": ["editable-breaker:publish-npm"],
         "commitMessageFormat": "release(${projectName}): 🎸 cut release to ${version}"
