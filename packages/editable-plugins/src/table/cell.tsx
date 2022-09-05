@@ -32,16 +32,15 @@ export const TableCellEditor = {
     });
   },
 };
-
 export const withTableCell = <T extends Editable>(
   editor: T,
   options: TableCellOptions = {}
 ) => {
   const newEditor = editor as T & TableCellEditor;
-  const { renderElement, isCell } = editor;
+  const { renderElement, isGridCell } = editor;
 
-  newEditor.isCell = (node: Node): node is GridCell => {
-    return TableCellEditor.isTableCell(newEditor, node) || isCell(node);
+  newEditor.isGridCell = (node: Node): node is GridCell => {
+    return TableCellEditor.isTableCell(newEditor, node) || isGridCell(node);
   };
 
   newEditor.renderElement = (props) => {

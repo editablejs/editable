@@ -1,6 +1,6 @@
 import { Grid } from '../../../src/interfaces/grid';
 import { createEditor } from '../../../src/plugin/custom';
-import { Editable } from '../../../src/plugin/editable';
+import { Editable } from './../../../src/plugin/editable';
 
 describe('interfaces/grid', () => {
   const editor = createEditor();

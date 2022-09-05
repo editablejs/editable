@@ -78,8 +78,8 @@ export const withBlockquote = <T extends Editable>(
             match: (n) =>
               Editor.isBlock(editor, n) &&
               !editor.isGrid(n) &&
-              !editor.isRow(n) &&
-              !editor.isCell(n),
+              !editor.isGridRow(n) &&
+              !editor.isGridCell(n),
           }
         );
       }

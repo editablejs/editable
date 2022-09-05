@@ -179,8 +179,6 @@ export const ContentEditable = (props: EditableProps) => {
     if (isRootMouseDown.current && !event.defaultPrevented) {
       if (
         isFocused &&
-        // TODO: 类型会报错暂时注释
-        // @ts-ignore
         EDITOR_TO_SHADOW.get(editor) !== EDITOR_TO_TEXTAREA.get(editor)
       ) {
         Editable.focus(editor);
@@ -245,8 +243,6 @@ export const ContentEditable = (props: EditableProps) => {
     onClick: () => {
       isDoubleClickRef.current = false;
     },
-    // TODO: 类型错误暂时注释
-    // @ts-ignore
     onMultipleClick: (event, count) => {
       event.preventDefault();
       const { selection } = editor;

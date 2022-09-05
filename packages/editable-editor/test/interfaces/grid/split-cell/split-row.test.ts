@@ -10,11 +10,11 @@ describe('interfaces/grid', () => {
     return value.type === 'grid';
   };
 
-  editor.isRow = (value): value is GridRow => {
+  editor.isGridRow = (value): value is GridRow => {
     return value.type === 'grid-row';
   };
 
-  editor.isCell = (value): value is GridCell => {
+  editor.isGridCell = (value): value is GridCell => {
     return value.type === 'grid-cell';
   };
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   Editor,
@@ -67,14 +66,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
   };
 
   (e.isGrid = (value: any): value is Grid => false),
-    (e.isRow = (value: any): value is GridRow => false),
-    (e.isCell = (value: any): value is GridCell => false),
+    (e.isGridRow = (value: any): value is GridRow => false),
+    (e.isGridCell = (value: any): value is GridCell => false),
     (e.deleteForward = (unit) => {
       const { selection } = editor;
 
       if (selection && Range.isCollapsed(selection)) {
         const [cell] = Editor.nodes(editor, {
-          match: (n) => e.isCell(n),
+          match: (n) => e.isGridCell(n),
         });
 
         if (cell) {
@@ -93,7 +92,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (selection && Range.isCollapsed(selection)) {
       const [cell] = Editor.nodes(editor, {
-        match: (n) => e.isCell(n),
+        match: (n) => e.isGridCell(n),
       });
 
       if (cell) {
@@ -798,7 +797,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (grid && selection) {
       const sel = Grid.getSelection(e, grid);
       if (sel) {
-        const { start, end } = sel;
+        let { start, end } = sel;
         const [startRow, startCol] = start;
         const [endRow, endCol] = end;
 

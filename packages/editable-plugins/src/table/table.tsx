@@ -6,17 +6,21 @@ import {
   Grid,
   Node,
   Editor,
-} from '@editablejs/editable-editor';
+  useIsomorphicLayoutEffect,
+  Range,
+  useNodeFocused,
+  useNodeSelected,
+  useGridSelection,
+  Transforms,
+  useGridSelected,
+} from '@editablejs/editor';
 import classnames from 'classnames';
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback } from 'react';
 import { TableCell, TableCellEditor } from './cell';
 import { TableContext, TableDragOptions, TableOptions } from './context';
 import { TableColHeader, TableRowHeader } from './header';
 import { TableRow, TableRowEditor } from './row';
-import {
-  TableSelection as TableSelectionElement,
-  useSelection,
-} from './selection';
+import { TableSelection as TableSelectionElement } from './selection';
 import './style.less';
 
 export const TABLE_KEY = 'table';
@@ -122,6 +126,87 @@ const TableComponent: React.FC<TableProps> = ({
   // drag
   const dragRef = useRef<TableDragOptions | null>(null);
 
+  const nodeSelected = useNodeSelected();
+
+  const nodeFocused = useNodeFocused();
+
+  const selection = useGridSelection();
+
+  const selected = useGridSelected();
+
+  /**
+   * 部分选中表格，让选中部分选中表格的整行
+   */
+  useIsomorphicLayoutEffect(() => {
+    const { selection } = editor;
+    if (selection && nodeSelected && !nodeFocused) {
+      let { anchor, focus } = selection;
+      const isBackward = Range.isBackward(selection);
+      const [startRow] = Editor.nodes<TableRow>(editor, {
+        at: anchor.path,
+        match: (n) => TableRowEditor.isTableRow(editor, n),
+      });
+      if (startRow) {
+        const [row, path] = startRow;
+        const { children: cells } = row;
+        const table = Grid.findGrid(editor, path);
+        if (table) {
+          if (isBackward) {
+            const sel = Grid.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1],
+            });
+            anchor = Editable.toLowestPoint(
+              editor,
+              path.slice(0, -1).concat(sel.end)
+            );
+          } else {
+            const sel = Grid.edges(editor, table, {
+              start: [path[path.length - 1], 0],
+              end: [table[0].children.length - 1, cells.length - 1],
+            });
+            anchor = Editable.toLowestPoint(
+              editor,
+              path.slice(0, -1).concat(sel.start)
+            );
+          }
+        }
+      }
+      const [endRow] = Editor.nodes<TableRow>(editor, {
+        at: focus.path,
+        match: (n) => TableRowEditor.isTableRow(editor, n),
+      });
+      if (endRow) {
+        const [row, path] = endRow;
+        const { children: cells } = row;
+        const table = Grid.findGrid(editor, path);
+        if (table) {
+          if (isBackward) {
+            const sel = Grid.edges(editor, table, {
+              start: [table[0].children.length - 1, cells.length - 1],
+              end: [path[path.length - 1], 0],
+            });
+            focus = Editable.toLowestPoint(
+              editor,
+              path.slice(0, -1).concat(sel.start)
+            );
+          } else {
+            const sel = Grid.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1],
+            });
+            focus = Editable.toLowestPoint(
+              editor,
+              path.slice(0, -1).concat(sel.end)
+            );
+          }
+        }
+      }
+      const range = { anchor, focus };
+      if (!Range.equals(selection, range)) Transforms.select(editor, range);
+    }
+  }, [nodeSelected, nodeFocused, editor, editor.selection]);
+
   const { colsWidth = [] } = element;
 
   const renderColgroup = () => {
@@ -148,9 +233,6 @@ const TableComponent: React.FC<TableProps> = ({
     }
     return height;
   }, [element]);
-
-  // selection
-  const { selection, selected } = useSelection(editor, element);
 
   const renderAllHeader = () => {
     const handleMouseDown = (e: React.MouseEvent) => {

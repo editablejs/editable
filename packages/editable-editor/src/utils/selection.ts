@@ -68,7 +68,7 @@ const findMaxPosition = (
   top: number,
   bottom: number
 ) => {
-  const height = bottom - top;
+  let height = bottom - top;
   const lineReact = {
     top: top,
     height: height,
@@ -214,8 +214,8 @@ export const getLineRectsByRange = (
   const blockRects: DOMRect[] = [];
   const rectMap: Map<DOMRect, DOMElement> = new Map();
 
-  const [startBlock, startPath] = anchorEntry;
-  const [_, endPath] = focusEntry;
+  let [startBlock, startPath] = anchorEntry;
+  let [_, endPath] = focusEntry;
   const ranges: DOMRange[] = [];
   let isStart = true;
   let next: NodeEntry<Element> | undefined = anchorEntry;
