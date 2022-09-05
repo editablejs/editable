@@ -5,7 +5,7 @@
   "exports": {
     "./index.css": "./index.css"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@editablejs/editable-editor": "^0.0.1"
   }
 }

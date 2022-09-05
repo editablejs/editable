@@ -49,22 +49,6 @@
           "quiet": true
         }
       }
-    },
-    "publish-npm": {
-      "executor": "ngx-deploy-npm:deploy",
-      "options": {
-        "access": "public"
-      }
-    },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "preset": "conventional",
-        "push": true,
-        "trackDeps": true,
-        "postTargets": ["docs:publish-npm"],
-        "commitMessageFormat": "release(${projectName}): 🎸 cut release to ${version}"
-      }
     }
   }
 }
