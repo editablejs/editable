@@ -15,7 +15,7 @@ import {
   useGridSelected,
 } from '@editablejs/editable-editor';
 import classnames from 'classnames';
-import { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { TableCell, TableCellEditor } from './cell';
 import { TableContext, TableDragOptions, TableOptions } from './context';
 import { TableColHeader, TableRowHeader } from './header';

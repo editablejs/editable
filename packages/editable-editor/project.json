@@ -4,14 +4,19 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:swc",
+      "executor": "@nrwl/web:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "project": "packages/editable-editor/package.json",
         "outputPath": "dist/packages/editable-editor",
-        "main": "packages/editable-editor/src/index.ts",
         "tsConfig": "packages/editable-editor/tsconfig.lib.json",
-        "assets": ["packages/editable-editor/*.md"],
-        "buildableProjectDepsInPackageJsonType": "dependencies"
+        "entryFile": "packages/editable-editor/src/index.ts",
+        "generatePackageJson": true,
+        "updateBuildableProjectDepsInPackageJson": false,
+        "generateExportsField": true,
+        "compiler": "babel",
+        "format": ["esm", "umd"],
+        "rollupConfig": ["packages/editable-editor/rollup.config.js"]
       }
     },
     "lint": {
@@ -43,7 +48,7 @@
         "preset": "conventional",
         "push": true,
         "trackDeps": true,
-        "postTargets": ["auth:publish-npm"],
+        "postTargets": ["editable-editor:publish-npm"],
         "commitMessageFormat": "release(${projectName}): 🎸 cut release to ${version}"
       }
     }

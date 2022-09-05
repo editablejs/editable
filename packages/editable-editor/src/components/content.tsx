@@ -201,6 +201,7 @@ export const ContentEditable = (props: EditableProps) => {
     onClick: () => {
       isDoubleClickRef.current = false;
     },
+    // @ts-expect-error
     onMultipleClick: (event, count) => {
       event.preventDefault();
       const { selection } = editor;

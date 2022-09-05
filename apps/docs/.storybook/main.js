@@ -39,7 +39,7 @@ module.exports = {
       },
       plugins: [nodePolyfills(), viteNxProjectPaths({ workspaceRoot })],
       build: {
-        target: 'es2017',
+        target: 'es2019',
         commonjsOptions: {
           transformMixedEsModules: true,
         },

@@ -1,5 +1,5 @@
 import { Range, Selection } from 'slate';
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Editable } from '../plugin/editable';
 import {
   EDITOR_TO_INPUT,

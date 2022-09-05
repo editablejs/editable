@@ -1,6 +1,6 @@
 {
   "jsc": {
-    "target": "es2017",
+    "target": "es2019",
     "parser": {
       "syntax": "typescript",
       "decorators": true,

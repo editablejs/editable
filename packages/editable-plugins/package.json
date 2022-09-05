@@ -1,7 +1,8 @@
 {
   "name": "@editablejs/editable-plugins",
   "version": "0.0.1",
-  "sideEffects": false,
-  "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "exports": {
+    "./index.css": "./index.css"
+  }
 }

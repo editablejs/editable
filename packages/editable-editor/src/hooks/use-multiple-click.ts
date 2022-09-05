@@ -27,6 +27,7 @@ const useMultipleClick = (options: {
     pointRef.current = undefined;
   };
 
+  // @ts-expect-error
   const handleMultipleClick = (event: React.MouseEvent) => {
     if (event.button === 2) return;
     const point = pointRef.current;

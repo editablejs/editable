@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Range, Selection } from 'slate';
 import { useEditable } from '../hooks/use-editable';
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect';

@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import { Selection, Range } from 'slate';
 import { useEditable } from '../hooks/use-editable';
 import { useFocused } from '../hooks/use-focused';
@@ -65,6 +65,7 @@ const CaretComponent: FC<CaretProps> = ({
       } else {
         setOpacity(opacity);
       }
+      // @ts-ignore
       timer.current = setTimeout(() => {
         active();
       }, timeout);
