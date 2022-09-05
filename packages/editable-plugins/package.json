@@ -4,5 +4,8 @@
   "license": "MIT",
   "exports": {
     "./index.css": "./index.css"
+  },
+  "peerDependencies": {
+    "@editablejs/editable-editor": "^0.0.1"
   }
 }
