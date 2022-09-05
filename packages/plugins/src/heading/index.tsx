@@ -1,7 +1,7 @@
-import { Editable, isHotkey, Transforms, Text, Element, Editor, Range, Node, Path } from "@editablejs/editor";
-import { FontSize, FontSizeEditor } from "./fontsize";
-import { Mark, MarkEditor } from "./mark";
-import "./heading.less"
+import { Editable, isHotkey, Transforms, Text, Element, Editor, Range, Node, Path, Locale } from "@editablejs/editor";
+import { FontSize, FontSizeEditor } from "../fontsize";
+import { Mark, MarkEditor } from "../mark";
+import "./style.less"
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -114,7 +114,7 @@ export const HeadingEditor = {
   }
 }
 
-const prefixCls = "editable-heading"
+const prefixCls = Locale.getPrefixCls(HEADING_KEY)
 
 export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingEditor

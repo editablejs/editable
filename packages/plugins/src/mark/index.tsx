@@ -1,6 +1,6 @@
-import { Editable, RenderLeafProps, isHotkey, Editor, Text } from "@editablejs/editor";
+import { Editable, RenderLeafProps, isHotkey, Editor, Text, Locale } from "@editablejs/editor";
 import { CSSProperties } from 'react'
-import './mark.less'
+import './style.less'
 
 type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
 export interface MarkOptions {
@@ -69,6 +69,8 @@ export const MarkEditor = {
   },
 }
 
+const prefixCls = Locale.getPrefixCls()
+
 export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
   const newEditor = editor as T & MarkEditor
 
@@ -118,15 +120,15 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
 
     const enabledSub = text.sub && MarkEditor.isEnabled(editor, 'sub')
     if(enabledSub) {
-      children = <span className="editable-sub">{children}</span>
+      children = <span className={`${prefixCls}-sub`}>{children}</span>
     }
     const enabledSup = text.sup && MarkEditor.isEnabled(editor, 'sup')
     if(enabledSup) {
-      children = <span className="editable-sup">{children}</span>
+      children = <span className={`${prefixCls}-sup`}>{children}</span>
     }
 
     if (text.code && MarkEditor.isEnabled(editor, 'code')) {
-      children = <code className="editable-code">{children}</code>
+      children = <code className={`${prefixCls}-code`}>{children}</code>
     }
     
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })

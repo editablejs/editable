@@ -1,5 +1,5 @@
-import { Editable, isHotkey, Transforms, Editor, Range, Element, Path, Node } from "@editablejs/editor";
-import './blockquote.less'
+import { Editable, isHotkey, Transforms, Editor, Range, Element, Path, Node, Locale } from "@editablejs/editor";
+import './style.less'
 
 export const BLOCKQUOTE_KEY = 'blockquote'
 
@@ -72,7 +72,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   newEditor.renderElement = ({ element, attributes, children }) => {
     if(BlockquoteEditor.isBlockquote(newEditor, element)) { 
       const Blockquote = BLOCKQUOTE_KEY
-      return <Blockquote className="editable-blockquote" {...attributes}>{children}</Blockquote>
+      return <Blockquote className={Locale.getPrefixCls(BLOCKQUOTE_KEY)} {...attributes}>{children}</Blockquote>
     }
     return renderElement({ attributes, children, element })
   }

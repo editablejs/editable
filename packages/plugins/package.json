@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/editor-plugins",
+  "name": "@editablejs/plugins",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -38,6 +38,7 @@
     "preset": "scripts/jest/node"
   },
   "dependencies": {
-    "classnames": "^2.3.1"
+    "classnames": "^2.3.1",
+    "@editablejs/ui": "workspace:*"
   }
 }

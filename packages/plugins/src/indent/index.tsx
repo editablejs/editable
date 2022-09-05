@@ -1,6 +1,6 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps, Editor, Transforms, Node, Element, NodeEntry, Path, Range } from "@editablejs/editor"
+import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps, Editor, Transforms, Node, Element, NodeEntry, Path, Range, Locale } from "@editablejs/editor"
 import { CSSProperties } from "react"
-import './indent.less'
+import './style.less'
 
 export interface Indent extends Element {
   /**
@@ -211,7 +211,7 @@ const renderIndent = (editor: Editable, { attributes, element, children }: Rende
   const { textIndent, type } = element
 
   if(textIndent && type === INDENT_KEY) { 
-    children = <span className="editable-indent" style={{width: getIndentSize(editor, 'text', textIndent)}}>{children}</span>
+    children = <span className={Locale.getPrefixCls(INDENT_KEY)} style={{width: getIndentSize(editor, 'text', textIndent)}}>{children}</span>
   } 
   return next({ attributes: Object.assign({}, attributes, { style }), children, element })
 }

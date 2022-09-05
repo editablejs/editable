@@ -1,4 +1,4 @@
-import { Editable, Editor, Node, GridCell } from "@editablejs/editor";
+import { Editable, Editor, Node, GridCell, Locale } from "@editablejs/editor";
 
 export const TABLE_CELL_KEY = 'table-cell';
 
@@ -10,7 +10,7 @@ export interface TableCell extends GridCell {
   type: typeof TABLE_CELL_KEY
 }
 
-const prefixCls = 'editable-table-cell';
+const prefixCls = Locale.getPrefixCls('table-cell');
 
 export interface TableCellEditor extends Editable {
   

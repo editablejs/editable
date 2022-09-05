@@ -1,4 +1,4 @@
-import { Editable, isHotkey, RenderElementProps, Editor, Transforms, Element, Node, Path, Range, NodeEntry } from "@editablejs/editor"
+import { Editable, isHotkey, RenderElementProps, Editor, Transforms, Element, Node, Path, Range, NodeEntry, Locale } from "@editablejs/editor"
 import React from 'react'
 import { HeadingEditor } from "../heading"
 import { Indent, IndentEditor, IndentMode } from "../indent"
@@ -312,7 +312,7 @@ const updateListStart = (editor: Editable, type: string, options: UpdateListStar
   }
 }
 
-const prefixCls = "editable-list"
+export const prefixCls = Locale.getPrefixCls(LIST_KEY)
 
 const ListElement = ({ element, attributes, children, onRenderLabel, className }: RenderElementProps<List> & {onRenderLabel: (element: List) => React.ReactNode, className?: string }) => { 
   const { level } = element

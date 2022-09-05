@@ -1,4 +1,4 @@
-import { RenderElementProps, useCancellablePromises, cancellablePromise, Editable, Grid, Node, Editor, useIsomorphicLayoutEffect, Range, useNodeFocused, useNodeSelected, useGridSelection, Transforms, useGridSelected } from "@editablejs/editor";
+import { RenderElementProps, useCancellablePromises, cancellablePromise, Editable, Grid, Node, Editor, useIsomorphicLayoutEffect, Range, useNodeFocused, useNodeSelected, useGridSelection, Transforms, useGridSelected, Locale } from "@editablejs/editor";
 import classnames from "classnames";
 import { useState, useRef, useMemo, useCallback } from "react";
 import { TableCell, TableCellEditor } from "./cell";
@@ -88,7 +88,7 @@ export const TableEditor = {
   },
 }
 
-const prefixCls = 'editable-table';
+const prefixCls = Locale.getPrefixCls('table');
 
 interface TableProps extends RenderElementProps<Table> {
   editor: TableEditor

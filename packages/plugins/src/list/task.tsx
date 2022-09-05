@@ -1,4 +1,4 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementProps, Transforms, Node } from "@editablejs/editor";
+import { Editable, ElementAttributes, isHotkey, RenderElementProps, Transforms, Node, Locale } from "@editablejs/editor";
 import { List, ListEditor, ToggleListOptions, withList } from "./base";
 import './task.less'
 
@@ -45,7 +45,7 @@ export const TaskListEditor = {
   },
 }
 
-const prefixCls = 'editable-task-list'
+const prefixCls = Locale.getPrefixCls(TASK_LIST_KEY)
 
 interface TaskProps {
   checked: boolean

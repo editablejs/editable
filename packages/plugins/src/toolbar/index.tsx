@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import classNames from 'classnames';
-import { Editable, useEditable } from '@editablejs/editor';
+import { Editable, Locale, useEditable } from '@editablejs/editor';
 import ToolbarGroup, { GroupItem } from './group';
 import { ToolbarButton } from './button';
 import { ToolbarDropdown } from './dropdown';
@@ -28,6 +28,8 @@ const getActiveState = (editor: Editable, items: ToolbarItem[][]): GroupItem[][]
   }))
 }
 
+const prefixCls = Locale.getPrefixCls('toolbar');
+
 const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ items: itemProps, className, ...props }) => {
 
   const editor = useEditable()
@@ -44,7 +46,7 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
     }
   }, [editor])
 
-  return <div className={classNames('editable-toolbar', className)} {...props}>
+  return <div className={classNames(prefixCls, className)} {...props}>
   {
     items.map((group, index) => 
     <ToolbarGroup 

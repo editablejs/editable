@@ -1,8 +1,7 @@
 import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor';
-import { Toolbar, withPlugins } from '@editablejs/editor-plugins'
+import { Toolbar, withPlugins } from '@editablejs/plugins'
 import React, { useState } from 'react';
 import styles from './index.module.css'
-import '@editablejs/editor-plugins/dist/index.css'
 import { defaultToolbarConfig } from '../toolbar-config';
 
 const initialValue = [

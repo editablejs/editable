@@ -1,12 +1,12 @@
-import { cancellablePromise, Editable, useCancellablePromises, Transforms, Grid } from "@editablejs/editor";
+import { cancellablePromise, Editable, useCancellablePromises, Transforms, Grid, Locale } from "@editablejs/editor";
 import classNames from "classnames";
 import React, { useRef, useState, useCallback, useContext } from "react";
-import { Icon } from "../icon";
+import { Icon } from '@editablejs/ui'
 import { TABLE_CELL_KEY } from "./cell";
 import { TableContext } from "./context";
 import { TableRow, TABLE_ROW_KEY } from "./row";
 
-const prefixCls = 'editable-table';
+const prefixCls = Locale.getPrefixCls('table');
 const TYPE_COLS = 'cols'
 const TYPE_ROWS = 'rows'
 

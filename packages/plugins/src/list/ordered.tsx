@@ -1,4 +1,4 @@
-import { Editable, isHotkey, Path } from "@editablejs/editor";
+import { Editable, isHotkey, Locale, Path } from "@editablejs/editor";
 import React, { useLayoutEffect } from "react";
 import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./base";
 import './ordered.less'
@@ -75,7 +75,7 @@ const toRoman = (num: number) => {
   return result
 };
 
-const prefixCls = 'editable-ordered-list'
+const prefixCls = Locale.getPrefixCls(ORDERED_LIST_KEY)
 
 export const OrderedListTemplates: ListTemplate[] = [
   {

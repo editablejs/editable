@@ -1,30 +1,24 @@
-
-import { Editable } from '@editablejs/editor';
-import classNames from 'classnames'
 import React from 'react';
+import { Editable } from '@editablejs/editor';
+import { Button, ButtonProps } from '@editablejs/ui'
 
-interface ButtonProps { 
+interface ToolbarButtonProps extends ButtonProps { 
   editor: Editable
   onToggle: <T extends Editable>(editor: T) => void;
-  active?: boolean
-  disabled?: boolean
-  children: any
 }
 
-export interface ToolbarButton extends Omit<ButtonProps, 'active' | 'editor'> {
+export interface ToolbarButton extends Omit<ToolbarButtonProps, 'active' | 'editor'> {
   onActive?: <T extends Editable>(editor: T) => boolean
   onDisabled?: <T extends Editable>(editor: T) => boolean
   type: 'button'
 } 
 
-const Button: React.FC<ButtonProps> =({ editor, children, onToggle, active, disabled }) => {
+export const ToolbarButton: React.FC<ToolbarButtonProps> =({ editor, children, onToggle, ...props }) => {
 
 	const handleMouseDown = (event: React.MouseEvent) => {
 		event.preventDefault()
 		onToggle(editor)
 	}
 
-  return <button onMouseDown={handleMouseDown} className={classNames("toolbar-btn", {"toolbar-btn-active": active, "toolbar-btn-disabled": disabled})}>{ children }</button>
+  return <Button onMouseDown={handleMouseDown} {...props}>{ children }</Button>
 }
-
-export default Button

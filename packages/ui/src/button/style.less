@@ -1,0 +1,29 @@
+@import '../variable';
+
+.@{prefix}-btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px 3px;
+  font-size: 16px;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: #595959;
+  outline: none;
+  display: flex;
+  align-items: center;
+  margin: 0 2px;
+
+  &:hover, &-active {
+    background-color: #e8e8e8;
+    border: 1px solid transparent;
+  }
+
+  &[disabled] {
+    color: rgba(17, 31, 44, 0.24);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
+  } 
+}

@@ -1,4 +1,4 @@
-import { Editable, isHotkey } from "@editablejs/editor";
+import { Editable, isHotkey, Locale } from "@editablejs/editor";
 import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./base";
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
@@ -41,7 +41,7 @@ export const UnOrderedListEditor = {
   },
 }
 
-const prefixCls = 'editable-unordered-list'
+const prefixCls = Locale.getPrefixCls(UNORDERED_LIST_KEY)
 
 export const UnOrderedListTemplates: ListTemplate[] = [
   {

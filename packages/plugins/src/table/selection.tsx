@@ -1,7 +1,7 @@
-import { Editable, useGridSelectionRect, Grid, useEditableStatic, useIsomorphicLayoutEffect } from "@editablejs/editor";
+import { Editable, useGridSelectionRect, Grid, useEditableStatic, useIsomorphicLayoutEffect, Locale } from "@editablejs/editor";
 import React from "react";
 
-const prefixCls = 'editable-table';
+const prefixCls = Locale.getPrefixCls('table');
 
 export interface TableSelectionProps {
   editor: Editable

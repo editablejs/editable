@@ -1,4 +1,4 @@
-import { Editable } from '@editablejs/editor';
+import { Editable, Locale } from '@editablejs/editor';
 import classNames from 'classnames';
 import React, { useCallback, useContext, useMemo } from 'react'
 import { InsertAction, SplitAction } from './action';
@@ -9,7 +9,7 @@ export interface TableHeaderProps {
   table: Grid
 }
 
-const prefixCls = 'editable-table';
+const prefixCls = Locale.getPrefixCls('table');
 const prefixColsCls = `${prefixCls}-cols`;
 const prefixRowsCls = `${prefixCls}-rows`;
 

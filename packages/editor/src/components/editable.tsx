@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Editor, Node, Descendant, Scrubber } from 'slate'
 import { Editable } from '../plugin/editable'
 import { FocusedContext } from '../hooks/use-focused'
@@ -7,18 +7,15 @@ import { EditableContext } from '../hooks/use-editable'
 import { IS_FOCUSED } from '../utils/weak-maps'
 import { Locale, LocaleContext } from '../hooks/use-locale'
 
-export const defaultPrefixCls = 'editable';
-
 export const EditableComposer = (props: {
   editor: Editable
   value: Descendant[]
   children: React.ReactNode
   lang?: string
-  prefixCls?: string
   onChange?: (value: Descendant[]) => void
 }) => {
   
-  const { editor, children, onChange, value, lang, prefixCls, ...rest } = props
+  const { editor, children, onChange, value, lang, ...rest } = props
 
   const [context, setContext] = useState<[Editable]>(() => {
     if (!Node.isNodeList(value)) {
@@ -68,22 +65,8 @@ export const EditableComposer = (props: {
     }
   }, [editor, onChange])
 
-  const getPrefixCls = useCallback(
-    (suffixCls?: string, customizePrefixCls?: string) => {
-      if (customizePrefixCls) return customizePrefixCls;
-
-      const mergedPrefixCls = prefixCls || defaultPrefixCls;
-
-      return suffixCls ? `${mergedPrefixCls}-${suffixCls}` : mergedPrefixCls;
-    },
-    [prefixCls],
-  );
-
   return (
-    <LocaleContext.Provider value={{
-      locale: Locale.get(lang ?? 'en-US'),
-      getPrefixCls
-    }}>
+    <LocaleContext.Provider value={Locale.get(lang ?? 'en-US')}>
       <EditableContext.Provider value={context}>
         <EditorContext.Provider value={editor}>
           <FocusedContext.Provider value={[focused, changeFocused]}>

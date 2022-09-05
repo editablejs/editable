@@ -1,5 +1,6 @@
 import { Grid } from '@editablejs/editor'
-import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, Icon, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor, TableEditor } from "@editablejs/editor-plugins"
+import { Icon } from '@editablejs/ui'
+import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor, TableEditor } from "@editablejs/plugins"
 
 const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
 

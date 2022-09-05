@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/editor",
+  "name": "@editablejs/ui",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -18,24 +18,14 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@editablejs/breaker": "workspace:*",
-    "@editablejs/ui": "workspace:*",
-    "direction": "^1.0.3",
-    "escape-html": "^1.0.3",
-    "is-hotkey": "^0.1.6",
-    "is-plain-object": "^5.0.0",
-    "lodash": "^4.17.4",
-    "scroll-into-view-if-needed": "^2.2.20",
-    "slate": "^0.82.0",
-    "slate-hyperscript": "^0.77.0"
+    "classnames": "^2.3.1"
   },
   "devDependencies": {
-    "@types/escape-html": "^1.0.2",
-    "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "@types/lodash": "^4.14.149",
     "@types/react": "^17.x",
     "@types/react-dom": "^17.x",
+    "esbuild": "^0.14.49",
+    "esbuild-plugin-less": "^1.1.8",
     "jest": "^27.5.1",
     "react": "^17.x",
     "react-dom": "^17.x",

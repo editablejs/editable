@@ -26,7 +26,6 @@ export {
 }
 
 export * from './toolbar'
-export * from './icon'
 interface PluginOptions {
   mark?: MarkOptions
   fontSize?: FontSizeOptions

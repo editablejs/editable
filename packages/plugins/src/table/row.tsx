@@ -1,4 +1,4 @@
-import { Editable, RenderElementProps, Editor, Node, Element, Transforms, GridRow } from "@editablejs/editor";
+import { Editable, RenderElementProps, Editor, Node, Element, Transforms, GridRow, Locale } from "@editablejs/editor";
 import React, { useContext, useLayoutEffect } from "react";
 import { TableCell, TableCellEditor } from "./cell";
 import { TableContext } from "./context";
@@ -42,7 +42,7 @@ export const TableRowEditor = {
   }
 }
 
-const prefixCls = 'editable-table-row';
+const prefixCls = Locale.getPrefixCls('table-row');
 
 interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> {
   editor: Editable
