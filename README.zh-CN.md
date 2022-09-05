@@ -4,7 +4,7 @@
 
 ## 开发
 
-使用 `nextjs` & `turbo` 搭建的开发环境，使用 `typescript` 开发，单元测试使用的 vitest。
+使用 `vite` & `nx` 搭建的开发环境，使用 `typescript` 开发，单元测试使用的 jest。
 
 ```bash
 # 安装

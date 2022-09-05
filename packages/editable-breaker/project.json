@@ -24,14 +24,10 @@
       }
     },
     "test": {
-      "executor": "@nxext/vitest:vitest",
-      "configurations": {
-        "watch": {
-          "command": "watch"
-        }
-      },
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/editable-breaker"],
       "options": {
-        "command": "run",
+        "jestConfig": "packages/editable-breaker/jest.config.ts",
         "passWithNoTests": true
       }
     },

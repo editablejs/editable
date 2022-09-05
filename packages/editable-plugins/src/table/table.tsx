@@ -13,7 +13,7 @@ import {
   useGridSelection,
   Transforms,
   useGridSelected,
-} from '@editablejs/editor';
+} from '@editablejs/editable-editor';
 import classnames from 'classnames';
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { TableCell, TableCellEditor } from './cell';

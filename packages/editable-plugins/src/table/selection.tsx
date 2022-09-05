@@ -4,7 +4,7 @@ import {
   Grid,
   useEditableStatic,
   useIsomorphicLayoutEffect,
-} from '@editablejs/editor';
+} from '@editablejs/editable-editor';
 import React from 'react';
 
 const prefixCls = 'editable-table';

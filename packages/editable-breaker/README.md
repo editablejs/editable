@@ -53,7 +53,7 @@ contributing or fixing bugs, these things might be of interest.
 - The `src/classes.ts` file is generated from `GraphemeBreakProperty.txt` in the Unicode
   database by `src/generate_data.ts`. It should be rare that you need to run this, but
   you may if, for instance, you want to change the Unicode version.
-- You can run the tests using `pnpm test`. They are written using `vitest`, and generated from
+- You can run the tests using `pnpm test`. They are written using `jest`, and generated from
   `GraphemeBreakTest.txt` and `emoji-test.txt` from the Unicode database, which is included in the
   repository for performance reasons while running them.
 

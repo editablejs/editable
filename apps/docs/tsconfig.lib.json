@@ -10,7 +10,7 @@
     "../../node_modules/@nrwl/react/typings/image.d.ts"
   ],
   "exclude": [
-    "vitest.config.ts",
+    "jest.config.ts",
     "test",
     "**/*.spec.ts",
     "**/*.test.ts",

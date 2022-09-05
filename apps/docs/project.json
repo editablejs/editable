@@ -12,14 +12,10 @@
       }
     },
     "test": {
-      "executor": "@nxext/vitest:vitest",
-      "configurations": {
-        "watch": {
-          "command": "watch"
-        }
-      },
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/docs"],
       "options": {
-        "command": "run",
+        "jestConfig": "apps/docs/jest.config.ts",
         "passWithNoTests": true
       }
     },

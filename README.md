@@ -6,7 +6,7 @@ An experimental rich text editor framework which aims to replace the native `con
 
 ## Development
 
-Use `nextjs` & `turbo` to build a development environment, use `typescript` for development, and use vitest for unit testing.
+Use `vite` & `nx` to build a development environment, use `typescript` for development, and use jest for unit testing.
 
 ```bash
 # Install

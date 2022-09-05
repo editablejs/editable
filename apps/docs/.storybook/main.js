@@ -15,9 +15,6 @@ const workspaceRoot = path.resolve(__dirname, '../../../');
 
 module.exports = {
   ...rootMain,
-  features: {
-    storyStoreV7: true,
-  },
   core: {
     ...rootMain.core,
     builder: '@storybook/builder-vite',
