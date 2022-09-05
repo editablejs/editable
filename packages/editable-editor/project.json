@@ -12,8 +12,15 @@
         "tsConfig": "packages/editable-editor/tsconfig.lib.json",
         "entryFile": "packages/editable-editor/src/index.ts",
         "generatePackageJson": true,
-        "updateBuildableProjectDepsInPackageJson": false,
+        "buildableProjectDepsInPackageJsonType": "dependencies",
         "generateExportsField": true,
+        "assets": [
+          {
+            "glob": "packages/editable-editor/*.md",
+            "input": ".",
+            "output": "."
+          }
+        ],
         "compiler": "babel",
         "format": ["esm", "umd"],
         "rollupConfig": ["packages/editable-editor/rollup.config.js"]
@@ -46,7 +53,7 @@
       "executor": "@jscutlery/semver:version",
       "options": {
         "preset": "conventional",
-        "push": true,
+        "push": false,
         "trackDeps": true,
         "postTargets": ["editable-editor:publish-npm"],
         "commitMessageFormat": "release(${projectName}): 🎸 cut release to ${version}"

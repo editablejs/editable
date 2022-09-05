@@ -4,17 +4,29 @@ const replace = require('rollup-plugin-replace');
 const external = [];
 
 module.exports = (config) => {
-  config.external = (id) => {
-    if (path.isAbsolute(id) || id.startsWith('./')) {
+  const { format } = config.output;
+
+  if (format === 'umd') {
+    config.external = (id) => {
+      if (path.isAbsolute(id) || id.startsWith('.')) {
+        return false;
+      }
+
+      if (external.includes(id)) {
+        return true;
+      }
+
       return false;
-    }
+    };
+  } else {
+    config.external = (id) => {
+      if (path.isAbsolute(id) || id.startsWith('.')) {
+        return false;
+      }
 
-    if (external.includes(id)) {
       return true;
-    }
-
-    return false;
-  };
+    };
+  }
 
   config.plugins.push(
     replace({

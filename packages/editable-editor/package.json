@@ -2,9 +2,6 @@
   "name": "@editablejs/editable-editor",
   "version": "0.0.1",
   "license": "MIT",
-  "dependencies": {
-    "@editablejs/editable-breaker": "^0.0.1"
-  },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.x || ^18.x",
     "react-dom": "^16.8.0 || ^17.x || ^18.x"
