@@ -1,6 +1,6 @@
 {
   "name": "@editablejs/editable-editor",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "license": "MIT",
   "peerDependencies": {
     "react": "^16.8.0 || ^17.x || ^18.x",
