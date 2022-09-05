@@ -11,6 +11,7 @@ import {
   Transforms,
   NodeEntry,
   Selection,
+  Descendant,
 } from 'slate';
 
 import { Key } from '../utils/key';
@@ -25,8 +26,6 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
-  EDITOR_TO_INPUT,
-  EDITOR_TO_SHADOW,
 } from '../utils/weak-maps';
 import {
   DOMElement,
@@ -166,6 +165,11 @@ export interface Editable extends BaseEditor {
   clearSelectionDraw: () => void;
   startSelectionDraw: () => void;
   normalizeSelection: (fn: (selection: Selection) => void) => void;
+  serializeHtml: (node: Descendant, children?: string) => string;
+  deserializeHtml: (
+    el: DOMNode,
+    attributes?: Record<string, any>
+  ) => Descendant | Descendant[];
 }
 
 export const Editable = {

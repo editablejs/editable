@@ -1923,6 +1923,7 @@ __metadata:
     "@testing-library/react": 13.4.0
     "@testing-library/react-hooks": ^8.0.1
     "@testing-library/user-event": ^14.4.3
+    "@types/escape-html": ^1.0.2
     "@types/is-hotkey": ^0.1.7
     "@types/jest": 27.4.1
     "@types/lodash": ^4.14.184
@@ -1937,6 +1938,7 @@ __metadata:
     classnames: ^2.3.1
     core-js: ^3.25.0
     direction: ^1.0.3
+    escape-html: ^1.0.3
     eslint: ~8.23.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
@@ -1962,6 +1964,7 @@ __metadata:
     rollup-plugin-polyfill-node: ^0.10.2
     scroll-into-view-if-needed: ^2.2.20
     slate: ^0.82.0
+    slate-hyperscript: ^0.77.0
     tiny-inflate: ^1.0.3
     ts-jest: 27.1.5
     ts-node: ~10.9.1
@@ -5074,6 +5077,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: fe81351470f2d3165e8b12ce33542eef89ea893e36dd62e8f7d72566dfb7e448376ae962f9f3ea888547ce8b55a40020ca0e01d637fab5d99567673084542641
+  languageName: node
+  linkType: hard
+
+"@types/escape-html@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@types/escape-html@npm:1.0.2"
+  checksum: 42505406d8680cf735b456034f8a1464849be415271ed8682ab24c7add7d8448fd3ce3ca48ec15354d656d532c640e0f9db28adffc95bf80d61dd69c143e7c1c
   languageName: node
   linkType: hard
 
@@ -10291,7 +10301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-html@npm:~1.0.3":
+"escape-html@npm:^1.0.3, escape-html@npm:~1.0.3":
   version: 1.0.3
   resolution: "escape-html@npm:1.0.3"
   checksum: 6213ca9ae00d0ab8bccb6d8d4e0a98e76237b2410302cf7df70aaa6591d509a2a37ce8998008cbecae8fc8ffaadf3fb0229535e6a145f3ce0b211d060decbb24
@@ -19667,6 +19677,17 @@ __metadata:
   version: 4.0.0
   resolution: "slash@npm:4.0.0"
   checksum: da8e4af73712253acd21b7853b7e0dbba776b786e82b010a5bfc8b5051a1db38ed8aba8e1e8f400dd2c9f373be91eb1c42b66e91abb407ff42b10feece5e1d2d
+  languageName: node
+  linkType: hard
+
+"slate-hyperscript@npm:^0.77.0":
+  version: 0.77.0
+  resolution: "slate-hyperscript@npm:0.77.0"
+  dependencies:
+    is-plain-object: ^5.0.0
+  peerDependencies:
+    slate: ">=0.65.3"
+  checksum: b701dd1975c7d3510c1eb05c631c4c58072b22a94729033af915a43b20a703447ef8abcdc03d23146defd519cc668dcfa455220ff174a3d0be5126b248b7db72
   languageName: node
   linkType: hard
 
