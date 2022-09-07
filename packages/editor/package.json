@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@editablejs/breaker": "workspace:*",
-    "@editablejs/ui": "workspace:*",
     "direction": "^1.0.3",
     "escape-html": "^1.0.3",
     "is-hotkey": "^0.1.6",

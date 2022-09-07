@@ -18,7 +18,8 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "classnames": "^2.3.1"
+    "classnames": "^2.3.1",
+    "rc-align": "^4.0.12"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
@@ -29,7 +30,8 @@
     "jest": "^27.5.1",
     "react": "^17.x",
     "react-dom": "^17.x",
-    "scripts": "workspace:*",
+    "jest-presets": "workspace:*",
+    "eslint-config-editable": "workspace:*",
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "typescript": "^4.5.3"
@@ -39,6 +41,6 @@
     "react-dom": ">=16.8.0"
   },
   "jest": {
-    "preset": "scripts/jest/node"
+    "preset": "jest-presets/jest/node"
   }
 }
