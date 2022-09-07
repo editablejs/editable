@@ -1,5 +1,10 @@
 {
+  "name": "edtiablejs-packages",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --no-cache --parallel --continue",
@@ -10,18 +15,36 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
+    "eslint-config-editable": "workspace:*",
     "lint-staged": "^13.0.3",
-    "prettier": "^2.5.1",
+    "prettier": "latest",
     "simple-git-hooks": "^2.8.0",
     "turbo": "latest"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "pnpm exec lint-staged"
   },
   "lint-staged": {
     "*.{css,md,js,jsx,json,ts,tsx}": [
       "prettier --write",
       "eslint --fix"
     ]
-  }
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "pnpm": ">=7.0.0"
+  },
+  "browserslist": {
+    "production": [
+      "last 3 versions",
+      "Chrome >= 90",
+      "Safari >= 13"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "packageManager": "pnpm@7.11.0"
 }

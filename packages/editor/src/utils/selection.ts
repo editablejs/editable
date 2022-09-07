@@ -1,6 +1,6 @@
 import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
 import { Editable } from '../plugin/editable';
-import { DOMElement, DOMNode, DOMRange, isDOMElement, isDOMText } from './dom';
+import { DOMElement, DOMRange, isDOMElement } from './dom';
 
 interface LineRect {
   top: number
@@ -41,11 +41,11 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
 
 /**
  * 找到top位置在el节点中所在行的最大位置
- * @param editor 
- * @param element 
- * @param top 
- * @param bottom 
- * @returns 
+ * @param editor
+ * @param element
+ * @param top
+ * @param bottom
+ * @returns
  */
 const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bottom: number) => {
   let height = bottom - top
@@ -55,7 +55,7 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
     bottom: bottom
   }
 
-  const compareHeight = (rect: DOMRect) => { 
+  const compareHeight = (rect: DOMRect) => {
     if(rect.top >= top && rect.bottom <= bottom || rect.top <= top && rect.bottom >= bottom && rect.height > height) {
       if(rect.height > height) {
         lineReact.height = rect.height
@@ -65,7 +65,7 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
     }
   }
 
-  const findHeight = (element: DOMElement) => { 
+  const findHeight = (element: DOMElement) => {
     for(const child of element.childNodes) {
       if(isDOMElement(child)) {
         const hasNode = child.hasAttribute('data-slate-node')
@@ -112,12 +112,12 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
       }
     }
   }
-  
+
   findHeight(element)
   return lineReact
 }
 
-export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) => { 
+export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) => {
   const path = Editable.findPath(editor, node)
   const block: NodeEntry | undefined = Editor.isBlock(editor, node) && path.length === 1 ? [node, path] : Editor.above<Element>(editor, {
     at: path,
@@ -150,9 +150,9 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
 
 /**
  * 在范围内获取按行分割的DOMRect对象
- * @param editor 
- * @param range 
- * @returns 
+ * @param editor
+ * @param range
+ * @returns
  */
 export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4) => {
   const anchor = Range.start(range)
@@ -185,7 +185,7 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
     const rect = element.getBoundingClientRect()
     rectMap.set(rect, element)
     blockRects.push(rect)
-   
+
     if(Path.equals(nextPath, endPath)) break
     if(!isStart) {
       const range = document.createRange()
@@ -217,10 +217,10 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
       focus
     }))
   }
-  
+
   // 拆分的行
   const rects: DOMRect[] = []
-  for(const range of ranges) { 
+  for(const range of ranges) {
     rects.push(...range.getClientRects())
   }
   const lines = splitLines(rects)
@@ -232,7 +232,7 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
     // 一行的最后rect的right 减去第一个rect的left 行得到宽度
     const last = rects.concat().reverse().find(r => r.width > 0) ?? rects[rects.length - 1]
     let width = last.right - rects[0].left
-    if(el) { 
+    if(el) {
       const lineRect = findMaxPosition(editor, el, line.top, line.bottom)
       line.top = lineRect.top
       line.height = lineRect.height
@@ -250,7 +250,7 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
 
 export const getRectsByRange = (editor: Editable, range: Range) => {
   let rects: DOMRect[] = []
-  if (Range.isCollapsed(range)) { 
+  if (Range.isCollapsed(range)) {
     const domRange = Editable.toDOMRange(editor, range)
     rects = [domRange.getBoundingClientRect()]
   } else {

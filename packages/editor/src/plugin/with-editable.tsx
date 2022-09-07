@@ -47,12 +47,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
   // avoid collisions between editors in the DOM that share the same value.
   EDITOR_TO_KEY_TO_ELEMENT.set(e, new WeakMap())
 
-  e.canFocusVoid = (element: Element) => { 
+  e.canFocusVoid = (_element: Element) => {
     return true
   }
 
   e.isGrid = (value: any): value is Grid => false,
-  
+
   e.isGridRow = (value: any): value is GridRow => false,
 
   e.isGridCell = (value: any): value is GridCell => false,
@@ -358,14 +358,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
         at: selection,
         match: n => !Editor.isEditor(n) && Element.isElement(n)
       })
-    
+
       for(const entry of nodeEntries) {
         const type = entry[0].type ?? 'paragraph'
         if(elements[type]) elements[type].push(entry)
         else elements[type] = [entry]
       }
     })
-    
+
     if(Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   },
@@ -632,7 +632,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
-  e.onKeyup = (event: KeyboardEvent) => { 
+  e.onKeyup = (event: KeyboardEvent) => {
     if(event.key.toLowerCase() === 'shift') {
       IS_SHIFT_PRESSED.set(editor, false)
     }
@@ -660,7 +660,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           e.marks = null
         }
         else if(Text.isText(node)) {
-          if(Range.isExpanded(selection)) { 
+          if(Range.isExpanded(selection)) {
             Editor.deleteFragment(editor)
           }
           const offset = node.composition?.offset ?? selection.anchor.offset
@@ -688,7 +688,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     IS_COMPOSING.set(editor, true)
   }
 
-  e.onCompositionEnd = (value: string) => { 
+  e.onCompositionEnd = (value: string) => {
     IS_COMPOSING.set(editor, false)
     const { selection } = editor
     if(!selection) return
@@ -715,11 +715,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.setSelectionStyle = (style: SelectionStyle) => {}
 
-  e.renderElementAttributes = ({ attributes }) => { 
+  e.renderElementAttributes = ({ attributes }) => {
     return attributes
   }
 
-  e.renderLeafAttributes = ({ attributes }) => { 
+  e.renderLeafAttributes = ({ attributes }) => {
     return attributes
   }
 
@@ -750,14 +750,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.clearSelectionDraw = () => {
     const setSelectionDraw = IS_DRAW_SELECTION.get(e)
-    if(setSelectionDraw) { 
+    if(setSelectionDraw) {
       setSelectionDraw(false)
     }
   }
 
-  e.startSelectionDraw = () => { 
+  e.startSelectionDraw = () => {
     const setSelectionDraw = IS_DRAW_SELECTION.get(e)
-    if(setSelectionDraw) { 
+    if(setSelectionDraw) {
       setSelectionDraw(true)
     }
   }
@@ -771,7 +771,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         let { start, end } = sel
         const [startRow, startCol] = start
         const [endRow, endCol] = end
-    
+
         const rowCount = endRow - startRow
         const colCount = endCol - startCol
 
@@ -785,7 +785,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
             endRow: edgeEnd[0],
             endCol: edgeEnd[1]
           })
-          
+
           for(const [cell, row, col] of cells) {
             if(!cell) break
             if(!cell.span) {
@@ -814,17 +814,17 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (el.nodeType === globalThis.Node.TEXT_NODE) {
       return jsx('text', attributes, el.textContent)
     }
-  
+
     const nodeAttributes = { ...attributes }
-  
+
     const children = Array.from(el.childNodes)
       .map(node => e.deserializeHtml(node, nodeAttributes))
       .flat()
-  
+
     if (children.length === 0) {
       children.push(jsx('text', nodeAttributes, ''))
     }
-  
+
     switch (el.nodeName) {
       case 'BODY':
         return jsx('fragment', {}, children)
