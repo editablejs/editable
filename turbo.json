@@ -9,7 +9,7 @@
       "dependsOn": []
     },
     "format": {
-      "dependsOn": ["^lint"]
+      "outputs": []
     },
     "lint": {
       "outputs": []

@@ -20,14 +20,15 @@
     "@commitlint/config-conventional": "17.1.0",
     "eslint-config-editable": "workspace:*",
     "husky": "8.0.1",
-    "lint-staged": "^13.0.3",
-    "tailwind-config": "workspace:*",
+    "lint-staged": "13.0.3",
     "prettier-config": "workspace:*",
+    "tailwind-config": "workspace:*",
     "turbo": "latest"
   },
   "lint-staged": {
-    "*.{css,md,js,jsx,json,ts,tsx}": [
-      "pnpm lint"
+    "*.{ts,tsx,md,mdx,js,jsx}":[
+      "eslint --fix",
+      "prettier --write"
     ]
   },
   "engines": {
