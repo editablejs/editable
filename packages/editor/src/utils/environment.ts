@@ -1,7 +1,6 @@
 import React from 'react'
 
-export const IS_REACT_VERSION_17_OR_ABOVE =
-  parseInt(React.version.split('.')[0], 10) >= 17
+export const IS_REACT_VERSION_17_OR_ABOVE = parseInt(React.version.split('.')[0], 10) >= 17
 
 export const IS_IOS =
   typeof navigator !== 'undefined' &&
@@ -9,24 +8,20 @@ export const IS_IOS =
   /iPad|iPhone|iPod/.test(navigator.userAgent) &&
   !(window as any).MSStream
 
-export const IS_APPLE =
-  typeof navigator !== 'undefined' && /Mac OS X/.test(navigator.userAgent)
+export const IS_APPLE = typeof navigator !== 'undefined' && /Mac OS X/.test(navigator.userAgent)
 
 export const IS_FIREFOX =
-  typeof navigator !== 'undefined' &&
-  /^(?!.*Seamonkey)(?=.*Firefox).*/i.test(navigator.userAgent)
+  typeof navigator !== 'undefined' && /^(?!.*Seamonkey)(?=.*Firefox).*/i.test(navigator.userAgent)
 
 export const IS_SAFARI =
-  typeof navigator !== 'undefined' &&
-  /Version\/[\d\.]+.*Safari/.test(navigator.userAgent)
+  typeof navigator !== 'undefined' && /Version\/[\d\.]+.*Safari/.test(navigator.userAgent)
 
 // "modern" Edge was released at 79.x
 export const IS_EDGE_LEGACY =
   typeof navigator !== 'undefined' &&
   /Edge?\/(?:[0-6][0-9]|[0-7][0-8])(?:\.)/i.test(navigator.userAgent)
 
-export const IS_CHROME =
-  typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent)
+export const IS_CHROME = typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent)
 
 // Native `beforeInput` events don't work well with react on Chrome 75
 // and older, Chrome 76+ can use `beforeInput` though.
@@ -37,9 +32,7 @@ export const IS_CHROME_LEGACY =
 // Firefox did not support `beforeInput` until `v87`.
 export const IS_FIREFOX_LEGACY =
   typeof navigator !== 'undefined' &&
-  /^(?!.*Seamonkey)(?=.*Firefox\/(?:[0-7][0-9]|[0-8][0-6])(?:\.)).*/i.test(
-    navigator.userAgent
-  )
+  /^(?!.*Seamonkey)(?=.*Firefox\/(?:[0-7][0-9]|[0-8][0-6])(?:\.)).*/i.test(navigator.userAgent)
 
 // qq browser
 export const IS_QQBROWSER =

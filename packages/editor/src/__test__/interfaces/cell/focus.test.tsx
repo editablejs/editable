@@ -2,7 +2,6 @@ import { GridCell } from '../../../interfaces/cell'
 import { createEditor, Editor, Element, Node } from '../../../plugin/custom'
 
 describe('interfaces/cell', () => {
-
   const editor = createEditor()
 
   editor.children = [
@@ -16,21 +15,17 @@ describe('interfaces/cell', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell2' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ]
   it('focus-start', () => {
     const path = [0, 0, 0]
@@ -39,12 +34,12 @@ describe('interfaces/cell', () => {
     expect(selection).toEqual({
       anchor: {
         path: path.concat(0, 0),
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: path.concat(0, 0),
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
   it('focus-end', () => {
@@ -54,12 +49,12 @@ describe('interfaces/cell', () => {
     expect(selection).toEqual({
       anchor: {
         path: path.concat(1, 0),
-        offset: 5
+        offset: 5,
       },
       focus: {
         path: path.concat(1, 0),
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 })

@@ -4,7 +4,6 @@ import { GridRow } from '../../../interfaces/row'
 import { createEditor } from '../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -30,41 +29,33 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'text1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'text1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   it('getSelection-undefined', () => {
@@ -86,7 +77,7 @@ describe('interfaces/grid', () => {
     const selection = Grid.getSelection(editor)
     expect(selection).toEqual({
       start: [0, 0],
-      end: [0, 0]
+      end: [0, 0],
     })
   })
 
@@ -104,7 +95,7 @@ describe('interfaces/grid', () => {
     const selection = Grid.getSelection(editor, [0])
     expect(selection).toEqual({
       start: [0, 0],
-      end: [0, 1]
+      end: [0, 1],
     })
   })
 
@@ -123,7 +114,7 @@ describe('interfaces/grid', () => {
     const selection = Grid.getSelection(editor, grid)
     expect(selection).toEqual({
       start: [0, 1],
-      end: [0, 2]
+      end: [0, 2],
     })
   })
 
@@ -142,7 +133,7 @@ describe('interfaces/grid', () => {
     const selection = Grid.getSelection(editor, grid)
     expect(selection).toEqual({
       start: [0, 0],
-      end: [0, 2]
+      end: [0, 2],
     })
   })
 })

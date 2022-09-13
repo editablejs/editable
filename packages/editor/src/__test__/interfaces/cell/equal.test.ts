@@ -1,6 +1,6 @@
 import { GridCell } from '../../../interfaces/cell'
 
-describe('interfaces/cell', () => { 
+describe('interfaces/cell', () => {
   it('equal', () => {
     const equal = GridCell.equal([0, 1], [0, 1])
     expect(equal).toBe(true)

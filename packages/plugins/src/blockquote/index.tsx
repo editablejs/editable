@@ -1,5 +1,4 @@
-import { Editable, isHotkey, Transforms, Editor, Range, Element, Path, Node, Locale } from "@editablejs/editor";
-import './style.less'
+import { Editable, isHotkey, Transforms, Editor, Range, Element, Path, Node } from "@editablejs/editor";
 
 export const BLOCKQUOTE_KEY = 'blockquote'
 
@@ -27,7 +26,7 @@ export const BlockquoteEditor = {
     return !!(editor as BlockquoteEditor).toggleBlockquote
   },
 
-  isBlockquote: (editor: Editable, n: Node): n is Blockquote => { 
+  isBlockquote: (editor: Editable, n: Node): n is Blockquote => {
     return Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY
   },
 
@@ -36,25 +35,25 @@ export const BlockquoteEditor = {
     return !!elements[BLOCKQUOTE_KEY]
   },
 
-  getOptions: (editor: Editable): BlockquoteOptions => { 
+  getOptions: (editor: Editable): BlockquoteOptions => {
     return BLOCKQUOTE_OPTIONS.get(editor) ?? {}
   },
 
-  toggle: (editor: BlockquoteEditor) => { 
+  toggle: (editor: BlockquoteEditor) => {
     editor.toggleBlockquote()
   }
 }
 
 export const withBlockquote = <T extends Editable>(editor: T, options: BlockquoteOptions = {}) => {
   const newEditor = editor as T & BlockquoteEditor
-  
+
   BLOCKQUOTE_OPTIONS.set(newEditor, options)
 
-  newEditor.toggleBlockquote = () => { 
+  newEditor.toggleBlockquote = () => {
     editor.normalizeSelection(selection => {
       if(editor.selection !== selection) editor.selection = selection
       if(BlockquoteEditor.isActive(editor)) {
-        Transforms.unwrapNodes(editor, { 
+        Transforms.unwrapNodes(editor, {
           match: n => Editor.isBlock(editor, n) && n.type === BLOCKQUOTE_KEY,
           split: true,
         })
@@ -70,16 +69,16 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   const { renderElement } = newEditor
 
   newEditor.renderElement = ({ element, attributes, children }) => {
-    if(BlockquoteEditor.isBlockquote(newEditor, element)) { 
+    if(BlockquoteEditor.isBlockquote(newEditor, element)) {
       const Blockquote = BLOCKQUOTE_KEY
-      return <Blockquote className={Locale.getPrefixCls(BLOCKQUOTE_KEY)} {...attributes}>{children}</Blockquote>
+      return <Blockquote className='ea-blockquote' {...attributes}>{children}</Blockquote>
     }
     return renderElement({ attributes, children, element })
   }
-  
+
   const hotkey = options.hotkey ?? defaultHotkey
   const { onKeydown } = newEditor
-  newEditor.onKeydown = (e: KeyboardEvent) => { 
+  newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {
       e.preventDefault()
       newEditor.toggleBlockquote()
@@ -97,7 +96,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
         const [parent, parentPath ] = Editor.parent(newEditor, path)
         if(Editable.isEmpty(newEditor, block) && (parent as Element).type === BLOCKQUOTE_KEY) {
           e.preventDefault()
-          Transforms.moveNodes(newEditor, { 
+          Transforms.moveNodes(newEditor, {
             at: path,
             to: Path.next(parentPath)
           })

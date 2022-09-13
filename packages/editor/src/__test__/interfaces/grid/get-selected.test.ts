@@ -4,7 +4,6 @@ import { GridRow } from '../../../interfaces/row'
 import { createEditor } from '../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -30,41 +29,33 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'text1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'text1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   it('getSelected-undefined', () => {
@@ -91,7 +82,7 @@ describe('interfaces/grid', () => {
       colFull: true,
       allFull: false,
       cells: [[0, 0]],
-      count: 1
+      count: 1,
     })
   })
 
@@ -113,8 +104,11 @@ describe('interfaces/grid', () => {
       rowFull: false,
       colFull: true,
       allFull: false,
-      cells: [[0, 0], [0, 1]],
-      count: 2
+      cells: [
+        [0, 0],
+        [0, 1],
+      ],
+      count: 2,
     })
   })
 
@@ -137,8 +131,11 @@ describe('interfaces/grid', () => {
       rowFull: false,
       colFull: true,
       allFull: false,
-      cells: [[0, 1], [0, 2]],
-      count: 2
+      cells: [
+        [0, 1],
+        [0, 2],
+      ],
+      count: 2,
     })
   })
 
@@ -161,8 +158,12 @@ describe('interfaces/grid', () => {
       rowFull: true,
       colFull: true,
       allFull: true,
-      cells: [[0, 0], [0, 1], [0, 2]],
-      count: 3
+      cells: [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+      ],
+      count: 3,
     })
   })
 })

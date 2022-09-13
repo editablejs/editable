@@ -2,7 +2,6 @@ import { Grid } from '../../../interfaces/grid'
 import { createEditor } from '../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
   editor.isGrid = (value): value is Grid => {
     return value.type === 'grid'
@@ -18,21 +17,17 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell2' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   it('findGrid-undefined', () => {
@@ -42,30 +37,29 @@ describe('interfaces/grid', () => {
 
   it('findGrid', () => {
     const grid = Grid.findGrid(editor, [0])
-    expect(grid).toEqual([{
-      type: 'grid',
-      children: [
-        {
-          type: 'grid-row',
-          children: [
-            {
-              type: 'grid-cell',
-              children: [
-                {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                },
-                {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }, [0]])
+    expect(grid).toEqual([
+      {
+        type: 'grid',
+        children: [
+          {
+            type: 'grid-row',
+            children: [
+              {
+                type: 'grid-cell',
+                children: [
+                  {
+                    children: [{ text: 'cell1' }],
+                  },
+                  {
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      [0],
+    ])
   })
 })

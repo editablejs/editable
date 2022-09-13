@@ -4,7 +4,6 @@ import { GridRow } from '../../../../interfaces/row'
 import { createEditor } from '../../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -30,33 +29,27 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'grid-row',
@@ -65,33 +58,27 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell4'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell4' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell5'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell5' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell6'}
-                  ]
-                }
-              ]
-            }
-          ]
+                  children: [{ text: 'cell6' }],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'grid-row',
@@ -100,36 +87,30 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell7'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell7' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell8'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell8' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell9'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell9' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('get-range-of-move-row', () => {
@@ -137,42 +118,42 @@ describe('interfaces/grid', () => {
     const to1 = Grid.getRangeOfMoveRow(editor, {
       at: [0],
       move: 0,
-      to: 1
+      to: 1,
     })
     expect(to1).toEqual({
       move: [0, 0],
       to: 1,
-      isBackward: false
+      isBackward: false,
     })
     const to2 = Grid.getRangeOfMoveRow(editor, {
       at: [0],
       move: 0,
-      to: 2
+      to: 2,
     })
     expect(to2).toEqual({
       move: [0, 0],
       to: 2,
-      isBackward: false
+      isBackward: false,
     })
     const to3 = Grid.getRangeOfMoveRow(editor, {
       at: [0],
       move: 2,
-      to: 0
+      to: 0,
     })
     expect(to3).toEqual({
       move: [2, 2],
       to: 0,
-      isBackward: true
+      isBackward: true,
     })
     const to4 = Grid.getRangeOfMoveRow(editor, {
       at: [0],
       move: 1,
-      to: 0
+      to: 0,
     })
     expect(to4).toEqual({
       move: [1, 1],
       to: 0,
-      isBackward: true
+      isBackward: true,
     })
   })
 })

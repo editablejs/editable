@@ -1,6 +1,5 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps, Editor, Transforms, Node, Element, NodeEntry, Path, Range, Locale } from "@editablejs/editor"
+import { Editable, ElementAttributes, isHotkey, RenderElementAttributes, RenderElementProps, Editor, Transforms, Node, Element, NodeEntry, Path, Range } from "@editablejs/editor"
 import { CSSProperties } from "react"
-import './style.less'
 
 export interface Indent extends Element {
   /**
@@ -29,7 +28,7 @@ export interface IndentOptions {
   onRenderSize?: (type: IndentType, size: number) => string | number
 }
 
-const defaultHotkeys: Hotkeys = { 
+const defaultHotkeys: Hotkeys = {
   [INDENT_KEY]: 'tab',
   [OUTDENT_KEY]: 'shift+tab',
 }
@@ -52,16 +51,16 @@ export const IndentEditor = {
     return !!(editor as IndentEditor).toggleIndent
   },
 
-  isIndent: (editor: Editor, node: Node): node is Indent => { 
+  isIndent: (editor: Editor, node: Node): node is Indent => {
     return Element.isElement(node) && node.type === INDENT_KEY
   },
 
-  queryActive: (editor: Editable) => { 
+  queryActive: (editor: Editable) => {
     const elements = editor.queryActiveElements()
-    for(const type in elements) { 
+    for(const type in elements) {
       for(const element of elements[type]) {
         const { textIndent, lineIndent } = element[0] as Indent
-        if(textIndent || lineIndent) { 
+        if(textIndent || lineIndent) {
           const text = textIndent ?? 0
           const line = lineIndent ?? 0
           const options = INDENT_OPTIONS.get(editor) ?? {}
@@ -79,19 +78,19 @@ export const IndentEditor = {
     return null
   },
 
-  toggle: (editor: IndentEditor, mode?: IndentMode) => { 
+  toggle: (editor: IndentEditor, mode?: IndentMode) => {
     editor.toggleIndent(mode)
   },
 
-  toggleOut: (editor: IndentEditor) => { 
+  toggleOut: (editor: IndentEditor) => {
     editor.toggleOutdent()
   },
 
-  getOptions: (editor: Editable): IndentOptions => { 
+  getOptions: (editor: Editable): IndentOptions => {
     return INDENT_OPTIONS.get(editor) ?? {}
   },
 
-  getSize: (editor: Editable): number => { 
+  getSize: (editor: Editable): number => {
     const options = INDENT_OPTIONS.get(editor) ?? {}
     return options.size ?? DEFAULT_SIZE
   },
@@ -126,17 +125,17 @@ export const IndentEditor = {
     }
   },
 
-  canSetIndent: (editor: IndentEditor, mode: IndentMode = 'auto') => { 
+  canSetIndent: (editor: IndentEditor, mode: IndentMode = 'auto') => {
     const { selection } = editor
     if(!selection) return false
     // 是否选中一行
     const selectLine = Editable.getSelectLine(editor)
     // 是否选中在一行的开始或结尾位置
     const selectLineEdge = Editable.isSelectLineEdge(editor)
-    
+
     const isCollapsed = Range.isCollapsed(selection)
     if(isCollapsed && (!selectLine || mode === 'line')) {
-      const entry = Editor.above(editor, { 
+      const entry = Editor.above(editor, {
         match: editor.onIndentMatch,
         at: selection.anchor
       })
@@ -150,7 +149,7 @@ export const IndentEditor = {
     return false
   },
 
-  insertIndent: (editor: Editable) => { 
+  insertIndent: (editor: Editable) => {
     const { selection } = editor
     if(!selection) return
     const size = IndentEditor.getSize(editor)
@@ -176,7 +175,7 @@ export const IndentEditor = {
   }
 }
 
-const setTextIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: number) => { 
+const setTextIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: number) => {
   const [block, path] = blockEntry
   const textIndent = block.textIndent ?? 0
   const lineIndent = block.lineIndent ?? 0
@@ -188,7 +187,7 @@ const setTextIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: nu
   Transforms.setNodes<Indent>(editor, { textIndent: indent }, { at: path })
 }
 
-const setLineIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: number) => { 
+const setLineIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: number) => {
   const [block, path] = blockEntry
   const lineIndent = block.lineIndent ?? 0
   const textIndent = block.textIndent ?? 0
@@ -200,31 +199,31 @@ const setLineIndent = (editor: Editable, blockEntry: NodeEntry<Indent>, size: nu
   Transforms.setNodes(editor, { lineIndent: indent } as Indent, { at: path })
 }
 
-const getIndentSize = (editor: Editable, type: IndentType, size: number) => { 
+const getIndentSize = (editor: Editable, type: IndentType, size: number) => {
   const { onRenderSize } = (INDENT_OPTIONS.get(editor) ?? {})
   return onRenderSize ? onRenderSize(type, size) : size
 }
 
 const renderIndent = (editor: Editable, { attributes, element, children }: RenderElementProps<Indent>, next: (props: RenderElementProps) => JSX.Element) => {
   const style: CSSProperties = attributes.style ?? {}
- 
+
   const { textIndent, type } = element
 
-  if(textIndent && type === INDENT_KEY) { 
-    children = <span className={Locale.getPrefixCls(INDENT_KEY)} style={{width: getIndentSize(editor, 'text', textIndent)}}>{children}</span>
-  } 
+  if(textIndent && type === INDENT_KEY) {
+    children = <span className='ea-indent' style={{width: getIndentSize(editor, 'text', textIndent)}}>{children}</span>
+  }
   return next({ attributes: Object.assign({}, attributes, { style }), children, element })
 }
 
 export const renderIndentAttributes = (editor: Editable, { attributes, element }: RenderElementAttributes<Indent>, next: (props: RenderElementAttributes) => ElementAttributes) => {
   const { textIndent, lineIndent, type } = element
   const style: CSSProperties = attributes.style ?? {}
-  if(textIndent && type !== INDENT_KEY) { 
+  if(textIndent && type !== INDENT_KEY) {
     style.textIndent = getIndentSize(editor, 'text', textIndent)
   } else {
     delete style.textIndent
   }
-  if(lineIndent) { 
+  if(lineIndent) {
     style.paddingLeft = getIndentSize(editor, 'line', lineIndent)
   } else {
     delete style.paddingLeft
@@ -232,7 +231,7 @@ export const renderIndentAttributes = (editor: Editable, { attributes, element }
   return next({ attributes: Object.assign({}, attributes, { style }), element })
 }
 
-const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'auto') => { 
+const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'auto') => {
   editor.normalizeSelection(selection => {
     if(!selection) return
     if(editor.selection !== selection) editor.selection = selection
@@ -240,11 +239,11 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'au
     const selectLine = Editable.getSelectLine(editor)
     // 是否选中在一行的开始或结尾位置
     const selectLineEdge = Editable.isSelectLineEdge(editor)
-    
+
     const isCollapsed = Range.isCollapsed(selection)
     // text indent
     if(isCollapsed && (!selectLine || mode === 'line')) {
-      const entry = Editor.above(editor, { 
+      const entry = Editor.above(editor, {
         match: editor.onIndentMatch,
         at: selection.anchor
       })
@@ -254,7 +253,7 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'au
       if(Editor.isStart(editor, selection.focus, path)) {
         mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
         return
-      } 
+      }
       // 在一行的开始位置，设置line indent
       else if(selectLineEdge) {
         if(size > 0) {
@@ -262,15 +261,15 @@ const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'au
         }
         setLineIndent(editor, entry, size)
       }
-    } 
+    }
     // line indent
     else if(selectLine) {
-      const blockEntrys = Editor.nodes<Indent>(editor, { 
+      const blockEntrys = Editor.nodes<Indent>(editor, {
         match: editor.onIndentMatch,
         mode: 'lowest'
       })
       if(!blockEntrys) return
-      for(const entry of blockEntrys) { 
+      for(const entry of blockEntrys) {
         setLineIndent(editor, entry, size)
       }
       return
@@ -284,10 +283,10 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   const newEditor = editor as T & IndentEditor
 
   INDENT_OPTIONS.set(newEditor, options)
-  
+
   const size = IndentEditor.getSize(editor)
 
-  newEditor.toggleIndent = (mode) => { 
+  newEditor.toggleIndent = (mode) => {
     toggleIndent(newEditor, size, mode)
   }
 
@@ -300,8 +299,8 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   }
 
   const { renderElement, renderElementAttributes } = newEditor
-  
-  newEditor.renderElementAttributes = (props) => { 
+
+  newEditor.renderElementAttributes = (props) => {
     return renderIndentAttributes(newEditor, props, renderElementAttributes)
   }
 
@@ -314,18 +313,18 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   newEditor.isInline = (el: Element) => {
     return IndentEditor.isIndent(newEditor, el) || isInline(el)
   }
-  
+
   newEditor.isVoid = (el: Element) => {
     return IndentEditor.isIndent(newEditor, el) || isVoid(el)
   }
 
-  newEditor.canFocusVoid = (el: Element) => { 
+  newEditor.canFocusVoid = (el: Element) => {
     if(IndentEditor.isIndent(newEditor, el)) return false
     return canFocusVoid(el)
   }
 
   const hotkeys: Hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
-  newEditor.onKeydown = (e: KeyboardEvent) => { 
+  newEditor.onKeydown = (e: KeyboardEvent) => {
     for(let key in hotkeys) {
       const type = key as IndentPluginType
       const hotkey = hotkeys[type]
@@ -340,8 +339,8 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
       }
     }
     const { selection } = editor
-    if(selection && Range.isCollapsed(selection) && isHotkey('backspace', e)) { 
-      const entry = Editor.above(newEditor, { 
+    if(selection && Range.isCollapsed(selection) && isHotkey('backspace', e)) {
+      const entry = Editor.above(newEditor, {
         match: newEditor.onIndentMatch
       })
       const active = IndentEditor.queryActive(newEditor)

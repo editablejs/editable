@@ -4,7 +4,6 @@ import { Grid } from '../../../../interfaces/grid'
 import { GridRow } from '../../../../interfaces/row'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -31,41 +30,33 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'text1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'text1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('remove-col-2', () => {
@@ -82,41 +73,35 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'text1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'text1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 1, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 1, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 
@@ -134,31 +119,27 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'text1'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'text1' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 

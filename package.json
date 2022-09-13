@@ -9,25 +9,25 @@
     "build": "turbo run build",
     "dev": "turbo run dev --no-cache --parallel --continue",
     "lint": "turbo run lint",
+    "format": "turbo run format",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
+    "@commitlint/cli": "17.1.2",
+    "@commitlint/config-conventional": "17.1.0",
     "eslint-config-editable": "workspace:*",
+    "husky": "8.0.1",
     "lint-staged": "^13.0.3",
-    "prettier": "latest",
-    "simple-git-hooks": "^2.8.0",
+    "tailwind-config": "workspace:*",
+    "prettier-config": "workspace:*",
     "turbo": "latest"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm exec lint-staged"
   },
   "lint-staged": {
     "*.{css,md,js,jsx,json,ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
+      "pnpm lint"
     ]
   },
   "engines": {

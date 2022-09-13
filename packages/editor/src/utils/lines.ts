@@ -11,11 +11,7 @@ const doRectsIntersect = (rect: DOMRect, compareRect: DOMRect) => {
   return rect.top <= middle && rect.bottom >= middle
 }
 
-const areRangesSameLine = (
-  editor: Editable,
-  range1: Range,
-  range2: Range
-) => {
+const areRangesSameLine = (editor: Editable, range1: Range, range2: Range) => {
   const rect1 = Editable.toDOMRange(editor, range1).getBoundingClientRect()
   const rect2 = Editable.toDOMRange(editor, range2).getBoundingClientRect()
 
@@ -30,10 +26,7 @@ const areRangesSameLine = (
  * @param {Range} parentRange The parent range to compare against
  * @returns {Range} A valid portion of the parentRange which is one a single line
  */
-export const findCurrentLineRange = (
-  editor: Editable,
-  parentRange: Range
-): Range => {
+export const findCurrentLineRange = (editor: Editable, parentRange: Range): Range => {
   const parentRangeBoundary = Editor.range(editor, Range.end(parentRange))
   const positions = Array.from(Editor.positions(editor, { at: parentRange }))
 
@@ -41,32 +34,16 @@ export const findCurrentLineRange = (
   let right = positions.length
   let middle = Math.floor(right / 2)
 
-  if (
-    areRangesSameLine(
-      editor,
-      Editor.range(editor, positions[left]),
-      parentRangeBoundary
-    )
-  ) {
+  if (areRangesSameLine(editor, Editor.range(editor, positions[left]), parentRangeBoundary)) {
     return Editor.range(editor, positions[left], parentRangeBoundary)
   }
 
   if (positions.length < 2) {
-    return Editor.range(
-      editor,
-      positions[positions.length - 1],
-      parentRangeBoundary
-    )
+    return Editor.range(editor, positions[positions.length - 1], parentRangeBoundary)
   }
 
   while (middle !== positions.length && middle !== left) {
-    if (
-      areRangesSameLine(
-        editor,
-        Editor.range(editor, positions[middle]),
-        parentRangeBoundary
-      )
-    ) {
+    if (areRangesSameLine(editor, Editor.range(editor, positions[middle]), parentRangeBoundary)) {
       right = middle
     } else {
       left = middle

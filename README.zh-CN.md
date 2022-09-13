@@ -17,7 +17,7 @@ pnpm dev
 
 ## 目录结构
 
-所有源代码都在 packages 里面，apps 目录主要用作文档和测试用例，现在初始开发阶段里面写了一个React渲染编辑器模型、以及模型更新的逻辑，方便可视化测试。
+所有源代码都在 packages 里面，apps 目录主要用作文档和测试用例，现在初始开发阶段里面写了一个 React 渲染编辑器模型、以及模型更新的逻辑，方便可视化测试。
 
 ### packages/editable-breaker
 
@@ -25,7 +25,7 @@ pnpm dev
 
 ### packages/editable-editor
 
-使用slatejs数据模型，借助 react 使用自绘光标的模式渲染，不再依赖 contenteditable 属性
+使用 slatejs 数据模型，借助 react 使用自绘光标的模式渲染，不再依赖 contenteditable 属性
 
 ### packages/editable-plugins
 
@@ -41,9 +41,9 @@ pnpm dev
 - [x] 文本输入框渲染
 - [x] 拖拽鼠标选择选区与光标
 - [x] 通过键盘左右键切换光标和选区
-- [x] 通过键盘Shift+左右键切换光标和选区
-- [x] 通过键盘Shift+上下键切换光标和选区
-- [x] 通过键盘Ctrl+上下键切换光标和选区
+- [x] 通过键盘 Shift+左右键切换光标和选区
+- [x] 通过键盘 Shift+上下键切换光标和选区
+- [x] 通过键盘 Ctrl+上下键切换光标和选区
 - [x] 通过键盘上下键切换光标和选区
 - [x] 鼠标双击、三击后分词选中文本
 - [ ] 触摸选择选区与光标

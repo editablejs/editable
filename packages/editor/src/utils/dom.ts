@@ -13,15 +13,7 @@ type DOMRange = globalThis.Range
 type DOMSelection = globalThis.Selection
 type DOMStaticRange = globalThis.StaticRange
 
-export type {
-  DOMNode,
-  DOMComment,
-  DOMElement,
-  DOMText,
-  DOMRange,
-  DOMSelection,
-  DOMStaticRange,
-}
+export type { DOMNode, DOMComment, DOMElement, DOMText, DOMRange, DOMSelection, DOMStaticRange }
 
 declare global {
   interface Window {
@@ -38,9 +30,7 @@ export type DOMPoint = [Node, number]
  */
 
 export const getDefaultView = (value: any): Window | null => {
-  return (
-    (value && value.ownerDocument && value.ownerDocument.defaultView) || null
-  )
+  return (value && value.ownerDocument && value.ownerDocument.defaultView) || null
 }
 
 /**
@@ -109,11 +99,7 @@ export const normalizeDOMPoint = (domPoint: DOMPoint): DOMPoint => {
   if (isDOMElement(node) && node.childNodes.length) {
     let isLast = offset === node.childNodes.length
     let index = isLast ? offset - 1 : offset
-    ;[node, index] = getEditableChildAndIndex(
-      node,
-      index,
-      isLast ? 'backward' : 'forward'
-    )
+    ;[node, index] = getEditableChildAndIndex(node, index, isLast ? 'backward' : 'forward')
     // If the editable child found is in front of input offset, we instead seek to its end
     isLast = index < offset
 
@@ -137,9 +123,7 @@ export const normalizeDOMPoint = (domPoint: DOMPoint): DOMPoint => {
  */
 
 export const hasShadowRoot = () => {
-  return !!(
-    window.document.activeElement && window.document.activeElement.shadowRoot
-  )
+  return !!(window.document.activeElement && window.document.activeElement.shadowRoot)
 }
 
 /**
@@ -150,7 +134,7 @@ export const hasShadowRoot = () => {
 export const getEditableChildAndIndex = (
   parent: DOMElement,
   index: number,
-  direction: 'forward' | 'backward'
+  direction: 'forward' | 'backward',
 ): [DOMNode, number] => {
   const { childNodes } = parent
   let child = childNodes[index]
@@ -160,10 +144,7 @@ export const getEditableChildAndIndex = (
 
   // While the child is a comment node, or an element node with no children,
   // keep iterating to find a sibling non-void, non-comment node.
-  while (
-    isDOMComment(child) ||
-    (isDOMElement(child) && child.childNodes.length === 0)
-  ) {
+  while (isDOMComment(child) || (isDOMElement(child) && child.childNodes.length === 0)) {
     if (triedForward && triedBackward) {
       break
     }
@@ -198,7 +179,7 @@ export const getEditableChildAndIndex = (
 export const getEditableChild = (
   parent: DOMElement,
   index: number,
-  direction: 'forward' | 'backward'
+  direction: 'forward' | 'backward',
 ): DOMNode => {
   const [child] = getEditableChildAndIndex(parent, index, direction)
   return child
@@ -237,9 +218,7 @@ export const getPlainText = (domNode: DOMNode) => {
  * Get x-slate-fragment attribute from data-slate-fragment
  */
 const catchSlateFragment = /data-slate-fragment="(.+?)"/m
-export const getSlateFragmentAttribute = (
-  dataTransfer: DataTransfer
-): string | void => {
+export const getSlateFragmentAttribute = (dataTransfer: DataTransfer): string | void => {
   const htmlData = dataTransfer.getData('text/html')
   const [, fragment] = htmlData.match(catchSlateFragment) || []
   return fragment

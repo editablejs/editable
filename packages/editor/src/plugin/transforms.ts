@@ -1,15 +1,15 @@
-import { Point, Editor, Path, Transforms, Range, NodeEntry, Location } from "slate"
-import { SelectionMoveOptions } from "slate/dist/transforms/selection"
-import { Editable } from "./editable"
-import { Grid } from '../interfaces/grid';
-import { GridCell } from "../interfaces/cell";
+import { Point, Editor, Path, Transforms, Range, NodeEntry, Location } from 'slate'
+import { SelectionMoveOptions } from 'slate/dist/transforms/selection'
+import { Editable } from './editable'
+import { Grid } from '../interfaces/grid'
+import { GridCell } from '../interfaces/cell'
 
-const getVoidPoint = (editor: Editable, point: Point, reverse: boolean) => { 
+const getVoidPoint = (editor: Editable, point: Point, reverse: boolean) => {
   const voidElement = Editor.above(editor, {
     at: point,
     match: n => Editor.isVoid(editor, n),
   })
-  if(voidElement && !editor.canFocusVoid(voidElement[0])) {
+  if (voidElement && !editor.canFocusVoid(voidElement[0])) {
     const path = voidElement[1]
     const p = reverse ? Path.previous(path) : Path.next(path)
     return Editor.point(editor, p, {
@@ -21,11 +21,11 @@ const getVoidPoint = (editor: Editable, point: Point, reverse: boolean) => {
 
 const { move } = Transforms
 
-Transforms.move = (editor: Editor, options: SelectionMoveOptions = {}) => { 
-  if(Editable.isEditor(editor)) {
+Transforms.move = (editor: Editor, options: SelectionMoveOptions = {}) => {
+  if (Editable.isEditor(editor)) {
     const { selection } = editor
     const { distance = 1, unit = 'character', reverse = false } = options
-    
+
     let { edge = null } = options
 
     if (!selection) {
@@ -55,20 +55,18 @@ Transforms.move = (editor: Editor, options: SelectionMoveOptions = {}) => {
     }
 
     if (edge == null || edge === 'focus') {
-      const point = reverse
-        ? Editor.before(editor, focus, opts)
-        : Editor.after(editor, focus, opts)
+      const point = reverse ? Editor.before(editor, focus, opts) : Editor.after(editor, focus, opts)
 
       if (point) {
         props.focus = point
       }
     }
 
-    if(props.anchor) {
+    if (props.anchor) {
       props.anchor = getVoidPoint(editor, props.anchor, reverse)
     }
 
-    if(props.focus) { 
+    if (props.focus) {
       props.focus = getVoidPoint(editor, props.focus, reverse)
     }
 
@@ -78,7 +76,11 @@ Transforms.move = (editor: Editor, options: SelectionMoveOptions = {}) => {
   }
 }
 
-const { delete: defaultDelete, insertNodes: defaultInsertNodes, insertText: defaultInsertText } = Transforms
+const {
+  delete: defaultDelete,
+  insertNodes: defaultInsertNodes,
+  insertText: defaultInsertText,
+} = Transforms
 
 interface OperationTableValue {
   grid?: NodeEntry<Grid>
@@ -88,20 +90,20 @@ interface OperationTableValue {
 
 const getOperationGrid = (editor: Editor, at: Location | null = editor.selection) => {
   const value: OperationTableValue = {}
-  if(Editable.isEditor(editor) && Range.isRange(at) && Range.isExpanded(at)) {
+  if (Editable.isEditor(editor) && Range.isRange(at) && Range.isExpanded(at)) {
     const [anchor, focus] = Range.edges(at)
-    const [startCell] = Editor.nodes<GridCell>(editor, { 
+    const [startCell] = Editor.nodes<GridCell>(editor, {
       at: anchor.path,
-      match: n => editor.isGridCell(n)
+      match: n => editor.isGridCell(n),
     })
     value.start = startCell
     const [endCell] = Editor.nodes<GridCell>(editor, {
       at: focus.path,
-      match: n => editor.isGridCell(n)
+      match: n => editor.isGridCell(n),
     })
     value.end = endCell
     if (startCell && endCell) {
-      if(Path.equals(startCell[1], endCell[1])) { 
+      if (Path.equals(startCell[1], endCell[1])) {
         value.start = undefined
         value.end = undefined
         return value
@@ -117,49 +119,49 @@ const getOperationGrid = (editor: Editor, at: Location | null = editor.selection
 }
 
 // 删除
-Transforms.delete = (editor, options = {}) => { 
+Transforms.delete = (editor, options = {}) => {
   const { at = editor.selection } = options
   const { grid, start, end } = getOperationGrid(editor, at)
   // anchor 与 focus 在同一grid内
-  if(Editable.isEditor(editor)) {
-    if(grid) {
+  if (Editable.isEditor(editor)) {
+    if (grid) {
       const selected = Grid.getSelected(editor, grid)
-      if(selected) {
+      if (selected) {
         const { allFull, rowFull, colFull, rows, cols } = selected
-        if(allFull) {
+        if (allFull) {
           Grid.remove(editor, grid)
-        } else if(rowFull){
-          for(let r = rows.length - 1; r >= 0; r--) { 
+        } else if (rowFull) {
+          for (let r = rows.length - 1; r >= 0; r--) {
             Grid.removeRow(editor, grid[1], rows[r])
           }
-        } else if(colFull){
-          for(let c = cols.length - 1; c >= 0; c--) { 
+        } else if (colFull) {
+          for (let c = cols.length - 1; c >= 0; c--) {
             Grid.removeCol(editor, grid[1], cols[c])
           }
         } else {
           // 设置 selection 到 anchor
-          Transforms.collapse(editor, { edge: 'anchor'})
+          Transforms.collapse(editor, { edge: 'anchor' })
         }
         return
       }
       // 设置 selection 到 anchor
-      Transforms.collapse(editor, { edge: 'anchor'})
+      Transforms.collapse(editor, { edge: 'anchor' })
     } else {
-      const removeRow = (path: Path, start = true) => { 
+      const removeRow = (path: Path, start = true) => {
         const grid = Grid.findGrid(editor, path)
-        if(grid) {
+        if (grid) {
           const [row] = GridCell.toPoint(path)
-          for(let r = start ? grid[0].children.length - 1 : row; r >= (start ? row : 0); r--) { 
+          for (let r = start ? grid[0].children.length - 1 : row; r >= (start ? row : 0); r--) {
             Grid.removeRow(editor, grid[1], r)
           }
         }
       }
       // 开始位置选中在grid内
-      if(start) {
+      if (start) {
         removeRow(start[1])
       }
       // 结束位置选中在grid内
-      if(end) {
+      if (end) {
         removeRow(end[1], false)
       }
       defaultDelete(editor, options)
@@ -169,43 +171,43 @@ Transforms.delete = (editor, options = {}) => {
   }
 }
 
-const handleInsertOnGrid = (editor: Editable, at: Location | null = editor.selection) => { 
+const handleInsertOnGrid = (editor: Editable, at: Location | null = editor.selection) => {
   const { grid, start, end } = getOperationGrid(editor, at)
   // anchor 与 focus 在同一grid内
-  if(grid) {
+  if (grid) {
     // 设置 selection 到 anchor
-    Transforms.collapse(editor, { edge: 'anchor'})
-  } 
+    Transforms.collapse(editor, { edge: 'anchor' })
+  }
   // focus 在grid内
   else if (end) {
-    Transforms.collapse(editor, { edge: 'anchor'})
+    Transforms.collapse(editor, { edge: 'anchor' })
     return false
   }
   // anchor 在grid内
-  else if (start) { 
+  else if (start) {
     const [, startPath] = start
     const grid = Grid.findGrid(editor, startPath)
-    if(grid) { 
+    if (grid) {
       const { children } = grid[0]
       const path = startPath.slice(0, -1)
       const rowIndex = path[path.length - 1]
-      if(rowIndex === 0) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+      if (rowIndex === 0) {
         Grid.remove(editor, grid)
       } else {
-        for(let r = children.length - 1; r >= rowIndex; r--) { 
+        for (let r = children.length - 1; r >= rowIndex; r--) {
           Grid.removeRow(editor, grid[1], r)
         }
       }
       // 重新设置 anchor
       const nextPath = rowIndex === 0 ? grid[1] : Path.next(grid[1])
       const { selection } = editor
-      if(selection) {
-        Transforms.select(editor, { 
+      if (selection) {
+        Transforms.select(editor, {
           ...selection,
           anchor: Editable.toLowestPoint(editor, {
             path: nextPath,
-            offset: 0
-          })
+            offset: 0,
+          }),
         })
       }
     }
@@ -213,20 +215,18 @@ const handleInsertOnGrid = (editor: Editable, at: Location | null = editor.selec
   return true
 }
 
-Transforms.insertText  = (editor, text, options = {}) => { 
+Transforms.insertText = (editor, text, options = {}) => {
   const { at = editor.selection } = options
-  if(Editable.isEditor(editor) && handleInsertOnGrid(editor, at)) {
+  if (Editable.isEditor(editor) && handleInsertOnGrid(editor, at)) {
     defaultInsertText(editor, text, options)
-  } 
+  }
 }
 
-Transforms.insertNodes = (editor, nodes, options = {}) => { 
+Transforms.insertNodes = (editor, nodes, options = {}) => {
   const { at = editor.selection } = options
-  if(Editable.isEditor(editor) && handleInsertOnGrid(editor, at)) {
+  if (Editable.isEditor(editor) && handleInsertOnGrid(editor, at)) {
     defaultInsertNodes(editor, nodes, options)
   }
 }
 
-export {
-  Transforms
-}
+export { Transforms }

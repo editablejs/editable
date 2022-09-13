@@ -7,14 +7,12 @@
   "scripts": {
     "clean": "rm -rf .turbo && rm -rf node_modules"
   },
-  "dependencies": {
-    "eslint": "^7.23.0",
+  "devDependencies": {
+    "eslint": "^7.32.0",
     "eslint-config-next": "^12.0.8",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "7.31.0",
-    "eslint-config-turbo": "latest"
-  },
-  "devDependencies": {
+    "eslint-config-turbo": "latest",
     "typescript": "^4.5.3"
   },
   "publishConfig": {

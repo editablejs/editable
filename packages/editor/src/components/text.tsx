@@ -3,27 +3,15 @@ import { Element, Text as SlateText } from 'slate'
 
 import Leaf from './leaf'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import {
-  NODE_TO_ELEMENT,
-  ELEMENT_TO_NODE,
-  EDITOR_TO_KEY_TO_ELEMENT,
-} from '../utils/weak-maps'
+import { NODE_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_KEY_TO_ELEMENT } from '../utils/weak-maps'
 import { useEditableStatic } from '../hooks/use-editable-static'
 import { Editable } from '../plugin/editable'
 
 /**
  * Text.
  */
-const Text = (props: {
-  isLast: boolean
-  parent: Element
-  text: SlateText
-}) => {
-  const {
-    isLast,
-    parent,
-    text,
-  } = props
+const Text = (props: { isLast: boolean; parent: Element; text: SlateText }) => {
+  const { isLast, parent, text } = props
   const editor = useEditableStatic()
   const ref = useRef<HTMLSpanElement>(null)
   const key = Editable.findKey(editor, text)
@@ -43,22 +31,13 @@ const Text = (props: {
 
   return (
     <span data-slate-node="text" ref={ref}>
-      <Leaf
-        isLast={isLast}
-        key={`${key.id}`}
-        text={text}
-        parent={parent}
-      />
+      <Leaf isLast={isLast} key={`${key.id}`} text={text} parent={parent} />
     </span>
   )
 }
 
 const MemoizedText = React.memo(Text, (prev, next) => {
-  return (
-    next.parent === prev.parent &&
-    next.isLast === prev.isLast &&
-    next.text === prev.text
-  )
+  return next.parent === prev.parent && next.isLast === prev.isLast && next.text === prev.text
 })
 
 export default MemoizedText

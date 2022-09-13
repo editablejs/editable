@@ -21,10 +21,7 @@ export const EDITOR_TO_SHADOW: WeakMap<Editor, ShadowRoot | null> = new WeakMap(
 export const ELEMENT_TO_NODE: WeakMap<HTMLElement, Node> = new WeakMap()
 export const NODE_TO_ELEMENT: WeakMap<Node, HTMLElement> = new WeakMap()
 export const NODE_TO_KEY: WeakMap<Node, Key> = new WeakMap()
-export const EDITOR_TO_KEY_TO_ELEMENT: WeakMap<
-  Editor,
-  WeakMap<Key, HTMLElement>
-> = new WeakMap()
+export const EDITOR_TO_KEY_TO_ELEMENT: WeakMap<Editor, WeakMap<Key, HTMLElement>> = new WeakMap()
 
 /**
  * Weak maps for storing editor-related state.

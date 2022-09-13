@@ -1,7 +1,6 @@
-import { Editable, isHotkey, Transforms, Text, Element, Editor, Range, Node, Path, Locale } from "@editablejs/editor";
+import { Editable, isHotkey, Transforms, Text, Element, Editor, Range, Node, Path } from "@editablejs/editor";
 import { FontSize, FontSizeEditor } from "../fontsize";
 import { Mark, MarkEditor } from "../mark";
-import "./style.less"
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -23,8 +22,8 @@ export const HeadingTags = {
   [HEADING_SIX_KEY]: 'h6',
 }
 
-const defaultHeadingStyle = { 
-  [HEADING_ONE_KEY]: { 
+const defaultHeadingStyle = {
+  [HEADING_ONE_KEY]: {
     fontSize: '28px',
     fontWeight: 'bold',
   },
@@ -52,7 +51,7 @@ const defaultHeadingStyle = {
 
 type Hotkeys = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
 
-const defaultHotkeys: Hotkeys = { 
+const defaultHotkeys: Hotkeys = {
   [HEADING_ONE_KEY]: 'mod+opt+1',
   [HEADING_TWO_KEY]: 'mod+opt+2',
   [HEADING_THREE_KEY]: 'mod+opt+3',
@@ -85,11 +84,11 @@ export const HeadingEditor = {
     return !!(editor as HeadingEditor).toggleHeading
   },
 
-  isHeading: (editor: Editable, n: Node): n is Heading => { 
+  isHeading: (editor: Editable, n: Node): n is Heading => {
     return Editor.isBlock(editor, n) && !!n.type && n.type in HeadingTags
   },
 
-  isEnabled: (editor: Editable, type: HeadingType) => { 
+  isEnabled: (editor: Editable, type: HeadingType) => {
     if(!HeadingEditor.isHeadingEditor(editor)) return false
     const { enabled, disabled } = HEADING_OPTIONS.get(editor) ?? {}
     if(enabled && ~~enabled.indexOf(type)) return false
@@ -105,23 +104,21 @@ export const HeadingEditor = {
     return null
   },
 
-  getOptions: (editor: Editable): HeadingOptions => { 
+  getOptions: (editor: Editable): HeadingOptions => {
     return HEADING_OPTIONS.get(editor) ?? {}
   },
 
-  toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => { 
+  toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
     editor.toggleHeading(type)
   }
 }
-
-const prefixCls = Locale.getPrefixCls(HEADING_KEY)
 
 export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingEditor
 
   HEADING_OPTIONS.set(newEditor, options)
-  
-  newEditor.toggleHeading = (type) => { 
+
+  newEditor.toggleHeading = (type) => {
     editor.normalizeSelection(selection => {
       if(!selection || type && type !== PARAGRAPH_KEY && !HeadingEditor.isEnabled(editor, type)) return
       if(!type) type = PARAGRAPH_KEY
@@ -132,13 +129,13 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
 
       const lowestBlocks = Editor.nodes<Element>(editor, { mode: 'lowest', match: n => Editor.isBlock(editor, n) })
       for(const [_, path] of lowestBlocks) {
-        if(type !== PARAGRAPH_KEY) { 
+        if(type !== PARAGRAPH_KEY) {
           const style = ({...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style})[type]
           const mark: Partial<FontSize & Mark> = { }
           if(FontSizeEditor.isFontSizeEditor(editor)) {
             mark.fontSize = style.fontSize
           }
-          if(MarkEditor.isMarkEditor(editor)) { 
+          if(MarkEditor.isMarkEditor(editor)) {
             mark.bold = style.fontWeight
           }
           Transforms.setNodes<FontSize & Mark>(editor, mark, {
@@ -159,16 +156,16 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
   const { renderElement } = newEditor
 
   newEditor.renderElement = ({ element, attributes, children }) => {
-    if(HeadingEditor.isHeading(editor, element)) { 
+    if(HeadingEditor.isHeading(editor, element)) {
       const Heading = HeadingTags[element.type] as ('h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6')
-      return <Heading className={`${prefixCls}`}{...attributes}>{children}</Heading>
+      return <Heading className='ea-heading' {...attributes}>{children}</Heading>
     }
     return renderElement({ attributes, children, element })
   }
-  
+
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
   const { onKeydown } = newEditor
-  newEditor.onKeydown = (e: KeyboardEvent) => { 
+  newEditor.onKeydown = (e: KeyboardEvent) => {
     for(let key in hotkeys) {
       const type = key as HeadingType
       const hotkey = hotkeys[type]

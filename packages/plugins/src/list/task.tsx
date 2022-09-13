@@ -1,6 +1,5 @@
-import { Editable, ElementAttributes, isHotkey, RenderElementProps, Transforms, Node, Locale } from "@editablejs/editor";
+import { Editable, ElementAttributes, isHotkey, RenderElementProps, Transforms, Node } from "@editablejs/editor";
 import { List, ListEditor, ToggleListOptions, withList } from "./base";
-import './task.less'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -28,11 +27,11 @@ export interface TaskListEditor extends Editable {
 }
 
 export const TaskListEditor = {
-  isListEditor: (editor: Editable): editor is TaskListEditor => { 
+  isListEditor: (editor: Editable): editor is TaskListEditor => {
     return !!(editor as TaskListEditor).toggleTaskList
   },
 
-  isTask: (editor: Editable, n: Node): n is Task => { 
+  isTask: (editor: Editable, n: Node): n is Task => {
     return ListEditor.isList(editor, n, TASK_LIST_KEY) && n.type === TASK_LIST_KEY
   },
 
@@ -40,12 +39,10 @@ export const TaskListEditor = {
     return ListEditor.queryActive(editor, TASK_LIST_KEY)
   },
 
-  toggle: (editor: TaskListEditor, options?: ToggleTaskListOptions) => { 
+  toggle: (editor: TaskListEditor, options?: ToggleTaskListOptions) => {
     editor.toggleTaskList(options)
   },
 }
-
-const prefixCls = Locale.getPrefixCls(TASK_LIST_KEY)
 
 interface TaskProps {
   checked: boolean
@@ -56,16 +53,16 @@ interface RenderTaskElementProps extends RenderElementProps {
   attributes: ElementAttributes & Partial<Record<typeof DATA_TASK_CHECKED_KEY, boolean>>
 }
 
-const TaskElement = ({ checked, onChange }: TaskProps) => { 
+const TaskElement = ({ checked, onChange }: TaskProps) => {
 
-  const handleMouseDown = (e: React.MouseEvent) => { 
+  const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
   }
 
-  return <span onMouseDown={handleMouseDown} onClick={() => onChange(!checked)} className={`${prefixCls}-checkbox`}><span className={`${prefixCls}-inner`}></span></span>
+  return <span onMouseDown={handleMouseDown} onClick={() => onChange(!checked)} className='ea-task-checkbox'><span className='ea-task-checkbox-inner'></span></span>
 }
 
-export const withTaskList = <T extends Editable>(editor: T, options: TaskListOptions = {}) => { 
+export const withTaskList = <T extends Editable>(editor: T, options: TaskListOptions = {}) => {
   const hotkey = options.hotkey || defaultHotkey
 
   const e = editor as  T & TaskListEditor
@@ -84,10 +81,10 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
           attributes,
           children,
         },
-        className: prefixCls,
-        onRenderLabel: (element) => { 
+        className: 'ea-task-list',
+        onRenderLabel: (element) => {
           const { checked } = element as Task
-          const onChange = (checked: boolean) => { 
+          const onChange = (checked: boolean) => {
             Transforms.setNodes<Task>(editor, { checked }, { at: Editable.findPath(editor, element) })
           }
           return <TaskElement checked={checked ?? false} onChange={onChange} />
@@ -97,7 +94,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
     return renderElement(props)
   }
 
-  newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => { 
+  newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => {
     ListEditor.toggle(editor, TASK_LIST_KEY, {
       ...options,
       values: {
@@ -108,7 +105,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
 
   const { onKeydown } = newEditor
 
-  newEditor.onKeydown = (e: KeyboardEvent) => { 
+  newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {
       e.preventDefault()
       newEditor.toggleTaskList()

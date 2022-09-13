@@ -1,12 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  Editor,
-  Node,
-  Range,
-  Transforms,
-  Point,
-  Selection,
-} from 'slate'
+import { Editor, Node, Range, Transforms, Point, Selection } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
@@ -14,10 +7,7 @@ import { Editable } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useEditable } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import {
-  DOMRange,
-  getDefaultView,
-} from '../utils/dom'
+import { DOMRange, getDefaultView } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
@@ -63,13 +53,16 @@ export type EditableProps = {
   selectionStyle?: SelectionStyle
 }
 
-const mergeSelectionStyle = (selectionStyle: SelectionStyle, oldStyle: SelectionStyle = {
-  focusColor: SELECTION_DEFAULT_FOCUS_COLOR,
-  blurColor: SELECTION_DEFAULT_BLUR_COLOR,
-  caretColor: SELECTION_DEFAULT_CARET_COLOR,
-  caretWidth: SELECTION_DEFAULT_CARET_WIDTH
-}): Required<SelectionStyle> => { 
-  return Object.assign({},oldStyle , selectionStyle) as Required<SelectionStyle>
+const mergeSelectionStyle = (
+  selectionStyle: SelectionStyle,
+  oldStyle: SelectionStyle = {
+    focusColor: SELECTION_DEFAULT_FOCUS_COLOR,
+    blurColor: SELECTION_DEFAULT_BLUR_COLOR,
+    caretColor: SELECTION_DEFAULT_CARET_COLOR,
+    caretWidth: SELECTION_DEFAULT_CARET_WIDTH,
+  },
+): Required<SelectionStyle> => {
+  return Object.assign({}, oldStyle, selectionStyle) as Required<SelectionStyle>
 }
 
 /**
@@ -89,8 +82,10 @@ export const ContentEditable = (props: EditableProps) => {
   const editor = useEditable()
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [drawSelection, setDrawSelection] = useState<Selection>(null)
-  const [drawSelectionStyle, setDrawSelectionStyle] = useState(mergeSelectionStyle(selectionStyle ?? {}))
-  const [ isDrawSelection, setIsDrawSelection ] = useState(true)
+  const [drawSelectionStyle, setDrawSelectionStyle] = useState(
+    mergeSelectionStyle(selectionStyle ?? {}),
+  )
+  const [isDrawSelection, setIsDrawSelection] = useState(true)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -119,7 +114,7 @@ export const ContentEditable = (props: EditableProps) => {
     }
   }, [editor, autoFocus])
 
-  useEffect(() => {  
+  useEffect(() => {
     editor.setSelectionStyle = style => {
       setDrawSelectionStyle(value => mergeSelectionStyle(style, value))
     }
@@ -131,15 +126,18 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleDocumentMouseDown = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if(!isMouseDown && !event.defaultPrevented) setFocused(false)
+    if (!isMouseDown && !event.defaultPrevented) setFocused(false)
   }
 
-  const handleSelecting = (point: Point | null) => { 
-    if(!point) return
-    const anchor = IS_SHIFT_PRESSED.get(editor) && editor.selection ? editor.selection.anchor : startPointRef.current
-    if(!anchor) return
+  const handleSelecting = (point: Point | null) => {
+    if (!point) return
+    const anchor =
+      IS_SHIFT_PRESSED.get(editor) && editor.selection
+        ? editor.selection.anchor
+        : startPointRef.current
+    if (!anchor) return
     const range: Range = { anchor, focus: point }
-    if(editor.selection && Range.equals(range, editor.selection)) {
+    if (editor.selection && Range.equals(range, editor.selection)) {
       Editable.focus(editor)
       setFocused(true)
       return
@@ -150,29 +148,29 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if(isMouseDown && !event.defaultPrevented) {
-      if(focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
+    if (isMouseDown && !event.defaultPrevented) {
+      if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         Editable.focus(editor)
       }
       const range = handleSelecting(Editable.findEventPoint(editor, event))
-      if(range) editor.onSelectEnd()
+      if (range) editor.onSelectEnd()
     }
     IS_MOUSEDOWN.set(editor, false)
   }
 
-  const handleDocumentMouseMove = (event: MouseEvent) => { 
+  const handleDocumentMouseMove = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if(event.button !== 0 || !isMouseDown || event.defaultPrevented) return
+    if (event.button !== 0 || !isMouseDown || event.defaultPrevented) return
     const point = Editable.findEventPoint(editor, event)
     const range = handleSelecting(point)
-    if(range)  editor.onSelecting()
+    if (range) editor.onSelecting()
   }
 
   const handleRootMouseDown = (event: React.MouseEvent) => {
-    if(event.defaultPrevented) return
+    if (event.defaultPrevented) return
     IS_MOUSEDOWN.set(editor, true)
-    if(isDoubleClickRef.current) {
-      if(isSamePoint(event)) {
+    if (isDoubleClickRef.current) {
+      if (isSamePoint(event)) {
         return
       } else {
         isDoubleClickRef.current = false
@@ -180,14 +178,13 @@ export const ContentEditable = (props: EditableProps) => {
     }
     setFocused(true)
     const point = Editable.findEventPoint(editor, event)
-    if(point) {
-      if(!IS_SHIFT_PRESSED.get(editor)) {
+    if (point) {
+      if (!IS_SHIFT_PRESSED.get(editor)) {
         startPointRef.current = point
       }
       const range = handleSelecting(point)
-      if(range) editor.onSelectStart()
-    }
-    else startPointRef.current = null
+      if (range) editor.onSelectStart()
+    } else startPointRef.current = null
   }
 
   const isDoubleClickRef = useRef(false)
@@ -199,30 +196,29 @@ export const ContentEditable = (props: EditableProps) => {
     onMultipleClick: (event, count) => {
       event.preventDefault()
       const { selection } = editor
-      if(!selection) return
+      if (!selection) return
       const { focus } = selection
       const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
       const isCollapsed = Range.isCollapsed(selection)
-      if(count === 1 && !isCollapsed) {
+      if (count === 1 && !isCollapsed) {
         return false
-      }
-      else if(count === 2) {
+      } else if (count === 2) {
         const { text, offset } = Editable.findTextOffsetOnLine(editor, focus)
-        if(text) {
+        if (text) {
           const [startOffset, endOffset] = getWordRange(text, offset)
           Transforms.select(editor, {
             anchor: Editable.findPointOnLine(editor, focusPath, startOffset, true),
-            focus: Editable.findPointOnLine(editor, focusPath, endOffset)
+            focus: Editable.findPointOnLine(editor, focusPath, endOffset),
           })
           isDoubleClickRef.current = true
           setTimeout(() => {
             isDoubleClickRef.current = false
-          }, 500);
+          }, 500)
           Editable.focus(editor)
           return
         }
-      } else if(count === 3) {
+      } else if (count === 3) {
         let blockPath = focusPath
         if (!Editor.isBlock(editor, focusNode)) {
           const block = Editor.above(editor, {
@@ -239,19 +235,19 @@ export const ContentEditable = (props: EditableProps) => {
         Editable.focus(editor)
         return false
       }
-    }
+    },
   })
-  
+
   useIsomorphicLayoutEffect(() => {
     const { onChange } = editor
-    editor.onChange = () => { 
+    editor.onChange = () => {
       const { selection } = editor
       onChange()
-      setDrawSelection(selection ? {...selection} : null)
+      setDrawSelection(selection ? { ...selection } : null)
     }
 
     const handleShift = (event: KeyboardEvent) => {
-      if(event.key.toLowerCase() === 'shift') {
+      if (event.key.toLowerCase() === 'shift') {
         IS_SHIFT_PRESSED.set(editor, false)
       }
     }
@@ -290,14 +286,22 @@ export const ContentEditable = (props: EditableProps) => {
         onMouseDown={handleRootMouseDown}
         onClick={handleMultipleClick}
       >
-        <Children
-          node={editor}
-          selection={editor.selection}
-        />
+        <Children node={editor} selection={editor.selection} />
       </Component>
       <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
-        {isDrawSelection && <CaretComponent selection={drawSelection} width={drawSelectionStyle?.caretWidth} color={drawSelectionStyle?.caretColor} />}
-        {isDrawSelection && <SelectionComponent selection={drawSelection} color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor} />}
+        {isDrawSelection && (
+          <CaretComponent
+            selection={drawSelection}
+            width={drawSelectionStyle?.caretWidth}
+            color={drawSelectionStyle?.caretColor}
+          />
+        )}
+        {isDrawSelection && (
+          <SelectionComponent
+            selection={drawSelection}
+            color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
+          />
+        )}
         <InputComponent selection={drawSelection} />
       </Shadow>
     </ReadOnlyContext.Provider>
@@ -307,16 +311,10 @@ export const ContentEditable = (props: EditableProps) => {
 /**
  * A default implement to scroll dom range into view.
  */
-const defaultScrollSelectionIntoView = (
-  editor: Editable,
-  domRange: DOMRange
-) => {
+const defaultScrollSelectionIntoView = (editor: Editable, domRange: DOMRange) => {
   // This was affecting the selection of multiple blocks and dragging behavior,
   // so enabled only if the selection has been collapsed.
-  if (
-    !editor.selection ||
-    (editor.selection && Range.isCollapsed(editor.selection))
-  ) {
+  if (!editor.selection || (editor.selection && Range.isCollapsed(editor.selection))) {
     const leafEl = domRange.startContainer.parentElement!
     leafEl.getBoundingClientRect = domRange.getBoundingClientRect.bind(domRange)
     scrollIntoView(leafEl, {
@@ -325,4 +323,3 @@ const defaultScrollSelectionIntoView = (
     delete (leafEl as any).getBoundingClientRect
   }
 }
-

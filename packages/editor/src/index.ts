@@ -9,9 +9,7 @@ export * from './plugin/custom'
 // Locale
 export * from './hooks/use-locale'
 
-export {
-  ContentEditable,
-} from './components/content'
+export { ContentEditable } from './components/content'
 export { EditableComposer } from './components/editable'
 
 export { useIsomorphicLayoutEffect } from './hooks/use-isomorphic-layout-effect'
@@ -40,13 +38,9 @@ export type {
   ElementAttributes,
   NodeAttributes,
   TextAttributes,
-  PlaceholderAttributes
+  PlaceholderAttributes,
 } from './plugin/editable'
 
 export { useCancellablePromises, cancellablePromise } from './hooks/use-cancellable-promises'
 
-export {
-  isHotkey,
-  isCodeHotkey,
-  isKeyHotkey
-}
+export { isHotkey, isCodeHotkey, isKeyHotkey }

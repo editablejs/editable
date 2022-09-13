@@ -4,7 +4,6 @@ import { Grid } from '../../../../interfaces/grid'
 import { GridRow } from '../../../../interfaces/row'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -31,33 +30,27 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'grid-row',
@@ -68,33 +61,27 @@ describe('interfaces/grid', () => {
               colspan: 1,
               children: [
                 {
-                  children: [
-                    { text: 'cell4'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell4' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell5'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell5' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell6'}
-                  ]
-                }
-              ]
-            }
-          ]
+                  children: [{ text: 'cell6' }],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'grid-row',
@@ -104,43 +91,44 @@ describe('interfaces/grid', () => {
               span: [1, 0],
               children: [
                 {
-                  children: [
-                    { text: 'cell7'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell7' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell8'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell8' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell9'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell9' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('insert-row-span-1-0-0', () => {
     editor.children = children.concat()
-    Grid.insertRow(editor, [0], 0, {
-      type: 'grid-row',
-    }, { type: 'grid-cell' }, 35)
+    Grid.insertRow(
+      editor,
+      [0],
+      0,
+      {
+        type: 'grid-row',
+      },
+      { type: 'grid-cell' },
+      35,
+    )
     expect(editor.children).toEqual([
       {
         type: 'grid',
@@ -157,11 +145,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -169,11 +155,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -181,13 +165,11 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
-            ]
+            ],
           },
           {
             type: 'grid-row',
@@ -196,33 +178,27 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -233,33 +209,27 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell4'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell4' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell5'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell5' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell6'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell6' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -269,54 +239,55 @@ describe('interfaces/grid', () => {
                 span: [2, 0],
                 children: [
                   {
-                    children: [
-                      { text: 'cell7'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell7' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell8'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell8' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell9'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell9' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 
   it('insert-row-span-1-0-1', () => {
     editor.children = children.concat()
-    Grid.insertRow(editor, [0], 1, {
-      type: 'grid-row',
-    }, { type: 'grid-cell' }, 35)
+    Grid.insertRow(
+      editor,
+      [0],
+      1,
+      {
+        type: 'grid-row',
+      },
+      { type: 'grid-cell' },
+      35,
+    )
     expect(editor.children).toEqual([
       {
         type: 'grid',
@@ -329,33 +300,27 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -368,11 +333,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -380,11 +343,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -392,13 +353,11 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
-            ]
+            ],
           },
           {
             type: 'grid-row',
@@ -409,33 +368,27 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell4'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell4' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell5'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell5' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell6'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell6' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -445,54 +398,55 @@ describe('interfaces/grid', () => {
                 span: [2, 0],
                 children: [
                   {
-                    children: [
-                      { text: 'cell7'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell7' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell8'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell8' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell9'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell9' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 1, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 1, 0, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 
   it('insert-row-span-1-0-2', () => {
     editor.children = children.concat()
-    Grid.insertRow(editor, [0], 2, {
-      type: 'grid-row',
-    }, { type: 'grid-cell' }, 35)
+    Grid.insertRow(
+      editor,
+      [0],
+      2,
+      {
+        type: 'grid-row',
+      },
+      { type: 'grid-cell' },
+      35,
+    )
     expect(editor.children).toEqual([
       {
         type: 'grid',
@@ -505,33 +459,27 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -542,33 +490,27 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell4'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell4' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell5'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell5' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell6'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell6' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -582,11 +524,9 @@ describe('interfaces/grid', () => {
                 span: [1, 0],
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -594,11 +534,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -606,13 +544,11 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
-            ]
+            ],
           },
           {
             type: 'grid-row',
@@ -622,54 +558,55 @@ describe('interfaces/grid', () => {
                 span: [1, 0],
                 children: [
                   {
-                    children: [
-                      { text: 'cell7'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell7' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell8'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell8' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell9'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell9' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 1, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 1, 0, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 
   it('insert-row-span-1-0-3', () => {
     editor.children = children.concat()
-    Grid.insertRow(editor, [0], 3, {
-      type: 'grid-row',
-    }, { type: 'grid-cell' }, 35)
+    Grid.insertRow(
+      editor,
+      [0],
+      3,
+      {
+        type: 'grid-row',
+      },
+      { type: 'grid-cell' },
+      35,
+    )
     expect(editor.children).toEqual([
       {
         type: 'grid',
@@ -682,33 +619,27 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -719,33 +650,27 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell4'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell4' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell5'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell5' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell6'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell6' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -755,33 +680,27 @@ describe('interfaces/grid', () => {
                 span: [1, 0],
                 children: [
                   {
-                    children: [
-                      { text: 'cell7'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell7' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell8'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell8' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell9'}
-                    ]
-                  }
-                ]
-              }
-            ]
+                    children: [{ text: 'cell9' }],
+                  },
+                ],
+              },
+            ],
           },
           {
             type: 'grid-row',
@@ -794,11 +713,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -806,11 +723,9 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -818,26 +733,24 @@ describe('interfaces/grid', () => {
                 colspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: ''}
-                    ]
-                  }
-                ]
+                    children: [{ text: '' }],
+                  },
+                ],
               },
-            ]
+            ],
           },
-        ]
-      }
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 3, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 3, 0, 0, 0],
-        offset: 0
-      }
+        offset: 0,
+      },
     })
   })
 })

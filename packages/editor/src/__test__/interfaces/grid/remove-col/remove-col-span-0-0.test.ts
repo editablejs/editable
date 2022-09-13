@@ -4,7 +4,6 @@ import { GridRow } from '../../../../interfaces/row'
 import { createEditor } from '../../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -33,42 +32,34 @@ describe('interfaces/grid', () => {
               rowspan: 1,
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
+                  children: [{ text: 'cell1' }],
                 },
                 {
-                  children: [
-                    { text: 'text1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'text1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               span: [0, 0],
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('remove-col-span-0-0-0', () => {
@@ -88,26 +79,22 @@ describe('interfaces/grid', () => {
                 rowspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   })
 
@@ -128,31 +115,25 @@ describe('interfaces/grid', () => {
                 rowspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'text1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'text1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
   })
 
@@ -173,32 +154,26 @@ describe('interfaces/grid', () => {
                 rowspan: 1,
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'text1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'text1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 span: [0, 0],
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
-            ]
-          }
-        ]
-      }
+            ],
+          },
+        ],
+      },
     ])
   })
 })

@@ -1,6 +1,5 @@
-
-import { Locale } from '../hooks/use-locale';
-import localeData from './ja_JP.json';
+import { Locale } from '../hooks/use-locale'
+import localeData from './ja_JP.json'
 
 const localeValue: Locale = {
   locale: 'ja-JP',
@@ -8,6 +7,6 @@ const localeValue: Locale = {
     locale: 'ja-JP',
     ...localeData,
   },
-};
+}
 
-export default localeValue;
+export default localeValue

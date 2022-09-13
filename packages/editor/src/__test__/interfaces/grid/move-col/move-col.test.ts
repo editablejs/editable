@@ -4,7 +4,6 @@ import { GridRow } from '../../../../interfaces/row'
 import { createEditor } from '../../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -31,36 +30,30 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('move-col-0-to-1', () => {
@@ -68,7 +61,7 @@ describe('interfaces/grid', () => {
     Grid.moveCol(editor, {
       at: [0],
       move: 0,
-      to: 1
+      to: 1,
     })
     expect(editor.children).toEqual([
       {
@@ -82,46 +75,40 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 1, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 1, 0, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
   it('move-col-0-to-2', () => {
@@ -129,7 +116,7 @@ describe('interfaces/grid', () => {
     Grid.moveCol(editor, {
       at: [0],
       move: 0,
-      to: 2
+      to: 2,
     })
     expect(editor.children).toEqual([
       {
@@ -143,46 +130,40 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 2, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 2, 0, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 
@@ -191,7 +172,7 @@ describe('interfaces/grid', () => {
     Grid.moveCol(editor, {
       at: [0],
       move: 2,
-      to: 1
+      to: 1,
     })
     expect(editor.children).toEqual([
       {
@@ -205,46 +186,40 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 1, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 1, 0, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 
@@ -253,7 +228,7 @@ describe('interfaces/grid', () => {
     Grid.moveCol(editor, {
       at: [0],
       move: 2,
-      to: 0
+      to: 0,
     })
     expect(editor.children).toEqual([
       {
@@ -267,46 +242,40 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell3' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell3' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1' }
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 0, 0, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 })

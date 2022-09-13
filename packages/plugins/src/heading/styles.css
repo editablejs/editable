@@ -1,0 +1,6 @@
+
+@layer components {
+  .ea-heading {
+    @apply ea-font-medium ea-mb-2 ea-mt-0;
+  }
+}

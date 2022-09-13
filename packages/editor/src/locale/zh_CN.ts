@@ -1,6 +1,5 @@
-
-import { Locale } from '../hooks/use-locale';
-import localeData from './zh_CN.json';
+import { Locale } from '../hooks/use-locale'
+import localeData from './zh_CN.json'
 
 const localeValue: Locale = {
   locale: 'zh-CN',
@@ -8,6 +7,6 @@ const localeValue: Locale = {
     locale: 'zh-CN',
     ...localeData,
   },
-};
+}
 
-export default localeValue;
+export default localeValue

@@ -1,15 +1,16 @@
-import { defineConfig } from 'tsup'
-import { lessLoader } from 'esbuild-plugin-less'
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ["src/index.ts"],
-  inject: ["react-shim.ts"],
-  format: ["cjs", "esm", "iife"],
+  entry: [
+    'src/index.ts',
+  ],
+  inject: ['react-shim.ts'],
+  format: ['cjs', 'esm', 'iife'],
+  bundle: true,
   dts: true,
   sourcemap: true,
-  esbuildPlugins: [lessLoader()],
+  clean: true,
   esbuildOptions(options) {
-    options.bundle = true
-    options.external = ["react", "react-dom", "@editablejs/editor"]
+    options.external = ['react', 'react-dom', '@editablejs/editor'];
   },
-})
+});

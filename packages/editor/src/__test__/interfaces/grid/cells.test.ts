@@ -4,7 +4,6 @@ import { GridRow } from '../../../interfaces/row'
 import { createEditor } from '../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -30,33 +29,27 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
         },
         {
           type: 'grid-row',
@@ -65,169 +58,187 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell4'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell4' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell5'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell5' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell6'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell6' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   it('cells-all', () => {
     const cells = Grid.cells(editor, [0])
     expect(Array.from(cells)).toEqual([
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell1'}
-            ]
-          }
-        ]
-      }, 0, 0],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell2'}
-            ]
-          }
-        ]
-      }, 0, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell3'}
-            ]
-          }
-        ]
-      }, 0, 2],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell4'}
-            ]
-          }
-        ]
-      }, 1, 0],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell5'}
-            ]
-          }
-        ]
-      }, 1, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell6'}
-            ]
-          }
-        ]
-      }, 1, 2]
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell1' }],
+            },
+          ],
+        },
+        0,
+        0,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell2' }],
+            },
+          ],
+        },
+        0,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell3' }],
+            },
+          ],
+        },
+        0,
+        2,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell4' }],
+            },
+          ],
+        },
+        1,
+        0,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell5' }],
+            },
+          ],
+        },
+        1,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell6' }],
+            },
+          ],
+        },
+        1,
+        2,
+      ],
     ])
   })
 
   it('cells-all-reverse', () => {
     const cells = Grid.cells(editor, [0], {
-      reverse: true
+      reverse: true,
     })
     expect(Array.from(cells)).toEqual([
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell6'}
-            ]
-          }
-        ]
-      }, 1, 2],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell5'}
-            ]
-          }
-        ]
-      }, 1, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell4'}
-            ]
-          }
-        ]
-      }, 1, 0],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell3'}
-            ]
-          }
-        ]
-      }, 0, 2],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell2'}
-            ]
-          }
-        ]
-      }, 0, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell1'}
-            ]
-          }
-        ]
-      }, 0, 0]
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell6' }],
+            },
+          ],
+        },
+        1,
+        2,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell5' }],
+            },
+          ],
+        },
+        1,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell4' }],
+            },
+          ],
+        },
+        1,
+        0,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell3' }],
+            },
+          ],
+        },
+        0,
+        2,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell2' }],
+            },
+          ],
+        },
+        0,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell1' }],
+            },
+          ],
+        },
+        0,
+        0,
+      ],
     ])
   })
 
@@ -237,64 +248,74 @@ describe('interfaces/grid', () => {
       endCol: 1,
     })
     expect(Array.from(cells)).toEqual([
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell2'}
-            ]
-          }
-        ]
-      }, 0, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell5'}
-            ]
-          }
-        ]
-      }, 1, 1]
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell2' }],
+            },
+          ],
+        },
+        0,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell5' }],
+            },
+          ],
+        },
+        1,
+        1,
+      ],
     ])
   })
 
   it('cells-row-1', () => {
     const cells = Grid.cells(editor, [0], {
-      startRow: 1
+      startRow: 1,
     })
     expect(Array.from(cells)).toEqual([
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell4'}
-            ]
-          }
-        ]
-      }, 1, 0],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell5'}
-            ]
-          }
-        ]
-      }, 1, 1],
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell6'}
-            ]
-          }
-        ]
-      }, 1, 2]
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell4' }],
+            },
+          ],
+        },
+        1,
+        0,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell5' }],
+            },
+          ],
+        },
+        1,
+        1,
+      ],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell6' }],
+            },
+          ],
+        },
+        1,
+        2,
+      ],
     ])
   })
 
@@ -303,19 +324,21 @@ describe('interfaces/grid', () => {
       startRow: 0,
       startCol: 1,
       endRow: 0,
-      endCol: 1
+      endCol: 1,
     })
     expect(Array.from(cells)).toEqual([
-      [{
-        type: 'grid-cell',
-        children: [
-          {
-            children: [
-              { text: 'cell2'}
-            ]
-          }
-        ]
-      }, 0, 1],
+      [
+        {
+          type: 'grid-cell',
+          children: [
+            {
+              children: [{ text: 'cell2' }],
+            },
+          ],
+        },
+        0,
+        1,
+      ],
     ])
   })
 })

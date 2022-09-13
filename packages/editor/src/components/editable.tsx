@@ -14,21 +14,17 @@ export const EditableComposer = (props: {
   lang?: string
   onChange?: (value: Descendant[]) => void
 }) => {
-  
   const { editor, children, onChange, value, lang, ...rest } = props
 
   const [context, setContext] = useState<[Editable]>(() => {
     if (!Node.isNodeList(value)) {
       throw new Error(
         `[Editable] value is invalid! Expected a list of elements` +
-          `but got: ${Scrubber.stringify(value)}`
+          `but got: ${Scrubber.stringify(value)}`,
       )
     }
     if (!Editor.isEditor(editor)) {
-      throw new Error(
-        `[Editable] editor is invalid! you passed:` +
-          `${Scrubber.stringify(editor)}`
-      )
+      throw new Error(`[Editable] editor is invalid! you passed:` + `${Scrubber.stringify(editor)}`)
     }
     editor.children = value
     Object.assign(editor, rest)
@@ -41,9 +37,9 @@ export const EditableComposer = (props: {
     IS_FOCUSED.set(editor, focused)
   }, [editor, focused])
 
-  const changeFocused = (value: boolean) => { 
-    if(value === focused) return
-    if(value) {
+  const changeFocused = (value: boolean) => {
+    if (value === focused) return
+    if (value) {
       editor.onFocus()
     } else {
       editor.onBlur()
@@ -60,7 +56,7 @@ export const EditableComposer = (props: {
       }
       setContext([editor])
     }
-    return () => { 
+    return () => {
       editor.onChange = editorChange
     }
   }, [editor, onChange])

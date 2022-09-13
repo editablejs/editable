@@ -1,13 +1,13 @@
 module.exports = {
-  roots: ["<rootDir>"],
+  roots: ['<rootDir>'],
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
+    '^.+\\.tsx?$': 'ts-jest',
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   modulePathIgnorePatterns: [
-    "<rootDir>/test/__fixtures__",
-    "<rootDir>/node_modules",
-    "<rootDir>/dist"
+    '<rootDir>/test/__fixtures__',
+    '<rootDir>/node_modules',
+    '<rootDir>/dist',
   ],
-  preset: "ts-jest"
+  preset: 'ts-jest',
 };

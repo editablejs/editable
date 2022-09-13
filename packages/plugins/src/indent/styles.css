@@ -1,0 +1,5 @@
+@layer components {
+  .ea-indent {
+    @apply ea-h-full ea-inline-flex;
+  }
+}

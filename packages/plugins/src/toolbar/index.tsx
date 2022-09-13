@@ -1,61 +1,149 @@
-import React, { useEffect, useState } from 'react'
-import classNames from 'classnames';
-import { Editable, Locale, useEditable } from '@editablejs/editor';
-import ToolbarGroup, { GroupItem } from './group';
-import { ToolbarButton } from './button';
-import { ToolbarDropdown } from './dropdown';
-import './style.less'
+import React, { createContext, FC, memo, useContext, useEffect, useRef, useState } from 'react';
+import { Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor';
 
-export type ToolbarItem = ToolbarButton | ToolbarDropdown
-export interface ToolbarProps {
-  items: ToolbarItem[][]
+import { Toolbar as ToolbarUI, ToolbarButton as ToolbarButtonUI, ToolbarDropdown as ToolbarDropdownUI, ToolbarSeparator} from '../ui'
+
+type EditorChangeHandler = (editor: Editable) => void;
+export interface ToolbarContext {
+  addEventListener: (callback: EditorChangeHandler) => () => void
 }
 
-const getActiveState = (editor: Editable, items: ToolbarItem[][]): GroupItem[][] => { 
-  return items.map(group => group.map(item => {
-    const { type, onActive } = item
-    switch(type) { 
-      case 'button':
-        const { onDisabled } = item
-        return { 
-          ...item, 
-          active: onActive ? onActive(editor) : false,
-          disabled: onDisabled ? onDisabled(editor) : false
-        }
-      case 'dropdown':
-        return { ...item, activeKey: onActive ? onActive(editor) : '' }
+export const ToolbarContext = createContext<ToolbarContext>({} as any);
+export interface ToolbarButton extends Omit<ToolbarButtonUI, 'active' | 'disabled' | 'onToggle'> {
+  onActive?: <T extends Editable>(editor: T) => boolean;
+  onDisabled?: <T extends Editable>(editor: T) => boolean;
+  onToggle?: <T extends Editable>(editor: T) => void;
+  type: 'button';
+}
+
+export const ToolbarButtonDefault: FC<ToolbarButton> = ({ type, onActive, onDisabled, onToggle, ...props }) => {
+
+  const { addEventListener } = useContext(ToolbarContext)
+
+  const [active, setActive] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+
+  useIsomorphicLayoutEffect(() => {
+    const onChange = (editor: Editable) => {
+      const active = onActive ? onActive(editor) : false;
+      const disabled = onDisabled ? onDisabled(editor) : false;
+      setActive(active)
+      setDisabled(disabled)
     }
-  }))
+
+    const unsubscribe = addEventListener(onChange)
+
+    return () => unsubscribe()
+  }, [onActive, onDisabled])
+
+  const editor = useEditable();
+
+  const handleToogle = () => {
+    if(onToggle) onToggle(editor)
+  }
+
+  return <ToolbarButtonUI {...props} active={active} disabled={disabled} onToggle={handleToogle} />
 }
 
-const prefixCls = Locale.getPrefixCls('toolbar');
+export const ToolbarButton = memo(ToolbarButtonDefault, (prev, next) => {
+  return prev.onActive === next.onActive && prev.onDisabled === next.onDisabled && prev.onToggle === next.onToggle && prev.children === next.children && prev.title === next.title;
+})
 
-const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({ items: itemProps, className, ...props }) => {
+export interface ToolbarDropdown extends Omit<ToolbarDropdownUI, 'value' | 'disabled' | 'onToggle'> {
+  type: 'dropdown';
+  onActive?: <T extends Editable>(editor: T) => string;
+  onDisabled?: <T extends Editable>(editor: T) => boolean;
+  onToggle?: <T extends Editable>(editor: T, value: string) => void;
+}
 
-  const editor = useEditable()
+export const ToolbarDropdownDefault: FC<ToolbarDropdown> = ({ type, onActive, onDisabled, onToggle, ...props }) => {
+  const { addEventListener } = useContext(ToolbarContext)
 
-  const [ items, setItems ] = useState<GroupItem[][]>(getActiveState(editor, itemProps))
+  const [value, setValue] = useState<string>()
+  const [disabled, setDisabled] = useState(false)
+
+  useIsomorphicLayoutEffect(() => {
+    const onChange = (editor: Editable) => {
+      const value = onActive ? onActive(editor) : undefined;
+      const disabled = onDisabled ? onDisabled(editor) : false;
+      setValue(value)
+      setDisabled(disabled)
+    }
+
+    const unsubscribe = addEventListener(onChange)
+
+    return () => unsubscribe()
+  }, [onActive, onDisabled])
+
+  const editor = useEditable();
+
+  const handleToogle = (value: string) => {
+    if(onToggle) onToggle(editor, value)
+  }
+
+  return <ToolbarDropdownUI {...props} value={value} disabled={disabled} onToggle={handleToogle} />
+}
+
+export const ToolbarDropdown = memo(ToolbarDropdownDefault, (prev, next) => {
+  return prev.onActive === next.onActive && prev.onDisabled === next.onDisabled && prev.onToggle === next.onToggle && prev.children === next.children && prev.items.length === next.items.length;
+})
+
+export type ToolbarItem = ToolbarButton | ToolbarDropdown | 'separator';
+
+export interface ToolbarProps {
+  items: ToolbarItem[];
+}
+
+const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({
+  items,
+  ...props
+}) => {
+  const editor = useEditable();
+
+  const eventListeners = useRef<EditorChangeHandler[]>([]).current
 
   useEffect(() => {
-    const { onSelectionChange } = editor
-    editor.onSelectionChange = () => {
-      onSelectionChange()
-      setItems(items => {
-        return getActiveState(editor, items)
-      })
+    const { onSelectionChange } = editor;
+    const dispatch = () => {
+      eventListeners.forEach(callback => callback(editor))
     }
-  }, [editor])
+    editor.onSelectionChange = () => {
+      onSelectionChange();
+      dispatch()
+    };
+    dispatch();
+    return () => {
+      editor.onSelectionChange = onSelectionChange;
+    }
+  }, [editor, eventListeners]);
 
-  return <div className={classNames(prefixCls, className)} {...props}>
-  {
-    items.map((group, index) => 
-    <ToolbarGroup 
-    key={index} 
-    editor={editor} 
-    items={group} 
-    />)
+  const renderItem = (item: ToolbarItem, key: any) => {
+    if(item === 'separator') return <ToolbarSeparator key={key} />
+    const { type } = item
+    switch(type) {
+      case "button":
+        return <ToolbarButton key={key} {...item} />
+      case "dropdown":
+        return <ToolbarDropdown key={key} {...item} />
+    }
   }
-  </div>
-}
 
-export default Toolbar
+  return (
+    <ToolbarContext.Provider value={{
+      addEventListener: (callback: (editor: Editable) => void) => {
+        eventListeners.push(callback);
+        return () => {
+          eventListeners.splice(eventListeners.indexOf(callback), 1);
+        }
+      }
+    }}>
+      <ToolbarUI {...props}>
+        {
+          items.map(renderItem)
+        }
+      </ToolbarUI>
+    </ToolbarContext.Provider>
+  );
+};
+
+export default Toolbar;

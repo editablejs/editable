@@ -1,0 +1,22 @@
+@layer components {
+  .ea-code {
+    @apply ea-bg-black ea-bg-opacity-8 ea-break-words ea-indent-0 ea-rounded-md;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+    font-size: inherit;
+    padding: 0 2px;
+    line-height: inherit;
+  }
+
+  .ea-sub, .ea-sup {
+    @apply ea-relative ea-align-baseline;
+    font-size: 75%;
+  }
+
+  .ea-sub {
+    @apply -ea-bottom-1;
+  }
+
+  .ea-sup {
+    @apply -ea-top-2;
+  }
+}

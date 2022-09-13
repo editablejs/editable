@@ -18,14 +18,8 @@ import {
  * Element.
  */
 
-const Element = (props: {
-  element: SlateElement
-  selection: Range | null
-}) => {
-  const {
-    element,
-    selection,
-  } = props
+const Element = (props: { element: SlateElement; selection: Range | null }) => {
+  const { element, selection } = props
   const ref = useRef<HTMLElement>(null)
   const editor = useEditableStatic()
   const readOnly = useReadOnly()
@@ -71,14 +65,10 @@ const Element = (props: {
         style={{
           height: '0',
           color: 'transparent',
-          outline: 'none'
+          outline: 'none',
         }}
       >
-        <Text
-          isLast={false}
-          parent={element}
-          text={text}
-        />
+        <Text isLast={false} parent={element} text={text} />
       </Tag>
     )
 
@@ -98,7 +88,7 @@ const Element = (props: {
       NODE_TO_ELEMENT.delete(element)
     }
   })
-  const newAttributes = editor.renderElementAttributes({attributes, element})
+  const newAttributes = editor.renderElementAttributes({ attributes, element })
   const content = editor.renderElement({ attributes: newAttributes, children, element })
 
   return content
@@ -108,9 +98,7 @@ const MemoizedElement = React.memo(Element, (prev, next) => {
   return (
     prev.element === next.element &&
     (prev.selection === next.selection ||
-      (!!prev.selection &&
-        !!next.selection &&
-        Range.equals(prev.selection, next.selection)))
+      (!!prev.selection && !!next.selection && Range.equals(prev.selection, next.selection)))
   )
 })
 

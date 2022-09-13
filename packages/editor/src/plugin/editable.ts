@@ -11,7 +11,7 @@ import {
   Transforms,
   NodeEntry,
   Selection,
-  Descendant
+  Descendant,
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -67,13 +67,13 @@ export interface ElementAttributes<T extends any = any> extends BaseAttributes {
   ref: React.MutableRefObject<T>
 }
 
-export interface TextAttributes extends BaseAttributes { 
+export interface TextAttributes extends BaseAttributes {
   'data-slate-leaf': true
 }
 
 export type NodeAttributes = ElementAttributes | TextAttributes
 
-export interface PlaceholderAttributes extends BaseAttributes { 
+export interface PlaceholderAttributes extends BaseAttributes {
   'data-slate-placeholder': true
 }
 
@@ -125,15 +125,12 @@ export interface Editable extends BaseEditor {
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
   insertTextData: (data: DataTransfer) => boolean
-  setFragmentData: (
-    data: DataTransfer,
-    originEvent?: 'drag' | 'copy' | 'cut'
-  ) => void
+  setFragmentData: (data: DataTransfer, originEvent?: 'drag' | 'copy' | 'cut') => void
   hasRange: (editor: Editable, range: Range) => boolean
   blur(): void
-  focus(): void 
-  queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>,
-  queryActiveElements: () => EditorElements,
+  focus(): void
+  queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>
+  queryActiveElements: () => EditorElements
   onKeydown: (event: KeyboardEvent) => void
   onKeyup: (event: KeyboardEvent) => void
   onFocus: () => void
@@ -160,7 +157,7 @@ export interface Editable extends BaseEditor {
 }
 
 export const Editable = {
-  isEditor(value: any): value is Editable { 
+  isEditor(value: any): value is Editable {
     return !!value && Editor.isEditor(value) && !!(value as Editable).onSelectionChange
   },
   /**
@@ -171,12 +168,14 @@ export const Editable = {
   },
 
   isEmpty(editor: Editable, node: Node): boolean {
-    if(Text.isText(node)) {
+    if (Text.isText(node)) {
       return node.text === '' && !IS_COMPOSING.get(editor)
-    }
-    else {
-      if(node.children.length === 0) return true
-      if(node.children.length === 1) return !Editor.isVoid(editor, node) && Editable.isEmpty(editor, (node as Element).children[0])
+    } else {
+      if (node.children.length === 0) return true
+      if (node.children.length === 1)
+        return (
+          !Editor.isVoid(editor, node) && Editable.isEmpty(editor, (node as Element).children[0])
+        )
       return false
     }
   },
@@ -185,11 +184,11 @@ export const Editable = {
     return editor.isGrid(value)
   },
 
-  isGridRow(editor: Editable, value: any): value is GridRow{
+  isGridRow(editor: Editable, value: any): value is GridRow {
     return editor.isGridRow(value)
   },
 
-  isGridCell(editor: Editable, value: any): value is GridCell{
+  isGridCell(editor: Editable, value: any): value is GridCell {
     return editor.isGridCell(value)
   },
 
@@ -199,26 +198,34 @@ export const Editable = {
    * @param options
    * @returns
    */
-  getSelectLine(editor: Editable, options: { range?: Range, match?: (element: Element) => boolean } = {}): [Element, number] | undefined { 
+  getSelectLine(
+    editor: Editable,
+    options: { range?: Range; match?: (element: Element) => boolean } = {},
+  ): [Element, number] | undefined {
     const { range = editor.selection, match = () => true } = options
-    if(!range || Range.isCollapsed(range)) return
+    if (!range || Range.isCollapsed(range)) return
     const start = Range.start(range)
     const entry = Editor.above(editor, { at: start, match: n => Editor.isBlock(editor, n) })
-    if(!entry) return
+    if (!entry) return
     const rangeLines = getLineRectsByRange(editor, range)
     let [block, path] = entry
-    while(block) {
-      if(match(block)) {
+    while (block) {
+      if (match(block)) {
         const elLines = getLineRectsByNode(editor, block)
-        for(const rangeLine of rangeLines) { 
-          const index = elLines.findIndex(elLine => elLine.left === rangeLine.left && elLine.top === rangeLine.top && elLine.width === rangeLine.width)
-          if(~index) {
+        for (const rangeLine of rangeLines) {
+          const index = elLines.findIndex(
+            elLine =>
+              elLine.left === rangeLine.left &&
+              elLine.top === rangeLine.top &&
+              elLine.width === rangeLine.width,
+          )
+          if (~index) {
             return [block, index]
           }
         }
       }
       const next = Editor.next(editor, { at: path, match: n => Editor.isBlock(editor, n) })
-      if(!next) return;
+      if (!next) return
       const [n, p] = next
       block = n as Element
       path = p
@@ -227,24 +234,35 @@ export const Editable = {
   },
   /**
    * 检查选区是否选中在内容一行的开始或者结尾
-   * @param editor 
-   * @param options 
-   * @returns 
+   * @param editor
+   * @param options
+   * @returns
    */
-  isSelectLineEdge(editor: Editable, options: { point?: Point, edge?: SelectionEdge } = {}): boolean { 
+  isSelectLineEdge(
+    editor: Editable,
+    options: { point?: Point; edge?: SelectionEdge } = {},
+  ): boolean {
     const { point = editor.selection?.focus, edge = 'start' } = options
-    if(!point) return false
+    if (!point) return false
     const entry = Editor.above(editor, { at: point, match: n => Editor.isBlock(editor, n) })
-    if(!entry) return false
+    if (!entry) return false
     const [block] = entry
     const rangeLines = getLineRectsByRange(editor, { anchor: point, focus: point })
-    if(rangeLines.length < 0) return false
+    if (rangeLines.length < 0) return false
     const rangeLine = rangeLines[0]
     const lines = getLineRectsByNode(editor, block)
-    for(const line of lines) {
-      if(~['start', 'anchor'].indexOf(edge) && line.left === rangeLine.left && line.top === rangeLine.top) {
+    for (const line of lines) {
+      if (
+        ~['start', 'anchor'].indexOf(edge) &&
+        line.left === rangeLine.left &&
+        line.top === rangeLine.top
+      ) {
         return true
-      } else if(~['end', 'focus'].indexOf(edge) && line.right === rangeLine.right && line.top === rangeLine.top) {
+      } else if (
+        ~['end', 'focus'].indexOf(edge) &&
+        line.right === rangeLine.right &&
+        line.top === rangeLine.top
+      ) {
         return true
       }
     }
@@ -306,9 +324,7 @@ export const Editable = {
       child = parent
     }
 
-    throw new Error(
-      `Unable to find the path for Slate node: ${Scrubber.stringify(node)}`
-    )
+    throw new Error(`Unable to find the path for Slate node: ${Scrubber.stringify(node)}`)
   },
 
   /**
@@ -369,10 +385,7 @@ export const Editable = {
   /**
    * Check if a DOM node is within the editor.
    */
-  hasDOMNode(
-    editor: Editable,
-    target: DOMNode
-  ): boolean {
+  hasDOMNode(editor: Editable, target: DOMNode): boolean {
     const editorEl = Editable.toDOMNode(editor, editor)
     let targetEl
 
@@ -381,13 +394,9 @@ export const Editable = {
     // stepper arrow on a number input). (2018/05/04)
     // https://github.com/ianstormtaylor/slate/issues/1819
     try {
-      targetEl = (isDOMElement(target)
-        ? target
-        : target.parentElement) as HTMLElement
+      targetEl = (isDOMElement(target) ? target : target.parentElement) as HTMLElement
     } catch (err: any) {
-      if (
-        !err.message.includes('Permission denied to access property "nodeType"')
-      ) {
+      if (!err.message.includes('Permission denied to access property "nodeType"')) {
         throw err
       }
     }
@@ -430,7 +439,7 @@ export const Editable = {
   setFragmentData(
     editor: Editable,
     data: DataTransfer,
-    originEvent?: 'drag' | 'copy' | 'cut'
+    originEvent?: 'drag' | 'copy' | 'cut',
   ): void {
     editor.setFragmentData(data, originEvent)
   },
@@ -446,31 +455,33 @@ export const Editable = {
       : KEY_TO_ELEMENT?.get(Editable.findKey(editor, node))
 
     if (!offsetNode) {
-      throw new Error(
-        `Cannot resolve a DOM node from Slate node: ${Scrubber.stringify(node)}`
-      )
+      throw new Error(`Cannot resolve a DOM node from Slate node: ${Scrubber.stringify(node)}`)
     }
 
     return offsetNode
   },
 
-  toLowestPoint(editor: Editable, at: Point | Path, edge: SelectionEdge = 'start'): Point { 
+  toLowestPoint(editor: Editable, at: Point | Path, edge: SelectionEdge = 'start'): Point {
     const isPoint = Point.isPoint(at)
     let path = isPoint ? at.path : at
     let offset = isPoint ? at.offset : 0
     let [node] = Editor.node(editor, path)
 
-    while(Element.isElement(node)) {
+    while (Element.isElement(node)) {
       const { children } = node
       const isStart = ~['start', 'anchor'].indexOf(edge)
-      const index = isPoint ? Math.min(offset, children.length - 1) : (isStart ? 0 : children.length - 1)
+      const index = isPoint
+        ? Math.min(offset, children.length - 1)
+        : isStart
+        ? 0
+        : children.length - 1
       node = children[index]
       path = path.concat(index)
-      offset = isStart ? 0 : (Element.isElement(node) ? node.children.length : node.text.length)
+      offset = isStart ? 0 : Element.isElement(node) ? node.children.length : node.text.length
     }
     return {
       path,
-      offset
+      offset,
     }
   },
 
@@ -517,11 +528,7 @@ export const Editable = {
     }
 
     if (!domPoint) {
-      throw new Error(
-        `Cannot resolve a DOM point from Slate point: ${Scrubber.stringify(
-          point
-        )}`
-      )
+      throw new Error(`Cannot resolve a DOM point from Slate point: ${Scrubber.stringify(point)}`)
     }
 
     return domPoint
@@ -540,9 +547,7 @@ export const Editable = {
     const { anchor, focus } = range
     const isBackward = Range.isBackward(range)
     const domAnchor = Editable.toDOMPoint(editor, anchor)
-    const domFocus = Range.isCollapsed(range)
-      ? domAnchor
-      : Editable.toDOMPoint(editor, focus)
+    const domFocus = Range.isCollapsed(range) ? domAnchor : Editable.toDOMPoint(editor, focus)
 
     const window = Editable.getWindow(editor)
     const domRange = window.document.createRange()
@@ -552,13 +557,9 @@ export const Editable = {
     // A slate Point at zero-width Leaf always has an offset of 0 but a native DOM selection at
     // zero-width node has an offset of 1 so we have to check if we are in a zero-width node and
     // adjust the offset accordingly.
-    const startEl = (isDOMElement(startNode)
-      ? startNode
-      : startNode.parentElement) as HTMLElement
+    const startEl = (isDOMElement(startNode) ? startNode : startNode.parentElement) as HTMLElement
     const isStartAtZeroWidth = !!startEl.getAttribute('data-slate-zero-width')
-    const endEl = (isDOMElement(endNode)
-      ? endNode
-      : endNode.parentElement) as HTMLElement
+    const endEl = (isDOMElement(endNode) ? endNode : endNode.parentElement) as HTMLElement
     const isEndAtZeroWidth = !!endEl.getAttribute('data-slate-zero-width')
 
     domRange.setStart(startNode, isStartAtZeroWidth ? 1 : startOffset)
@@ -588,140 +589,144 @@ export const Editable = {
 
   findLowestDOMElements(editor: Editable, node: Node) {
     const domNode = Editable.toDOMNode(editor, node)
-    if(Editor.isVoid(editor, node)) return [domNode]
-    const nodes = domNode.querySelectorAll('[data-slate-string], [data-slate-composition], [data-slate-zero-width]')
+    if (Editor.isVoid(editor, node)) return [domNode]
+    const nodes = domNode.querySelectorAll(
+      '[data-slate-string], [data-slate-composition], [data-slate-zero-width]',
+    )
     return Array.from(nodes)
   },
 
-  findClosestPoint(editor: Editable, domNode: DOMNode, x: number, y: number): Point | null { 
+  findClosestPoint(editor: Editable, domNode: DOMNode, x: number, y: number): Point | null {
     const domEl = isDOMElement(domNode) ? domNode : domNode.parentElement
-    if(!domEl) return null
+    if (!domEl) return null
     const elements: DOMElement[] = []
-    let element: DOMElement | null = domEl.hasAttribute('data-slate-node') ? domEl : domEl.closest(`[data-slate-node]`)
+    let element: DOMElement | null = domEl.hasAttribute('data-slate-node')
+      ? domEl
+      : domEl.closest(`[data-slate-node]`)
 
     const addToElements = (node: Node) => {
       const children = Editable.findLowestDOMElements(editor, node)
-      for(const child of children) {
-        if(~elements.indexOf(child)) continue
-          elements.push(child)
+      for (const child of children) {
+        if (~elements.indexOf(child)) continue
+        elements.push(child)
       }
     }
-    
-    if(!element) {
+
+    if (!element) {
       const nodes = Node.nodes(editor)
-      for(const [ node ] of nodes) {
+      for (const [node] of nodes) {
         addToElements(node)
       }
     } else {
       const node = Editable.toSlateNode(editor, element)
-      if(Text.isText(node)) {
+      if (Text.isText(node)) {
         addToElements(node)
       } else {
-        if(!editor.canFocusVoid(node)) {
+        if (!editor.canFocusVoid(node)) {
           const rect = element.getBoundingClientRect()
           const reverse = x < rect.left + rect.width / 2
           const adjacent = (reverse ? Editor.previous : Editor.next)(editor, {
             at: Editable.findPath(editor, node),
           })
-          if(adjacent) {
+          if (adjacent) {
             addToElements(adjacent[0])
           }
         } else {
           const isGrid = Editable.isGrid(editor, node)
           const nodes = Editor.nodes(editor, {
             at: Editable.findPath(editor, node),
-            match: n => isGrid && Editable.isGridCell(editor, n) || Text.isText(n),
+            match: n => (isGrid && Editable.isGridCell(editor, n)) || Text.isText(n),
             mode: 'highest',
           })
-          for(const [child] of nodes) { 
-            if(Editor.isBlock(editor, child)) {
+          for (const [child] of nodes) {
+            if (Editor.isBlock(editor, child)) {
               elements.push(Editable.toDOMNode(editor, child))
-            } else
-            addToElements(child)
+            } else addToElements(child)
           }
         }
       }
     }
-    let top = y, left = x
+    let top = y,
+      left = x
     const nodes = findClosestNode(elements, x, y)
-    if(!nodes) return null
+    if (!nodes) return null
     let offsetNode: DOMElement | null = null
-    if(isDOMNode(nodes)) {
+    if (isDOMNode(nodes)) {
       offsetNode = nodes
     } else {
       const { top: closestTop, left: closestLeft, right: closestRight, below: closestBelow } = nodes
-      
-      if(closestLeft && closestBelow) {
-        if(isAlignY(closestBelow.rect, closestLeft.rect)) {
+
+      if (closestLeft && closestBelow) {
+        if (isAlignY(closestBelow.rect, closestLeft.rect)) {
           offsetNode = closestBelow.node
           top = closestBelow.rect.top
         } else {
           offsetNode = closestLeft.node
           left = closestLeft.rect.right
         }
-      } else if(closestRight && closestBelow) {
-        if(isAlignY(closestBelow.rect, closestRight.rect)) {
+      } else if (closestRight && closestBelow) {
+        if (isAlignY(closestBelow.rect, closestRight.rect)) {
           offsetNode = closestBelow.node
           top = closestBelow.rect.top
         } else {
           offsetNode = closestRight.node
           left = closestRight.rect.left
         }
-      } else if(closestLeft) {
+      } else if (closestLeft) {
         offsetNode = closestLeft.node
         left = closestLeft.rect.right
-      } else if(closestRight) {
+      } else if (closestRight) {
         offsetNode = closestRight.node
         left = closestRight.rect.left
-      } else if(closestBelow) {
-        if(left < closestBelow.rect.left) {
+      } else if (closestBelow) {
+        if (left < closestBelow.rect.left) {
           left = closestBelow.rect.left
-        } else if(left > closestBelow.rect.right) { 
+        } else if (left > closestBelow.rect.right) {
           left = closestBelow.rect.right
         }
         top = closestBelow.rect.top
         offsetNode = closestBelow.node
-      } else if(closestTop) {
+      } else if (closestTop) {
         offsetNode = closestTop.node
-        if(left < closestTop.rect.left) {
+        if (left < closestTop.rect.left) {
           left = closestTop.rect.left
-        } else if(left > closestTop.rect.right) { 
+        } else if (left > closestTop.rect.right) {
           left = closestTop.rect.right
         }
         top = closestTop.rect.bottom
       }
     }
-    if(!offsetNode) return null
+    if (!offsetNode) return null
     const node = Editable.toSlateNode(editor, offsetNode)
-    if(Text.isText(node)) {
-      const path =  Editable.findPath(editor, node)
-      if(node.text.length === 0) {
+    if (Text.isText(node)) {
+      const path = Editable.findPath(editor, node)
+      if (node.text.length === 0) {
         return {
           path,
-          offset: 0
-        } 
+          offset: 0,
+        }
       }
       const textNodes = Editable.findLowestDOMElements(editor, node)
       let startOffset = 0
-      for(let s = 0; s < textNodes.length; s++) { 
+      for (let s = 0; s < textNodes.length; s++) {
         const textNode = textNodes[s]
-        if(textNode === offsetNode) break
+        if (textNode === offsetNode) break
         startOffset += (textNode.textContent ?? '').length
       }
       const textNode = isDOMText(offsetNode) ? offsetNode : offsetNode.firstChild
-      if(!isDOMText(textNode)) return null
+      if (!isDOMText(textNode)) return null
       const content = textNode.textContent ?? ''
       const offset = getTextOffset(textNode, left, top, 0, content.length, content.length)
       return {
         path,
-        offset: startOffset + offset
+        offset: startOffset + offset,
       }
-    } else if(Element.isElement(node)) {
-      const point = Editable.toSlatePoint(editor, [ offsetNode, 0 ], {
+    } else if (Element.isElement(node)) {
+      const point = Editable.toSlatePoint(editor, [offsetNode, 0], {
         exactMatch: false,
         suppressThrow: true,
       })
-      if(!point) return Editable.toLowestPoint(editor, Editable.findPath(editor, node))
+      if (!point) return Editable.toLowestPoint(editor, Editable.findPath(editor, node))
       return point
     }
     return null
@@ -742,10 +747,10 @@ export const Editable = {
     return Editable.findClosestPoint(editor, target, x, y)
   },
 
-  findPreviousLinePoint(editor: Editable, at?: Range): Point | null { 
+  findPreviousLinePoint(editor: Editable, at?: Range): Point | null {
     const { selection } = editor
-    if(!at && selection) at = selection
-    if(!at) return null
+    if (!at && selection) at = selection
+    if (!at) return null
     const domRange = Editable.toDOMRange(editor, at)
     const startRange = domRange.cloneRange()
     startRange.collapse(true)
@@ -762,38 +767,38 @@ export const Editable = {
     let top = endRect.top
     let isFind = false
     let domBlock: DOMElement | null = null
-    while(blockEntry && !isFind) {
+    while (blockEntry && !isFind) {
       const [block, path] = blockEntry
       domBlock = Editable.toDOMNode(editor, block)
       const lowestElements = Editable.findLowestDOMElements(editor, block)
-      for(let l = lowestElements.length - 1; l >=0 && !isFind; l--) {
+      for (let l = lowestElements.length - 1; l >= 0 && !isFind; l--) {
         const lowestElement = lowestElements[l]
         const rects = lowestElement.getClientRects()
-        for(let i = 0; i < rects.length; i++) {
+        for (let i = 0; i < rects.length; i++) {
           const rect = rects[i]
-          if(rect.height === 0) continue
+          if (rect.height === 0) continue
           if (rect.bottom <= top) {
             isFind = true
-            top = rect.bottom - rect.height / 2;
+            top = rect.bottom - rect.height / 2
             break
           }
         }
       }
-      if(!isFind) {
+      if (!isFind) {
         blockEntry = Editor.previous(editor, {
           at: path,
           match: n => Editor.isBlock(editor, n),
         })
       }
     }
-    if(!domBlock ) return null
+    if (!domBlock) return null
     return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 0, top)
   },
 
-  findNextLinePoint(editor: Editable, at?: Range): Point | null { 
+  findNextLinePoint(editor: Editable, at?: Range): Point | null {
     const { selection } = editor
-    if(!at && selection) at = selection
-    if(!at) return null
+    if (!at && selection) at = selection
+    if (!at) return null
     const domRange = Editable.toDOMRange(editor, at)
     const startRange = domRange.cloneRange()
     startRange.collapse(true)
@@ -810,60 +815,60 @@ export const Editable = {
     let bottom = endRect.bottom
     let isFind = false
     let domBlock: DOMElement | null = null
-    while(blockEntry && !isFind) {
+    while (blockEntry && !isFind) {
       const [block, path] = blockEntry
       domBlock = Editable.toDOMNode(editor, block)
       const lowestElements = Editable.findLowestDOMElements(editor, block)
-      for(let l = 0; l < lowestElements.length && !isFind; l++) {
+      for (let l = 0; l < lowestElements.length && !isFind; l++) {
         const lowestElement = lowestElements[l]
         const rects = lowestElement.getClientRects()
-        for(let i = 0; i < rects.length; i++) {
+        for (let i = 0; i < rects.length; i++) {
           const rect = rects[i]
-          if(rect.height === 0) continue
+          if (rect.height === 0) continue
           if (rect.top >= bottom) {
             isFind = true
-            bottom = rect.top + rect.height / 2;
+            bottom = rect.top + rect.height / 2
             break
           }
         }
       }
-      if(!isFind) {
+      if (!isFind) {
         blockEntry = Editor.next(editor, {
           at: path,
           match: n => Editor.isBlock(editor, n),
         })
       }
     }
-    if(!domBlock ) return null
-    
+    if (!domBlock) return null
+
     return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 99999, bottom)
   },
 
-  findTextOffsetOnLine(editor: Editable, point: Point) { 
+  findTextOffsetOnLine(editor: Editable, point: Point) {
     const blockEntry = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
       at: point,
     })
     const data = {
       text: '',
-      offset: 0
+      offset: 0,
     }
-    if(!blockEntry) {
+    if (!blockEntry) {
       throw new Error(`Cannot resolve a Slate block from a point: ${point}`)
     }
     const textNodes = Node.texts(blockEntry[0])
     let isFindOffset = false
-    for(const [textNode, textPath] of textNodes) {
+    for (const [textNode, textPath] of textNodes) {
       let { text } = textNode
       const path = blockEntry[1].concat(textPath)
       const [parent] = Editor.parent(editor, path)
-      if(parent && Editor.isVoid(editor, parent)) {
+      if (parent && Editor.isVoid(editor, parent)) {
         text = ' '
       }
-      if(Path.equals(path, point.path)) {
+      if (Path.equals(path, point.path)) {
         data.offset += point.offset
         isFindOffset = true
-      } else if(!isFindOffset) {
+      } else if (!isFindOffset) {
         data.offset += text.length
       }
       data.text += text
@@ -876,34 +881,34 @@ export const Editable = {
       match: n => Editor.isBlock(editor, n),
       at: path,
     })
-    if(!blockEntry) {
+    if (!blockEntry) {
       throw new Error(`Cannot resolve a Slate block from a path: ${path}`)
     }
     const textNodes = Node.texts(blockEntry[0])
-    let findOffset = 0;
-    for(const [textNode, textPath] of textNodes) {
+    let findOffset = 0
+    for (const [textNode, textPath] of textNodes) {
       let { text } = textNode
       const path = blockEntry[1].concat(textPath)
       const [parent, parentPath] = Editor.parent(editor, path)
       const isVoid = parent && Editor.isVoid(editor, parent)
-      if(isVoid) {
+      if (isVoid) {
         text = ' '
       }
       const textLength = text.length
       const totalOffset = findOffset + textLength
-      if(totalOffset >= offset) {
-        if(moveNext && offset > 0 && totalOffset === offset) {
+      if (totalOffset >= offset) {
+        if (moveNext && offset > 0 && totalOffset === offset) {
           const next = Editor.next(editor, {
             at: isVoid ? parentPath : path,
           })
-          if(next) {
+          if (next) {
             return {
               path: next[1],
-              offset: 0
+              offset: 0,
             }
           }
         }
-        return {path, offset: textLength - (totalOffset - offset)}
+        return { path, offset: textLength - (totalOffset - offset) }
       } else {
         findOffset += textLength
       }
@@ -921,12 +926,10 @@ export const Editable = {
     options: {
       exactMatch: T
       suppressThrow: T
-    }
+    },
   ): T extends true ? Point | null : Point {
     const { exactMatch, suppressThrow } = options
-    const [nearestNode, nearestOffset] = exactMatch
-      ? domPoint
-      : normalizeDOMPoint(domPoint)
+    const [nearestNode, nearestOffset] = exactMatch ? domPoint : normalizeDOMPoint(domPoint)
     const parentNode = nearestNode.parentNode as DOMElement
     let textNode: DOMElement | null = null
     let offset = 0
@@ -939,9 +942,7 @@ export const Editable = {
       // if this editor is within a void node of another editor ("nested editors", like in
       // the "Editable Voids" example on the docs site).
       const voidNode =
-        potentialVoidNode && editorEl.contains(potentialVoidNode)
-          ? potentialVoidNode
-          : null
+        potentialVoidNode && editorEl.contains(potentialVoidNode) ? potentialVoidNode : null
       let leafNode = parentNode.closest('[data-slate-leaf]')
       let offsetNode: DOMElement | null = null
 
@@ -958,9 +959,7 @@ export const Editable = {
 
           const contents = range.cloneContents()
           const removals = [
-            ...Array.prototype.slice.call(
-              contents.querySelectorAll('[data-slate-zero-width]')
-            ),
+            ...Array.prototype.slice.call(contents.querySelectorAll('[data-slate-zero-width]')),
           ]
 
           removals.forEach(el => {
@@ -1015,9 +1014,7 @@ export const Editable = {
       if (suppressThrow) {
         return null as T extends true ? Point | null : Point
       }
-      throw new Error(
-        `Cannot resolve a Slate point from DOM point: ${domPoint}`
-      )
+      throw new Error(`Cannot resolve a Slate point from DOM point: ${domPoint}`)
     }
 
     // COMPAT: If someone is clicking from one Slate editor into another,
@@ -1038,12 +1035,10 @@ export const Editable = {
     options: {
       exactMatch: T
       suppressThrow: T
-    }
+    },
   ): T extends true ? Range | null : Range {
     const { exactMatch, suppressThrow } = options
-    const el = isDOMSelection(domRange)
-      ? domRange.anchorNode
-      : domRange.startContainer
+    const el = isDOMSelection(domRange) ? domRange.anchorNode : domRange.startContainer
     let anchorNode
     let anchorOffset
     let focusNode
@@ -1076,22 +1071,14 @@ export const Editable = {
       }
     }
 
-    if (
-      anchorNode == null ||
-      focusNode == null ||
-      anchorOffset == null ||
-      focusOffset == null
-    ) {
-      throw new Error(
-        `Cannot resolve a Slate range from DOM range: ${domRange}`
-      )
+    if (anchorNode == null || focusNode == null || anchorOffset == null || focusOffset == null) {
+      throw new Error(`Cannot resolve a Slate range from DOM range: ${domRange}`)
     }
 
-    const anchor = Editable.toSlatePoint(
-      editor,
-      [anchorNode, anchorOffset],
-      { exactMatch, suppressThrow }
-    )
+    const anchor = Editable.toSlatePoint(editor, [anchorNode, anchorOffset], {
+      exactMatch,
+      suppressThrow,
+    })
     if (!anchor) {
       return null as T extends true ? Range | null : Range
     }
@@ -1120,13 +1107,11 @@ export const Editable = {
       range = Editor.unhangRange(editor, range, { voids: true })
     }
 
-    return (range as unknown) as T extends true ? Range | null : Range
+    return range as unknown as T extends true ? Range | null : Range
   },
 
   hasRange(editor: Editable, range: Range): boolean {
     const { anchor, focus } = range
-    return (
-      Editor.hasPath(editor, anchor.path) && Editor.hasPath(editor, focus.path)
-    )
+    return Editor.hasPath(editor, anchor.path) && Editor.hasPath(editor, focus.path)
   },
 }

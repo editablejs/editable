@@ -8,33 +8,26 @@ import { TextAttributes } from '../plugin/editable'
 /**
  * Individual leaves in a text node with unique formatting.
  */
-const Leaf = (props: {
-  isLast: boolean
-  parent: Element
-  text: Text
-}) => {
-  const {
-    isLast,
-    text,
-    parent,
-  } = props
+const Leaf = (props: { isLast: boolean; parent: Element; text: Text }) => {
+  const { isLast, text, parent } = props
 
+  let children = <String isLast={isLast} parent={parent} text={text} />
 
-  let children = (
-    <String isLast={isLast} parent={parent} text={text} />
-  )
-  
   const editor = useEditableStatic()
   const placeholder = EDITOR_TO_PLACEHOLDER.get(editor)
   if (placeholder) {
-    const placeholderComponent = editor.renderPlaceholder({ attributes: {'data-slate-placeholder': true}, node: text, children: placeholder })
-    if(placeholderComponent)
-    children = (
-      <React.Fragment>
-        {placeholderComponent}
-        {children}
-      </React.Fragment>
-    )
+    const placeholderComponent = editor.renderPlaceholder({
+      attributes: { 'data-slate-placeholder': true },
+      node: text,
+      children: placeholder,
+    })
+    if (placeholderComponent)
+      children = (
+        <React.Fragment>
+          {placeholderComponent}
+          {children}
+        </React.Fragment>
+      )
   }
 
   // COMPAT: Having the `data-` attributes on these leaf elements ensures that
@@ -48,11 +41,7 @@ const Leaf = (props: {
 }
 
 const MemoizedLeaf = React.memo(Leaf, (prev, next) => {
-  return (
-    next.parent === prev.parent &&
-    next.isLast === prev.isLast &&
-    next.text === prev.text
-  )
+  return next.parent === prev.parent && next.isLast === prev.isLast && next.text === prev.text
 })
 
 export default MemoizedLeaf

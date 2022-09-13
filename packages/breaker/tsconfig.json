@@ -3,7 +3,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "extends": "tsconfig/base.json",
   "include": ["."],

@@ -4,7 +4,6 @@ import { Grid } from '../../../../interfaces/grid'
 import { GridRow } from '../../../../interfaces/row'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -31,11 +30,9 @@ describe('interfaces/grid', () => {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
@@ -43,30 +40,26 @@ describe('interfaces/grid', () => {
               colspan: 2,
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               span: [0, 1],
-              children: [
-                { text: ''}
-              ]
-            }
-          ]
-        }
-      ]
-    }
+              children: [{ text: '' }],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('merege-col-span-0-1-0-1', () => {
     editor.children = children.concat()
-    Grid.mergeCell(editor, [0],{
+    Grid.mergeCell(editor, [0], {
       start: [0, 0],
-      end: [0, 1]
+      end: [0, 1],
     })
     expect(editor.children).toEqual([
       {
@@ -82,53 +75,45 @@ describe('interfaces/grid', () => {
                 colspan: 3,
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 span: [0, 0],
-                children: [
-                  { text: ''}
-                ]
+                children: [{ text: '' }],
               },
               {
                 type: 'grid-cell',
                 span: [0, 0],
-                children: [
-                  { text: ''}
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                children: [{ text: '' }],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 0, 1, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 
   it('merege-col-span-0-1-0-2', () => {
     editor.children = children.concat()
-    Grid.mergeCell(editor, [0],{
+    Grid.mergeCell(editor, [0], {
       start: [0, 0],
-      end: [0, 2]
+      end: [0, 2],
     })
     expect(editor.children).toEqual([
       {
@@ -144,53 +129,45 @@ describe('interfaces/grid', () => {
                 colspan: 3,
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
+                    children: [{ text: 'cell1' }],
                   },
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 span: [0, 0],
-                children: [
-                  { text: ''}
-                ]
+                children: [{ text: '' }],
               },
               {
                 type: 'grid-cell',
                 span: [0, 0],
-                children: [
-                  { text: ''}
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                children: [{ text: '' }],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 0, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 0, 1, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 
   it('merege-col-span-0-1-1-2', () => {
     editor.children = children.concat()
-    Grid.mergeCell(editor, [0],{
+    Grid.mergeCell(editor, [0], {
       start: [0, 1],
-      end: [0, 2]
+      end: [0, 2],
     })
     expect(editor.children).toEqual([
       {
@@ -204,11 +181,9 @@ describe('interfaces/grid', () => {
                 type: 'grid-cell',
                 children: [
                   {
-                    children: [
-                      { text: 'cell1'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell1' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
@@ -216,33 +191,29 @@ describe('interfaces/grid', () => {
                 colspan: 2,
                 children: [
                   {
-                    children: [
-                      { text: 'cell2'}
-                    ]
-                  }
-                ]
+                    children: [{ text: 'cell2' }],
+                  },
+                ],
               },
               {
                 type: 'grid-cell',
                 span: [0, 1],
-                children: [
-                  { text: ''}
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                children: [{ text: '' }],
+              },
+            ],
+          },
+        ],
+      },
     ])
     expect(editor.selection).toEqual({
       anchor: {
         path: [0, 0, 1, 0, 0],
-        offset: 0
+        offset: 0,
       },
       focus: {
         path: [0, 0, 1, 0, 0],
-        offset: 5
-      }
+        offset: 5,
+      },
     })
   })
 })

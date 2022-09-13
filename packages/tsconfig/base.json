@@ -17,9 +17,7 @@
     "strict": true,
     "rootDir": "src",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules"]

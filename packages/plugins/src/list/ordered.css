@@ -1,0 +1,11 @@
+@layer components {
+  .ea-ordered-list {
+    .ea-ordered-list-label {
+      @apply ea-ml-7 ea-mr-0;
+    }
+
+    .ea-list-label {
+      @apply -ea-ml-7
+    }
+  }
+}

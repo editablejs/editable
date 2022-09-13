@@ -1,5 +1,5 @@
 import { Element } from 'slate'
-import { GridCell } from "./cell"
+import { GridCell } from './cell'
 
 export interface GridRow extends Element {
   type: string
@@ -9,15 +9,17 @@ export interface GridRow extends Element {
 }
 
 export const GridRow = {
-
-  create: <R extends GridRow, C extends GridCell>(row: Partial<Omit<R, 'children'>> = {}, cells: Partial<Omit<C, 'children'>>[]): R => { 
+  create: <R extends GridRow, C extends GridCell>(
+    row: Partial<Omit<R, 'children'>> = {},
+    cells: Partial<Omit<C, 'children'>>[],
+  ): R => {
     const { height, contentHeight = height, ...rest } = row
     return {
       type: 'grid-row',
       children: cells.map(cell => GridCell.create<C>(cell)),
       height,
       contentHeight,
-      ...rest
+      ...rest,
     } as unknown as R
-  }
+  },
 }

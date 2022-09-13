@@ -16,7 +16,7 @@ export const useEditableStatic = (): Editable => {
 
   if (!editor) {
     throw new Error(
-      `The \`useEditableStatic\` hook must be used inside the <Slate> component's context.`
+      `The \`useEditableStatic\` hook must be used inside the <Slate> component's context.`,
     )
   }
 

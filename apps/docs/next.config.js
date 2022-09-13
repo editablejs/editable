@@ -1,21 +1,23 @@
 const withPlugins = require('next-compose-plugins');
-const withTM = require('next-transpile-modules')(['@editablejs/editor', '@editablejs/plugins', '@editablejs/ui']);
-const withLess = require('next-with-less');
+const withTM = require('next-transpile-modules')([
+  '@editablejs/editor',
+  '@editablejs/plugins'
+]);
 
 const plugins = [
-  [
-    withLess,
-    {
-      lessLoaderOptions: {
-        javascriptEnabled: true,
-      },
-    },
-  ],
   [
     withTM,
     {
       reactStrictMode: false,
     },
   ],
-]
-module.exports = withPlugins(plugins);
+];
+
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = withPlugins(plugins, {
+  swcMinify: true,
+});
+
+module.exports = nextConfig;

@@ -1,13 +1,13 @@
 import { GridRow } from '../../../interfaces/row'
 import { createEditor } from '../../../plugin/custom'
-import { Editable } from '../../../plugin/editable';
+import { Editable } from '../../../plugin/editable'
 
-describe('interfaces/row', () => { 
+describe('interfaces/row', () => {
   const editor = createEditor()
   editor.isGridRow = (value): value is GridRow => {
     return value.type === 'grid-row'
   }
-  
+
   it('is-row', () => {
     expect(Editable.isGridRow(editor, { type: 'grid-row', children: [] })).toBe(true)
   })

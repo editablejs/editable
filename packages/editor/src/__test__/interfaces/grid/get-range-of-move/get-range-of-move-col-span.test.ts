@@ -4,7 +4,6 @@ import { GridRow } from '../../../../interfaces/row'
 import { createEditor } from '../../../../plugin/custom'
 
 describe('interfaces/grid', () => {
-
   const editor = createEditor()
 
   editor.isGrid = (value): value is Grid => {
@@ -32,37 +31,31 @@ describe('interfaces/grid', () => {
               colspan: 2,
               children: [
                 {
-                  children: [
-                    { text: 'cell1'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell1' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               span: [0, 0],
               children: [
                 {
-                  children: [
-                    { text: 'cell2'}
-                  ]
-                }
-              ]
+                  children: [{ text: 'cell2' }],
+                },
+              ],
             },
             {
               type: 'grid-cell',
               children: [
                 {
-                  children: [
-                    { text: 'cell3'}
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+                  children: [{ text: 'cell3' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ] as Grid[]
 
   it('get-range-of-move-col-span', () => {
@@ -70,55 +63,55 @@ describe('interfaces/grid', () => {
     const to1 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 0,
-      to: 1
+      to: 1,
     })
     expect(to1).toEqual(undefined)
 
     const to2 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 0,
-      to: 2
+      to: 2,
     })
     expect(to2).toEqual({
       move: [0, 1],
       to: 2,
-      isBackward: false
+      isBackward: false,
     })
 
     const to3 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 1,
-      to: 1
+      to: 1,
     })
     expect(to3).toEqual(undefined)
 
     const to4 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 1,
-      to: 2
+      to: 2,
     })
     expect(to4).toEqual({
       move: [0, 1],
       to: 2,
-      isBackward: false
+      isBackward: false,
     })
 
     const to5 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 2,
-      to: 2
+      to: 2,
     })
     expect(to5).toEqual(undefined)
-    
+
     const to6 = Grid.getRangeOfMoveCol(editor, {
       at: [0],
       move: 2,
-      to: 1
+      to: 1,
     })
     expect(to6).toEqual({
       move: [2, 2],
       to: 0,
-      isBackward: true
+      isBackward: true,
     })
   })
 })

@@ -8,12 +8,12 @@ The base project is [`grapheme-breaker`](https://github.com/foliojs/grapheme-bre
 ## for Web and Deno
 
 test page  
-https://taisukef.github.io/grapheme-breaker-mjs/  
+https://taisukef.github.io/grapheme-breaker-mjs/
 
 ```typescript
 import { breaks } from '@editablejs/breaker';
 
-console.log(breaks('😜🇺🇸👍')) // => [ '😜', '🇺🇸', '👍' ]
+console.log(breaks('😜🇺🇸👍')); // => [ '😜', '🇺🇸', '👍' ]
 ```
 
 ## Installation
@@ -47,15 +47,10 @@ previousBreak('😜🇺🇸👍', 3) // => 2
 
 ## Development Notes
 
-In order to use the library, you shouldn't need to know this, but if you're interested in
-contributing or fixing bugs, these things might be of interest.
+In order to use the library, you shouldn't need to know this, but if you're interested in contributing or fixing bugs, these things might be of interest.
 
-* The `src/classes.ts` file is generated from `GraphemeBreakProperty.txt` in the Unicode
-  database by `src/generate_data.ts`. It should be rare that you need to run this, but
-  you may if, for instance, you want to change the Unicode version.
-* You can run the tests using `pnpm test`. They are written using `jest`, and generated from
-  `GraphemeBreakTest.txt` and `emoji-test.txt` from the Unicode database, which is included in the
-  repository for performance reasons while running them.
+- The `src/classes.ts` file is generated from `GraphemeBreakProperty.txt` in the Unicode database by `src/generate_data.ts`. It should be rare that you need to run this, but you may if, for instance, you want to change the Unicode version.
+- You can run the tests using `pnpm test`. They are written using `jest`, and generated from `GraphemeBreakTest.txt` and `emoji-test.txt` from the Unicode database, which is included in the repository for performance reasons while running them.
 
 ## License
 

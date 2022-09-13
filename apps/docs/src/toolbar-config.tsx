@@ -1,166 +1,172 @@
-import { Grid } from '@editablejs/editor'
-import { Icon } from '@editablejs/ui'
-import { FontSizeEditor, HeadingEditor, BlockquoteEditor, OrderedListEditor, UnOrderedListEditor, HeadingType, MarkFormat, MarkEditor, ToolbarItem, TaskListEditor, TableEditor } from "@editablejs/plugins"
+import { Grid } from '@editablejs/editor';
+import {
+  FontSizeEditor,
+  HeadingEditor,
+  BlockquoteEditor,
+  OrderedListEditor,
+  UnOrderedListEditor,
+  HeadingType,
+  MarkFormat,
+  MarkEditor,
+  ToolbarItem,
+  TaskListEditor,
+  TableEditor,
+  ToolbarButton,
+  UI
+} from '@editablejs/plugins';
 
-const marks: MarkFormat[] = ["bold", "italic", "underline", "strikethrough", "code", "sub", "sup"]
+const { Icon } = UI
 
-const marksConfig: ToolbarItem[] = marks.map(mark => ({ 
+const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup'];
+
+const marksConfig: ToolbarButton[] = marks.map(mark => ({
   type: 'button',
-  onToggle: (editor) => {
-    if(MarkEditor.isMarkEditor(editor)) MarkEditor.toggle(editor, mark)
+  onToggle: editor => {
+    if (MarkEditor.isMarkEditor(editor)) MarkEditor.toggle(editor, mark);
   },
-  onActive: (editor) => { 
-    return MarkEditor.isActive(editor, mark)
+  onActive: editor => {
+    return MarkEditor.isActive(editor, mark);
   },
-  children: <Icon name={mark} />
-}))
+  children: <Icon name={mark} />,
+}));
 
-export const defaultToolbarConfig: ToolbarItem[][] = [
-  [...marksConfig],
-  [
-    {
-      type: 'dropdown',
-      items: [
-        {
-          key: '12px',
-          content:'12px',
-        },
-        {
-          key: '16px',
-          content:'16px',
-        },
-        {
-          key: '20px',
-          content:'20px',
-        },
-        {
-          key: '22px',
-          content:'22px',
-        },
-        {
-          key: '24px',
-          content:'24px',
-        },
-        {
-          key: '28px',
-          content:'28px',
-        },
-      ],
-      onActive: (editor) => { 
-        return FontSizeEditor.queryActive(editor) || ''
+export const defaultToolbarConfig: ToolbarItem[] = [
+  ...marksConfig,
+  {
+    type: 'dropdown',
+    items: [
+      {
+        value: '12px',
       },
-      onToggle: (editor, { key }) => {
-        if(FontSizeEditor.isFontSizeEditor(editor)) FontSizeEditor.toggle(editor, key)
+      {
+        value: '16px',
       },
+      {
+        value: '20px',
+      },
+      {
+        value: '22px',
+      },
+      {
+        value: '24px',
+      },
+      {
+        value: '28px',
+      },
+    ],
+    onActive: editor => {
+      return FontSizeEditor.queryActive(editor) ?? '12px';
     },
-    {
-      type: 'dropdown',
-      items: [
-        {
-          key: 'paragraph',
-          content:'paragraph',
-        },
-        {
-          key: 'heading-one',
-          content:'Heading 1',
-        },
-        {
-          key: 'heading-two',
-          content:'Heading 2',
-        },
-        {
-          key: 'heading-three',
-          content:'Heading 3',
-        },
-        {
-          key: 'heading-four',
-          content:'Heading 4',
-        },
-        {
-          key: 'heading-five',
-          content:'Heading 5',
-        },
-        {
-          key: 'heading-six',
-          content:'Heading 6',
-        },
-      ],
-      onActive: (editor) => { 
-        return HeadingEditor.queryHeading(editor) ?? 'paragraph'
+    onToggle: (editor,  value) => {
+      if (FontSizeEditor.isFontSizeEditor(editor)) FontSizeEditor.toggle(editor, value);
+    },
+  },
+  {
+    type: 'dropdown',
+    items: [
+      {
+        value: 'paragraph'
       },
-      onToggle: (editor, { key }) => {
-        if(HeadingEditor.isHeadingEditor(editor)) HeadingEditor.toggle(editor, key as HeadingType)
+      {
+        value: 'heading-one',
+        content: 'Heading 1',
       },
-    }, 
-    {
-      type: 'button',
-      onActive: (editor) => { 
-        return BlockquoteEditor.isActive(editor)
+      {
+        value: 'heading-two',
+        content: 'Heading 2',
       },
-      onToggle: (editor) => {
-        if(BlockquoteEditor.isBlockquoteEditor(editor)) BlockquoteEditor.toggle(editor)
+      {
+        value: 'heading-three',
+        content: 'Heading 3',
       },
-      children: <Icon name="blockquote" />
-    }, 
-    {
-      type: 'button',
-      onActive: (editor) => { 
-        return !!UnOrderedListEditor.queryActive(editor)
+      {
+        value: 'heading-four',
+        content: 'Heading 4',
       },
-      onToggle: (editor) => {
-        if(UnOrderedListEditor.isListEditor(editor)) UnOrderedListEditor.toggle(editor)
+      {
+        value: 'heading-five',
+        content: 'Heading 5',
       },
-      children: <Icon name="unorderedList" />
-    }, 
-    {
-      type: 'button',
-      onActive: (editor) => { 
-        return !!OrderedListEditor.queryActive(editor)
+      {
+        value: 'heading-six',
+        content: 'Heading 6',
       },
-      onToggle: (editor) => {
-        if(OrderedListEditor.isListEditor(editor)) OrderedListEditor.toggle(editor)
-      },
-      children: <Icon name="orderedList" />
-    }, 
-    {
-      type: 'button',
-      onActive: (editor) => { 
-        return !!TaskListEditor.queryActive(editor)
-      },
-      onToggle: (editor) => {
-        if(TaskListEditor.isListEditor(editor)) TaskListEditor.toggle(editor)
-      },
-      children: <Icon name="taskList" />
-    }, 
-    {
-      type: 'button',
-      onDisabled: (editor) => { 
-        return !!TableEditor.isActive(editor)
-      },
-      onToggle: (editor) => {
-        if(TableEditor.isTableEditor(editor)) TableEditor.toggle(editor)
-      },
-      children: <Icon name="table" />
-    }, 
-    {
-      type: 'button',
-      onDisabled: (editor) => { 
-        return !Grid.canMerge(editor)
-      },
-      onToggle: (editor) => {
-        Grid.mergeCell(editor)
-      },
-      children: <Icon name="tableMerge" />
-    }, 
-    {
-      type: 'button',
-      onDisabled: (editor) => { 
-        return !Grid.canSplit(editor)
-      },
-      onToggle: (editor) => {
-        Grid.splitCell(editor)
-      },
-      children: <Icon name="tableSplit" />
-    }
-  ],
-]
+    ],
+    onActive: editor => {
+      return HeadingEditor.queryHeading(editor) ?? 'paragraph';
+    },
+    onToggle: (editor, value) => {
+      if (HeadingEditor.isHeadingEditor(editor)) HeadingEditor.toggle(editor, value as HeadingType);
+    },
+  },
+  {
+    type: 'button',
+    onActive: editor => {
+      return BlockquoteEditor.isActive(editor);
+    },
+    onToggle: editor => {
+      if (BlockquoteEditor.isBlockquoteEditor(editor)) BlockquoteEditor.toggle(editor);
+    },
+    children: <Icon name="blockquote" />,
+  },
+  {
+    type: 'button',
+    onActive: editor => {
+      return !!UnOrderedListEditor.queryActive(editor);
+    },
+    onToggle: editor => {
+      if (UnOrderedListEditor.isListEditor(editor)) UnOrderedListEditor.toggle(editor);
+    },
+    children: <Icon name="unorderedList" />,
+  },
+  {
+    type: 'button',
+    onActive: editor => {
+      return !!OrderedListEditor.queryActive(editor);
+    },
+    onToggle: editor => {
+      if (OrderedListEditor.isListEditor(editor)) OrderedListEditor.toggle(editor);
+    },
+    children: <Icon name="orderedList" />,
+  },
+  {
+    type: 'button',
+    onActive: editor => {
+      return !!TaskListEditor.queryActive(editor);
+    },
+    onToggle: editor => {
+      if (TaskListEditor.isListEditor(editor)) TaskListEditor.toggle(editor);
+    },
+    children: <Icon name="taskList" />,
+  },
+  {
+    type: 'button',
+    onDisabled: editor => {
+      return !!TableEditor.isActive(editor);
+    },
+    onToggle: editor => {
+      if (TableEditor.isTableEditor(editor)) TableEditor.toggle(editor);
+    },
+    children: <Icon name="table" />,
+  },
+  {
+    type: 'button',
+    onDisabled: editor => {
+      return !Grid.canMerge(editor);
+    },
+    onToggle: editor => {
+      Grid.mergeCell(editor);
+    },
+    children: <Icon name="tableMerge" />,
+  },
+  {
+    type: 'button',
+    onDisabled: editor => {
+      return !Grid.canSplit(editor);
+    },
+    onToggle: editor => {
+      Grid.splitCell(editor);
+    },
+    children: <Icon name="tableSplit" />,
+  },
+];

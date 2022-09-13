@@ -8,7 +8,7 @@ declare module 'slate' {
         offset: number
         emptyText?: boolean
       }
-    },
+    }
     Element: BaseElement & {
       type?: string
     }

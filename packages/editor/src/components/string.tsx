@@ -10,7 +10,7 @@ const String: React.FC<{
   isLast: boolean
   parent: Element
   text: Text
-}> = (props) => {
+}> = props => {
   const { isLast, parent, text } = props
   const editor = useEditableStatic()
   const path = Editable.findPath(editor, text)
@@ -21,13 +21,19 @@ const String: React.FC<{
   if (editor.isVoid(parent)) {
     return <ZeroWidthString length={Node.string(parent).length} />
   }
-  
-  if(text.composition) {
+
+  if (text.composition) {
     const { offset, text: compositionText } = text.composition
     const t = text.text
     const left = t.substring(0, offset)
     const right = t.substring(offset)
-    return <>{left && <TextString text={left}/>}<CompositionString text={compositionText} />{right && <TextString text={right}/>}</>
+    return (
+      <>
+        {left && <TextString text={left} />}
+        <CompositionString text={compositionText} />
+        {right && <TextString text={right} />}
+      </>
+    )
   }
   // COMPAT: If this is the last text node in an empty block, render a zero-
   // width space that will convert into a line break when copying and pasting
@@ -66,20 +72,12 @@ const TextString = (props: { text: string; isTrailing?: boolean }) => {
     return `${text ?? ''}${isTrailing ? '\n' : ''}`
   }
 
-  return (
-    <span data-slate-string>
-      {getTextContent()}
-    </span>
-  )
+  return <span data-slate-string>{getTextContent()}</span>
 }
 
-const CompositionString = (props: { text: string; }) => { 
+const CompositionString = (props: { text: string }) => {
   const { text } = props
-  return (
-    <u data-slate-composition>
-      {text}
-    </u>
-  )
+  return <u data-slate-composition>{text}</u>
 }
 
 /**
@@ -89,10 +87,7 @@ const CompositionString = (props: { text: string; }) => {
 const ZeroWidthString = (props: { length?: number; isLineBreak?: boolean }) => {
   const { length = 0, isLineBreak = false } = props
   return (
-    <span
-      data-slate-zero-width={isLineBreak ? 'n' : 'z'}
-      data-slate-length={length}
-    >
+    <span data-slate-zero-width={isLineBreak ? 'n' : 'z'} data-slate-length={length}>
       {'\uFEFF'}
       {isLineBreak ? <br /> : null}
     </span>

@@ -1,7 +1,6 @@
-import { Editable, isHotkey, Locale, Path } from "@editablejs/editor";
+import { Editable, isHotkey, Path } from "@editablejs/editor";
 import React, { useLayoutEffect } from "react";
 import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from "./base";
-import './ordered.less'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -25,7 +24,7 @@ export interface OrderedListEditor extends Editable {
 }
 
 export const OrderedListEditor = {
-  isListEditor: (editor: Editable): editor is OrderedListEditor => { 
+  isListEditor: (editor: Editable): editor is OrderedListEditor => {
     return !!(editor as OrderedListEditor).toggleOrderedList
   },
 
@@ -37,7 +36,7 @@ export const OrderedListEditor = {
     return ListEditor.queryActive(editor, ORDERED_LIST_KEY)
   },
 
-  toggle: (editor: OrderedListEditor, options?: ToggleOrderedListOptions) => { 
+  toggle: (editor: OrderedListEditor, options?: ToggleOrderedListOptions) => {
     editor.toggleOrderedList(options)
   },
 }
@@ -75,15 +74,13 @@ const toRoman = (num: number) => {
   return result
 };
 
-const prefixCls = Locale.getPrefixCls(ORDERED_LIST_KEY)
-
 export const OrderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,
     render: ({ start, level }: List) => {
       const l = level % 3
-      switch(l) { 
+      switch(l) {
         case 1: return `${toABC(start)}.`
         case 2: return `${toRoman(start)}.`
         default:
@@ -93,13 +90,13 @@ export const OrderedListTemplates: ListTemplate[] = [
   }
 ]
 
-const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { editor: Editable, element: List, template?: ListTemplate }) => { 
+const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { editor: Editable, element: List, template?: ListTemplate }) => {
   const { level, key } = element
   const ref = React.useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
     const { current: label } = ref
-    if(level % template.depth > 0 && label) { 
+    if(level % template.depth > 0 && label) {
       const path = Editable.findPath(editor, element)
       const [start, startPath] = ListEditor.findStartList(editor, {
         path,
@@ -109,16 +106,16 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
       })
       if(Path.equals(path, startPath)) return
       const startDom = Editable.toDOMNode(editor, start)
-      const startLabel = startDom.querySelector(`.${prefixCls}-label`)
+      const startLabel = startDom.querySelector(`.ea-ordered-list-label`)
       if(startLabel) {
         const { width: startWidth } = startLabel.getBoundingClientRect()
         const { width } = label.getBoundingClientRect()
         if(width > startWidth) {
           label.style.marginLeft = `-${width - startWidth + 28}px`
-        } 
+        }
         // else if(startWidth > width) {
         //   label.style.marginLeft = `-${28 - (startWidth - width)}px`
-        // } 
+        // }
         else {
           label.style.marginLeft = ''
         }
@@ -128,10 +125,10 @@ const LabelElement = ({ editor, element, template = OrderedListTemplates[0]}: { 
     }
   }, [editor, element, level, key, template.depth])
 
-  return <span ref={ref} className={`${prefixCls}-label`}>{template.render(element)}</span>
+  return <span ref={ref} className='ea-ordered-list-label'>{template.render(element)}</span>
 }
 
-export const withOrderedList = <T extends Editable>(editor: T, options: OrderedListOptions = {}) => { 
+export const withOrderedList = <T extends Editable>(editor: T, options: OrderedListOptions = {}) => {
   const hotkey = options.hotkey || defaultHotkey
 
   const e = editor as  T & OrderedListEditor
@@ -153,8 +150,8 @@ export const withOrderedList = <T extends Editable>(editor: T, options: OrderedL
           attributes,
           children,
         },
-        className: prefixCls,
-        onRenderLabel: (element, template) => { 
+        className: 'ea-ordered-list',
+        onRenderLabel: (element, template) => {
           return <LabelElement element={element} editor={newEditor} template={template} />
         }
       })
@@ -162,7 +159,7 @@ export const withOrderedList = <T extends Editable>(editor: T, options: OrderedL
     return renderElement(props)
   }
 
-  newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => { 
+  newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => {
     ListEditor.toggle(editor, ORDERED_LIST_KEY,{
       ...options,
       template: options?.template ?? OrderedListTemplates[0].key
@@ -171,7 +168,7 @@ export const withOrderedList = <T extends Editable>(editor: T, options: OrderedL
 
   const { onKeydown } = newEditor
 
-  newEditor.onKeydown = (e: KeyboardEvent) => { 
+  newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {
       e.preventDefault()
       newEditor.toggleOrderedList()
