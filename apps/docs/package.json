@@ -26,5 +26,11 @@
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^4.5.3"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

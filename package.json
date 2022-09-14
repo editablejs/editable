@@ -25,12 +25,6 @@
     "tailwind-config": "workspace:*",
     "turbo": "latest"
   },
-  "lint-staged": {
-    "*.{ts,tsx,md,mdx,js,jsx}":[
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
   "engines": {
     "node": ">=14.0.0",
     "pnpm": ">=7.0.0"

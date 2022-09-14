@@ -1,6 +1,6 @@
 @layer components {
   .ea-code {
-    @apply ea-bg-black ea-bg-opacity-8 ea-break-words ea-indent-0 ea-rounded-md;
+    @apply ea-bg-black ea-bg-opacity-8 ea-break-words ea-indent-0 ea-rounded;
     font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
     font-size: inherit;
     padding: 0 2px;

@@ -29,6 +29,7 @@ import Shadow from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
+import ContextMenu from './context-menu'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -148,7 +149,7 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (isMouseDown && !event.defaultPrevented) {
+    if (isMouseDown && (!event.defaultPrevented || event.button === 2)) {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         Editable.focus(editor)
       }
@@ -167,7 +168,7 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleRootMouseDown = (event: React.MouseEvent) => {
-    if (event.defaultPrevented) return
+    if (event.defaultPrevented && event.button !== 2) return
     IS_MOUSEDOWN.set(editor, true)
     if (isDoubleClickRef.current) {
       if (isSamePoint(event)) {
@@ -304,6 +305,7 @@ export const ContentEditable = (props: EditableProps) => {
         )}
         <InputComponent selection={drawSelection} />
       </Shadow>
+      {ref.current && <ContextMenu />}
     </ReadOnlyContext.Provider>
   )
 }

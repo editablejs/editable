@@ -2,6 +2,10 @@
 @import "tailwindcss/components";
 
 /**
+* context-menu
+**/
+@import "./context-menu/styles.css";
+/**
 * blockquote
 **/
 @import "./blockquote/styles.css";

@@ -114,6 +114,16 @@ export interface EditorElements {
   [key: string]: NodeEntry<Element>[]
 }
 
+export interface ContextMenuItem {
+  key: string
+  title: JSX.Element | string
+  icon?: JSX.Element
+  rightText?: JSX.Element | string
+  sort?: number
+  href?: string
+  onSelect?: (e: React.MouseEvent<any>) => void
+  children?: ContextMenuItem[]
+}
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -143,6 +153,7 @@ export interface Editable extends BaseEditor {
   onSelecting: () => void
   onSelectEnd: () => void
   onSelectionChange: () => void
+  onContextMenu: (event: MouseEvent, items: ContextMenuItem[]) => JSX.Element | void | null
   setSelectionStyle: (style: SelectionStyle) => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes

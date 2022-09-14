@@ -31,12 +31,12 @@
     "cssnano": "5.1.13",
     "cssnano-preset-advanced": "5.3.8",
     "eslint-config-editable": "workspace:*",
-    "prettier-config": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "postcss": "^8.4.16",
     "postcss-cli": "^10.0.0",
     "postcss-import": "15.0.0",
+    "prettier-config": "workspace:*",
     "react": "^17.x",
     "react-dom": "^17.x",
     "tailwind-config": "workspace:*",
@@ -48,10 +48,17 @@
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "jest": {
     "preset": "jest-presets/jest/node"
   },
   "dependencies": {
+    "@radix-ui/react-context-menu": "1.0.0",
     "@radix-ui/react-dropdown-menu": "1.0.0",
     "@radix-ui/react-tooltip": "1.0.0",
     "classnames": "^2.3.1"

@@ -1,39 +1,59 @@
-import { Root, Content, ItemIndicator, Separator, Trigger, DropdownMenuProps, DropdownMenuItemProps, RadioGroup, RadioItem } from '@radix-ui/react-dropdown-menu';
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
-import classNames from 'classnames';
-import { Icon } from './icon';
+import {
+  Root,
+  Content,
+  ItemIndicator,
+  Separator,
+  Trigger,
+  DropdownMenuProps,
+  DropdownMenuItemProps,
+  RadioGroup,
+  RadioItem,
+} from '@radix-ui/react-dropdown-menu'
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import classNames from 'classnames'
+import { Icon } from './icon'
+import { unbundleFocusRadixUi } from './utils'
 
 export interface DropdownItemProps extends Omit<DropdownMenuItemProps, 'onSelect' | 'textValue'> {
   value: string
-  content?: ReactNode;
-  disabled?: boolean;
+  content?: ReactNode
+  disabled?: boolean
 }
 
 export interface DropdownProps extends Omit<DropdownMenuProps, 'modal'> {
   value?: string
   defaultValue?: string
-  defaultActiveFirstItem?: boolean;
-  calssName?: string;
-  disabled?: boolean;
-  items: DropdownItem[];
+  defaultActiveFirstItem?: boolean
+  calssName?: string
+  disabled?: boolean
+  items: DropdownItem[]
   onValueChange?: (value: string) => void
 }
 
-type DropdownItem = DropdownItemProps | "separator"
+type DropdownItem = DropdownItemProps | 'separator'
 
-export const Dropdown: FC<DropdownProps> = ({ children, disabled, items, defaultActiveFirstItem = true, calssName, onValueChange, defaultValue: defaultValueProps, value: valueProps, ...props }) => {
-
+export const Dropdown: FC<DropdownProps> = ({
+  children,
+  disabled,
+  items,
+  defaultActiveFirstItem = true,
+  calssName,
+  onValueChange,
+  defaultValue: defaultValueProps,
+  value: valueProps,
+  ...props
+}) => {
   const defaultValue = useMemo(() => {
     if (defaultValueProps) return defaultValueProps
-    const firstItem = items.find(item => item !== 'separator');
-    return defaultActiveFirstItem && typeof firstItem ==='object' ? firstItem.value : ''
+    const firstItem = items.find(item => item !== 'separator')
+    return defaultActiveFirstItem && typeof firstItem === 'object' ? firstItem.value : ''
   }, [defaultActiveFirstItem, items, defaultValueProps])
 
   const [value, setValue] = useState(defaultValue)
 
   const handleSelect = (e: Event, v: string) => {
     setValue(v)
-    if(onValueChange) onValueChange(value)
+    if (onValueChange) onValueChange(value)
   }
 
   useEffect(() => {
@@ -42,42 +62,37 @@ export const Dropdown: FC<DropdownProps> = ({ children, disabled, items, default
 
   const renderItems = (items: DropdownItem[]) => {
     return items.map((item, index) => {
-      if (item === "separator") {
-        return <Separator key={index} />;
+      if (item === 'separator') {
+        return <Separator key={index} />
       } else {
         const { value, content, disabled, ...props } = item
-        return <RadioItem
-        disabled={disabled}
-        key={value}
-        value={value}
-        className='ea-flex ea-items-center ea-py-1 ea-pl-6 ea-pr-3 ea-relative ea-cursor-pointer ea-text-center hover:ea-bg-gray-100'
-        onSelect={e => handleSelect(e, value)}
-        onMouseDown={e => e.preventDefault()}
-        ref={ref => {
-          if(ref) ref.focus = () => {}
-        }}
-        {...props}>
-          <ItemIndicator className='ea-absolute ea-w-6 ea-left-0 ea-top-1 ea-text-gray-400'>
-            <Icon name="check" />
-          </ItemIndicator>
-          {content ?? value}
-      </RadioItem>
+        return (
+          <RadioItem
+            disabled={disabled}
+            key={value}
+            value={value}
+            className="ea-relative ea-flex ea-cursor-pointer ea-items-center ea-py-1 ea-pl-6 ea-pr-3 ea-text-center hover:ea-bg-gray-100"
+            onSelect={e => handleSelect(e, value)}
+            onMouseDown={e => e.preventDefault()}
+            ref={unbundleFocusRadixUi}
+            {...props}
+          >
+            <ItemIndicator className="ea-absolute ea-left-0 ea-top-1 ea-w-6 ea-text-gray-400">
+              <Icon name="check" />
+            </ItemIndicator>
+            {content ?? value}
+          </RadioItem>
+        )
       }
     })
   }
 
-  const {
-    open,
-    defaultOpen,
-    onOpenChange,
-    dir,
-    ...triggerProps
-  } = props
+  const { open, defaultOpen, onOpenChange, dir, ...triggerProps } = props
 
   const activeItem = useMemo(() => {
     const findItem = (items: DropdownItem[]): DropdownItemProps | null => {
-      for(const item of items) {
-        if(item !== 'separator' && item.value === value) return item
+      for (const item of items) {
+        if (item !== 'separator' && item.value === value) return item
       }
       return null
     }
@@ -87,26 +102,25 @@ export const Dropdown: FC<DropdownProps> = ({ children, disabled, items, default
   return (
     <Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange} dir={dir} modal={false}>
       <Trigger
-      disabled={disabled}
-      ref={ref => {
-        if(ref) ref.focus = () => {}
-      }}
-      className={classNames(calssName, 'ea-inline-flex ea-items-center ea-border-none ea-outline-none ea-content-center ea-rounded ea-gap-2 ea-px-1 ea-py-1 ea-bg-white hover:ea-bg-gray-100 ea-cursor-pointer')}
-      {...triggerProps}>
+        disabled={disabled}
+        ref={unbundleFocusRadixUi}
+        className={classNames(
+          calssName,
+          'ea-inline-flex ea-cursor-pointer ea-content-center ea-items-center ea-gap-2 ea-rounded ea-border-none ea-bg-white ea-px-1 ea-py-1 ea-outline-none hover:ea-bg-gray-100',
+        )}
+        {...triggerProps}
+      >
         {children ?? activeItem?.children ?? value}
-        <Icon name="arrowCaretDown" className='ea-text-xxs ea-text-gray-400' />
+        <Icon name="arrowCaretDown" className="ea-text-xxs ea-text-gray-400" />
       </Trigger>
       <Content
-      ref={ref => {
-        if(ref) ref.focus = () => {}
-      }}
-      loop={true}
-      align="start"
-      className='ea-overflow-hidden ea-bg-white ea-rounded-md ea-shadow-md ea-border ea-border-gray-200 ea-border-solid ea-text-sm'>
+        ref={unbundleFocusRadixUi}
+        loop={true}
+        align="start"
+        className="ea-overflow-hidden ea-rounded-sm ea-border ea-border-solid ea-border-gray-200 ea-bg-white ea-text-sm ea-shadow-md"
+      >
         <RadioGroup value={value} onValueChange={onValueChange}>
-        {
-          renderItems(items)
-        }
+          {renderItems(items)}
         </RadioGroup>
       </Content>
     </Root>

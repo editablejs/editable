@@ -1,0 +1,5 @@
+@layer components {
+  .ea-context-menu {
+    min-width: 200px;
+  }
+}

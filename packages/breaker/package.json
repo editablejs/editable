@@ -35,6 +35,12 @@
     "tsup": "^6.1.2",
     "typescript": "^4.5.3"
   },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "jest": {
     "preset": "jest-presets/jest/node"
   }
