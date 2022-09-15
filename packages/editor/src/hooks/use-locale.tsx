@@ -1,42 +1,38 @@
 import merge from 'lodash/merge'
 import { useMemo, useContext, createContext } from 'react'
-import { locales } from '../locale'
-import defaultData from '../locale/en_US'
-
-export const defaultPrefixCls = 'ea'
+import { Editable } from '../plugin/editable'
+import { EDITOR_TO_LANG } from '../utils/weak-maps'
 export interface Locale {
   locale: string
-  global: {
-    locale: string
-  }
 }
 
+export const EDITOR_TO_LOCALE: WeakMap<Editable, Record<string, any>> = new WeakMap()
 export interface LocaleInterface {
-  set: <T extends Locale>(lang: string, locale: T) => void
-  get: <T extends Locale>(lang: string) => T
-  getLocales: () => Record<string, Locale>
-  getPrefixCls: (suffixCls?: string, customizePrefixCls?: string) => string
+  setLocale: <T extends Locale>(editor: Editable, lang: string, locale: T) => void
+  getLang: (editor: Editable) => string
+  getLocale: <T extends Locale>(editor: Editable) => T
+  getLocales: (editor: Editable) => Record<string, Locale>
 }
 
 export const Locale: LocaleInterface = {
-  set(lang, locale) {
+  setLocale(editor, lang, locale) {
+    const locales = Locale.getLocales(editor)
     locales[lang] = merge(locales[lang], locale)
+    EDITOR_TO_LOCALE.set(editor, locales)
   },
 
-  get(lang) {
+  getLang(editor) {
+    return EDITOR_TO_LANG.get(editor) || 'en-US'
+  },
+
+  getLocale(editor) {
+    const lang = Locale.getLang(editor)
+    const locales = Locale.getLocales(editor)
     return locales[lang] as any
   },
 
-  getLocales() {
-    return locales
-  },
-
-  getPrefixCls(suffixCls?: string, customizePrefixCls?: string) {
-    if (customizePrefixCls) return customizePrefixCls
-
-    const mergedPrefixCls = defaultPrefixCls
-
-    return suffixCls ? `${mergedPrefixCls}-${suffixCls}` : mergedPrefixCls
+  getLocales(editor) {
+    return EDITOR_TO_LOCALE.get(editor) || {}
   },
 }
 
@@ -52,12 +48,12 @@ export const useLocale = <T extends LocaleComponentName>(
   const componentLocaleContext = localeContext[componentName]
 
   const componentLocale = useMemo(() => {
-    const locale = componentLocaleContext || defaultLocale || defaultData[componentName || 'global']
+    const locale = componentLocaleContext || defaultLocale
 
     return {
       ...(typeof locale === 'function' ? locale() : locale),
     }
-  }, [componentName, defaultLocale, componentLocaleContext])
+  }, [defaultLocale, componentLocaleContext])
 
   return [componentLocale]
 }

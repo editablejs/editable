@@ -121,6 +121,7 @@ export interface ContextMenuItem {
   rightText?: JSX.Element | string
   sort?: number
   href?: string
+  disabled?: boolean
   onSelect?: (e: React.MouseEvent<any>) => void
   children?: ContextMenuItem[]
 }

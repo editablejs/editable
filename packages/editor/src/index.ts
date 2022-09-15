@@ -30,6 +30,9 @@ export { useGridSelected } from './hooks/use-grid-selected'
 export { Editable } from './plugin/editable'
 export { withEditable } from './plugin/with-editable'
 
+// Environment
+export * from './utils/environment'
+
 export type {
   RenderElementProps,
   RenderLeafProps,

@@ -1,4 +1,4 @@
-import { Element, NodeEntry, Path, Transforms } from 'slate'
+import { Element, Path, Transforms } from 'slate'
 import { SelectionEdge } from 'slate/dist/interfaces/types'
 import { Editable } from '../plugin/editable'
 

@@ -1,6 +1,6 @@
 import React, { createContext, FC, memo, useContext, useEffect, useRef, useState } from 'react'
 import { Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor'
-
+import classNames from 'classnames'
 import {
   Toolbar as UIToolbar,
   ToolbarButton as UIToolbarButton,
@@ -125,6 +125,7 @@ export interface ToolbarProps {
 
 const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({
   items,
+  className,
   ...props
 }) => {
   const editor = useEditable()
@@ -168,7 +169,9 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
         },
       }}
     >
-      <UIToolbar {...props}>{items.map(renderItem)}</UIToolbar>
+      <UIToolbar className={classNames('ea-toolbar', className)} {...props}>
+        {items.map(renderItem)}
+      </UIToolbar>
     </ToolbarContext.Provider>
   )
 }

@@ -10,8 +10,8 @@ import { OrderedListOptions, withOrderedList, OrderedListEditor } from './list/o
 import { UnOrderedListOptions, withUnOrderedList, UnOrderedListEditor } from './list/unordered'
 import { TaskListOptions, withTaskList, TaskListEditor } from './list/task'
 import { TableOptions, TableEditor, withTable } from './table'
-import { withContextMenu } from './context-menu'
-import { withBase } from './base'
+import { ContextMenuOptions, withContextMenu } from './context-menu'
+import { GlobalEditor, GlobalOptions, withGlobal } from './global'
 
 export * from './mark'
 export * from './fontsize'
@@ -26,31 +26,34 @@ export * from './table'
 export * from './toolbar'
 
 export { Toolbar, UI }
-interface PluginOptions {
+export interface PluginOptions {
+  global?: GlobalOptions
+  'context-menu'?: ContextMenuOptions
   mark?: MarkOptions
-  fontSize?: FontSizeOptions
+  'font-size'?: FontSizeOptions
   heading?: HeadingOptions
   blockquote?: BlockquoteOptions
-  orderedList?: OrderedListOptions
-  unOrderedList?: UnOrderedListOptions
-  taskList?: TaskListOptions
+  'ordered-list'?: OrderedListOptions
+  'unordered-list'?: UnOrderedListOptions
+  'task-list'?: TaskListOptions
   indent?: IndentOptions
   table?: TableOptions
 }
 
 export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
-  let newEditor = withBase(editor)
+  let newEditor = withGlobal(editor)
   newEditor = withMark(editor, options.mark)
-  newEditor = withFontSize(newEditor, options.fontSize)
+  newEditor = withFontSize(newEditor, options['font-size'])
   newEditor = withIndent(newEditor, options.indent)
   newEditor = withHeading(newEditor, options.heading)
   newEditor = withBlockquote(newEditor, options.blockquote)
-  newEditor = withOrderedList(newEditor, options.orderedList)
-  newEditor = withUnOrderedList(newEditor, options.unOrderedList)
-  newEditor = withTaskList(newEditor, options.taskList)
+  newEditor = withOrderedList(newEditor, options['ordered-list'])
+  newEditor = withUnOrderedList(newEditor, options['unordered-list'])
+  newEditor = withTaskList(newEditor, options['task-list'])
   newEditor = withTable(newEditor, options.table)
   newEditor = withContextMenu(newEditor)
   return newEditor as Editable &
+    GlobalEditor &
     MarkEditor &
     HeadingEditor &
     FontSizeEditor &

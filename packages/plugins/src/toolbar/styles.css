@@ -1,0 +1,10 @@
+@layer components {
+  .ea-toolbar {
+    @apply ea-text-gray-600;
+
+    button {
+      font-size: inherit;
+      color: inherit;
+    }
+  }
+}

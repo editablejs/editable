@@ -71,13 +71,13 @@ export const Dropdown: FC<DropdownProps> = ({
             disabled={disabled}
             key={value}
             value={value}
-            className="ea-relative ea-flex ea-cursor-pointer ea-items-center ea-py-1 ea-pl-6 ea-pr-3 ea-text-center hover:ea-bg-gray-100"
+            className="ea-relative ea-flex ea-cursor-pointer ea-items-center ea-py-2 ea-pl-9 ea-pr-3 ea-text-center hover:ea-bg-gray-100"
             onSelect={e => handleSelect(e, value)}
             onMouseDown={e => e.preventDefault()}
             ref={unbundleFocusRadixUi}
             {...props}
           >
-            <ItemIndicator className="ea-absolute ea-left-0 ea-top-1 ea-w-6 ea-text-gray-400">
+            <ItemIndicator className="ea-absolute ea-left-3 ea-top-0 ea-my-2 ea-text-gray-400">
               <Icon name="check" />
             </ItemIndicator>
             {content ?? value}
@@ -117,7 +117,7 @@ export const Dropdown: FC<DropdownProps> = ({
         ref={unbundleFocusRadixUi}
         loop={true}
         align="start"
-        className="ea-overflow-hidden ea-rounded-sm ea-border ea-border-solid ea-border-gray-200 ea-bg-white ea-text-sm ea-shadow-md"
+        className="ea-overflow-hidden ea-rounded-sm ea-border ea-border-solid ea-border-gray-200 ea-bg-white ea-shadow-md"
       >
         <RadioGroup value={value} onValueChange={onValueChange}>
           {renderItems(items)}

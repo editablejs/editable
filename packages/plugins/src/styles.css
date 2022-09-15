@@ -6,6 +6,11 @@
 **/
 @import "./context-menu/styles.css";
 /**
+* toolbar
+**/
+@import "./toolbar/styles.css";
+
+/**
 * blockquote
 **/
 @import "./blockquote/styles.css";

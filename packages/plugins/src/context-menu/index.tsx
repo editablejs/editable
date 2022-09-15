@@ -22,15 +22,19 @@ interface ContextMenu extends UIContextMenu {
 
 const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
   const renderItems = (items: ContextMenuItem[]) => {
-    return items.map(({ children, title, ...items }) => {
+    return items.map(({ children, title, onSelect, href, ...item }) => {
       if (children && children.length > 0) {
         return (
-          <ContextMenuSub title={title} {...items}>
+          <ContextMenuSub title={title} {...item}>
             {renderItems(children)}
           </ContextMenuSub>
         )
       }
-      return <UIContextMenuItem {...items}>{title}</UIContextMenuItem>
+      return (
+        <UIContextMenuItem onSelect={onSelect} href={href} {...item}>
+          {title}
+        </UIContextMenuItem>
+      )
     })
   }
 

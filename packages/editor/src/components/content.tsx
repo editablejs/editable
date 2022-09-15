@@ -124,21 +124,24 @@ export const ContentEditable = (props: EditableProps) => {
   const [focused, setFocused] = useFocused()
 
   const startPointRef = useRef<Point | null>(null)
+  const isContextMenu = useRef(false)
 
   const handleDocumentMouseDown = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
     if (!isMouseDown && !event.defaultPrevented) setFocused(false)
   }
 
-  const handleSelecting = (point: Point | null) => {
+  const handleSelecting = (point: Point | null, rest = true) => {
     if (!point) return
+    const { selection } = editor
+    if (!rest && selection && Range.includes(selection, point)) {
+      return
+    }
     const anchor =
-      IS_SHIFT_PRESSED.get(editor) && editor.selection
-        ? editor.selection.anchor
-        : startPointRef.current
+      IS_SHIFT_PRESSED.get(editor) && selection ? selection.anchor : startPointRef.current
     if (!anchor) return
     const range: Range = { anchor, focus: point }
-    if (editor.selection && Range.equals(range, editor.selection)) {
+    if (selection && Range.equals(range, selection)) {
       Editable.focus(editor)
       setFocused(true)
       return
@@ -153,15 +156,17 @@ export const ContentEditable = (props: EditableProps) => {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         Editable.focus(editor)
       }
-      const range = handleSelecting(Editable.findEventPoint(editor, event))
+      const range = handleSelecting(Editable.findEventPoint(editor, event), !isContextMenu.current)
       if (range) editor.onSelectEnd()
     }
+    isContextMenu.current = false
     IS_MOUSEDOWN.set(editor, false)
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (event.button !== 0 || !isMouseDown || event.defaultPrevented) return
+    if (event.button !== 0 || !isMouseDown || event.defaultPrevented || isContextMenu.current)
+      return
     const point = Editable.findEventPoint(editor, event)
     const range = handleSelecting(point)
     if (range) editor.onSelecting()
@@ -180,10 +185,14 @@ export const ContentEditable = (props: EditableProps) => {
     setFocused(true)
     const point = Editable.findEventPoint(editor, event)
     if (point) {
-      if (!IS_SHIFT_PRESSED.get(editor)) {
+      const isShift = IS_SHIFT_PRESSED.get(editor)
+      if (!isShift) {
         startPointRef.current = point
+        if (event.button === 2) {
+          isContextMenu.current = true
+        }
       }
-      const range = handleSelecting(point)
+      const range = handleSelecting(point, !isContextMenu.current)
       if (range) editor.onSelectStart()
     } else startPointRef.current = null
   }

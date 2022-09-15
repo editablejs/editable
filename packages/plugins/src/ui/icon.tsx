@@ -1,5 +1,5 @@
-import classNames from 'classnames';
-import React from 'react';
+import classNames from 'classnames'
+import React from 'react'
 
 export const BoldIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -14,8 +14,8 @@ export const BoldIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
     >
       <path d="M328 446h224.68C609.742 446 656 401.554 656 346.727v-9.454C656 282.446 609.742 238 552.68 238H328v208z m369.815 35.426C754.606 519.186 792 583.508 792 656.508v10.984C792 783.752 697.155 878 580.158 878h-318.67C245.202 878 232 864.798 232 848.512V169.39c0-15.127 12.263-27.39 27.39-27.39h295.9C663.93 142 752 229.267 752 336.915v10.17c0 52.073-20.609 99.378-54.185 134.341zM328 542.671V781.33h251.134c63.78 0 115.485-50.997 115.485-113.905v-10.848c0-62.908-51.705-113.905-115.485-113.905H328z"></path>
     </svg>
-  );
-};
+  )
+}
 
 export const ItalicIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -33,8 +33,8 @@ export const ItalicIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = prop
         p-id="9486"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const UnderlineIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -52,8 +52,8 @@ export const UnderlineIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = p
         p-id="9620"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const StrikethroughIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -71,8 +71,8 @@ export const StrikethroughIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>
         p-id="9754"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const CodeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -90,8 +90,8 @@ export const CodeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
         p-id="9888"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const SubIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -109,8 +109,8 @@ export const SubIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props =
         p-id="10022"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const SupIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -128,8 +128,8 @@ export const SupIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props =
         p-id="10156"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -147,8 +147,8 @@ export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props
         p-id="9084"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -166,8 +166,8 @@ export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
         p-id="9084"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const UnorderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -185,8 +185,8 @@ export const UnorderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>
         p-id="9084"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const OrderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -204,8 +204,8 @@ export const OrderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> =
         p-id="9352"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const TaskListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -223,8 +223,8 @@ export const TaskListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = pr
         p-id="9486"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const TableIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -239,8 +239,8 @@ export const TableIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props
     >
       <path d="M945.08373333 93.85173333L78.91626667 93.85173333c-24.74378667 0-44.80170667 20.05685333-44.80170667 44.80064l0 746.69653334c0 24.74272 20.05792 44.80064 44.80170667 44.80064l866.16746666 0c24.74165333 0 44.80170667-20.05685333 44.80170667-44.80064L989.88586667 138.65173333C989.88586667 113.90826667 969.82506667 93.85173333 945.08373333 93.85173333ZM945.08373333 273.05706667l0 175.07733333-258.85546666 0L686.22826667 273.05706667l214.05226666 0L945.08373333 273.05706667ZM382.57173333 667.17226667L382.57173333 492.93546667l258.85546667 0 0 174.2368L382.57173333 667.17226667ZM641.42826667 711.9744l0 173.37386667L382.57173333 885.34826667 382.57173333 711.9744 641.42826667 711.9744ZM337.77066667 667.17226667l-258.85546667 0L78.9152 492.93546667l258.85546667 0L337.77066667 667.17226667ZM641.42826667 273.05706667l0 175.07733333L382.57173333 448.1344 382.57173333 273.05706667 641.42826667 273.05706667ZM686.22826667 492.93546667l258.85546666 0 0 174.2368-258.85546666 0L686.22826667 492.93546667ZM392.52906667 138.65173333c24.74378667 0 44.80170667 20.05685333 44.80170666 44.80277334 0 24.74272-20.05792 44.80064-44.80170666 44.80064s-44.80277333-20.05685333-44.80277334-44.80064C347.72586667 158.70933333 367.7856 138.65173333 392.52906667 138.65173333ZM258.12373333 138.65173333c24.74165333 0 44.80170667 20.05685333 44.80170667 44.80277334 0 24.74272-20.05898667 44.80064-44.80170667 44.80064-24.74496 0-44.80277333-20.05685333-44.80277333-44.80064C213.3216 158.70933333 233.3792 138.65173333 258.12373333 138.65173333ZM123.7184 138.65173333c24.74165333 0 44.80170667 20.05685333 44.80170667 44.80277334 0 24.74272-20.05898667 44.80064-44.80170667 44.80064-24.74496 0-44.80277333-20.05685333-44.80277333-44.80064C78.91626667 158.70933333 98.97386667 138.65173333 123.7184 138.65173333ZM123.7184 273.05706667l214.05226667 0 0 175.07733333-258.85546667 0L78.91626667 273.05706667 123.7184 273.05706667ZM78.91626667 711.9744l258.85546666 0 0 173.37386667-258.85546666 0L78.91626667 711.9744ZM686.22826667 885.34826667L686.22826667 711.9744l258.85546666 0 0 173.37386667L686.22826667 885.34826667Z"></path>
     </svg>
-  );
-};
+  )
+}
 
 export const TableSplitIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -255,8 +255,8 @@ export const TableSplitIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
     >
       <path d="M248 474h136V188H188v124a8 8 0 0 0-8 8h-60a8 8 0 0 0-8-8V144c0-17.673 14.327-32 32-32h284c17.673 0 32 14.327 32 32v736c0 17.673-14.327 32-32 32H144c-17.673 0-32-14.327-32-32V712a8 8 0 0 0 8-8h60a8 8 0 0 0 8 8v124h196V550H248v81.407c0 7.143-8.295 11.194-13.825 6.717L83.27 518.717c-4.36-3.412-4.36-10.022 0-13.434l150.905-119.407c5.636-4.477 13.825-0.426 13.825 6.717V474z m528 76H640v286h196V712a8 8 0 0 0 8-8h60a8 8 0 0 0 8 8v168c0 17.673-14.327 32-32 32H596c-17.673 0-32-14.327-32-32V144c0-17.673 14.327-32 32-32h284c17.673 0 32 14.327 32 32v168a8 8 0 0 0-8 8h-60a8 8 0 0 0-8-8V188H640v286h136v-81.407c0-7.143 8.189-11.194 13.825-6.717L940.73 505.283c4.36 3.412 4.36 10.022 0 13.434L789.825 638.124c-5.53 4.477-13.825 0.426-13.825-6.717V550z"></path>
     </svg>
-  );
-};
+  )
+}
 
 export const TableMergeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -271,8 +271,8 @@ export const TableMergeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
     >
       <path d="M704 474h132V188H640v124a8 8 0 0 0-8 8h-60a8 8 0 0 0-8-8V144c0-17.673 14.327-32 32-32h284c17.673 0 32 14.327 32 32v736c0 17.673-14.327 32-32 32H596c-17.673 0-32-14.327-32-32V712a8 8 0 0 0 8-8h60a8 8 0 0 0 8 8v124h196V550H704v81.407c0 7.143-8.295 11.194-13.825 6.717L539.27 518.717c-4.36-3.412-4.36-10.022 0-13.434l150.905-119.407c5.636-4.477 13.825-0.426 13.825 6.717V474z m-384 76H188v286h196V712a8 8 0 0 0 8-8h60a8 8 0 0 0 8 8v168c0 17.673-14.327 32-32 32H144c-17.673 0-32-14.327-32-32V144c0-17.673 14.327-32 32-32h284c17.673 0 32 14.327 32 32v168a8 8 0 0 0-8 8h-60a8 8 0 0 0-8-8V188H188v286h132v-81.407c0-7.143 8.189-11.194 13.825-6.717L484.73 505.283c4.36 3.412 4.36 10.022 0 13.434L333.825 638.124c-5.53 4.477-13.825 0.426-13.825-6.717V550z"></path>
     </svg>
-  );
-};
+  )
+}
 
 export const PlusIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
@@ -293,57 +293,153 @@ export const PlusIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
         fill="#ffffff"
       ></path>
     </svg>
-  );
-};
+  )
+}
 
 export const ArrowDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
-    <svg {...props}
-    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    fill="currentColor"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3 0.1-12.7-6.4-12.7z"></path></svg>
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3 0.1-12.7-6.4-12.7z"></path>
+    </svg>
   )
 }
 
 export const ArrowUpIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
-    <svg {...props}
-    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    fill="currentColor"><path d="M890.5 755.3L537.9 269.2c-12.8-17.6-39-17.6-51.7 0L133.5 755.3c-3.8 5.3-0.1 12.7 6.5 12.7h75c5.1 0 9.9-2.5 12.9-6.6L512 369.8l284.1 391.6c3 4.1 7.8 6.6 12.9 6.6h75c6.5 0 10.3-7.4 6.5-12.7z"></path></svg>
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M890.5 755.3L537.9 269.2c-12.8-17.6-39-17.6-51.7 0L133.5 755.3c-3.8 5.3-0.1 12.7 6.5 12.7h75c5.1 0 9.9-2.5 12.9-6.6L512 369.8l284.1 391.6c3 4.1 7.8 6.6 12.9 6.6h75c6.5 0 10.3-7.4 6.5-12.7z"></path>
+    </svg>
   )
 }
 
 export const ArrowLeftIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
-    <svg {...props}
-    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    fill="currentColor"><path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path></svg>
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path>
+    </svg>
   )
 }
 
 export const ArrowRightIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
   return (
-    <svg {...props}
-    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    fill="currentColor"><path d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path></svg>
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M765.7 486.8L314.9 134.7c-5.3-4.1-12.9-0.4-12.9 6.3v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1c16.4-12.8 16.4-37.6 0-50.4z"></path>
+    </svg>
   )
 }
 
 export const ArrowCaretDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
-
   return (
-    <svg {...props}
-    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    fill="currentColor"><path d="M76.3 392.3l403.1 489.1c16.9 18.9 46.5 18.9 63.4 0l405.1-489.1c24.4-27.4 5-70.8-31.7-70.8H108.1c-36.8 0-56.3 43.4-31.8 70.8z" p-id="13314"/></svg>
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path
+        d="M76.3 392.3l403.1 489.1c16.9 18.9 46.5 18.9 63.4 0l405.1-489.1c24.4-27.4 5-70.8-31.7-70.8H108.1c-36.8 0-56.3 43.4-31.8 70.8z"
+        p-id="13314"
+      />
+    </svg>
+  )
+}
+
+export const CutIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M891.257 825.643C901.373 835.76 894.26 853 880 853h-90.6a15.87 15.87 0 0 0-11.264-4.65L510.502 580.03l-80.334 80.601C441.812 683.161 448 708.151 448 734c0 88.318-71.682 160-160 160s-160-71.682-160-160 71.682-160 160-160c26.357 0 51.758 6.38 74.494 18.383l80.208-80.386-80.111-80.378C339.855 443.62 314.456 450 288.1 450c-88.318 0-160-71.682-160-160s71.682-160 160-160 160 71.682 160 160c0 25.848-6.188 50.84-17.832 73.369l80.334 80.6 267.559-268.243c2.93-3.072 7.092-4.726 11.339-4.726H880c14.245 0 21.285 17.33 11.264 27.35L578.4 512l312.857 313.643zM288 370c44.1 0 80-35.9 80-80s-35.9-80-80-80-80 35.9-80 80 35.9 80 80 80z m0 444c44.1 0 80-35.9 80-80s-35.9-80-80-80-80 35.9-80 80 35.9 80 80 80z"></path>
+    </svg>
+  )
+}
+
+export const CopyIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M236 701.999h140c23.196 0 42 18.804 42 42V884h242V268H236v433.999z m33.479 68L350 850.519V770h-80.521zM832 64c17.7 0 32 14.3 32 32v728c0 4.4-3.6 8-8 8h-56c-4.4 0-8-3.6-8-8V136H296c-4.4 0-8-3.6-8-8V72c0-4.4 3.6-8 8-8h536zM704 192c17.673 0 32 14.327 32 32v704c0 17.673-14.327 32-32 32H365.255a32 32 0 0 0-22.628-9.373L169.373 777.373A32 32 0 0 0 160 754.745V224c0-17.673 14.327-32 32-32h512z"></path>
+    </svg>
+  )
+}
+
+export const PasteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M789.24444445 332L789.24444445 182c0-16.5-13.5-30-30-30L549.24444445 152 549.24444445 92c0-33-27-60-60-60l-120 0c-33 0-60 27-60 60l0 60L99.24444445 152c-16.5 0-30 13.5-30 30l0 600c0 16.5 13.5 30 30 30l270 0 0 180 420 0 180-180L969.24444445 332 789.24444445 332zM369.24444445 92.12c0.03-0.03 0.06-0.06 0.12-0.12l119.79 0c0.03 0.03 0.09 0.06 0.12 0.12L489.24444445 152l-120 0L369.24444445 92.12zM189.24444445 272L189.24444445 212l480 0 0 60L189.24444445 272zM789.24444445 907.16L789.24444445 812l95.16 0L789.24444445 907.16zM909.24444445 752l-180 0 0 180L429.24444445 932 429.24444445 392l480 0L909.24444445 752z"></path>
+    </svg>
+  )
+}
+
+export const PasteTextIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M490.66666667 512l0 112.5 28.125 0 28.125-56.25 56.25 0 0 225-42.1875 0 0 56.25 196.875 0 0-56.25-42.1875 0 0-225 56.25 0 28.125 56.25 28.125 0 0-112.5zM771.91666667 343.25l0-140.625c0-15.46875-12.65625-28.125-28.125-28.125l-196.875 0 0-56.25c0-30.9375-25.3125-56.25-56.25-56.25l-112.5 0c-30.9375 0-56.25 25.3125-56.25 56.25l0 56.25-196.875 0c-15.46875 0-28.125 12.65625-28.125 28.125l0 562.5c0 15.46875 12.65625 28.125 28.125 28.125l253.125 0 0 168.75 562.5 0 0-618.75-168.75 0zM378.16666667 118.3625c0.028125-0.028125 0.05625-0.05625 0.1125-0.1125l112.303125 0c0.028125 0.028125 0.084375 0.05625 0.1125 0.1125l0 56.1375-112.5 0 0-56.1375zM209.41666667 287l0-56.25 450 0 0 56.25-450 0zM884.41666667 905.75l-450 0 0-506.25 450 0 0 506.25z"></path>
+    </svg>
   )
 }
 
@@ -369,11 +465,20 @@ const ICON_LIST = {
   arrowLeft: ArrowLeftIcon,
   arrowRight: ArrowRightIcon,
   arrowCaretDown: ArrowCaretDownIcon,
-};
+  copy: CopyIcon,
+  cut: CutIcon,
+  paste: PasteIcon,
+  pasteText: PasteTextIcon,
+}
 
 export const Icon: React.FC<
   React.HTMLAttributes<HTMLOrSVGElement> & Record<'name', keyof typeof ICON_LIST>
 > = ({ className, name, ...props }) => {
-  const IconComponent = ICON_LIST[name];
-  return <IconComponent className={classNames('ea-align-middle ea-overflow-hidden', className)} {...props} />;
-};
+  const IconComponent = ICON_LIST[name]
+  return (
+    <IconComponent
+      className={classNames('ea-overflow-hidden ea-align-middle', className)}
+      {...props}
+    />
+  )
+}

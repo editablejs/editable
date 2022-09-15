@@ -1,11 +1,11 @@
 import { FC, useRef } from 'react'
+import classNames from 'classnames'
 import {
   Content,
   Item,
   Root,
   Trigger,
   ContextMenuProps as UIContextMenuProps,
-  ItemIndicator,
   Sub,
   SubTrigger,
   SubContent,
@@ -13,45 +13,84 @@ import {
 } from '@radix-ui/react-context-menu'
 import { useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { unbundleFocusRadixUi } from './utils'
-import classNames from 'classnames'
+import { Icon } from './icon'
 export interface ContextMenuItem {
   icon?: JSX.Element
   rightText?: JSX.Element | string
+  disabled?: boolean
+  href?: string
+  onSelect?: (e: React.MouseEvent<any>) => void
 }
 
-export const ContextMenuItem: FC<ContextMenuItem> = ({ icon, rightText, children }) => {
+const disabledCls = (disabled?: boolean) => ({ 'ea-text-gray-400 ea-cursor-default': disabled })
+
+const itemCls = (disabled?: boolean) =>
+  classNames(
+    'ea-relative ea-flex ea-cursor-pointer ea-items-center ea-py-2 ea-pl-9 ea-pr-3 ea-text-center hover:ea-bg-gray-100',
+    disabledCls(disabled),
+  )
+
+const iconCls = (disabled?: boolean) =>
+  classNames(
+    'ea-absolute ea-left-3 ea-top-0 ea-my-2',
+    { 'ea-text-gray-500': !disabled },
+    disabledCls(disabled),
+  )
+
+const rightCls = (disabled?: boolean) =>
+  classNames('ea-ml-auto ea-pl-9', { 'ea-text-gray-500': !disabled }, disabledCls(disabled))
+
+export const ContextMenuItem: FC<ContextMenuItem> = ({
+  icon,
+  rightText,
+  children,
+  disabled,
+  href,
+  onSelect,
+}) => {
+  const render = () => {
+    return (
+      <>
+        {icon && <span className={iconCls(disabled)}>{icon}</span>}
+        {children}
+        {rightText && <div className={rightCls(disabled)}>{rightText}</div>}
+      </>
+    )
+  }
   return (
     <Item
-      className="ea-relative ea-flex ea-cursor-pointer ea-items-center ea-py-1 ea-pl-6 ea-pr-3 ea-text-center hover:ea-bg-gray-100"
-      onMouseDown={e => e.preventDefault()}
+      className={itemCls(disabled)}
+      onMouseDown={e => {
+        e.preventDefault()
+        if (onSelect) onSelect(e)
+      }}
       ref={unbundleFocusRadixUi}
+      disabled={disabled}
     >
-      {icon && (
-        <ItemIndicator className="ea-absolute ea-left-0 ea-top-1 ea-w-6 ea-text-gray-400">
-          {icon}
-        </ItemIndicator>
+      {href ? (
+        <a href={href} target="_blank" rel="noreferrer">
+          {render()}
+        </a>
+      ) : (
+        render()
       )}
-      {children}
-      {rightText && <div className="ea-ml-auto ea-pl-3">{rightText}</div>}
     </Item>
   )
 }
 
-export interface ContextMenuSub extends ContextMenuItem {
+export interface ContextMenuSub extends Omit<ContextMenuItem, 'rightText' | 'href' | 'onSelect'> {
   title?: JSX.Element | string
 }
 
-export const ContextMenuSub: FC<ContextMenuSub> = ({ title, icon, rightText, children }) => {
+export const ContextMenuSub: FC<ContextMenuSub> = ({ title, icon, children, disabled }) => {
   return (
     <Sub>
-      <SubTrigger>
-        {icon && (
-          <ItemIndicator className="ea-absolute ea-left-0 ea-top-1 ea-w-6 ea-text-gray-400">
-            {icon}
-          </ItemIndicator>
-        )}
+      <SubTrigger disabled={disabled} className={itemCls(disabled)}>
+        {icon && <span className={iconCls(disabled)}>{icon}</span>}
         {title}
-        {rightText && <div className="ea-ml-auto ea-pl-3">{rightText}</div>}
+        <div className={rightCls(disabled)}>
+          <Icon name="arrowRight" />
+        </div>
       </SubTrigger>
       <SubContent sideOffset={2} alignOffset={-5}>
         {children}
@@ -106,7 +145,7 @@ export const ContextMenu: FC<ContextMenu> = ({ event, className, children, ...pr
         ref={unbundleFocusRadixUi}
         loop={true}
         className={classNames(
-          'ea-z-50 ea-overflow-hidden ea-rounded-sm ea-border ea-border-solid ea-border-gray-200 ea-bg-white ea-text-sm ea-shadow-md',
+          'ea-z-50 ea-overflow-hidden ea-rounded ea-border ea-border-solid ea-border-transparent ea-bg-white ea-py-2 ea-shadow-[0_2px_6px_2px_rgb(60,64,67,0.15)]',
           className,
         )}
       >
