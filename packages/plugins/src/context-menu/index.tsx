@@ -1,5 +1,6 @@
 import { Editable } from '@editablejs/editor'
 import { FC } from 'react'
+import ReactDOM from 'react-dom'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
@@ -8,11 +9,28 @@ import {
 
 export interface ContextMenuOptions {}
 
-export interface ContextMenuEditor extends Editable {}
+export interface ContextMenuEditor extends Editable {
+  onContextMenu: (items: ContextMenuItem[]) => ContextMenuItem[]
+}
+
+export const ContextMenuEditor = {
+  isContextMenuEditor(value: Editable): value is ContextMenuEditor {
+    return 'onContextMenu' in value
+  },
+
+  onContextMenu: (editor: Editable, items: ContextMenuItem[]) => {
+    if (ContextMenuEditor.isContextMenuEditor(editor)) {
+      return editor.onContextMenu(items)
+    }
+    return items
+  },
+}
 
 interface ContextMenuItem extends UIContextMenuItem {
   key: string
   title: JSX.Element | string
+  sort?: number
+  href?: string
   children?: ContextMenuItem[]
 }
 
@@ -51,13 +69,37 @@ export const withContextMenu = <T extends Editable>(
 ) => {
   const newEditor = editor as T & ContextMenuEditor
 
-  const { onContextMenu } = newEditor
+  const { onRenderFinish, onContextMenu } = newEditor
 
-  newEditor.onContextMenu = (e: MouseEvent, items) => {
-    onContextMenu(e, items)
-    return items.length > 0 ? (
-      <ContextMenu items={items.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))} event={e} />
-    ) : null
+  newEditor.onRenderFinish = () => {
+    const contentlEl = Editable.toDOMNode(newEditor, newEditor)
+
+    const root = document.createElement('div')
+    contentlEl.after(root)
+
+    const handleContextMenu = (e: MouseEvent) => {
+      const items = newEditor.onContextMenu([])
+      if (items.length > 0) {
+        ReactDOM.render(
+          <ContextMenu items={items.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))} event={e} />,
+          root,
+        )
+      }
+    }
+
+    contentlEl.addEventListener('contextmenu', handleContextMenu)
+
+    const destory = onRenderFinish()
+
+    return () => {
+      contentlEl.removeEventListener('contextmenu', handleContextMenu)
+      if (destory) destory()
+      root.parentNode?.removeChild(root)
+    }
+  }
+
+  newEditor.onContextMenu = items => {
+    return onContextMenu ? onContextMenu(items) : items
   }
 
   return newEditor

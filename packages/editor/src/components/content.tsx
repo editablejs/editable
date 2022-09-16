@@ -29,7 +29,7 @@ import Shadow from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
-import ContextMenu from './context-menu'
+import ReactDOM from 'react-dom'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -266,11 +266,14 @@ export const ContentEditable = (props: EditableProps) => {
     window.addEventListener('mouseup', handleDocumentMouseUp)
     window.addEventListener('mousemove', handleDocumentMouseMove)
 
+    const destory = editor.onRenderFinish()
+
     return () => {
       window.removeEventListener('keyup', handleShift)
       window.removeEventListener('mousedown', handleDocumentMouseDown)
       window.removeEventListener('mouseup', handleDocumentMouseUp)
       window.removeEventListener('mousemove', handleDocumentMouseMove)
+      if (destory) destory()
     }
   }, [editor])
 
@@ -314,7 +317,6 @@ export const ContentEditable = (props: EditableProps) => {
         )}
         <InputComponent selection={drawSelection} />
       </Shadow>
-      {ref.current && <ContextMenu />}
     </ReadOnlyContext.Provider>
   )
 }

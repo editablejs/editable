@@ -114,17 +114,6 @@ export interface EditorElements {
   [key: string]: NodeEntry<Element>[]
 }
 
-export interface ContextMenuItem {
-  key: string
-  title: JSX.Element | string
-  icon?: JSX.Element
-  rightText?: JSX.Element | string
-  sort?: number
-  href?: string
-  disabled?: boolean
-  onSelect?: (e: React.MouseEvent<any>) => void
-  children?: ContextMenuItem[]
-}
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -136,7 +125,6 @@ export interface Editable extends BaseEditor {
   insertData: (data: DataTransfer) => void
   insertFragmentData: (data: DataTransfer) => boolean
   insertTextData: (data: DataTransfer) => boolean
-  setFragmentData: (data: DataTransfer, originEvent?: 'drag' | 'copy' | 'cut') => void
   hasRange: (editor: Editable, range: Range) => boolean
   blur(): void
   focus(): void
@@ -154,7 +142,7 @@ export interface Editable extends BaseEditor {
   onSelecting: () => void
   onSelectEnd: () => void
   onSelectionChange: () => void
-  onContextMenu: (event: MouseEvent, items: ContextMenuItem[]) => JSX.Element | void | null
+  onRenderFinish: () => void | (() => void)
   setSelectionStyle: (style: SelectionStyle) => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
@@ -164,8 +152,6 @@ export interface Editable extends BaseEditor {
   clearSelectionDraw: () => void
   startSelectionDraw: () => void
   normalizeSelection: (fn: (selection: Selection) => void) => void
-  serializeHtml: (node: Descendant, children?: string) => string
-  deserializeHtml: (el: DOMNode, attributes?: Record<string, any>) => Descendant | Descendant[]
 }
 
 export const Editable = {
@@ -442,18 +428,6 @@ export const Editable = {
 
   insertTextData(editor: Editable, data: DataTransfer): boolean {
     return editor.insertTextData(data)
-  },
-
-  /**
-   * Sets data from the currently selected fragment on a `DataTransfer`.
-   */
-
-  setFragmentData(
-    editor: Editable,
-    data: DataTransfer,
-    originEvent?: 'drag' | 'copy' | 'cut',
-  ): void {
-    editor.setFragmentData(data, originEvent)
   },
 
   /**

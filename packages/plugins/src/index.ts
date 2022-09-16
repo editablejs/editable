@@ -10,8 +10,9 @@ import { OrderedListOptions, withOrderedList, OrderedListEditor } from './list/o
 import { UnOrderedListOptions, withUnOrderedList, UnOrderedListEditor } from './list/unordered'
 import { TaskListOptions, withTaskList, TaskListEditor } from './list/task'
 import { TableOptions, TableEditor, withTable } from './table'
-import { ContextMenuOptions, withContextMenu } from './context-menu'
+import { ContextMenuEditor, ContextMenuOptions, withContextMenu } from './context-menu'
 import { GlobalEditor, GlobalOptions, withGlobal } from './global'
+import { SerializeEditor, SerializeOptions, withSerialize } from './serialize'
 
 export * from './mark'
 export * from './fontsize'
@@ -28,6 +29,7 @@ export * from './toolbar'
 export { Toolbar, UI }
 export interface PluginOptions {
   global?: GlobalOptions
+  serialize?: SerializeOptions
   'context-menu'?: ContextMenuOptions
   mark?: MarkOptions
   'font-size'?: FontSizeOptions
@@ -42,7 +44,8 @@ export interface PluginOptions {
 
 export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   let newEditor = withGlobal(editor)
-  newEditor = withMark(editor, options.mark)
+  newEditor = withSerialize(newEditor, options.serialize)
+  newEditor = withMark(newEditor, options.mark)
   newEditor = withFontSize(newEditor, options['font-size'])
   newEditor = withIndent(newEditor, options.indent)
   newEditor = withHeading(newEditor, options.heading)
@@ -54,6 +57,8 @@ export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   newEditor = withContextMenu(newEditor)
   return newEditor as Editable &
     GlobalEditor &
+    SerializeEditor &
+    ContextMenuEditor &
     MarkEditor &
     HeadingEditor &
     FontSizeEditor &

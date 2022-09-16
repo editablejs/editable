@@ -1,7 +1,10 @@
-import { Editable, Locale, Range } from '@editablejs/editor'
+import { Descendant, Editable, isHotkey, Locale, Range } from '@editablejs/editor'
+import writeClipboard from 'copy-to-clipboard'
 import locales, { GlobalLocale } from './locale'
 import { Icon } from '../ui'
 import { formatHotkey } from '../utils'
+import { SerializeEditor } from '../serialize'
+import { ContextMenuEditor } from '../context-menu'
 
 export const CUT_KEY = 'cut'
 export const COPY_KEY = 'copy'
@@ -29,9 +32,25 @@ export interface GlobalOptions {
 
 export const GLOBAL_OPTIONS = new WeakMap<Editable, GlobalOptions>()
 
-export interface GlobalEditor extends Editable {}
+export interface GlobalEditor extends Editable {
+  copy: () => void
+}
+
+export interface WriteClipboardOptions {
+  html?: string
+  text?: string
+  fragment?: Descendant[] | string
+}
+
+const APPLICATION_FRAGMENT_TYPE = 'application/x-editablejs-fragment'
+
+const DATA_EDITABLEJS_FRAGMENT = 'data-editablejs-fragment'
 
 export const GlobalEditor = {
+  isGlobalEditor: (editor: Editable): editor is GlobalEditor => {
+    return !!(editor as GlobalEditor).copy
+  },
+
   isEnabled: (editor: Editable, type: GlobalType) => {
     const { enabled, disabled } = GLOBAL_OPTIONS.get(editor) ?? {}
     if (enabled && ~~enabled.indexOf(type)) return false
@@ -42,22 +61,75 @@ export const GlobalEditor = {
   getOptions: (editor: Editable): GlobalOptions => {
     return GLOBAL_OPTIONS.get(editor) ?? {}
   },
+
+  copy: (editor: Editable) => {
+    if (GlobalEditor.isGlobalEditor(editor)) {
+      editor.copy()
+    }
+  },
+
+  encodeFragment: (fragment: Descendant[]) => {
+    const string = JSON.stringify(fragment)
+    return window.btoa(encodeURIComponent(string))
+  },
+
+  writeClipboard: (options: WriteClipboardOptions) => {
+    const { html = '', text = '', fragment = [] } = options
+    writeClipboard(html, {
+      format: 'text/html',
+      onCopy: e => {
+        const data = e as DataTransfer
+        const encoded =
+          typeof fragment === 'string' ? fragment : GlobalEditor.encodeFragment(fragment)
+        data.setData('text/plain', text)
+        data.setData(APPLICATION_FRAGMENT_TYPE, encoded)
+      },
+    })
+  },
 }
 
 export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions = {}) => {
-  const newEditor = editor as T & GlobalEditor
+  const newEditor = editor as T & GlobalEditor & ContextMenuEditor
 
   GLOBAL_OPTIONS.set(newEditor, options)
 
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
 
-  const { onContextMenu } = newEditor
+  const { onKeydown } = newEditor
 
   for (const key in locales) {
     Locale.setLocale(newEditor, key, locales[key])
   }
 
-  newEditor.onContextMenu = (e: MouseEvent, items) => {
+  const vaildHotkey = (type: GlobalType, e: KeyboardEvent) => {
+    const hotkey = hotkeys[type]
+    if (
+      (typeof hotkey === 'string' && isHotkey(hotkey, e)) ||
+      (typeof hotkey === 'function' && hotkey(e))
+    ) {
+      return true
+    }
+    return false
+  }
+
+  const getHotkeyText = (type: GlobalType) => {
+    const hotkey = hotkeys[type]
+    return typeof hotkey === 'string' ? formatHotkey(hotkey) : undefined
+  }
+
+  newEditor.onKeydown = (e: KeyboardEvent) => {
+    if (vaildHotkey(CUT_KEY, e)) {
+    } else if (vaildHotkey(COPY_KEY, e)) {
+      newEditor.copy()
+    } else if (vaildHotkey(PASTE_KEY, e)) {
+    } else if (vaildHotkey(PASTE_TEXT_KEY, e)) {
+    } else {
+      onKeydown(e)
+    }
+  }
+
+  const { onContextMenu } = newEditor
+  newEditor.onContextMenu = items => {
     const { selection } = newEditor
 
     const locale = Locale.getLocale<GlobalLocale>(newEditor).global
@@ -65,51 +137,60 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
     const isDisabled = !selection || Range.isCollapsed(selection)
 
     if (GlobalEditor.isEnabled(newEditor, CUT_KEY)) {
-      const hotkey = hotkeys[CUT_KEY]
       items.push({
         key: CUT_KEY,
         icon: <Icon name={CUT_KEY} />,
         title: locale.cut,
-        rightText: typeof hotkey === 'string' ? formatHotkey(hotkey) : undefined,
+        rightText: getHotkeyText(CUT_KEY),
         disabled: isDisabled,
         sort: 0,
       })
     }
 
     if (GlobalEditor.isEnabled(newEditor, COPY_KEY)) {
-      const hotkey = hotkeys[COPY_KEY]
       items.push({
         key: COPY_KEY,
         icon: <Icon name={COPY_KEY} />,
         title: locale.copy,
-        rightText: typeof hotkey === 'string' ? formatHotkey(hotkey) : undefined,
+        rightText: getHotkeyText(COPY_KEY),
         disabled: isDisabled,
         sort: 0,
+        onSelect: () => {
+          newEditor.copy()
+        },
       })
     }
     if (GlobalEditor.isEnabled(newEditor, PASTE_KEY)) {
-      const hotkey = hotkeys[PASTE_KEY]
       items.push({
         key: PASTE_KEY,
         icon: <Icon name={PASTE_KEY} />,
         title: locale.paste,
-        rightText: typeof hotkey === 'string' ? formatHotkey(hotkey) : undefined,
+        rightText: getHotkeyText(PASTE_KEY),
         disabled: !selection,
         sort: 0,
       })
     }
     if (GlobalEditor.isEnabled(newEditor, PASTE_TEXT_KEY)) {
-      const hotkey = hotkeys[PASTE_TEXT_KEY]
       items.push({
         key: PASTE_TEXT_KEY,
         icon: <Icon name="pasteText" />,
         title: locale.pasteText,
-        rightText: typeof hotkey === 'string' ? formatHotkey(hotkey) : undefined,
+        rightText: getHotkeyText(PASTE_TEXT_KEY),
         disabled: !selection,
         sort: 0,
       })
     }
-    return onContextMenu(e, items)
+    return onContextMenu ? onContextMenu(items) : items
+  }
+
+  newEditor.copy = () => {
+    if (!SerializeEditor.isSerializeEditor(newEditor)) return
+    const fragment = editor.getFragment()
+    const children = fragment.map(node => newEditor.serializeHtml(node)).join('')
+    const encoded = GlobalEditor.encodeFragment(fragment)
+    let html = `<div ${DATA_EDITABLEJS_FRAGMENT}="${encoded}">${children}</div>`
+    html = `<html><head><meta name="source" content="editablejs" /></head><body>${html}</body></html>`
+    GlobalEditor.writeClipboard({ html, fragment })
   }
 
   return newEditor
