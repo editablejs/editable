@@ -32,6 +32,10 @@ export { withEditable } from './plugin/with-editable'
 
 // Environment
 export * from './utils/environment'
+// Key
+export * from './utils/key'
+// format
+export * from './utils/format'
 
 export type {
   RenderElementProps,

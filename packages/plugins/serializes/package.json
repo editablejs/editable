@@ -1,0 +1,49 @@
+{
+  "name": "@editablejs/plugin-serializes",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@types/escape-html": "^1.0.2",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.1.2",
+    "tsup-config": "workspace:*",
+    "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  },
+  "dependencies": {
+    "escape-html": "^1.0.3",
+    "slate-hyperscript": "^0.77.0"
+  }
+}

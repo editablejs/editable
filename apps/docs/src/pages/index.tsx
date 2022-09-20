@@ -1,8 +1,8 @@
-import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor';
-import { Toolbar, withPlugins } from '@editablejs/plugins';
-import React, { useState } from 'react';
-import styles from './index.module.css';
-import { defaultToolbarConfig } from '../toolbar-config';
+import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor'
+import { Toolbar, withPlugins } from '@editablejs/plugins'
+import React, { useMemo } from 'react'
+import styles from './index.module.css'
+import { defaultToolbarConfig } from '../toolbar-config'
 
 const initialValue = [
   {
@@ -28,14 +28,16 @@ const initialValue = [
       },
     ],
   },
-];
+]
 
 export default function Docs() {
-  const [editor] = useState(() =>
-    withPlugins(createEditor(), {
-      fontSize: { defaultSize: '14px' },
-    }),
-  );
+  const editor = useMemo(
+    () =>
+      withPlugins(createEditor(), {
+        'font-size': { defaultSize: '14px' },
+      }),
+    [],
+  )
 
   return (
     <div className={styles.wrapper}>
@@ -46,5 +48,5 @@ export default function Docs() {
         </div>
       </EditableComposer>
     </div>
-  );
+  )
 }

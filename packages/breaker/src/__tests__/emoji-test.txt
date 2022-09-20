@@ -3419,7 +3419,7 @@
 1F1EC 1F1F8                                ; fully-qualified     # 🇬🇸 South Georgia & South Sandwich Islands
 1F1EC 1F1F9                                ; fully-qualified     # 🇬🇹 Guatemala
 1F1EC 1F1FA                                ; fully-qualified     # 🇬🇺 Guam
-1F1EC 1F1FC                                ; fully-qualified     # 🇬🇼 Guinea-Bissau
+1F1EC 1F1FC                                ; fully-qualified     # 🇬🇼 GuinBissau
 1F1EC 1F1FE                                ; fully-qualified     # 🇬🇾 Guyana
 1F1ED 1F1F0                                ; fully-qualified     # 🇭🇰 Hong Kong SAR China
 1F1ED 1F1F2                                ; fully-qualified     # 🇭🇲 Heard & McDonald Islands

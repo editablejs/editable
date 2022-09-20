@@ -1,0 +1,62 @@
+{
+  "name": "@editablejs/plugin-list",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "exports": {
+    ".": "./dist",
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@types/react": "^17.x",
+    "@types/react-dom": "^17.x",
+    "@types/styled-components": "5.1.26",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "react": "^17.x",
+    "react-dom": "^17.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.1.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.1.2",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.0.0-rc.4.1",
+    "typescript": "^4.5.3"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*"
+  },
+  "dependencies": {
+    "@editablejs/plugin-serializes": "workspace:*",
+    "@editablejs/plugin-heading": "workspace:*",
+    "@editablejs/plugin-indent": "workspace:*",
+    "styled-components": "5.3.5"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

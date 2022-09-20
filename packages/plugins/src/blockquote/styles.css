@@ -1,5 +1,0 @@
-@layer components {
-  .ea-blockquote {
-    @apply ea-m-0 ea-pl-4 ea-opacity-50 ea-border-4 ea-border-solid ea-border-gray-400;
-  }
-}

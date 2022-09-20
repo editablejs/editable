@@ -94,7 +94,7 @@ export const defaultToolbarConfig: ToolbarItem[] = [
       },
     ],
     onActive: editor => {
-      return HeadingEditor.queryHeading(editor) ?? 'paragraph'
+      return HeadingEditor.queryActive(editor) ?? 'paragraph'
     },
     onToggle: (editor, value) => {
       if (HeadingEditor.isHeadingEditor(editor)) HeadingEditor.toggle(editor, value as HeadingType)

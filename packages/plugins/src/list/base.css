@@ -1,9 +1,0 @@
-@layer components {
-  .ea-list {
-    @apply ea-w-full ea-flex ea-align-baseline;
-
-    .ea-list-label {
-      @apply ea-inline-block ea-mr-3 ea-whitespace-nowrap;
-    }
-  }
-}
