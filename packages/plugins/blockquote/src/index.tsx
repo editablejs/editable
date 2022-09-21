@@ -77,11 +77,13 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
 
   newEditor.renderElement = ({ element, attributes, children }) => {
     if (BlockquoteEditor.isBlockquote(newEditor, element)) {
-      const Blockquote = BLOCKQUOTE_KEY
       return (
-        <Blockquote tw="m-0 pl-4 opacity-50 border-4 border-solid border-gray-400" {...attributes}>
+        <blockquote
+          tw="m-0 pl-4 opacity-50 border-4 border-solid border-gray-200 border-y-0 border-r-0"
+          {...attributes}
+        >
           {children}
-        </Blockquote>
+        </blockquote>
       )
     }
     return renderElement({ attributes, children, element })
@@ -129,15 +131,27 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
     onKeydown(e)
   }
 
-  if (SerializeEditor.isSerializeEditor(newEditor)) {
-    const { serializeHtml } = newEditor
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
 
-    newEditor.serializeHtml = node => {
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
       if (BlockquoteEditor.isBlockquote(newEditor, node)) {
-        return `<blockquote>${node.children.map(child => serializeHtml(child))}</blockquote>`
+        return SerializeEditor.createHtml(
+          BLOCKQUOTE_KEY,
+          attributes,
+          {
+            ...styles,
+            'border-left': '4px solid #e2e8f0',
+            'padding-left': '1rem',
+            'margin-left': '0',
+            opacity: '0.5',
+          },
+          node.children.map(child => e.serializeHtml({ node: child })).join(''),
+        )
       }
-      return serializeHtml(node)
+      return serializeHtml(options)
     }
-  }
+  })
   return newEditor
 }

@@ -24,6 +24,9 @@ const useChildren = (props: { node: Ancestor; selection: Range | null }) => {
     const p = path.concat(i)
     const n = node.children[i] as Descendant
     const key = Editable.findKey(editor, n)
+    if (editor.children.length === 0) {
+      debugger
+    }
     const range = Editor.range(editor, p)
     const sel = selection && Range.intersection(range, selection)
     const focused =

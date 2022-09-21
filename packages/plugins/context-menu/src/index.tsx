@@ -10,6 +10,9 @@ import {
 
 export interface ContextMenuOptions {}
 
+type WithFunction = (editor: ContextMenuEditor) => void
+
+const withSet = new Set<WithFunction>()
 export interface ContextMenuEditor extends Editable {
   onContextMenu: (items: ContextMenuItem[]) => ContextMenuItem[]
 }
@@ -19,11 +22,12 @@ export const ContextMenuEditor = {
     return 'onContextMenu' in value
   },
 
-  onContextMenu: (editor: Editable, items: ContextMenuItem[]) => {
+  with: (editor: Editable, fn: WithFunction) => {
     if (ContextMenuEditor.isContextMenuEditor(editor)) {
-      return editor.onContextMenu(items)
+      fn(editor)
+    } else {
+      withSet.add(fn)
     }
-    return items
   },
 }
 
@@ -70,7 +74,7 @@ export const withContextMenu = <T extends Editable>(
 ) => {
   const newEditor = editor as T & ContextMenuEditor
 
-  const { onRenderFinish, onContextMenu } = newEditor
+  const { onRenderFinish } = newEditor
 
   newEditor.onRenderFinish = () => {
     const contentlEl = Editable.toDOMNode(newEditor, newEditor)
@@ -100,8 +104,11 @@ export const withContextMenu = <T extends Editable>(
   }
 
   newEditor.onContextMenu = items => {
-    return onContextMenu ? onContextMenu(items) : items
+    return items
   }
+
+  withSet.forEach(fn => fn(newEditor))
+  withSet.clear()
 
   return newEditor
 }

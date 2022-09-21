@@ -126,9 +126,10 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
       onKeydown(e)
     }
   }
-  if (ContextMenuEditor.isContextMenuEditor(newEditor)) {
-    const { onContextMenu } = newEditor
-    newEditor.onContextMenu = items => {
+
+  ContextMenuEditor.with(newEditor, e => {
+    const { onContextMenu } = e
+    e.onContextMenu = items => {
       const { selection } = newEditor
 
       const locale = Locale.getLocale<GlobalLocale>(newEditor).global
@@ -181,7 +182,7 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
       }
       return onContextMenu(items)
     }
-  }
+  })
 
   newEditor.copy = () => {
     if (!SerializeEditor.isSerializeEditor(newEditor)) return
@@ -190,10 +191,10 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
 
     const text = fragment.map(newEditor.serializeText).join('\n')
 
-    let html = fragment.map(newEditor.serializeHtml).join('')
+    let html = fragment.map(child => newEditor.serializeHtml({ node: child })).join('')
     html = `<div ${DATA_EDITABLEJS_FRAGMENT}="${encoded}">${html}</div>`
     html = `<html><head><meta name="source" content="editablejs" /></head><body>${html}</body></html>`
-
+    console.log(html)
     GlobalEditor.writeClipboard({ html, text, fragment })
   }
 

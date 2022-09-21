@@ -90,7 +90,7 @@ const CodeStyles = styled.code(() => [
 ])
 
 export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
-  const newEditor = editor as T & MarkEditor & SerializeEditor
+  const newEditor = editor as T & MarkEditor
 
   MARK_OPTIONS.set(newEditor, options)
 
@@ -175,23 +175,25 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     }
     onKeydown(e)
   }
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
 
-  const { serializeHtml } = newEditor
-
-  newEditor.serializeHtml = node => {
-    if (MarkEditor.isMark(node)) {
-      let html = node.text
-      if (node.bold) html = `<strong>${html}</strong>`
-      if (node.italic) html = `<em>${html}</em>`
-      if (node.underline) html = `<u>${html}</u>`
-      if (node.strikethrough) html = `<s>${html}</s>`
-      if (node.code) html = `<code>${html}</code>`
-      if (node.sub) html = `<sub>${html}</sub>`
-      if (node.sup) html = `<sup>${html}</sup>`
-      return html
+    e.serializeHtml = options => {
+      const { node } = options
+      if (MarkEditor.isMark(node)) {
+        let html = node.text
+        if (node.bold) html = `<strong>${html}</strong>`
+        if (node.italic) html = `<em>${html}</em>`
+        if (node.underline) html = `<u>${html}</u>`
+        if (node.strikethrough) html = `<s>${html}</s>`
+        if (node.code) html = `<code>${html}</code>`
+        if (node.sub) html = `<sub>${html}</sub>`
+        if (node.sup) html = `<sup>${html}</sup>`
+        return html
+      }
+      return serializeHtml(options)
     }
-    return serializeHtml(node)
-  }
+  })
 
   return newEditor
 }

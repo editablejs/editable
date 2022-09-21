@@ -40,7 +40,7 @@ export interface ListEditor extends Editable {
 export interface ListTemplate {
   key: string
   depth: number
-  render: (element: List) => React.ReactNode
+  render: (element: Omit<List, 'children'>) => string | Record<'type' | 'text', string>
 }
 
 const TEMPLATE_WEAKMAP = new WeakMap<Editable, Map<string, ListTemplate[]>>()
@@ -76,9 +76,10 @@ export const ListEditor = {
     } = options
     const renderLabel = () => {
       const { template: key, type, start } = element
-      const template = key ? ListEditor.getTemplates(editor, type, key) : undefined
+      const template = key ? ListEditor.getTemplate(editor, type, key) : undefined
       if (onRenderLabel) return onRenderLabel(element, template)
-      return template ? template.render(element) : `${start}.`
+      const result = template ? template.render(element) : `${start}.`
+      return typeof result === 'object' ? result.text : result
     }
 
     return (
@@ -233,7 +234,7 @@ export const ListEditor = {
     TEMPLATE_WEAKMAP.set(editor, templates)
   },
 
-  getTemplates: (editor: ListEditor, type: string, key: string) => {
+  getTemplate: (editor: ListEditor, type: string, key: string) => {
     const templates = TEMPLATE_WEAKMAP.get(editor) ?? new Map()
     const list: ListTemplate[] = templates.get(type) ?? []
     return list.find(t => t.key === key)

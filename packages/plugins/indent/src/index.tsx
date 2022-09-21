@@ -13,6 +13,8 @@ import {
   Range,
 } from '@editablejs/editor'
 import { CSSProperties } from 'react'
+import tw from 'twin.macro'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 
 export interface Indent extends Element {
   /**
@@ -222,6 +224,8 @@ const getIndentSize = (editor: Editable, type: IndentType, size: number) => {
   return onRenderSize ? onRenderSize(type, size) : size
 }
 
+const StyledIndent = tw.span`h-full inline-flex`
+
 const renderIndent = (
   editor: Editable,
   { attributes, element, children }: RenderElementProps<Indent>,
@@ -233,9 +237,9 @@ const renderIndent = (
 
   if (textIndent && type === INDENT_KEY) {
     children = (
-      <span tw="h-full inline-flex" style={{ width: getIndentSize(editor, 'text', textIndent) }}>
+      <StyledIndent style={{ width: getIndentSize(editor, 'text', textIndent) }}>
         {children}
-      </span>
+      </StyledIndent>
     )
   }
   return next({ attributes: Object.assign({}, attributes, { style }), children, element })
@@ -337,6 +341,42 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   newEditor.renderElement = props => {
     return renderIndent(newEditor, props, renderElement)
   }
+
+  SerializeEditor.with(
+    newEditor,
+    e => {
+      const { serializeHtml } = e
+      e.serializeHtml = options => {
+        const { node, attributes, styles } = options
+        if (IndentEditor.isIndent(e, node)) {
+          return SerializeEditor.createHtml(
+            'span',
+            attributes,
+            {
+              ...styles,
+              display: 'inline-block',
+              height: '100%',
+              width: `${node.textIndent}px`,
+            },
+            '&#xfeff;',
+          )
+        } else {
+          const indent = node as Indent
+          const { textIndent, lineIndent } = indent
+          const newStyles = { ...styles }
+          if (textIndent) {
+            newStyles['text-indent'] = `${textIndent}px`
+          }
+          if (lineIndent) {
+            newStyles['padding-left'] = `${lineIndent}px`
+          }
+
+          return serializeHtml({ node, attributes, styles: newStyles })
+        }
+      }
+    },
+    true,
+  )
 
   const { onKeydown, isInline, isVoid, canFocusVoid } = newEditor
 

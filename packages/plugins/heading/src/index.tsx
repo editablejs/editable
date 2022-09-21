@@ -12,6 +12,7 @@ import {
 import { FontSize, FontSizeEditor } from '@editablejs/plugin-fontsize'
 import { Mark, MarkEditor } from '@editablejs/plugin-mark'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
+import tw from 'twin.macro'
 
 export const HEADING_KEY = 'heading'
 export const PARAGRAPH_KEY = 'paragraph'
@@ -173,14 +174,14 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
   }
 
   const { renderElement } = newEditor
-
+  const StyledHeading = tw.h1`font-medium mb-2 mt-0`
   newEditor.renderElement = ({ element, attributes, children }) => {
     if (HeadingEditor.isHeading(editor, element)) {
-      const Heading = HeadingTags[element.type] as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+      const tag = HeadingTags[element.type]
       return (
-        <Heading tw="font-medium mb-2 mt-0" {...attributes}>
+        <StyledHeading as={tag} {...attributes}>
           {children}
-        </Heading>
+        </StyledHeading>
       )
     }
     return renderElement({ attributes, children, element })
@@ -223,15 +224,21 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
     }
     onKeydown(e)
   }
-  if (SerializeEditor.isSerializeEditor(newEditor)) {
-    const { serializeHtml } = newEditor
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
 
-    newEditor.serializeHtml = node => {
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
       if (HeadingEditor.isHeading(newEditor, node)) {
-        return `<${node.type}>${node.children.map(serializeHtml)}</${node.type}>`
+        return SerializeEditor.createHtml(
+          HeadingTags[node.type],
+          attributes,
+          styles,
+          node.children.map(child => e.serializeHtml({ node: child })).join(''),
+        )
       }
-      return serializeHtml(node)
+      return serializeHtml(options)
     }
-  }
+  })
   return newEditor
 }

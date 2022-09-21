@@ -36,6 +36,9 @@
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
+  "dependencies": {
+    "@editablejs/plugin-serializes": "workspace:*"
+  },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
       "eslint --fix",

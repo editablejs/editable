@@ -1,8 +1,9 @@
 import { Editable, RenderElementProps, Transforms, Node, Grid } from '@editablejs/editor'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { withTableCell } from './cell'
 import { TableOptions } from './context'
 import { withTableRow } from './row'
-import { TableEditor, TableComponent, TABLE_OPTIONS_WEAKMAP, Table } from './table'
+import { TableEditor, TableComponent, TABLE_OPTIONS_WEAKMAP, Table, TABLE_KEY } from './table'
 
 export const withTable = <T extends Editable>(editor: T, options: TableOptions = {}) => {
   let newEditor = editor as T & TableEditor
@@ -34,6 +35,34 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
+      if (TableEditor.isTable(newEditor, node)) {
+        const { colsWidth } = node
+        const colgroup = colsWidth?.map(w => SerializeEditor.createHtml('col', {}, { width: w }))
+        debugger
+        return SerializeEditor.createHtml(
+          TABLE_KEY,
+          attributes,
+          {
+            ...styles,
+            'table-layout': 'fixed',
+            'border-collapse': 'collapse',
+            'white-space': 'pre-wrap',
+          },
+          `<colgroup>${colgroup?.join('')}</colgroup><tbody>${node.children
+            .map(child => e.serializeHtml({ node: child }))
+            .join('')}</tbody>`,
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
+
   return newEditor
 }
 

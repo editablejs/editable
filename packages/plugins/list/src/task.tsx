@@ -5,7 +5,9 @@ import {
   RenderElementProps,
   Transforms,
   Node,
+  Editor,
 } from '@editablejs/editor'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 import tw, { css, styled, theme } from 'twin.macro'
 import { List, ListEditor, ListLabelStyles, ListStyles, ToggleListOptions, withList } from './base'
 
@@ -174,6 +176,39 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+    e.serializeHtml = options => {
+      const { node, attributes, styles = {} } = options
+      if (TaskListEditor.isTask(e, node)) {
+        const { checked, children } = node
+        const pl = styles['padding-left'] ?? '0px'
+        delete styles['padding-left']
+        return SerializeEditor.createHtml(
+          'ul',
+          { ...attributes },
+          {
+            ...styles,
+            'list-style': 'none',
+            'text-decoration-line': checked ? 'line-through' : 'none',
+            'margin-left': pl,
+          },
+          SerializeEditor.createHtml(
+            'li',
+            {},
+            { display: 'flex', width: '100%', 'vertical-align': 'baseline' },
+            `<input type="checkbox" ${
+              checked ? 'checked="true"' : ''
+            } style='margin-right: 0.75rem;' />${children
+              .map(child => e.serializeHtml({ node: child }))
+              .join('')}`,
+          ),
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => {
     ListEditor.toggle(editor, TASK_LIST_KEY, {

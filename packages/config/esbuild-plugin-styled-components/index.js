@@ -2,7 +2,6 @@ const babel = require('@babel/core');
 const styled = require('babel-plugin-styled-components').default
 const macros = require('babel-plugin-macros')
 const twin = require('babel-plugin-twin')
-const build = require('esbuild');
 const fs = require('node:fs');
 
 module.exports = (config) => {
@@ -13,7 +12,7 @@ module.exports = (config) => {
       onLoad({ filter: /\.[tj]sx$/ }, async (args) => {
 
         const contents = await fs.promises.readFile(args.path, "utf8");
-        if (!contents.includes('twin.macro')) return
+        if (!contents.includes('twin.macro') && !contents.includes(' tw=') && !contents.includes(' css=')) return
 
         let { code } = babel.transformSync(contents, {
           babelrc: false,

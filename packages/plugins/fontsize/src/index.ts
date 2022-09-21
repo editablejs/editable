@@ -1,6 +1,6 @@
 import { Editable, RenderLeafProps, Editor, Text } from '@editablejs/editor'
 import { CSSProperties } from 'react'
-
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 export interface FontSizeOptions {
   defaultSize?: string
 }
@@ -22,8 +22,8 @@ export const FontSizeEditor = {
     return !!(editor as FontSizeEditor).toggleFontSize
   },
 
-  isFontSize: (node: Text): node is FontSize => {
-    return Text.isText(node)
+  isFontSize: (editor: Editable, node: any): node is FontSize => {
+    return Text.isText(node) && !!(node as FontSize)[FONTSIZE_KEY]
   },
 
   queryActive: (editor: Editable) => {
@@ -66,6 +66,23 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
     }
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
+      if (FontSizeEditor.isFontSize(e, node)) {
+        const { fontSize, text } = node
+        return SerializeEditor.createHtml(
+          'span',
+          attributes,
+          { ...styles, 'font-size': fontSize },
+          text,
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   return newEditor
 }

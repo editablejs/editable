@@ -9,7 +9,8 @@ import {
   ToggleListOptions,
   withList,
 } from './base'
-import tw, { css, styled } from 'twin.macro'
+import tw, { styled } from 'twin.macro'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -87,19 +88,30 @@ export const OrderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,
-    render: ({ start, level }: List) => {
+    render: ({ start, level }) => {
       const l = level % 3
       switch (l) {
         case 1:
-          return `${toABC(start)}.`
+          return { type: 'a', text: `${toABC(start)}.` }
         case 2:
-          return `${toRoman(start)}.`
+          return { type: 'I', text: `${toRoman(start)}.` }
         default:
-          return `${start}.`
+          return { type: '1', text: `${start}.` }
       }
     },
   },
 ]
+
+/**
+ * 移除值的单位
+ * @param value 值
+ */
+const removeUnit = (value: string) => {
+  let match
+  return value && (match = /^((-?\d+)(\.\d+)?)/.exec(value))
+    ? Math.floor(parseFloat(match[1]) * 10000) / 10000
+    : 0
+}
 
 const LabelStyles = tw.span`ml-7 mr-0`
 
@@ -127,12 +139,14 @@ const LabelElement = ({
       })
       if (Path.equals(path, startPath)) return
       const startDom = Editable.toDOMNode(editor, start)
-      const startLabel = startDom.querySelector(`.ordered-list-label`)
+      const startLabel = startDom.querySelector(`.ea-ordered-label`)
       if (startLabel) {
         const { width: startWidth } = startLabel.getBoundingClientRect()
         const { width } = label.getBoundingClientRect()
         if (width > startWidth) {
-          label.style.marginLeft = `-${width - startWidth + 28}px`
+          const ml = window.getComputedStyle(startLabel).marginLeft
+          const mlv = removeUnit(ml)
+          label.style.marginLeft = `${mlv - (width - startWidth)}px`
         }
         // else if(startWidth > width) {
         //   label.style.marginLeft = `-${28 - (startWidth - width)}px`
@@ -146,7 +160,11 @@ const LabelElement = ({
     }
   }, [editor, element, level, key, template.depth])
 
-  return <LabelStyles ref={ref}>{template.render(element)}</LabelStyles>
+  return (
+    <LabelStyles className="ea-ordered-label" ref={ref}>
+      {template.render(element)}
+    </LabelStyles>
+  )
 }
 
 const StyledList = styled(ListStyles)`
@@ -188,6 +206,37 @@ export const withOrderedList = <T extends Editable>(
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+    e.serializeHtml = options => {
+      const { node, attributes, styles = {} } = options
+      if (OrderedListEditor.isOrdered(e, node)) {
+        const { start, template } = node
+        const listTemplate = ListEditor.getTemplate(
+          newEditor,
+          ORDERED_LIST_KEY,
+          template || OrderedListTemplates[0].key,
+        )
+        const label = listTemplate?.render({ ...node, start: 1 })
+        const type = typeof label === 'string' ? label?.replace(/\.$/, '').trim() : label?.type
+        const pl = styles['padding-left'] ?? '0px'
+        delete styles['padding-left']
+        return SerializeEditor.createHtml(
+          'ol',
+          { ...attributes, start, type },
+          { ...styles, 'margin-left': pl },
+          SerializeEditor.createHtml(
+            'li',
+            {},
+            {},
+            node.children.map(child => e.serializeHtml({ node: child })).join(''),
+          ),
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => {
     ListEditor.toggle(editor, ORDERED_LIST_KEY, {

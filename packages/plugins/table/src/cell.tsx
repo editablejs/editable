@@ -1,4 +1,5 @@
 import { Editable, Editor, Node, GridCell } from '@editablejs/editor'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { CellInnerStyles, CellStyles } from './styles'
 
 export const TABLE_CELL_KEY = 'table-cell'
@@ -54,6 +55,31 @@ export const withTableCell = <T extends Editable>(editor: T, options: TableCellO
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
+      if (TableCellEditor.isTableCell(newEditor, node)) {
+        const { rowspan, colspan, span } = node
+        return SerializeEditor.createHtml(
+          'td',
+          { ...attributes, colspan, rowspan },
+          {
+            ...styles,
+            margin: '0px',
+            padding: '6px',
+            border: '1px solid #d6d6d6',
+            'vertical-align': 'top',
+            display: span ? 'none' : '',
+          },
+          node.children.map(child => e.serializeHtml({ node: child })).join(''),
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   return newEditor
 }

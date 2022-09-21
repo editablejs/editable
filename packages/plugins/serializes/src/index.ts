@@ -6,25 +6,80 @@ export interface SerializeOptions {}
 
 export const SERIALIZE_OPTIONS = new WeakMap<Editable, SerializeOptions>()
 
+type WithFunction = (editor: SerializeEditor) => void
+
+const withSet = new Set<WithFunction>()
+const withUnshift = new Set<WithFunction>()
+
+export interface SerializeHtmlOptions {
+  node: Node
+  attributes?: Record<string, any>
+  styles?: Record<string, any>
+}
 export interface SerializeEditor extends Editable {
   serializeText: (node: Node) => string
-  serializeHtml: (node: Node) => string
+  serializeHtml: (options: SerializeHtmlOptions) => string
   deserializeHtml: (
     el: globalThis.Node,
     attributes?: Record<string, any>,
   ) => Descendant | Descendant[]
 }
 
+const FLUSHING: WeakMap<Editor, boolean> = new WeakMap()
+
 export const SerializeEditor = {
   isSerializeEditor(editor: Editable): editor is SerializeEditor {
     return 'serializeHtml' in editor
   },
 
-  serializeHtml: (editor: Editable, node: Node) => {
+  serializeHtml: (editor: Editable, options: SerializeHtmlOptions) => {
     if (SerializeEditor.isSerializeEditor(editor)) {
-      return editor.serializeHtml(node)
+      return editor.serializeHtml(options)
     }
     return ''
+  },
+
+  createHtml: (
+    tag: string,
+    attributes: Record<string, any> = {},
+    styles: Record<string, any> = {},
+    children: string = '',
+  ) => {
+    const attrs = []
+    for (const key in attributes) {
+      attrs.push(`${key}="${escapeHtml(attributes[key])}"`)
+    }
+    const _styles = []
+    for (const key in styles) {
+      const val = styles[key]
+      if (!val) continue
+      _styles.push(`${key}: ${styles[key]}`)
+    }
+    let style = ''
+    if (_styles.length > 0) {
+      style = `style="${escapeHtml(_styles.join(';'))}"`
+    }
+    return `<${tag} ${attrs.join(' ')} ${style}>${children}</${tag}>`
+  },
+
+  with: (editor: Editable, fn: WithFunction, unshift: boolean = false) => {
+    if (unshift) {
+      if (!FLUSHING.get(editor)) {
+        FLUSHING.set(editor, true)
+        Promise.resolve().then(() => {
+          FLUSHING.set(editor, false)
+          if (SerializeEditor.isSerializeEditor(editor)) {
+            withUnshift.forEach(fn => fn(editor))
+            withUnshift.clear()
+          }
+        })
+      }
+      withUnshift.add(fn)
+    } else if (SerializeEditor.isSerializeEditor(editor)) {
+      fn(editor)
+    } else {
+      withSet.add(fn)
+    }
   },
 }
 
@@ -32,8 +87,6 @@ export const withSerialize = <T extends Editable>(editor: T, options: SerializeO
   const newEditor = editor as T & SerializeEditor
 
   SERIALIZE_OPTIONS.set(newEditor, options)
-
-  const { serializeText, serializeHtml } = newEditor
 
   newEditor.serializeText = (node: Node) => {
     if (Text.isText(node)) return escapeHtml(node.text)
@@ -57,18 +110,20 @@ export const withSerialize = <T extends Editable>(editor: T, options: SerializeO
       .join('')
   }
 
-  newEditor.serializeHtml = (node: Node) => {
+  newEditor.serializeHtml = (options: SerializeHtmlOptions) => {
+    const { node, attributes, styles } = options
     if (Text.isText(node)) return escapeHtml(node.text)
-    if (Editor.isEditor(node)) return node.children.map(newEditor.serializeHtml).join('')
+    if (Editor.isEditor(node))
+      return node.children.map(child => newEditor.serializeHtml({ node: child })).join('')
     const { type, children } = node
-    const html = children.map(newEditor.serializeHtml).join('')
+    const childrenHtml = children.map(child => newEditor.serializeHtml({ node: child })).join('')
     let tag = type ?? 'p'
     switch (type) {
       case 'paragraph':
         tag = 'p'
         break
     }
-    return `<${tag}>${html}</${tag}>`
+    return SerializeEditor.createHtml(tag, attributes, styles, childrenHtml)
   }
 
   newEditor.deserializeHtml = (el: globalThis.Node, attributes = {}) => {
@@ -93,6 +148,12 @@ export const withSerialize = <T extends Editable>(editor: T, options: SerializeO
         return jsx('element', { type: 'paragraph' }, children)
     }
   }
+
+  withSet.forEach(fn => fn(newEditor))
+  withSet.clear()
+
+  withUnshift.forEach(fn => fn(newEditor))
+  withUnshift.clear()
 
   return newEditor
 }

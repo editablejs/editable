@@ -1,4 +1,5 @@
 import { Editable, isHotkey } from '@editablejs/editor'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from './base'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
@@ -26,7 +27,7 @@ export const UnOrderedListEditor = {
     return !!(editor as UnOrderedListEditor).toggleUnOrderedList
   },
 
-  isUnOrderedList: (editor: Editable, value: any): value is UnOrdered => {
+  isUnOrdered: (editor: Editable, value: any): value is UnOrdered => {
     return value && value.type === UNORDERED_LIST_KEY
   },
 
@@ -43,15 +44,15 @@ export const UnOrderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,
-    render: ({ level }: List) => {
+    render: ({ level }) => {
       const l = level % 3
       switch (l) {
         case 1:
-          return `○`
+          return { type: 'circle', text: `○` }
         case 2:
-          return `■`
+          return { type: 'square', text: `■` }
         default:
-          return `●`
+          return { type: 'disc', text: `●` }
       }
     },
   },
@@ -86,6 +87,37 @@ export const withUnOrderedList = <T extends Editable>(
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+    e.serializeHtml = options => {
+      const { node, attributes, styles = {} } = options
+      if (UnOrderedListEditor.isUnOrdered(e, node)) {
+        const { start, template } = node
+        const listTemplate = ListEditor.getTemplate(
+          newEditor,
+          UNORDERED_LIST_KEY,
+          template || UnOrderedListTemplates[0].key,
+        )
+        const label = listTemplate?.render({ ...node, start: 1 })
+        const type = typeof label === 'string' ? label?.replace(/\.$/, '').trim() : label?.type
+        const pl = styles['padding-left'] ?? '0px'
+        delete styles['padding-left']
+        return SerializeEditor.createHtml(
+          'ul',
+          { ...attributes, start, type },
+          { ...styles, 'margin-left': pl },
+          SerializeEditor.createHtml(
+            'li',
+            {},
+            {},
+            node.children.map(child => e.serializeHtml({ node: child })).join(''),
+          ),
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   newEditor.toggleUnOrderedList = (options?: ToggleUnOrderedListOptions) => {
     ListEditor.toggle(editor, UNORDERED_LIST_KEY, {

@@ -7,6 +7,7 @@ import {
   Transforms,
   GridRow,
 } from '@editablejs/editor'
+import { SerializeEditor } from '@editablejs/plugin-serializes'
 import React, { useContext, useLayoutEffect } from 'react'
 import { TableCell, TableCellEditor } from './cell'
 import { TableContext } from './context'
@@ -106,6 +107,29 @@ export const withTableRow = <T extends Editable>(editor: T, options: TableRowOpt
     }
     return renderElement(props)
   }
+
+  SerializeEditor.with(newEditor, e => {
+    const { serializeHtml } = e
+
+    e.serializeHtml = options => {
+      const { node, attributes, styles } = options
+      if (TableRowEditor.isTableRow(newEditor, node)) {
+        const { height } = node
+        return SerializeEditor.createHtml(
+          'tr',
+          attributes,
+          {
+            ...styles,
+            height: `${height}px`,
+            margin: '0px',
+            padding: '0px',
+          },
+          node.children.map(child => e.serializeHtml({ node: child })).join(''),
+        )
+      }
+      return serializeHtml(options)
+    }
+  })
 
   return newEditor
 }

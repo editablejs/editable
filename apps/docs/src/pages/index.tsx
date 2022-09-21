@@ -1,6 +1,6 @@
 import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor'
 import { Toolbar, withPlugins } from '@editablejs/plugins'
-import React, { useMemo } from 'react'
+import React, { useState } from 'react'
 import styles from './index.module.css'
 import { defaultToolbarConfig } from '../toolbar-config'
 
@@ -31,12 +31,10 @@ const initialValue = [
 ]
 
 export default function Docs() {
-  const editor = useMemo(
-    () =>
-      withPlugins(createEditor(), {
-        'font-size': { defaultSize: '14px' },
-      }),
-    [],
+  const [editor] = useState(
+    withPlugins(createEditor(), {
+      'font-size': { defaultSize: '14px' },
+    }),
   )
 
   return (
