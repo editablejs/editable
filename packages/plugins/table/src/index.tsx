@@ -44,7 +44,6 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
       if (TableEditor.isTable(newEditor, node)) {
         const { colsWidth } = node
         const colgroup = colsWidth?.map(w => SerializeEditor.createHtml('col', {}, { width: w }))
-        debugger
         return SerializeEditor.createHtml(
           TABLE_KEY,
           attributes,
