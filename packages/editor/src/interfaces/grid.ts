@@ -152,6 +152,35 @@ export const Grid = {
     }
   },
 
+  getFragment: (
+    editor: Editable,
+    at?: GridLocation,
+    selection?: GridSelection,
+  ): Grid | undefined => {
+    if (!at || Path.isPath(at)) {
+      const entry = Grid.findGrid(editor, at)
+      if (!entry) return
+      at = entry
+    }
+
+    const { start, end } = Grid.edges(editor, at, selection) ?? { start: [0, 0], end: [-1, -1] }
+    const [startRow, startCol] = start
+    const [endRow, endCol] = end
+    const [grid] = at
+    const { colsWidth, children } = grid
+    const newGrid: Grid = {
+      ...grid,
+      children: [],
+      colsWidth: colsWidth?.slice(startCol, endCol + 1) ?? [],
+    }
+    for (let i = startRow; i <= endRow; i++) {
+      const row = children[i]
+      const newRow: GridRow = { ...row, children: row.children.slice(startCol, endCol + 1) }
+      newGrid.children.push(newRow)
+    }
+    return newGrid
+  },
+
   create: <G extends Grid, R extends GridRow, C extends GridCell>(
     grid: Partial<Omit<G, 'children'>>,
     ...rows: (Omit<R, 'children'> & Record<'children', C[]>)[]

@@ -10,6 +10,7 @@ import {
   Element,
   EditorMarks,
   Point,
+  Descendant,
 } from 'slate'
 import getDirection from 'direction'
 import {
@@ -716,7 +717,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
               const anchor = Editable.toLowestPoint(e, path.concat([row, col]))
               const focus = Editable.toLowestPoint(e, path.concat([row, col]), 'end')
               const range = { anchor, focus }
-              fn(range)
+              fn(range, { grid, row, col })
             }
           }
           // 恢复选区
@@ -729,6 +730,29 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.onRenderFinish = () => {}
+
+  e.getFragment = () => {
+    const { selection } = e
+    if (!selection) return []
+    const grid = Grid.findGrid(e)
+    if (grid) {
+      const sel = Grid.getSelection(e, grid)
+      if (sel) {
+        let { start, end } = sel
+        const [startRow, startCol] = start
+        const [endRow, endCol] = end
+
+        const rowCount = endRow - startRow
+        const colCount = endCol - startCol
+
+        if (rowCount > 0 || colCount > 0) {
+          const fragment = Grid.getFragment(e, grid, sel)
+          return fragment ? [fragment] : []
+        }
+      }
+    }
+    return Node.fragment(e, selection)
+  }
 
   return e
 }

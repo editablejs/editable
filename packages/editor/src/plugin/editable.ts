@@ -151,7 +151,12 @@ export interface Editable extends BaseEditor {
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
   clearSelectionDraw: () => void
   startSelectionDraw: () => void
-  normalizeSelection: (fn: (selection: Selection) => void) => void
+  normalizeSelection: (
+    fn: (
+      selection: Selection,
+      options?: { grid: NodeEntry<Grid>; row: number; col: number },
+    ) => void,
+  ) => void
 }
 
 export const Editable = {
