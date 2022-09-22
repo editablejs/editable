@@ -1,4 +1,14 @@
-import { Descendant, Editable, isHotkey, Locale, Range, formatHotkey } from '@editablejs/editor'
+import {
+  Descendant,
+  Editable,
+  isHotkey,
+  Locale,
+  Range,
+  formatHotkey,
+  Editor,
+  Transforms,
+  Node,
+} from '@editablejs/editor'
 import writeClipboard from 'copy-to-clipboard'
 import { Icon } from '@editablejs/plugin-ui'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
@@ -32,6 +42,7 @@ export interface GlobalOptions {
 export const GLOBAL_OPTIONS = new WeakMap<Editable, GlobalOptions>()
 
 export interface GlobalEditor extends Editable {
+  cut: () => void
   copy: () => void
 }
 
@@ -71,6 +82,8 @@ export const GlobalEditor = {
     const string = JSON.stringify(fragment)
     return window.btoa(encodeURIComponent(string))
   },
+
+  getClipboard: () => {},
 
   writeClipboard: (options: WriteClipboardOptions) => {
     const { html = '', text = '', fragment = [] } = options
@@ -118,6 +131,7 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
     if (vaildHotkey(CUT_KEY, e)) {
+      newEditor.cut()
     } else if (vaildHotkey(COPY_KEY, e)) {
       newEditor.copy()
     } else if (vaildHotkey(PASTE_KEY, e)) {
@@ -143,7 +157,10 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
           title: locale.cut,
           rightText: getHotkeyText(CUT_KEY),
           disabled: isDisabled,
-          sort: 0,
+          index: 0,
+          onSelect: () => {
+            newEditor.cut()
+          },
         })
       }
 
@@ -154,7 +171,7 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
           title: locale.copy,
           rightText: getHotkeyText(COPY_KEY),
           disabled: isDisabled,
-          sort: 0,
+          index: 0,
           onSelect: () => {
             newEditor.copy()
           },
@@ -167,7 +184,7 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
           title: locale.paste,
           rightText: getHotkeyText(PASTE_KEY),
           disabled: !selection,
-          sort: 0,
+          index: 0,
         })
       }
       if (GlobalEditor.isEnabled(newEditor, PASTE_TEXT_KEY)) {
@@ -177,12 +194,27 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
           title: locale.pasteText,
           rightText: getHotkeyText(PASTE_TEXT_KEY),
           disabled: !selection,
-          sort: 0,
+          index: 0,
         })
       }
       return onContextMenu(items)
     }
   })
+
+  newEditor.cut = () => {
+    newEditor.copy()
+    const { selection } = newEditor
+    if (selection) {
+      if (Range.isExpanded(selection)) {
+        Editor.deleteFragment(newEditor)
+      } else {
+        const node = Node.parent(newEditor, selection.anchor.path)
+        if (Editor.isVoid(newEditor, node)) {
+          Transforms.delete(newEditor)
+        }
+      }
+    }
+  }
 
   newEditor.copy = () => {
     if (!SerializeEditor.isSerializeEditor(newEditor)) return
@@ -193,7 +225,7 @@ export const withGlobal = <T extends Editable>(editor: T, options: GlobalOptions
 
     let html = fragment.map(child => newEditor.serializeHtml({ node: child })).join('')
     html = `<div ${DATA_EDITABLEJS_FRAGMENT}="${encoded}">${html}</div>`
-    html = `<html><head><meta name="source" content="editablejs" /></head><body>${html}</body></html>`
+    html = `<html><head><meta name="source" content="${DATA_EDITABLEJS_FRAGMENT}" /></head><body>${html}</body></html>`
     console.log(html)
     GlobalEditor.writeClipboard({ html, text, fragment })
   }

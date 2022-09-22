@@ -125,8 +125,9 @@ Transforms.delete = (editor, options = {}) => {
   // anchor 与 focus 在同一grid内
   if (Editable.isEditor(editor)) {
     if (grid) {
-      const selected = Grid.getSelected(editor, grid)
-      if (selected) {
+      const sel = Grid.getSelection(editor, grid)
+      const selected = Grid.getSelected(editor, grid, sel)
+      if (sel && selected) {
         const { allFull, rowFull, colFull, rows, cols } = selected
         if (allFull) {
           Grid.remove(editor, grid)
@@ -140,7 +141,36 @@ Transforms.delete = (editor, options = {}) => {
           }
         } else {
           // 设置 selection 到 anchor
-          Transforms.collapse(editor, { edge: 'anchor' })
+          const { start, end } = Grid.edges(editor, grid, sel)
+          const cells = Grid.cells(editor, grid, {
+            startRow: start[0],
+            startCol: start[1],
+            endRow: end[0],
+            endCol: end[1],
+          })
+          // 删除单元格内内容
+          for (const [cell, row, col] of cells) {
+            const path = grid[1].concat([row, col])
+            Transforms.removeNodes(editor, {
+              at: {
+                anchor: {
+                  path: path.concat(0),
+                  offset: 0,
+                },
+                focus: {
+                  path: path.concat(cell.children.length - 1),
+                  offset: 0,
+                },
+              },
+              match(node, path) {
+                return !Editable.isGridCell(editor, node)
+              },
+            })
+          }
+          Grid.focus(editor, {
+            at: grid,
+            point: start,
+          })
         }
         return
       }
@@ -163,6 +193,18 @@ Transforms.delete = (editor, options = {}) => {
       // 结束位置选中在grid内
       if (end) {
         removeRow(end[1], false)
+        const { selection } = editor
+        if (selection) {
+          const { anchor, focus } = selection
+          const focusGrid = Grid.findGrid(editor, focus.path)
+          if (focusGrid) {
+            const path = Path.previous(focusGrid[1])
+            Transforms.select(editor, {
+              anchor,
+              focus: Editable.toLowestPoint(editor, path, 'end'),
+            })
+          }
+        }
       }
       defaultDelete(editor, options)
     }

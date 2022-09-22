@@ -102,17 +102,6 @@ export const OrderedListTemplates: ListTemplate[] = [
   },
 ]
 
-/**
- * 移除值的单位
- * @param value 值
- */
-const removeUnit = (value: string) => {
-  let match
-  return value && (match = /^((-?\d+)(\.\d+)?)/.exec(value))
-    ? Math.floor(parseFloat(match[1]) * 10000) / 10000
-    : 0
-}
-
 const LabelStyles = tw.span`ml-7 mr-0`
 
 const LabelElement = ({
@@ -145,7 +134,7 @@ const LabelElement = ({
         const { width } = label.getBoundingClientRect()
         if (width > startWidth) {
           const ml = window.getComputedStyle(startLabel).marginLeft
-          const mlv = removeUnit(ml)
+          const mlv = parseInt(ml, 10)
           label.style.marginLeft = `${mlv - (width - startWidth)}px`
         }
         // else if(startWidth > width) {

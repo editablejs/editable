@@ -34,7 +34,7 @@ export const ContextMenuEditor = {
 interface ContextMenuItem extends UIContextMenuItem {
   key: string
   title: JSX.Element | string
-  sort?: number
+  index?: number
   href?: string
   children?: ContextMenuItem[]
 }
@@ -86,7 +86,7 @@ export const withContextMenu = <T extends Editable>(
       const items = newEditor.onContextMenu([])
       if (items.length > 0) {
         ReactDOM.render(
-          <ContextMenu items={items.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))} event={e} />,
+          <ContextMenu items={items.sort((a, b) => (a.index ?? 0) - (b.index ?? 0))} event={e} />,
           root,
         )
       }
