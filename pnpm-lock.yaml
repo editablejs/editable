@@ -22,7 +22,7 @@ importers:
       lint-staged: 13.0.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.4.7
+      turbo: 1.5.1
 
   apps/docs:
     specifiers:
@@ -199,45 +199,6 @@ importers:
       tsup: 6.1.2_typescript@4.6.3
       typescript: 4.6.3
 
-  packages/plugins/base:
-    specifiers:
-      '@editablejs/editor': workspace:*
-      '@editablejs/plugin-context-menu': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
-      '@editablejs/plugin-ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
-      copy-to-clipboard: 3.3.2
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
-      tsconfig: workspace:*
-      tsup: ^6.1.2
-      tsup-config: workspace:*
-      typescript: ^4.5.3
-    dependencies:
-      '@editablejs/plugin-context-menu': link:../context-menu
-      '@editablejs/plugin-serializes': link:../serializes
-      '@editablejs/plugin-ui': link:../ui
-      copy-to-clipboard: 3.3.2
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.8.3
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.8.3
-
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -279,6 +240,45 @@ importers:
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      typescript: 4.8.3
+
+  packages/plugins/clipboard:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@editablejs/plugin-context-menu': workspace:*
+      '@editablejs/plugin-serializes': workspace:*
+      '@editablejs/plugin-ui': workspace:*
+      '@types/react': ^17.x
+      '@types/react-dom': ^17.x
+      copy-to-clipboard: 3.3.2
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      react: ^17.x
+      react-dom: ^17.x
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      typescript: ^4.5.3
+    dependencies:
+      '@editablejs/plugin-context-menu': link:../context-menu
+      '@editablejs/plugin-serializes': link:../serializes
+      '@editablejs/plugin-ui': link:../ui
+      copy-to-clipboard: 3.3.2
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/react': 17.0.47
+      '@types/react-dom': 17.0.17
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_typescript@4.8.3
+      tsup-config: link:../../config/tsup-config
       typescript: 4.8.3
 
   packages/plugins/context-menu:
@@ -548,8 +548,8 @@ importers:
   packages/plugins/plugins:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-base': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
+      '@editablejs/plugin-clipboard': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-fontsize': workspace:*
       '@editablejs/plugin-heading': workspace:*
@@ -573,8 +573,8 @@ importers:
       tsup-config: workspace:*
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-base': link:../base
       '@editablejs/plugin-blockquote': link:../blockquote
+      '@editablejs/plugin-clipboard': link:../clipboard
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-fontsize': link:../fontsize
       '@editablejs/plugin-heading': link:../heading
@@ -7601,137 +7601,65 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-android-arm64/1.4.7:
-    resolution: {integrity: sha512-BtWtH8e8w1GhtYpGQmkcDS/AUzVZhQ4ZZN+qtUFei1wZD7VAdtJ9Wcsfi3WD+mXA6vtpIpRJVfQMcShr8l8ErA==}
-    cpu: [arm64]
-    os: [android]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-darwin-64/1.4.7:
-    resolution: {integrity: sha512-bMvZaAz5diec9feZ0XpQosYI8U0kiOQM2tj2sv0Y2WZbe227wodVMCQMyUowmcotO8nr6NF76Xo5E+H+dnY6LQ==}
+  /turbo-darwin-64/1.5.1:
+    resolution: {integrity: sha512-63vbObfUOR26UNjwCEKLxrWiJFJE0XNSFNt2/CFF0nhx0I9RqNf21KCZk2FwcbHLSM/ca0Yqr/nJV9Wu+yo1Tg==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.4.7:
-    resolution: {integrity: sha512-AyfxYfKgh1EigQKjypbnDoMLuy4e/n/go+KYiWKKIpOaWXWLBokrBWzYN/aI3NMDRUJWK5ExdlWI9Nleelq8uQ==}
+  /turbo-darwin-arm64/1.5.1:
+    resolution: {integrity: sha512-VVrJdOvAXw17qKFdC5PlsoJ6Jupp5yCGUN+OJVWG/BvDVdcWJw3n0m3jpcvZ0JVKhGnjW4pRJudKLD1vR879Ng==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-freebsd-64/1.4.7:
-    resolution: {integrity: sha512-T5/osfbCh0rL53MFS5byFFfsR3vPMHIKIJ4fMMCNkoHsmFj2R0Pv53nqhEItogt0FJwCDHPyt7oBqO83H/AWQQ==}
-    cpu: [x64]
-    os: [freebsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-freebsd-arm64/1.4.7:
-    resolution: {integrity: sha512-PL+SaO78AUCas+YKj01UiS2rpmGcxz8XPmLdFWmq6PYjPX6GL5UBAc3pkBphIm0aTLZtsikoEul+JrwAuAy6UA==}
-    cpu: [arm64]
-    os: [freebsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-linux-32/1.4.7:
-    resolution: {integrity: sha512-dK94UwDzySMALoQtjBVVPbWJZP6xw3yHGuytM3q5p4kfMZPSA+rgNBn5T5Af2Rc7jxlLAsu5ODJ0SgIbWSF5Hg==}
-    cpu: [ia32]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-linux-64/1.4.7:
-    resolution: {integrity: sha512-F6IM23zgTYo9gYJaNp17gVvQBt0hMIvz52OF91DpPYSLpV2h9OSlzPJ3j5TGaWueS/bc/YCV23+VojXX/MauGQ==}
+  /turbo-linux-64/1.5.1:
+    resolution: {integrity: sha512-0PKkribBtjcuOllSbpA9rtLbyLdCJSAXO6G2TpZye6HUj/zRMeTVh3hpGwJJLsiaN/wCbF1g8uLtcrbEU0CcOw==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm/1.4.7:
-    resolution: {integrity: sha512-FTh4itdMNZ7IxGKknFnQ6iPO9vGGKqyySkCYLR01lnw6BTnKL9KuM9XUCBRyn7dNmHhAnqu1ZtVsBkH7CE7DEw==}
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-linux-arm64/1.4.7:
-    resolution: {integrity: sha512-kFe5jzj3FoY6jAEwyNEswndj1t/fPl0qyxfcQv6aNPz7Nb2Lh7mY/EEse+CG3ydIo5RZKba7ppQoBSDmHx7JsA==}
+  /turbo-linux-arm64/1.5.1:
+    resolution: {integrity: sha512-EzGwaNs1cHLlyYKNzJ1X2yvBE8ulFlVymW8lmllEwgXU801XlA8OEv8gfZOhtugvNr0F9eK3x0c30tGL/wco1w==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-mips64le/1.4.7:
-    resolution: {integrity: sha512-756nG8dnPQVcnl9s70S4NQ43aJjpsnc2h0toktPO+9u2ayv9XTbIPvZLFsS55bDeYhodDGvxoB96W6Xnx01hyQ==}
-    cpu: [mipsel]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-linux-ppc64le/1.4.7:
-    resolution: {integrity: sha512-VS2ofGN/XsafNGJdZ21UguURHb7KRG879yWLj59hO1d+0xXXQbx7ljsmEPOhiE4UjEdx4Ur6P44BhztTgDx9Og==}
-    cpu: [ppc64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-windows-32/1.4.7:
-    resolution: {integrity: sha512-M5GkZdA0CbJAOcR8SScM63CBV+NtX7qjhoNNOl0F99nGJ+rO3dH71CcM/rbhlz9SQzKQoX8rcuwZHe4r2HZAug==}
-    cpu: [ia32]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /turbo-windows-64/1.4.7:
-    resolution: {integrity: sha512-ftZUtZ1BX1vi8MbxKr+a7riIkhwvGnNTtWGprVu+aDJ8PnV+lNqbkrLJGvKP7Cn22hGTfzcjNNPcJ5PBZpQEQw==}
+  /turbo-windows-64/1.5.1:
+    resolution: {integrity: sha512-XX/0SB3cSpSGg33z4t0H3O0McHkqu5iIxmSZwqrrCG4h65ZUTVzr4AHG4cKF/vYYs4RRaPj9LaByveoh+AcZkA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.4.7:
-    resolution: {integrity: sha512-mZ79XeJFfaeVKdBV3w0eoGaqAxFnwxrme0jZtSWemAbeDSCF/13wcbLGwtq0+Lu0LxEGweeQ5AqsCIc9t9i6sA==}
+  /turbo-windows-arm64/1.5.1:
+    resolution: {integrity: sha512-dKGKvCHiooCRv3liETY67XA5skrOYhjt1scEeVQ1dMRfb2ePq2NypldPRrVF/ykMoTPrVHul7N5+SJa/NoGXvQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.4.7:
-    resolution: {integrity: sha512-oIk7PAISPidDOkTM5M+ydEe5GDQ/+TahDgIbaYKeAAy2Qpmur4s0HybSDWHIdxLqI96OPD/mOKymRLrjh3Mdhg==}
+  /turbo/1.5.1:
+    resolution: {integrity: sha512-AM6t4BBFt6ek96bRDr/UqF+zxlYjagPc29P4q/5phMKOH8SRNEb43MXjM2to8NwRhiaoPqNyct0gwgGM2rSRvA==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-android-arm64: 1.4.7
-      turbo-darwin-64: 1.4.7
-      turbo-darwin-arm64: 1.4.7
-      turbo-freebsd-64: 1.4.7
-      turbo-freebsd-arm64: 1.4.7
-      turbo-linux-32: 1.4.7
-      turbo-linux-64: 1.4.7
-      turbo-linux-arm: 1.4.7
-      turbo-linux-arm64: 1.4.7
-      turbo-linux-mips64le: 1.4.7
-      turbo-linux-ppc64le: 1.4.7
-      turbo-windows-32: 1.4.7
-      turbo-windows-64: 1.4.7
-      turbo-windows-arm64: 1.4.7
+      turbo-darwin-64: 1.5.1
+      turbo-darwin-arm64: 1.5.1
+      turbo-linux-64: 1.5.1
+      turbo-linux-arm64: 1.5.1
+      turbo-windows-64: 1.5.1
+      turbo-windows-arm64: 1.5.1
     dev: true
 
   /twin.macro/3.0.0-rc.4.1_tailwindcss@3.1.8:

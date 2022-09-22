@@ -37,7 +37,7 @@
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-base": "workspace:*",
+    "@editablejs/plugin-clipboard": "workspace:*",
     "@editablejs/plugin-blockquote": "workspace:*",
     "@editablejs/plugin-context-menu": "workspace:*",
     "@editablejs/plugin-fontsize": "workspace:*",

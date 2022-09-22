@@ -122,9 +122,6 @@ export interface Editable extends BaseEditor {
   isGrid: (value: any) => value is Grid
   isGridRow: (value: any) => value is GridRow
   isGridCell: (value: any) => value is GridCell
-  insertData: (data: DataTransfer) => void
-  insertFragmentData: (data: DataTransfer) => boolean
-  insertTextData: (data: DataTransfer) => boolean
   hasRange: (editor: Editable, range: Range) => boolean
   blur(): void
   focus(): void
@@ -134,6 +131,7 @@ export interface Editable extends BaseEditor {
   onKeyup: (event: KeyboardEvent) => void
   onFocus: () => void
   onBlur: () => void
+  onPaste: (event: ClipboardEvent) => void
   onInput: (value: string) => void
   onBeforeInput: (value: string) => void
   onCompositionStart: (value: string) => void
@@ -409,30 +407,6 @@ export const Editable = {
     }
 
     return targetEl.closest(`[data-slate-editor]`) === editorEl
-  },
-
-  /**
-   * Insert data from a `DataTransfer` into the editor.
-   */
-
-  insertData(editor: Editable, data: DataTransfer): void {
-    editor.insertData(data)
-  },
-
-  /**
-   * Insert fragment data from a `DataTransfer` into the editor.
-   */
-
-  insertFragmentData(editor: Editable, data: DataTransfer): boolean {
-    return editor.insertFragmentData(data)
-  },
-
-  /**
-   * Insert text data from a `DataTransfer` into the editor.
-   */
-
-  insertTextData(editor: Editable, data: DataTransfer): boolean {
-    return editor.insertTextData(data)
   },
 
   /**

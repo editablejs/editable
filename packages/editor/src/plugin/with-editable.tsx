@@ -175,47 +175,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
-  e.insertData = (data: DataTransfer) => {
-    if (!e.insertFragmentData(data)) {
-      e.insertTextData(data)
-    }
-  }
-
-  e.insertFragmentData = (data: DataTransfer): boolean => {
-    /**
-     * Checking copied fragment from application/x-slate-fragment or data-slate-fragment
-     */
-    const fragment = data.getData('application/x-slate-fragment') || getSlateFragmentAttribute(data)
-
-    if (fragment) {
-      const decoded = decodeURIComponent(window.atob(fragment))
-      const parsed = JSON.parse(decoded) as Node[]
-      e.insertFragment(parsed)
-      return true
-    }
-    return false
-  }
-
-  e.insertTextData = (data: DataTransfer): boolean => {
-    const text = data.getData('text/plain')
-
-    if (text) {
-      const lines = text.split(/\r\n|\r|\n/)
-      let split = false
-
-      for (const line of lines) {
-        if (split) {
-          Transforms.splitNodes(e, { always: true })
-        }
-
-        e.insertText(line)
-        split = true
-      }
-      return true
-    }
-    return false
-  }
-
   e.onChange = () => {
     let prevSelection: Range | undefined
     EDITOR_ACTIVE_MARKS.delete(editor)
@@ -627,7 +586,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       Transforms.insertText(editor, value)
     }
   }
-
+  e.onPaste = () => {}
   e.onSelectStart = () => {}
   e.onSelecting = () => {}
   e.onSelectEnd = () => {}

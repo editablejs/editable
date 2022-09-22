@@ -23,11 +23,11 @@ import {
   ContextMenuOptions,
   withContextMenu,
 } from '@editablejs/plugin-context-menu'
-import { GlobalEditor, GlobalOptions, withGlobal } from '@editablejs/plugin-base'
+import { ClipboardEditor, ClipboardOptions, withClipboard } from '@editablejs/plugin-clipboard'
 import { SerializeEditor, SerializeOptions, withSerialize } from '@editablejs/plugin-serializes'
 
 export interface PluginOptions {
-  global?: GlobalOptions
+  clipboard?: ClipboardOptions
   serialize?: SerializeOptions
   'context-menu'?: ContextMenuOptions
   mark?: MarkOptions
@@ -44,7 +44,7 @@ export interface PluginOptions {
 export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   let newEditor = withContextMenu(editor)
   newEditor = withSerialize(newEditor, options.serialize)
-  newEditor = withGlobal(newEditor, options.global)
+  newEditor = withClipboard(newEditor, options.clipboard)
   newEditor = withIndent(newEditor, options.indent)
   newEditor = withMark(newEditor, options.mark)
   newEditor = withFontSize(newEditor, options['font-size'])
@@ -55,7 +55,7 @@ export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   newEditor = withTaskList(newEditor, options['task-list'])
   newEditor = withTable(newEditor, options.table)
   return newEditor as Editable &
-    GlobalEditor &
+    ClipboardEditor &
     SerializeEditor &
     ContextMenuEditor &
     MarkEditor &
@@ -78,7 +78,7 @@ export * from '@editablejs/plugin-indent'
 export * from '@editablejs/plugin-table'
 export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
-export * from '@editablejs/plugin-base'
+export * from '@editablejs/plugin-clipboard'
 export * from '@editablejs/plugin-serializes'
 
 export { Toolbar, UI }

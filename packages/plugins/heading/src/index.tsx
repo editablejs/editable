@@ -123,6 +123,8 @@ export const HeadingEditor = {
   },
 }
 
+const StyledHeading = tw.h1`font-medium mb-2 mt-0`
+
 export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingEditor
 
@@ -174,7 +176,6 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
   }
 
   const { renderElement } = newEditor
-  const StyledHeading = tw.h1`font-medium mb-2 mt-0`
   newEditor.renderElement = ({ element, attributes, children }) => {
     if (HeadingEditor.isHeading(editor, element)) {
       const tag = HeadingTags[element.type]

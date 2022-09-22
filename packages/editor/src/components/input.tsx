@@ -113,6 +113,7 @@ const InputComponent: FC<InputProps> = ({ selection }) => {
         onCompositionEnd={handleCompositionEnd}
         onBlur={handleBlur}
         onFocus={handleFocus}
+        onPaste={e => editor.onPaste(e.nativeEvent)}
       />
     </ShadowRect>
   )

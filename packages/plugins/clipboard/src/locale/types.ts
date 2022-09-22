@@ -1,7 +1,7 @@
 import { Locale } from '@editablejs/editor'
 
-export interface GlobalLocale extends Locale {
-  global: {
+export interface ClipboardLocale extends Locale {
+  clipboard: {
     cut: string
     copy: string
     paste: string

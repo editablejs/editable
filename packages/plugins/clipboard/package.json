@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/plugin-base",
+  "name": "@editablejs/plugin-clipboard",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

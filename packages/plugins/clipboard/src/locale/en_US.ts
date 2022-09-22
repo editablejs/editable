@@ -1,8 +1,8 @@
-import { GlobalLocale } from './types'
+import { ClipboardLocale } from './types'
 
-const locale: GlobalLocale = {
+const locale: ClipboardLocale = {
   locale: 'en-US',
-  global: {
+  clipboard: {
     cut: 'Cut',
     copy: 'Copy',
     paste: 'Paste',
