@@ -309,7 +309,14 @@ export const withClipboard = <T extends Editable>(editor: T, options: ClipboardO
     ClipboardEditor.setData({ html, text, fragment: encoded })
   }
 
-  newEditor.pasteHtml = (html: string) => {}
+  newEditor.pasteHtml = (html: string) => {
+    const document = new DOMParser().parseFromString(html, 'text/html')
+    const fragment = SerializeEditor.deserializeHtml(newEditor, {
+      node: document.body,
+    })
+    console.log(fragment)
+    newEditor.insertFragment(fragment)
+  }
 
   newEditor.pasteText = (text: string) => {
     const lines = text.split(/\r\n|\r|\n/)

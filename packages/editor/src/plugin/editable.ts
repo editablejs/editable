@@ -11,7 +11,6 @@ import {
   Transforms,
   NodeEntry,
   Selection,
-  Descendant,
 } from 'slate'
 
 import { Key } from '../utils/key'

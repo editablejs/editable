@@ -18,16 +18,12 @@ import { useState, useRef, useMemo, useCallback } from 'react'
 import { TableCell, TableCellEditor } from './cell'
 import { TableContext, TableDragOptions, TableOptions } from './context'
 import { TableColHeader, TableRowHeader } from './header'
+import { getOptions } from './options'
 import { TableRow, TableRowEditor } from './row'
 import { TableSelection as TableSelectionElement } from './selection'
 import { AllHeaderStyles, TableStyles } from './styles'
 
 export const TABLE_KEY = 'table'
-
-export const defaultTableMinRowHeight = 35
-export const defaultTableMinColWidth = 35
-
-export const TABLE_OPTIONS_WEAKMAP = new WeakMap<Editable, TableOptions>()
 export interface CreateTableOptions {
   rows?: number
   cols?: number
@@ -60,34 +56,19 @@ export const TableEditor = {
   },
 
   getOptions: (editor: Editable): Required<TableOptions> => {
-    const options = TABLE_OPTIONS_WEAKMAP.get(editor) ?? {}
-    if (!options.minRowHeight) options.minRowHeight = defaultTableMinRowHeight
-    if (!options.minColWidth) options.minColWidth = defaultTableMinColWidth
-    return options as Required<TableOptions>
+    return getOptions(editor)
   },
 
   create: (editor: Editable, options: CreateTableOptions = {}): Table => {
-    const editorElement = Editable.toDOMNode(editor, editor)
-    const rect = editorElement.getBoundingClientRect()
-    const width = rect.width - 1
     const { rows = 3, cols = 3 } = options
     const { minRowHeight, minColWidth } = TableEditor.getOptions(editor)
-    const colWidth = Math.max(minColWidth, Math.floor(width / cols))
     const rowHeight = minRowHeight
     const tableRows: TableRow[] = []
-    const tableColsWdith = []
-    let colsWidth = 0
-    for (let c = 0; c < cols; c++) {
-      const cws = colsWidth + colWidth
-      if (c === cols - 1 && cws < width) {
-        const cw = width - colsWidth
-        colsWidth += cw
-        tableColsWdith.push(cw)
-      } else {
-        colsWidth = cws
-        tableColsWdith.push(colWidth)
-      }
-    }
+    const tableColsWdith = Grid.avgColWidth(editor, {
+      cols,
+      minWidth: minColWidth,
+      getWidth: width => width - 1,
+    })
     for (let r = 0; r < rows; r++) {
       tableRows.push(
         TableRowEditor.create(
@@ -194,7 +175,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     for (let i = 0; i < colsWidth.length; i++) {
       colgroup.push(<col width={colsWidth[i]} key={i} />)
     }
-    return <colgroup>{colgroup}</colgroup>
+    return colgroup.length > 0 ? <colgroup>{colgroup}</colgroup> : null
   }
   // table width
   const tableWidth = useMemo(() => {

@@ -75,7 +75,7 @@ export const ListEditor = {
       onRenderLabel,
     } = options
     const renderLabel = () => {
-      const { template: key, type, start } = element
+      const { template: key = 'default', type, start } = element
       const template = key ? ListEditor.getTemplate(editor, type, key) : undefined
       if (onRenderLabel) return onRenderLabel(element, template)
       const result = template ? template.render(element) : `${start}.`
@@ -112,6 +112,18 @@ export const ListEditor = {
             }) ?? [element, path]
             startLists.set(key, startList)
           }
+          const indent = element as Indent
+          element.children.forEach((child, index) => {
+            if (Editor.isBlock(editor, child)) {
+              Transforms.setNodes<Indent>(
+                editor,
+                { lineIndent: indent.lineIndent },
+                {
+                  at: path.concat(index),
+                },
+              )
+            }
+          })
         }
         Transforms.unwrapNodes(editor, {
           match: n => ListEditor.isList(editor, n, type),
@@ -126,14 +138,6 @@ export const ListEditor = {
             level: list.level,
             start: list.start,
           })
-          const indent = list as Indent
-          Transforms.setNodes<Indent>(
-            editor,
-            { lineIndent: indent.lineIndent },
-            {
-              at: path,
-            },
-          )
         }
       } else {
         const { selection } = editor
@@ -170,7 +174,7 @@ export const ListEditor = {
         let nextPath: Path = []
         for (const [node, path] of entrys) {
           const { lineIndent = 0, textIndent = 0 } = node as Indent
-          const level = ListEditor.calcLeval(editor, type, { path, key: key })
+          const level = ListEditor.calcLevel(editor, type, { path, key: key })
           const element: List & Indent = {
             type,
             key,
@@ -240,7 +244,7 @@ export const ListEditor = {
     return list.find(t => t.key === key)
   },
 
-  calcLeval: (
+  calcLevel: (
     editor: Editable,
     type: string,
     options: {
@@ -258,10 +262,10 @@ export const ListEditor = {
       at: path,
       match: n => ListEditor.isList(editor, n, type) && n.key === key,
     })
-    const prevIndentLeval = prev ? IndentEditor.getLeval(editor, prev[0]) : 0
-    const prefixIndentLeval = prev ? prevIndentLeval - prev[0].level : 0
-    const elementIndentLeval = element ? IndentEditor.getLeval(editor, element[0]) : 0
-    return elementIndentLeval - prefixIndentLeval
+    const prevIndentLevel = prev ? IndentEditor.getLevel(editor, prev[0]) : 0
+    const prefixIndentLevel = prev ? prevIndentLevel - prev[0].level : 0
+    const elementIndentLevel = element ? IndentEditor.getLevel(editor, element[0]) : 0
+    return elementIndentLevel - prefixIndentLevel
   },
 
   findStartList: (
@@ -341,7 +345,7 @@ const updateListStart = (editor: Editable, type: string, options: UpdateListStar
   }
 
   const levelOut = Number(Object.keys(startMap)[0])
-  let prevLeval = levelOut
+  let prevLevel = levelOut
   while (true) {
     const next = Editor.next<List>(editor, {
       at: startPath,
@@ -353,13 +357,13 @@ const updateListStart = (editor: Editable, type: string, options: UpdateListStar
     if (!next) break
     const [list, path] = next
     startPath = path
-    const nextLeval = list.level
-    let start = startMap[nextLeval]
-    if (!start || nextLeval > prevLeval) {
-      start = startMap[nextLeval] = 1
+    const nextLevel = list.level
+    let start = startMap[nextLevel]
+    if (!start || nextLevel > prevLevel) {
+      start = startMap[nextLevel] = 1
     }
 
-    prevLeval = nextLeval
+    prevLevel = nextLevel
     Transforms.setNodes<List>(
       editor,
       { start },
@@ -367,7 +371,7 @@ const updateListStart = (editor: Editable, type: string, options: UpdateListStar
         at: startPath,
       },
     )
-    startMap[nextLeval]++
+    startMap[nextLevel]++
   }
 }
 
@@ -573,7 +577,7 @@ export const withList = <T extends Editable>(editor: T, type: string) => {
             path = next[1]
             IndentEditor.addLineIndent(editor, path, sub)
             if (sub) {
-              const level = ListEditor.calcLeval(newEditor, type, { path, key: key })
+              const level = ListEditor.calcLevel(newEditor, type, { path, key: key })
               Transforms.setNodes<List>(
                 newEditor,
                 { level },
@@ -602,7 +606,7 @@ export const withList = <T extends Editable>(editor: T, type: string) => {
             match: n => ListEditor.isList(newEditor, n, type),
           })
           for (const [_, p] of listEntries) {
-            const level = ListEditor.calcLeval(newEditor, type, { path: p, key: key })
+            const level = ListEditor.calcLevel(newEditor, type, { path: p, key: key })
             Transforms.setNodes<List>(
               newEditor,
               { level },

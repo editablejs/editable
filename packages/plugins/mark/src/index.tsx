@@ -1,4 +1,4 @@
-import { Editable, RenderLeafProps, isHotkey, Editor, Text } from '@editablejs/editor'
+import { Editable, RenderLeafProps, isHotkey, Editor, Text, isDOMElement } from '@editablejs/editor'
 import { CSSProperties } from 'react'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import tw, { css, styled } from 'twin.macro'
@@ -175,25 +175,68 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     }
     onKeydown(e)
   }
-  SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+  SerializeEditor.with(
+    newEditor,
+    e => {
+      const { serializeHtml, deserializeHtml } = e
 
-    e.serializeHtml = options => {
-      const { node } = options
-      if (MarkEditor.isMark(node)) {
-        let html = node.text
-        if (node.bold) html = `<strong>${html}</strong>`
-        if (node.italic) html = `<em>${html}</em>`
-        if (node.underline) html = `<u>${html}</u>`
-        if (node.strikethrough) html = `<s>${html}</s>`
-        if (node.code) html = `<code>${html}</code>`
-        if (node.sub) html = `<sub>${html}</sub>`
-        if (node.sup) html = `<sup>${html}</sup>`
-        return html
+      e.serializeHtml = options => {
+        const { node } = options
+        if (MarkEditor.isMark(node)) {
+          let html = node.text
+          if (node.bold) html = `<strong>${html}</strong>`
+          if (node.italic) html = `<em>${html}</em>`
+          if (node.underline) html = `<u>${html}</u>`
+          if (node.strikethrough) html = `<s>${html}</s>`
+          if (node.code) html = `<code>${html}</code>`
+          if (node.sub) html = `<sub>${html}</sub>`
+          if (node.sup) html = `<sup>${html}</sup>`
+          return html
+        }
+        return serializeHtml(options)
       }
-      return serializeHtml(options)
-    }
-  })
+
+      e.deserializeHtml = options => {
+        const { node } = options
+        if (isDOMElement(node)) {
+          const markAttributes = { ...options.markAttributes }
+          const { style } = node as HTMLElement
+          if (node.nodeName === 'STRONG') {
+            markAttributes.bold = true
+          } else if (!markAttributes.bold) {
+            const weight = markAttributes.fontWeight || style.fontWeight || ''
+            if (/^\d+$/.test(weight) && parseInt(weight, 10) >= 500) {
+              markAttributes.bold = true
+            } else if (/bold/i.test(weight)) {
+              markAttributes.bold = true
+            }
+          }
+
+          if (node.nodeName === 'EM' || style.fontStyle === 'italic') {
+            markAttributes.italic = true
+          }
+          if (node.nodeName === 'U' || style.textDecoration === 'underline') {
+            markAttributes.underline = true
+          }
+          if (node.nodeName === 'S' || style.textDecoration === 'line-through') {
+            markAttributes.strikethrough = true
+          }
+          if (node.nodeName === 'CODE' || style.fontFamily === 'monospace') {
+            markAttributes.code = true
+          }
+          if (node.nodeName === 'SUB' || style.verticalAlign === 'sub') {
+            markAttributes.sub = true
+          }
+          if (node.nodeName === 'SUP' || style.verticalAlign === 'super') {
+            markAttributes.sup = true
+          }
+          return deserializeHtml({ ...options, markAttributes })
+        }
+        return deserializeHtml(options)
+      }
+    },
+    true,
+  )
 
   return newEditor
 }

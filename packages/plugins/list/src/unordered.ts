@@ -1,4 +1,5 @@
-import { Editable, isHotkey } from '@editablejs/editor'
+import { Descendant, Editable, generateRandomKey, isDOMText, isHotkey } from '@editablejs/editor'
+import { Indent, IndentEditor } from '@editablejs/plugin-indent'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from './base'
 
@@ -89,7 +90,7 @@ export const withUnOrderedList = <T extends Editable>(
   }
 
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
     e.serializeHtml = options => {
       const { node, attributes, styles = {} } = options
       if (UnOrderedListEditor.isUnOrdered(e, node)) {
@@ -116,6 +117,74 @@ export const withUnOrderedList = <T extends Editable>(
         )
       }
       return serializeHtml(options)
+    }
+    e.deserializeHtml = options => {
+      const { node, attributes, markAttributes } = options
+      const { parentElement } = node
+      if (parentElement?.nodeName === 'UL') {
+        let { start = 1 } = parentElement as HTMLOListElement
+        const children = Array.from(parentElement.childNodes)
+        const index = children.indexOf(node as ChildNode)
+        if (index > 0) {
+          start += index
+        }
+        const { nodeName } = node
+        const lists: List[] = []
+        const elId = parentElement.getAttribute('list-id')
+        const key = elId || generateRandomKey()
+        if (!elId) parentElement.setAttribute('list-id', key)
+
+        if (isDOMText(node)) {
+          lists.push({
+            ...attributes,
+            key,
+            type: UNORDERED_LIST_KEY,
+            start,
+            children: e.deserializeHtml({ node, markAttributes }),
+            level: 0,
+          })
+        } else if (nodeName === 'LI') {
+          const addLevel = (list: List & Indent, level = 0) => {
+            list.level = level + 1
+            if (list.type === UNORDERED_LIST_KEY) {
+              list.key = key
+            }
+            list.lineIndent = IndentEditor.getSize(e) * list.level
+            list.children.forEach(child => {
+              if (ListEditor.isList(e, child)) {
+                addLevel(child, list.level)
+              }
+            })
+          }
+          const children: Descendant[] = []
+          // 遍历 list 子节点
+          let isAddList = false
+          for (const child of node.childNodes) {
+            const fragment = e.deserializeHtml({ node: child, markAttributes })
+            for (const f of fragment) {
+              if (ListEditor.isList(e, f)) {
+                addLevel(f, f.level)
+                lists.push(f)
+                isAddList = true
+              } else if (isAddList) {
+                lists.push(f as any)
+              } else {
+                children.push(f)
+              }
+            }
+          }
+          lists.unshift({
+            ...attributes,
+            key,
+            type: UNORDERED_LIST_KEY,
+            start,
+            children,
+            level: 0,
+          })
+        }
+        return lists
+      }
+      return deserializeHtml(options)
     }
   })
 

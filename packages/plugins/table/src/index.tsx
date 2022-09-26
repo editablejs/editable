@@ -1,14 +1,22 @@
-import { Editable, RenderElementProps, Transforms, Node, Grid } from '@editablejs/editor'
+import {
+  Editable,
+  RenderElementProps,
+  Transforms,
+  Node,
+  Grid,
+  isDOMElement,
+} from '@editablejs/editor'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { withTableCell } from './cell'
 import { TableOptions } from './context'
-import { withTableRow } from './row'
-import { TableEditor, TableComponent, TABLE_OPTIONS_WEAKMAP, Table, TABLE_KEY } from './table'
+import { getOptions, setOptions } from './options'
+import { TableRow, withTableRow } from './row'
+import { TableEditor, TableComponent, Table, TABLE_KEY } from './table'
 
 export const withTable = <T extends Editable>(editor: T, options: TableOptions = {}) => {
   let newEditor = editor as T & TableEditor
 
-  TABLE_OPTIONS_WEAKMAP.set(newEditor, options)
+  setOptions(newEditor, options)
 
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
@@ -37,7 +45,7 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
   }
 
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
 
     e.serializeHtml = options => {
       const { node, attributes, styles } = options
@@ -59,6 +67,45 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
         )
       }
       return serializeHtml(options)
+    }
+
+    e.deserializeHtml = options => {
+      const { node, markAttributes } = options
+      if (isDOMElement(node) && node.nodeName === 'TABLE') {
+        const children: TableRow[] = []
+        for (const child of node.childNodes) {
+          children.push(
+            ...(e.deserializeHtml({ node: child, markAttributes, stripBreak: true }) as any),
+          )
+        }
+        const { minColWidth } = getOptions(e)
+        const colsWidth = Array.from(node.querySelectorAll('col')).map(c => {
+          const w = c.width || c.style.width
+          return Math.min(parseInt(w === '' ? '0' : w, 10), minColWidth)
+        })
+        const colCount = children[0].children.length
+        if (colsWidth.length === 0) {
+          colsWidth.push(
+            ...Grid.avgColWidth(editor, {
+              cols: colCount,
+              minWidth: minColWidth,
+              getWidth: width => width - 1,
+            }),
+          )
+        } else if (colsWidth.length < colCount) {
+          // TODO
+        } else if (colsWidth.length > colCount) {
+          // TODO
+        }
+
+        const table: Table = {
+          type: TABLE_KEY,
+          colsWidth,
+          children,
+        }
+        return [table]
+      }
+      return deserializeHtml(options)
     }
   })
 

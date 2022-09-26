@@ -1,4 +1,11 @@
-import { Editable, RenderLeafProps, Editor, Text } from '@editablejs/editor'
+import {
+  Editable,
+  RenderLeafProps,
+  Editor,
+  Text,
+  isDOMText,
+  isDOMElement,
+} from '@editablejs/editor'
 import { CSSProperties } from 'react'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 export interface FontSizeOptions {
@@ -67,22 +74,38 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 
-  SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
-    e.serializeHtml = options => {
-      const { node, attributes, styles } = options
-      if (FontSizeEditor.isFontSize(e, node)) {
-        const { fontSize, text } = node
-        return SerializeEditor.createHtml(
-          'span',
-          attributes,
-          { ...styles, 'font-size': fontSize },
-          text,
-        )
+  SerializeEditor.with(
+    newEditor,
+    e => {
+      const { serializeHtml, deserializeHtml } = e
+      e.serializeHtml = options => {
+        const { node, attributes, styles } = options
+        if (FontSizeEditor.isFontSize(e, node)) {
+          const { fontSize, text } = node
+          return SerializeEditor.createHtml(
+            'span',
+            attributes,
+            { ...styles, 'font-size': fontSize },
+            text,
+          )
+        }
+        return serializeHtml(options)
       }
-      return serializeHtml(options)
-    }
-  })
+
+      e.deserializeHtml = options => {
+        const { node, markAttributes } = options
+        if (isDOMElement(node)) {
+          const { fontSize } = (node as HTMLElement).style
+          if (fontSize) {
+            options.markAttributes = { ...markAttributes, fontSize }
+            return deserializeHtml(options)
+          }
+        }
+        return deserializeHtml(options)
+      }
+    },
+    true,
+  )
 
   return newEditor
 }

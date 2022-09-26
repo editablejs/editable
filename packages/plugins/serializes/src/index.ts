@@ -1,6 +1,5 @@
 import escapeHtml from 'escape-html'
-import { jsx } from 'slate-hyperscript'
-import { Descendant, Editable, Editor, Text, Node } from '@editablejs/editor'
+import { Descendant, Editable, Editor, Text, Node, DOMNode, isDOMText } from '@editablejs/editor'
 
 export interface SerializeOptions {}
 
@@ -16,13 +15,17 @@ export interface SerializeHtmlOptions {
   attributes?: Record<string, any>
   styles?: Record<string, any>
 }
+
+export interface DeserializeHtmlOptions {
+  node: DOMNode
+  attributes?: Record<string, any>
+  markAttributes?: Record<string, any>
+  stripBreak?: true | ((text: string) => boolean)
+}
 export interface SerializeEditor extends Editable {
   serializeText: (node: Node) => string
   serializeHtml: (options: SerializeHtmlOptions) => string
-  deserializeHtml: (
-    el: globalThis.Node,
-    attributes?: Record<string, any>,
-  ) => Descendant | Descendant[]
+  deserializeHtml: (options: DeserializeHtmlOptions) => Descendant[]
 }
 
 const FLUSHING: WeakMap<Editor, boolean> = new WeakMap()
@@ -37,6 +40,13 @@ export const SerializeEditor = {
       return editor.serializeHtml(options)
     }
     return ''
+  },
+
+  deserializeHtml: (editor: Editable, options: DeserializeHtmlOptions) => {
+    if (SerializeEditor.isSerializeEditor(editor)) {
+      return editor.deserializeHtml(options)
+    }
+    return []
   },
 
   createHtml: (
@@ -126,26 +136,33 @@ export const withSerialize = <T extends Editable>(editor: T, options: SerializeO
     return SerializeEditor.createHtml(tag, attributes, styles, childrenHtml)
   }
 
-  newEditor.deserializeHtml = (el: globalThis.Node, attributes = {}) => {
-    if (el.nodeType === globalThis.Node.TEXT_NODE) {
-      return jsx('text', attributes, el.textContent)
+  newEditor.deserializeHtml = options => {
+    const { node, attributes, markAttributes, stripBreak } = options
+    if (isDOMText(node)) {
+      const text = node.textContent ?? ''
+      if (
+        stripBreak &&
+        /^\s{0,}(\r\n|\n)+\s{0,}$/.test(text) &&
+        (typeof stripBreak === 'boolean' || stripBreak(text))
+      ) {
+        return []
+      }
+      const lines = text.split(/\r\n|\n/)
+      return lines.map(line => ({ ...markAttributes, text: line }))
     }
 
-    const nodeAttributes = { ...attributes }
-
-    const children = Array.from(el.childNodes).map(node =>
-      newEditor.deserializeHtml(node, nodeAttributes),
-    )
-
-    if (children.length === 0) {
-      children.push(jsx('text', nodeAttributes, ''))
+    const children = []
+    for (const child of node.childNodes) {
+      children.push(...newEditor.deserializeHtml({ node: child, markAttributes }))
     }
 
-    switch (el.nodeName) {
-      case 'BODY':
-        return jsx('fragment', {}, children)
+    switch (node.nodeName) {
+      case 'P':
+      case 'DIV':
+        if (children.length === 0) children.push({ text: '' })
+        return [{ ...attributes, type: 'paragraph', children }]
       default:
-        return jsx('element', { type: 'paragraph' }, children)
+        return children
     }
   }
 

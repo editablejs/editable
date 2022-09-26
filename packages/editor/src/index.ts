@@ -36,6 +36,8 @@ export * from './utils/environment'
 export * from './utils/key'
 // format
 export * from './utils/format'
+// dom
+export * from './utils/dom'
 
 export type {
   RenderElementProps,

@@ -1,4 +1,4 @@
-import { Editable, Editor, Node, GridCell } from '@editablejs/editor'
+import { Editable, Editor, Node, GridCell, isDOMElement, Descendant } from '@editablejs/editor'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { CellInnerStyles, CellStyles } from './styles'
 
@@ -57,7 +57,7 @@ export const withTableCell = <T extends Editable>(editor: T, options: TableCellO
   }
 
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
 
     e.serializeHtml = options => {
       const { node, attributes, styles } = options
@@ -78,6 +78,29 @@ export const withTableCell = <T extends Editable>(editor: T, options: TableCellO
         )
       }
       return serializeHtml(options)
+    }
+
+    e.deserializeHtml = options => {
+      const { node, markAttributes } = options
+      if (isDOMElement(node) && node.tagName === 'TD') {
+        const children: Descendant[] = []
+        for (const child of node.childNodes) {
+          const content = e.deserializeHtml({ node: child, markAttributes, stripBreak: true })
+          children.push(...content)
+        }
+        if (children.length === 0) {
+          children.push({ children: [{ text: '' }] })
+        }
+        const { colSpan, rowSpan } = node as HTMLTableCellElement
+        const cell: TableCell = {
+          type: TABLE_CELL_KEY,
+          children,
+          colspan: colSpan,
+          rowspan: rowSpan,
+        }
+        return [cell]
+      }
+      return deserializeHtml(options)
     }
   })
 

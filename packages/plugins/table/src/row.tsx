@@ -6,11 +6,14 @@ import {
   Element,
   Transforms,
   GridRow,
+  isDOMElement,
+  Descendant,
 } from '@editablejs/editor'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import React, { useContext, useLayoutEffect } from 'react'
 import { TableCell, TableCellEditor } from './cell'
 import { TableContext } from './context'
+import { getOptions } from './options'
 import { RowStyles } from './styles'
 
 export const TABLE_ROW_KEY = 'table-row'
@@ -64,10 +67,10 @@ const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowEle
 }) => {
   const { style, ref, ...rest } = attributes
   // 表格宽度变化导致挤压内容需要重新计算高度
-  const { width, getOptions } = useContext(TableContext)
+  const { width } = useContext(TableContext)
   // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
-    let maxHeight = getOptions().minRowHeight
+    let maxHeight = getOptions(editor).minRowHeight
     const rect = ref.current.getBoundingClientRect()
     maxHeight = Math.max(maxHeight, rect.height)
     if (maxHeight !== element.contentHeight) {
@@ -79,7 +82,7 @@ const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowEle
         },
       )
     }
-  }, [editor, ref, width, element, getOptions])
+  }, [editor, ref, width, element])
 
   return (
     <RowStyles ref={ref} style={{ height: element.height, ...style }} {...rest}>
@@ -109,7 +112,7 @@ export const withTableRow = <T extends Editable>(editor: T, options: TableRowOpt
   }
 
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
 
     e.serializeHtml = options => {
       const { node, attributes, styles } = options
@@ -128,6 +131,30 @@ export const withTableRow = <T extends Editable>(editor: T, options: TableRowOpt
         )
       }
       return serializeHtml(options)
+    }
+
+    e.deserializeHtml = options => {
+      const { node, markAttributes } = options
+      if (isDOMElement(node) && ['TR', 'TH'].includes(node.tagName)) {
+        const options = getOptions(e)
+        const h = (node as HTMLElement).style.height
+        const height = parseInt(h === '' ? '0' : h, 10)
+
+        const children: TableCell[] = []
+        for (const child of node.childNodes) {
+          children.push(
+            ...(e.deserializeHtml({ node: child, markAttributes, stripBreak: true }) as any),
+          )
+        }
+
+        const row: TableRow = {
+          type: TABLE_ROW_KEY,
+          height: Math.max(height, options.minRowHeight),
+          children,
+        }
+        return [row]
+      }
+      return deserializeHtml(options)
     }
   })
 

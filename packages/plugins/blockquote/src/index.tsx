@@ -132,7 +132,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   }
 
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
 
     e.serializeHtml = options => {
       const { node, attributes, styles } = options
@@ -151,6 +151,18 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
         )
       }
       return serializeHtml(options)
+    }
+
+    e.deserializeHtml = options => {
+      const { node, attributes, markAttributes } = options
+      if (node.nodeName.toLowerCase() === BLOCKQUOTE_KEY) {
+        const children = []
+        for (const child of node.childNodes) {
+          children.push(...e.deserializeHtml({ node: child, markAttributes }))
+        }
+        return [{ ...attributes, type: BLOCKQUOTE_KEY, children }]
+      }
+      return deserializeHtml(options)
     }
   })
   return newEditor

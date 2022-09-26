@@ -43,7 +43,6 @@
     "preset": "jest-presets/jest/node"
   },
   "dependencies": {
-    "escape-html": "^1.0.3",
-    "slate-hyperscript": "^0.77.0"
+    "escape-html": "^1.0.3"
   }
 }

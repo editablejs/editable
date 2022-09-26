@@ -53,6 +53,12 @@ export interface GridMoveRange {
   isBackward: boolean
 }
 
+export interface AvgColWidthOptions {
+  cols: number
+  minWidth?: number
+  getWidth?: (width: number) => number
+}
+
 export const Grid = {
   findGrid: (editor: Editable, at?: Location): NodeEntry<Grid> | undefined => {
     if (!at) {
@@ -1094,8 +1100,33 @@ export const Grid = {
     }
     const [grid] = at
     const { colsWidth, children } = grid
-    if (colsWidth) return colsWidth.length
-    if (children.length > 0) return children[0].children.length
-    return 0
+    const cellCount = children.length > 0 ? children[0].children.length : 0
+    if (colsWidth && colsWidth.length <= cellCount) {
+      return colsWidth.length
+    }
+    return cellCount
+  },
+
+  avgColWidth: (editor: Editable, options: AvgColWidthOptions): number[] => {
+    const { minWidth = 10, cols, getWidth } = options
+    const editorElement = Editable.toDOMNode(editor, editor)
+    const rect = editorElement.getBoundingClientRect()
+    const width = getWidth ? getWidth(rect.width) : 0
+    const colWidth = Math.max(minWidth, Math.floor(width / cols))
+
+    const tableColsWdith = []
+    let colsWidth = 0
+    for (let c = 0; c < cols; c++) {
+      const cws = colsWidth + colWidth
+      if (c === cols - 1 && cws < width) {
+        const cw = width - colsWidth
+        colsWidth += cw
+        tableColsWdith.push(cw)
+      } else {
+        colsWidth = cws
+        tableColsWdith.push(colWidth)
+      }
+    }
+    return tableColsWdith
   },
 }

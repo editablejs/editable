@@ -8,6 +8,7 @@ import {
   Range,
   Node,
   Path,
+  Descendant,
 } from '@editablejs/editor'
 import { FontSize, FontSizeEditor } from '@editablejs/plugin-fontsize'
 import { Mark, MarkEditor } from '@editablejs/plugin-mark'
@@ -118,6 +119,11 @@ export const HeadingEditor = {
     return HEADING_OPTIONS.get(editor) ?? {}
   },
 
+  getStyle: (editor: Editable, type: HeadingType): Record<'fontSize' | 'fontWeight', string> => {
+    const { style = {} } = HeadingEditor.getOptions(editor)
+    return { ...defaultHeadingStyle[type], ...style[type] }
+  },
+
   toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
     editor.toggleHeading(type)
   },
@@ -146,9 +152,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
       })
       for (const [_, path] of lowestBlocks) {
         if (type !== PARAGRAPH_KEY) {
-          const style = { ...defaultHeadingStyle, ...(HEADING_OPTIONS.get(editor) ?? {}).style }[
-            type
-          ]
+          const style = HeadingEditor.getStyle(editor, type)
           const mark: Partial<FontSize & Mark> = {}
           if (FontSizeEditor.isFontSizeEditor(editor)) {
             mark.fontSize = style.fontSize
@@ -226,7 +230,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
     onKeydown(e)
   }
   SerializeEditor.with(newEditor, e => {
-    const { serializeHtml } = e
+    const { serializeHtml, deserializeHtml } = e
 
     e.serializeHtml = options => {
       const { node, attributes, styles } = options
@@ -239,6 +243,44 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
         )
       }
       return serializeHtml(options)
+    }
+
+    e.deserializeHtml = options => {
+      const { node, attributes } = options
+      const tags = Object.values(HeadingTags)
+      const nodeName = node.nodeName.toLowerCase()
+      if (tags.includes(nodeName)) {
+        let type: HeadingType = 'heading-one'
+        switch (nodeName) {
+          case 'h1':
+            type = HEADING_ONE_KEY
+            break
+          case 'h2':
+            type = HEADING_TWO_KEY
+            break
+          case 'h3':
+            type = HEADING_THREE_KEY
+            break
+          case 'h4':
+            type = HEADING_FOUR_KEY
+            break
+          case 'h5':
+            type = HEADING_FIVE_KEY
+            break
+          case 'h6':
+            type = HEADING_SIX_KEY
+            break
+        }
+        const style = HeadingEditor.getStyle(editor, type)
+        const markAttributes = { ...options.markAttributes, ...style }
+        const children: Descendant[] = []
+        for (const child of node.childNodes) {
+          children.push(...e.deserializeHtml({ node: child, markAttributes }))
+        }
+        return [{ ...attributes, type, children }]
+      }
+
+      return deserializeHtml(options)
     }
   })
   return newEditor

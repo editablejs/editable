@@ -11,6 +11,7 @@ import {
   NodeEntry,
   Path,
   Range,
+  isDOMElement,
 } from '@editablejs/editor'
 import { CSSProperties } from 'react'
 import tw from 'twin.macro'
@@ -111,7 +112,7 @@ export const IndentEditor = {
     return options.size ?? DEFAULT_SIZE
   },
 
-  getLeval: (editor: Editable, element: Indent) => {
+  getLevel: (editor: Editable, element: Indent) => {
     const { textIndent, lineIndent } = element
     const count = (textIndent ?? 0) + (lineIndent ?? 0)
     const size = IndentEditor.getSize(editor)
@@ -345,7 +346,7 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   SerializeEditor.with(
     newEditor,
     e => {
-      const { serializeHtml } = e
+      const { serializeHtml, deserializeHtml } = e
       e.serializeHtml = options => {
         const { node, attributes, styles } = options
         if (IndentEditor.isIndent(e, node)) {
@@ -373,6 +374,26 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
 
           return serializeHtml({ node, attributes, styles: newStyles })
         }
+      }
+
+      e.deserializeHtml = options => {
+        const { node } = options
+        if (isDOMElement(node)) {
+          const { textIndent, paddingLeft } = (node as HTMLElement).style
+          const attributes = { ...options.attributes }
+          if (!attributes.textIndent && textIndent) {
+            const val = parseInt(textIndent, 10)
+            if (val > 0) attributes.textIndent = val
+          }
+          if (!attributes.lineIndent && paddingLeft) {
+            const val = parseInt(paddingLeft, 10)
+            if (val > 0) attributes.lineIndent = val
+          }
+          if (attributes.textIndent || attributes.lineIndent) {
+            return deserializeHtml({ ...options, attributes })
+          }
+        }
+        return deserializeHtml(options)
       }
     },
     true,

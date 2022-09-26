@@ -30,7 +30,6 @@ import {
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
-import { getSlateFragmentAttribute } from '../utils/dom'
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/text'
@@ -52,7 +51,7 @@ const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
  */
 export const withEditable = <T extends Editor>(editor: T) => {
   const e = editor as T & Editable
-  const { apply, onChange, deleteBackward, deleteForward } = e
+  const { apply, onChange, deleteBackward, deleteForward, normalizeNode } = e
 
   // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
   // avoid collisions between editors in the DOM that share the same value.
@@ -61,27 +60,31 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.canFocusVoid = (_element: Element) => {
     return true
   }
-  ;(e.isGrid = (value: any): value is Grid => false),
-    (e.isGridRow = (value: any): value is GridRow => false),
-    (e.isGridCell = (value: any): value is GridCell => false),
-    (e.deleteForward = unit => {
-      const { selection } = editor
 
-      if (selection && Range.isCollapsed(selection)) {
-        const [cell] = Editor.nodes(editor, {
-          match: n => e.isGridCell(n),
-        })
+  e.isGrid = (value: any): value is Grid => false
 
-        if (cell) {
-          const [, cellPath] = cell
-          const end = Editor.end(editor, cellPath)
-          if (Point.equals(selection.anchor, end)) {
-            return
-          }
+  e.isGridRow = (value: any): value is GridRow => false
+
+  e.isGridCell = (value: any): value is GridCell => false
+
+  e.deleteForward = unit => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const [cell] = Editor.nodes(editor, {
+        match: n => e.isGridCell(n),
+      })
+
+      if (cell) {
+        const [, cellPath] = cell
+        const end = Editor.end(editor, cellPath)
+        if (Point.equals(selection.anchor, end)) {
+          return
         }
       }
-      deleteForward(unit)
-    })
+    }
+    deleteForward(unit)
+  }
 
   e.deleteBackward = unit => {
     const { selection } = editor
@@ -175,6 +178,32 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
+  e.normalizeNode = entry => {
+    const [node, path] = entry
+    if (Editor.isBlock(e, node)) {
+      const { type, ...attributes } = node
+      let isUnwrap = false
+      const isParagraph = !type || type === 'paragraph'
+      // 相同type类的block不嵌套，paragraph 下不能嵌套block节点
+      for (const [child, childPath] of Node.children(editor, path)) {
+        if (Editor.isBlock(e, child)) {
+          if (!isUnwrap && !isParagraph && child.type === type) {
+            Transforms.unwrapNodes(editor, { at: childPath })
+            return
+          } else if (isParagraph) {
+            Transforms.setNodes(editor, attributes, { at: childPath })
+            isUnwrap = true
+          }
+        }
+      }
+      if (isUnwrap) {
+        Transforms.unwrapNodes(editor, { at: path })
+        return
+      }
+    }
+    normalizeNode(entry)
+  }
+
   e.onChange = () => {
     let prevSelection: Range | undefined
     EDITOR_ACTIVE_MARKS.delete(editor)
@@ -216,6 +245,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
     return editorMarks ?? {}
   }
+
   e.queryActiveElements = () => {
     let elements = EDITOR_ACTIVE_ELEMENTS.get(editor)
     if (elements) return elements
