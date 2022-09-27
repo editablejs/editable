@@ -326,21 +326,26 @@ export const withClipboard = <T extends Editable>(editor: T, options: ClipboardO
       if (split) {
         Transforms.splitNodes(newEditor, { always: true })
       }
-
-      newEditor.insertText(line)
+      newEditor.normalizeSelection(selection => {
+        if (selection !== newEditor.selection) newEditor.selection = selection
+        newEditor.insertText(line)
+      })
       split = true
     }
   }
 
   newEditor.paste = (onlyText = false) => {
     ClipboardEditor.getClipboardData().then(({ html, fragment, text }) => {
-      if (!onlyText && fragment.length > 0) {
-        newEditor.insertFragment(fragment)
-      } else if (!onlyText && html) {
-        newEditor.pasteHtml(html)
-      } else if (text) {
-        newEditor.pasteText(text)
-      }
+      newEditor.normalizeSelection(selection => {
+        if (selection !== newEditor.selection) newEditor.selection = selection
+        if (!onlyText && fragment.length > 0) {
+          newEditor.insertFragment(fragment)
+        } else if (!onlyText && html) {
+          newEditor.pasteHtml(html)
+        } else if (text) {
+          newEditor.pasteText(text)
+        }
+      })
     })
   }
 
