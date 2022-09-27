@@ -10,7 +10,7 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "ts-node",
+    "build": "tsc",
     "dev": "nodemon --watch src ./src/index.ts",
     "lint": "eslint src --fix",
     "format": "prettier --write",
@@ -23,7 +23,6 @@
     "@types/lodash.debounce": "4.0.7",
     "@types/node": "^17.0.15",
     "@types/ws": "8.5.3",
-    "concurrently": "7.4.0",
     "eslint-config-editable": "workspace:*",
     "nodemon": "2.0.20",
     "prettier-config": "workspace:*",
