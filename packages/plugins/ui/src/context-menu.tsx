@@ -1,5 +1,5 @@
-import { FC, useLayoutEffect, useRef } from 'react'
-import tw from 'twin.macro'
+import React, { FC, useLayoutEffect, useRef } from 'react'
+import tw, { css } from 'twin.macro'
 import {
   Content,
   Item,
@@ -103,8 +103,18 @@ export interface ContextMenuSeparatorProps {
   className?: string
 }
 
-export const ContextMenuSeparator: FC<HTMLDivElement> = ({ className }) => {
-  return <Separator css={[tw`h-[1] my-1 bg-gray-300`, className]} />
+export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+  return (
+    <Separator
+      css={[
+        tw`my-1 bg-gray-300`,
+        css`
+          height: 1px;
+        `,
+        className,
+      ]}
+    />
+  )
 }
 
 export interface ContextMenu extends Omit<UIContextMenuProps, 'modal'> {

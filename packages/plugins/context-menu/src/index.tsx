@@ -5,6 +5,7 @@ import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuSub,
 } from '@editablejs/plugin-ui'
 
@@ -40,7 +41,7 @@ interface ContextMenuItem extends UIContextMenuItem {
 }
 
 interface ContextMenu extends UIContextMenu {
-  items: ContextMenuItem[]
+  items: (ContextMenuItem | 'separator')[]
 }
 
 const StyledContextMenu = styled(UIContextMenu)`
@@ -48,17 +49,22 @@ const StyledContextMenu = styled(UIContextMenu)`
 `
 
 const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
-  const renderItems = (items: ContextMenuItem[]) => {
-    return items.map(({ children, title, onSelect, href, ...item }) => {
+  const renderItems = (items: (ContextMenuItem | 'separator')[]) => {
+    return items.map((item, index) => {
+      if (typeof item === 'string') {
+        if (index === 0) return null
+        return <ContextMenuSeparator key={`${item}-${index}`} />
+      }
+      const { children, title, onSelect, href, ...rest } = item
       if (children && children.length > 0) {
         return (
-          <ContextMenuSub title={title} {...item}>
+          <ContextMenuSub title={title} {...rest}>
             {renderItems(children)}
           </ContextMenuSub>
         )
       }
       return (
-        <UIContextMenuItem onSelect={onSelect} href={href} {...item}>
+        <UIContextMenuItem onSelect={onSelect} href={href} {...rest}>
           {title}
         </UIContextMenuItem>
       )
@@ -86,7 +92,7 @@ export const withContextMenu = <T extends Editable>(
       const items = newEditor.onContextMenu([])
       if (items.length > 0) {
         ReactDOM.render(
-          <ContextMenu items={items.sort((a, b) => (a.index ?? 0) - (b.index ?? 0))} event={e} />,
+          <ContextMenu items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))} event={e} />,
           root,
         )
       }

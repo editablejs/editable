@@ -5,10 +5,14 @@ import {
   Node,
   Grid,
   isDOMElement,
+  Locale,
 } from '@editablejs/editor'
+import { ContextMenuEditor } from '@editablejs/plugin-context-menu'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
+import { Icon } from '@editablejs/plugin-ui'
 import { withTableCell } from './cell'
 import { TableOptions } from './context'
+import locales, { TableLocale } from './locale'
 import { getOptions, setOptions } from './options'
 import { TableRow, withTableRow } from './row'
 import { TableEditor, TableComponent, Table, TABLE_KEY } from './table'
@@ -17,6 +21,10 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
   let newEditor = editor as T & TableEditor
 
   setOptions(newEditor, options)
+
+  for (const key in locales) {
+    Locale.setLocale(newEditor, key, locales[key])
+  }
 
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
@@ -106,6 +114,36 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
         return [table]
       }
       return deserializeHtml(options)
+    }
+  })
+
+  ContextMenuEditor.with(newEditor, e => {
+    const { onContextMenu } = e
+    e.onContextMenu = items => {
+      const locale = Locale.getLocale<TableLocale>(e).table
+
+      items.push('separator')
+      items.push({
+        key: 'merge_cells',
+        icon: <Icon name="tableMerge" />,
+        title: locale.mergeCells,
+        disabled: !Grid.canMerge(e),
+        onSelect: () => {
+          Grid.mergeCell(e)
+        },
+      })
+
+      items.push({
+        key: 'split_cells',
+        icon: <Icon name="tableSplit" />,
+        title: locale.splitCells,
+        disabled: !Grid.canSplit(e),
+        onSelect: () => {
+          Grid.splitCell(e)
+        },
+      })
+
+      return onContextMenu(items)
     }
   })
 

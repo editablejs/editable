@@ -150,24 +150,4 @@ export const defaultToolbarConfig: ToolbarItem[] = [
     },
     children: <Icon name="table" />,
   },
-  {
-    type: 'button',
-    onDisabled: editor => {
-      return !Grid.canMerge(editor)
-    },
-    onToggle: editor => {
-      Grid.mergeCell(editor)
-    },
-    children: <Icon name="tableMerge" />,
-  },
-  {
-    type: 'button',
-    onDisabled: editor => {
-      return !Grid.canSplit(editor)
-    },
-    onToggle: editor => {
-      Grid.splitCell(editor)
-    },
-    children: <Icon name="tableSplit" />,
-  },
 ]
