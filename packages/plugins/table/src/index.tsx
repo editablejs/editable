@@ -120,16 +120,20 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
   ContextMenuEditor.with(newEditor, e => {
     const { onContextMenu } = e
     e.onContextMenu = items => {
+      const grid = Grid.findGrid(e)
+      if (!grid) return onContextMenu(items)
       const locale = Locale.getLocale<TableLocale>(e).table
 
-      items.push('separator')
+      items.push({
+        type: 'separator',
+      })
       items.push({
         key: 'merge_cells',
         icon: <Icon name="tableMerge" />,
         title: locale.mergeCells,
-        disabled: !Grid.canMerge(e),
+        disabled: !Grid.canMerge(e, grid),
         onSelect: () => {
-          Grid.mergeCell(e)
+          Grid.mergeCell(e, grid)
         },
       })
 
@@ -137,9 +141,9 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
         key: 'split_cells',
         icon: <Icon name="tableSplit" />,
         title: locale.splitCells,
-        disabled: !Grid.canSplit(e),
+        disabled: !Grid.canSplit(e, grid),
         onSelect: () => {
-          Grid.splitCell(e)
+          Grid.splitCell(e, grid)
         },
       })
 

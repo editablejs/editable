@@ -32,7 +32,7 @@ export const ContextMenuEditor = {
   },
 }
 
-interface ContextMenuItem extends UIContextMenuItem {
+interface ContextMenuItemBase extends UIContextMenuItem {
   key: string
   title: JSX.Element | string
   index?: number
@@ -40,8 +40,15 @@ interface ContextMenuItem extends UIContextMenuItem {
   children?: ContextMenuItem[]
 }
 
+type ContextMenuItem =
+  | ContextMenuItemBase
+  | {
+      type: 'separator'
+      index?: number
+    }
+
 interface ContextMenu extends UIContextMenu {
-  items: (ContextMenuItem | 'separator')[]
+  items: ContextMenuItem[]
 }
 
 const StyledContextMenu = styled(UIContextMenu)`
@@ -49,9 +56,9 @@ const StyledContextMenu = styled(UIContextMenu)`
 `
 
 const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
-  const renderItems = (items: (ContextMenuItem | 'separator')[]) => {
+  const renderItems = (items: ContextMenuItem[]) => {
     return items.map((item, index) => {
-      if (typeof item === 'string') {
+      if ('type' in item) {
         if (index === 0) return null
         return <ContextMenuSeparator key={`${item}-${index}`} />
       }
