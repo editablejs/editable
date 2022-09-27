@@ -11,18 +11,21 @@
   },
   "dependencies": {
     "@editablejs/editor": "workspace:*",
+    "@editablejs/plugin-yjs": "workspace:0.0.0",
     "@editablejs/plugins": "workspace:*",
     "next": "latest",
     "react": "^17.x",
-    "react-dom": "^17.x"
+    "react-dom": "^17.x",
+    "y-websocket": "1.4.5",
+    "yjs": "^13.5.41"
   },
   "devDependencies": {
     "@types/node": "^17.x",
     "@types/react": "^17.x",
     "@types/react-dom": "^17.x",
+    "eslint-config-editable": "workspace:*",
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^9.0.0",
-    "eslint-config-editable": "workspace:*",
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^4.5.3"

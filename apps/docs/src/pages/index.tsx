@@ -24,7 +24,7 @@ const initialValue = [
     type: 'paragraph',
     children: [
       {
-        text: '拉萨扩大解放是的方式来的过节费打过来快递费建国饭店给对方dlsfjsdlfjsdlfjsdlfjsdlfjsdlfsdjlfdslkfsdlf',
+        text: 'A line of text in a paragraph.',
       },
     ],
   },

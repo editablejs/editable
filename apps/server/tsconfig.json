@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": true
+  },
+  "extends": "tsconfig/node14.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules", "tsup.config.ts"]
+}

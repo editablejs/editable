@@ -1,0 +1,47 @@
+{
+  "name": "@editablejs/yjs-server",
+  "version": "0.0.0",
+  "description": "Yjs Server",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "private": true,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "ts-node",
+    "dev": "nodemon --watch src ./src/index.ts",
+    "lint": "eslint src --fix",
+    "format": "prettier --write",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "4.0.7",
+    "@types/node": "^17.0.15",
+    "@types/ws": "8.5.3",
+    "concurrently": "7.4.0",
+    "eslint-config-editable": "workspace:*",
+    "nodemon": "2.0.20",
+    "prettier-config": "workspace:*",
+    "ts-node": "10.9.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^4.5.3"
+  },
+  "dependencies": {
+    "lib0": "^0.2.52",
+    "lodash.debounce": "^4.0.8",
+    "y-protocols": "^1.0.5"
+  },
+  "peerDependencies": {
+    "yjs": "^13.5.41"
+  },
+  "optionalDependencies": {
+    "ws": "^6.2.1",
+    "y-leveldb": "^0.1.0"
+  },
+  "license": "MIT"
+}

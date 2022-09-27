@@ -1,7 +1,8 @@
 const withPlugins = require('next-compose-plugins');
 const withTM = require('next-transpile-modules')([
   '@editablejs/editor',
-  '@editablejs/plugins'
+  '@editablejs/plugins',
+  '@editablejs/plugin-yjs'
 ]);
 
 const plugins = [
