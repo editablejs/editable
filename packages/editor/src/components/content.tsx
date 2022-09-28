@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Editor, Node, Range, Transforms, Point, Selection } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
-import { Editable } from '..'
+import { Editable, useEditableStatic } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useEditable } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
@@ -79,7 +79,8 @@ export const ContentEditable = (props: EditableProps) => {
     selectionStyle,
     ...attributes
   } = props
-  const editor = useEditable()
+  const editor = useEditableStatic()
+  const [rendered, setRendered] = useState(false)
   // 当前编辑器 selection 对象，设置后重绘光标位置
   const [drawSelection, setDrawSelection] = useState<Selection>(null)
   const [drawSelectionStyle, setDrawSelectionStyle] = useState(
@@ -93,20 +94,6 @@ export const ContentEditable = (props: EditableProps) => {
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
   IS_DRAW_SELECTION.set(editor, setIsDrawSelection)
-
-  // Whenever the editor updates...
-  useIsomorphicLayoutEffect(() => {
-    // Update element-related weak maps with the DOM element ref.
-    let window
-    if (ref.current && (window = getDefaultView(ref.current))) {
-      EDITOR_TO_WINDOW.set(editor, window)
-      EDITOR_TO_ELEMENT.set(editor, ref.current)
-      NODE_TO_ELEMENT.set(editor, ref.current)
-      ELEMENT_TO_NODE.set(ref.current, editor)
-    } else {
-      NODE_TO_ELEMENT.delete(editor)
-    }
-  })
 
   useEffect(() => {
     if (autoFocus) {
@@ -247,6 +234,7 @@ export const ContentEditable = (props: EditableProps) => {
     },
   })
 
+  // Whenever the editor updates...
   useIsomorphicLayoutEffect(() => {
     const { onChange } = editor
     editor.onChange = () => {
@@ -260,21 +248,33 @@ export const ContentEditable = (props: EditableProps) => {
         IS_SHIFT_PRESSED.set(editor, false)
       }
     }
-    window.addEventListener('keyup', handleShift)
-    window.addEventListener('mousedown', handleDocumentMouseDown)
-    window.addEventListener('mouseup', handleDocumentMouseUp)
-    window.addEventListener('mousemove', handleDocumentMouseMove)
 
-    const destory = editor.onRenderFinish()
+    let window: Window | null = null
+    if (ref.current && (window = getDefaultView(ref.current))) {
+      EDITOR_TO_WINDOW.set(editor, window)
+      EDITOR_TO_ELEMENT.set(editor, ref.current)
+      NODE_TO_ELEMENT.set(editor, ref.current)
+      ELEMENT_TO_NODE.set(ref.current, editor)
+      setRendered(true)
+
+      window.addEventListener('keyup', handleShift)
+      window.addEventListener('mousedown', handleDocumentMouseDown)
+      window.addEventListener('mouseup', handleDocumentMouseUp)
+      window.addEventListener('mousemove', handleDocumentMouseMove)
+    } else {
+      NODE_TO_ELEMENT.delete(editor)
+    }
 
     return () => {
-      window.removeEventListener('keyup', handleShift)
-      window.removeEventListener('mousedown', handleDocumentMouseDown)
-      window.removeEventListener('mouseup', handleDocumentMouseUp)
-      window.removeEventListener('mousemove', handleDocumentMouseMove)
-      if (destory) destory()
+      editor.onChange = onChange
+      window?.removeEventListener('keyup', handleShift)
+      window?.removeEventListener('mousedown', handleDocumentMouseDown)
+      window?.removeEventListener('mouseup', handleDocumentMouseUp)
+      window?.removeEventListener('mousemove', handleDocumentMouseMove)
     }
   }, [editor])
+
+  const contextElements = useMemo(() => editor.onRenderContextComponents([]), [editor])
 
   return (
     <ReadOnlyContext.Provider value={readOnly}>
@@ -291,7 +291,13 @@ export const ContentEditable = (props: EditableProps) => {
           // Preserve adjacent whitespace and new lines.
           whiteSpace: 'pre-wrap',
           // Allow words to break if they are too long.
-          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+          // Disable the default user-select behavior.
+          userSelect: 'none',
+          // Set cursor to text.
+          cursor: 'text',
+          //
+          overflowWrap: 'break-word',
           // Allow for passed-in styles to override anything.
           ...style,
         }}
@@ -316,6 +322,7 @@ export const ContentEditable = (props: EditableProps) => {
         )}
         <InputComponent selection={drawSelection} />
       </Shadow>
+      {rendered && contextElements.map((Component, index) => <Component key={index} />)}
     </ReadOnlyContext.Provider>
   )
 }

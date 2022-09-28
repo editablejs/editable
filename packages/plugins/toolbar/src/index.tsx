@@ -1,5 +1,10 @@
 import React, { createContext, FC, memo, useContext, useEffect, useRef, useState } from 'react'
-import { Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import {
+  Editable,
+  useEditable,
+  useEditableStatic,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
 import {
   Toolbar as UIToolbar,
   ToolbarButton as UIToolbarButton,
@@ -45,7 +50,7 @@ export const ToolbarButtonDefault: FC<ToolbarButton> = ({
     return () => unsubscribe()
   }, [onActive, onDisabled])
 
-  const editor = useEditable()
+  const editor = useEditableStatic()
 
   const handleToogle = () => {
     if (onToggle) onToggle(editor)
@@ -97,7 +102,7 @@ export const ToolbarDropdownDefault: FC<ToolbarDropdown> = ({
     return () => unsubscribe()
   }, [onActive, onDisabled])
 
-  const editor = useEditable()
+  const editor = useEditableStatic()
 
   const handleToogle = (value: string) => {
     if (onToggle) onToggle(editor, value)
@@ -127,7 +132,7 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
   className,
   ...props
 }) => {
-  const editor = useEditable()
+  const editor = useEditableStatic()
 
   const eventListeners = useRef<EditorChangeHandler[]>([]).current
 

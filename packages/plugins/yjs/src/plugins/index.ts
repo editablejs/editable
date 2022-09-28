@@ -1,3 +1,3 @@
-export * from './withYjs'
-export * from './withYHistory'
-export * from './withCursors'
+export * from './yjs'
+export * from './history'
+export * from './cursors'

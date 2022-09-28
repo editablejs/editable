@@ -1,7 +1,7 @@
 import { TextOperation } from '@editablejs/editor'
 import { OpMapper } from '../types'
-import { insertText } from './insertText'
-import { removeText } from './removeText'
+import { insertText } from './insert-text'
+import { removeText } from './remove-text'
 
 export const TEXT_MAPPER: OpMapper<TextOperation> = {
   insert_text: insertText,

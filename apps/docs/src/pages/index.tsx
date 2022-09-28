@@ -1,7 +1,7 @@
 import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor'
 import { Toolbar, withPlugins } from '@editablejs/plugins'
 import React, { useState } from 'react'
-import styles from './index.module.css'
+import tw, { styled } from 'twin.macro'
 import { defaultToolbarConfig } from '../toolbar-config'
 
 const initialValue = [
@@ -37,14 +37,22 @@ export default function Docs() {
     }),
   )
 
+  const StyledWrapper = styled.div`
+    cursor: default;
+    width: 600px;
+    margin: 60px auto;
+  `
+
+  const StyledContainer = tw.div`mt-5`
+
   return (
-    <div className={styles.wrapper}>
+    <StyledWrapper>
       <EditableComposer editor={editor} value={initialValue}>
-        <Toolbar className={styles.toolbar} items={defaultToolbarConfig} />
-        <div className={styles.container}>
+        <Toolbar items={defaultToolbarConfig} />
+        <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />
-        </div>
+        </StyledContainer>
       </EditableComposer>
-    </div>
+    </StyledWrapper>
   )
 }

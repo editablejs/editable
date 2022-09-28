@@ -1,11 +1,11 @@
 import { NodeOperation } from '@editablejs/editor'
 import { OpMapper } from '../types'
-import { insertNode } from './insertNode'
-import { mergeNode } from './mergeNode'
-import { moveNode } from './moveNode'
-import { removeNode } from './removeNode'
-import { setNode } from './setNode'
-import { splitNode } from './splitNode'
+import { insertNode } from './insert-node'
+import { mergeNode } from './merge-node'
+import { moveNode } from './move-node'
+import { removeNode } from './remove-node'
+import { setNode } from './set-node'
+import { splitNode } from './split-node'
 
 export const NODE_MAPPER: OpMapper<NodeOperation> = {
   insert_node: insertNode,

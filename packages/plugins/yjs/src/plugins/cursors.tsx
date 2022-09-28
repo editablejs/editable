@@ -1,9 +1,103 @@
-import { Editor, Range } from '@editablejs/editor'
+import {
+  Editable,
+  Editor,
+  Range,
+  useEditableStatic,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
+import React, { CSSProperties, useRef } from 'react'
 import { Awareness } from 'y-protocols/awareness'
 import * as Y from 'yjs'
-import { RelativeRange } from '../model/types'
+import {
+  CursorOverlayState,
+  useRemoteCursorOverlayPositions,
+} from '../hooks/useRemoteCursorOverlayPositions'
+import { RelativeRange } from '../types'
 import { slateRangeToRelativeRange } from '../utils/position'
-import { YjsEditor } from './withYjs'
+import { CaretPosition } from '../utils/selection'
+import { YjsEditor } from './yjs'
+
+export type CursorData = {
+  name: string
+  color: string
+}
+
+type CaretProps = {
+  position: CaretPosition
+  data: CursorData
+}
+
+function Caret({ position, data }: CaretProps) {
+  const caretStyle: CSSProperties = {
+    ...position,
+    background: data.color,
+  }
+
+  const labelStyle: CSSProperties = {
+    transform: 'translateY(-100%)',
+    background: data.color,
+  }
+
+  return (
+    <div style={caretStyle} tw="absolute w-0.5 z-10">
+      <div
+        tw="absolute top-0 whitespace-nowrap rounded rounded-bl-none px-1.5 py-0.5 text-xs text-white"
+        style={labelStyle}
+      >
+        {data.name}
+      </div>
+    </div>
+  )
+}
+
+const RemoteSelection = ({
+  data,
+  selectionRects,
+  caretPosition,
+}: CursorOverlayState<CursorData>) => {
+  if (!data) {
+    return null
+  }
+
+  const selectionStyle: CSSProperties = {
+    // Add a opacity to the background color
+    backgroundColor: `${data.color}66`,
+  }
+
+  return (
+    <React.Fragment>
+      {selectionRects.map((position, i) => (
+        <div
+          style={{ ...selectionStyle, ...position }}
+          tw="pointer-events-none absolute z-10"
+          // eslint-disable-next-line react/no-array-index-key
+          key={i}
+        />
+      ))}
+      {caretPosition && <Caret position={caretPosition} data={data} />}
+    </React.Fragment>
+  )
+}
+
+const RemoteCursors = () => {
+  const containerRef = useRef<HTMLElement | null>(null)
+  const editor = useEditableStatic()
+  useIsomorphicLayoutEffect(() => {
+    containerRef.current = Editable.toDOMNode(editor, editor)
+  }, [editor])
+
+  const { cursors } = useRemoteCursorOverlayPositions<CursorData>({
+    containerRef,
+  })
+
+  return (
+    <>
+      {cursors.map(cursor => (
+        <RemoteSelection key={cursor.clientId} {...cursor} />
+      ))}
+    </>
+  )
+}
 
 export type CursorStateChangeEvent = {
   added: number[]
@@ -159,7 +253,14 @@ export function withCursors<TCursorData extends Record<string, unknown>, TEditor
     data,
   }: WithCursorsOptions<TCursorData> = {},
 ): TEditor & CursorEditor<TCursorData> {
-  const e = editor as TEditor & CursorEditor<TCursorData>
+  const e = editor as Editable & TEditor & CursorEditor<TCursorData>
+
+  const { onRenderContextComponents } = e
+
+  e.onRenderContextComponents = components => {
+    components.push(RemoteCursors)
+    return onRenderContextComponents(components)
+  }
 
   e.awareness = awareness
   e.cursorDataField = cursorDataField

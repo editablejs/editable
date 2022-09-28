@@ -48,6 +48,7 @@ import { SelectionEdge } from 'slate/dist/interfaces/types'
 import { GridCell } from '../interfaces/cell'
 import { GridRow } from '../interfaces/row'
 import { Grid } from '../interfaces/grid'
+import { FC } from 'react'
 
 export interface SelectionStyle {
   focusColor?: string
@@ -139,7 +140,7 @@ export interface Editable extends BaseEditor {
   onSelecting: () => void
   onSelectEnd: () => void
   onSelectionChange: () => void
-  onRenderFinish: () => void | (() => void)
+  onRenderContextComponents: (components: FC[]) => FC[]
   setSelectionStyle: (style: SelectionStyle) => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes

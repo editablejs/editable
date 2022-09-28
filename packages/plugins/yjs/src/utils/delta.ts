@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { DeltaInsert, InsertDelta } from '../model/types'
+import { DeltaInsert, InsertDelta } from '../types'
 import { deepEquals } from './object'
 
 export function normalizeInsertDelta(delta: InsertDelta): InsertDelta {

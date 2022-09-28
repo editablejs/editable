@@ -1,6 +1,6 @@
 import { BasePoint, BaseRange, Node, Text } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { InsertDelta, RelativeRange, TextRange } from '../model/types'
+import { InsertDelta, RelativeRange, TextRange } from '../types'
 import { getInsertDeltaLength, yTextToInsertDelta } from './delta'
 import { getSlatePath, getYTarget, yOffsetToSlateOffsets } from './location'
 import { assertDocumentAttachment } from './yjs'

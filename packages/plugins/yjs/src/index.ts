@@ -1,5 +1,6 @@
-import { RelativeRange } from './model/types'
+import { RelativeRange } from './types'
 import {
+  CursorData,
   CursorEditor,
   CursorState,
   CursorStateChangeEvent,
@@ -20,6 +21,8 @@ import {
   slatePointToRelativePosition,
   slateRangeToRelativeRange,
 } from './utils/position'
+
+export * from './hooks/useRemoteCursorOverlayPositions'
 
 export {
   withYjs,
@@ -44,6 +47,7 @@ export type {
   WithYjsOptions,
   WithYHistoryOptions,
   WithCursorsOptions,
+  CursorData,
   CursorState,
   RemoteCursorChangeEventListener,
   CursorStateChangeEvent,

@@ -22,24 +22,32 @@ importers:
       lint-staged: 13.0.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.5.3
+      turbo: 1.5.4
 
   apps/docs:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/plugin-yjs': workspace:0.0.0
       '@editablejs/plugins': workspace:*
+      '@faker-js/faker': 7.5.0
       '@types/node': ^17.x
+      '@types/randomcolor': 0.5.6
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
+      '@types/styled-components': 5.1.26
+      babel-plugin-macros: 3.1.0
       eslint-config-editable: workspace:*
       next: latest
       next-compose-plugins: ^2.2.1
       next-transpile-modules: ^9.0.0
       prettier-config: workspace:*
+      randomcolor: 0.6.2
       react: ^17.x
       react-dom: ^17.x
+      styled-components: 5.3.5
+      tailwindcss: ^3.1.4
       tsconfig: workspace:*
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
       y-websocket: 1.4.5
       yjs: ^13.5.41
@@ -47,20 +55,28 @@ importers:
       '@editablejs/editor': link:../../packages/editor
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
       '@editablejs/plugins': link:../../packages/plugins/plugins
-      next: 12.3.1_sfoxds7t5ydpegc3knd667wn6m
+      '@faker-js/faker': 7.5.0
+      next: 12.3.1_ulq6fcwh252exui2b4mtgfnbpe
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       y-websocket: 1.4.5_yjs@13.5.41
       yjs: 13.5.41
     devDependencies:
       '@types/node': 17.0.23
+      '@types/randomcolor': 0.5.6
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
+      '@types/styled-components': 5.1.26
+      babel-plugin-macros: 3.1.0
       eslint-config-editable: link:../../packages/config/eslint-config-editable
       next-compose-plugins: 2.2.1
       next-transpile-modules: 9.0.0
       prettier-config: link:../../packages/config/prettier-config
+      randomcolor: 0.6.2
+      tailwindcss: 3.1.8_postcss@8.4.16
       tsconfig: link:../../packages/config/tsconfig
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.6.3
 
   apps/server:
@@ -262,7 +278,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-serializes': link:../serializes
@@ -283,7 +299,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/clipboard:
@@ -345,7 +361,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-ui': link:../ui
@@ -367,7 +383,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/fontsize:
@@ -424,7 +440,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-fontsize': link:../fontsize
@@ -447,7 +463,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/indent:
@@ -472,7 +488,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-serializes': link:../serializes
@@ -496,7 +512,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/list:
@@ -520,7 +536,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-heading': link:../heading
@@ -543,7 +559,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/mark:
@@ -565,7 +581,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-serializes': link:../serializes
@@ -586,7 +602,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/plugins:
@@ -692,7 +708,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-context-menu': link:../context-menu
@@ -715,7 +731,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/toolbar:
@@ -737,7 +753,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-ui': link:../ui
@@ -758,7 +774,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/ui:
@@ -781,7 +797,7 @@ importers:
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.1
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
     dependencies:
       '@radix-ui/react-context-menu': 1.0.0_nn45z5sr7igu7sfun6tiae5hx4
@@ -803,7 +819,7 @@ importers:
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.1_tailwindcss@3.1.8
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
 
   packages/plugins/yjs:
@@ -811,29 +827,47 @@ importers:
       '@editablejs/editor': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
+      '@types/react': ^17.x
+      '@types/react-dom': ^17.x
+      '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
+      react: ^17.x
+      react-dom: ^17.x
+      styled-components: 5.3.5
+      tailwind-config: 0.1.2
+      tailwindcss: ^3.1.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
+      twin.macro: 3.0.0-rc.4.2
       typescript: ^4.5.3
       y-protocols: 1.0.5
       yjs: ^13.5.41
     dependencies:
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       y-protocols: 1.0.5
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
+      '@types/react': 17.0.47
+      '@types/react-dom': 17.0.17
+      '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      tailwind-config: 0.1.2
+      tailwindcss: 3.1.8_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.8.3
+      tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
+      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
       typescript: 4.8.3
       yjs: 13.5.41
 
@@ -1680,6 +1714,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@faker-js/faker/7.5.0:
+    resolution: {integrity: sha512-8wNUCCUHvfvI0gQpDUho/3gPzABffnCn5um65F8dzQ86zz6dlt4+nmAA7PQUc8L+eH+9RgR/qzy5N/8kN0Ozdw==}
+    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    dev: false
 
   /@floating-ui/core/0.7.3:
     resolution: {integrity: sha512-buc8BXHmG9l82+OQXOFU3Kr2XQx9ys01U/Q9HMIrZ300iLc8HLMgh7dcCqgYzAzf4BkoQvDcXf5Y+CuEZ5JBYg==}
@@ -2648,13 +2687,16 @@ packages:
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
-    dev: true
 
   /@types/prettier/2.4.4:
     resolution: {integrity: sha512-ReVR2rLTV1kvtlWFyuot+d1pkpG2Fw/XKE3PDAdj57rbM97ttSp9JZ2UsP+2EHTylra9cUf6JA7tGwW1INzUrA==}
 
   /@types/prop-types/15.7.4:
     resolution: {integrity: sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==}
+
+  /@types/randomcolor/0.5.6:
+    resolution: {integrity: sha512-lKkW8DGUQpZldTrwa+HM5rY+7eTyaHOMTsnj9ewt7AAwXuMPwBmkLlfh8+SXdgOhBW9iNI4x4zRjQ/TQZkdycQ==}
+    dev: true
 
   /@types/react-dom/17.0.17:
     resolution: {integrity: sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==}
@@ -3092,7 +3134,6 @@ packages:
       '@babel/runtime': 7.18.6
       cosmiconfig: 7.0.1
       resolve: 1.22.1
-    dev: true
 
   /babel-plugin-styled-components/2.0.7_styled-components@5.3.5:
     resolution: {integrity: sha512-i7YhvPgVqRKfoQ66toiZ06jPNA3p6ierpfUuEWxNF+fV27Uv5gxBkf8KZLHUCc1nFA9j6+80pYoIpqCeyW3/bA==}
@@ -3497,7 +3538,6 @@ packages:
       parse-json: 5.2.0
       path-type: 4.0.0
       yaml: 1.10.2
-    dev: true
 
   /create-require/1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
@@ -4935,7 +4975,6 @@ packages:
     dependencies:
       parent-module: 1.0.1
       resolve-from: 4.0.0
-    dev: true
 
   /import-local/3.1.0:
     resolution: {integrity: sha512-ASB07uLtnDs1o6EHjKpX34BKYDSqnFerfTOJL2HvMqF70LnxpjkzDB8J44oT9pu4AMPkQwf8jl6szgvNd2tRIg==}
@@ -6221,7 +6260,7 @@ packages:
       escalade: 3.1.1
     dev: true
 
-  /next/12.3.1_sfoxds7t5ydpegc3knd667wn6m:
+  /next/12.3.1_ulq6fcwh252exui2b4mtgfnbpe:
     resolution: {integrity: sha512-l7bvmSeIwX5lp07WtIiP9u2ytZMv7jIeB8iacR28PuUEFG5j0HGAPnMqyG5kbZNBG2H7tRsrQ4HCjuMOPnANZw==}
     engines: {node: '>=12.22.0'}
     hasBin: true
@@ -6245,7 +6284,7 @@ packages:
       postcss: 8.4.14
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      styled-jsx: 5.0.7_react@17.0.2
+      styled-jsx: 5.0.7_yzsk54bn7fwakjyf3hexwnhade
       use-sync-external-store: 1.2.0_react@17.0.2
     optionalDependencies:
       '@next/swc-android-arm-eabi': 12.3.1
@@ -6541,7 +6580,6 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       callsites: 3.1.0
-    dev: true
 
   /parse-json/5.2.0:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
@@ -6583,7 +6621,6 @@ packages:
   /path-type/4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
-    dev: true
 
   /picocolors/1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
@@ -6889,6 +6926,10 @@ packages:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
 
+  /randomcolor/0.6.2:
+    resolution: {integrity: sha512-Mn6TbyYpFgwFuQ8KJKqf3bqqY9O1y37/0jgSK/61PUxV4QfIMv0+K2ioq8DfOjkBslcjwSzRfIDEXfzA9aCx7A==}
+    dev: true
+
   /react-dom/17.0.2_react@17.0.2:
     resolution: {integrity: sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==}
     peerDependencies:
@@ -7059,7 +7100,6 @@ packages:
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
-    dev: true
 
   /resolve-from/5.0.0:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
@@ -7491,7 +7531,7 @@ packages:
       shallowequal: 1.1.0
       supports-color: 5.5.0
 
-  /styled-jsx/5.0.7_react@17.0.2:
+  /styled-jsx/5.0.7_yzsk54bn7fwakjyf3hexwnhade:
     resolution: {integrity: sha512-b3sUzamS086YLRuvnaDigdAewz1/EFYlHpYBP5mZovKEdQQOIIYq8lApylub3HHZ6xFjV051kkGU7cudJmrXEA==}
     engines: {node: '>= 12.0.0'}
     peerDependencies:
@@ -7504,6 +7544,7 @@ packages:
       babel-plugin-macros:
         optional: true
     dependencies:
+      babel-plugin-macros: 3.1.0
       react: 17.0.2
     dev: false
 
@@ -7561,6 +7602,10 @@ packages:
       slice-ansi: 4.0.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
+    dev: true
+
+  /tailwind-config/0.1.2:
+    resolution: {integrity: sha512-7ASrC14CermwwDh0kWeNGrmjZbL7L1fKLopqtSSpVjnwwZvrdo3iSVPWAlmHGkvdEZ7JtZ8UBq3p9qaT+it8+w==}
     dev: true
 
   /tailwindcss/3.1.8_postcss@8.4.16:
@@ -7980,69 +8025,69 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-darwin-64/1.5.3:
-    resolution: {integrity: sha512-MBS8b/3DuMY6v3ljEX9qssHGQXnI4VDWLqvQ6FGfZFMp8lqa7mfoXv1U/MNR9OhSczaftsIS1e9mnD9m/qv7TQ==}
+  /turbo-darwin-64/1.5.4:
+    resolution: {integrity: sha512-Bdxnwf+m0bnRb5HsVZLe+GRer+MOUgLNjOxluwD7POETgH8CTWu99DXfIMAVDWNILVmPCZbWv8Qh2XwhmPlBqw==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.5.3:
-    resolution: {integrity: sha512-XNSV6SaxS8dAvGx2BF3H7MsKZ4zchj2kP/eXTss/vUcSRsS+zx0urZcEgxeGUeMk7V7fJq/5Ow7thApNojpwpw==}
+  /turbo-darwin-arm64/1.5.4:
+    resolution: {integrity: sha512-1Jdv6bl0v9TITEYDxwNFXdWMlYOifWdnrzkTDyaUV/IM0iL1oGiuD4ZdM9VfbR1D7y573dCmVPvbzgV3GQbJZA==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.5.3:
-    resolution: {integrity: sha512-YhYu50CUvy5m80l6dEXEgC3CvjjTelQb14fknAzIXoKztbWhBZqUCucR6jLRZpKgODwP4Fo4LUzz478EMwqy/Q==}
+  /turbo-linux-64/1.5.4:
+    resolution: {integrity: sha512-FbsXHOIkFnjX4Qu7ZtoCimmy5GlnTYuy66TO2re3i+jy+a59XOAnhU8tT/+FcA73oDAnSv/SAbz1gbsknCU4PA==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.5.3:
-    resolution: {integrity: sha512-JjJjxy0kkr/xAWAAE8t7UaTBc3GUc5Tz/Bupbve2VzG0w75md0LqXUV34WpyxMiNTNLmK8Dq7bIczG6OkJ29xQ==}
+  /turbo-linux-arm64/1.5.4:
+    resolution: {integrity: sha512-dYX2ekvYsHGSEsLI+NdoYskr1IEmUES+rup3vc9fFziYX+qOoQuttB7VYA9z6+E4fPpLCxAShPwzxmaXhplCNg==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.5.3:
-    resolution: {integrity: sha512-PS7+Isy7OX9xWWvtg2FKmh/eN4fTNR2r6RW5m+b+zR7t04QLWYOya1R8CeqgA6GyeFpn4KUxC+AeZ0wOi8RSPw==}
+  /turbo-windows-64/1.5.4:
+    resolution: {integrity: sha512-xMmmfplaPrN2Bac+tmOo7bncKhcjv2a/6UGXobNspWzwf6dEboHtxbsP0kIfqoi/22gyj66jg/K/gFJgX08pnw==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.5.3:
-    resolution: {integrity: sha512-DQzjFbPRd/Db5kkJtCER5DNcbY4ez5Bh8usemNlPZQ7I/5XwEUl9Rn3ss2LJsiv/pR7PkY92TUvmyFtBnqao8Q==}
+  /turbo-windows-arm64/1.5.4:
+    resolution: {integrity: sha512-6/DfBdUK+FrbRavQQY9XnxW+1SHPMsuooVjrW8nSh9KFXxTccbFvslUO38usl/lZ0EMKu7MC8D7Vf/zQ9pYGyw==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.5.3:
-    resolution: {integrity: sha512-/94cswfhXr6wWD6CFyF7E8bjEdjar4O+gzCJ3d49X9t9u9aDYFoQH/TlYTSNbAwXYiGqzJoodhf3kXRyrAiqSg==}
+  /turbo/1.5.4:
+    resolution: {integrity: sha512-8txVfU6J4H5ZkSxr6N6Qn7H+W2Cpr0Uh67VeCH4/ZIbH4u24qPFZA9emlGcss0tI1pZHKGJ0+KjoSzC7vWqN2g==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.5.3
-      turbo-darwin-arm64: 1.5.3
-      turbo-linux-64: 1.5.3
-      turbo-linux-arm64: 1.5.3
-      turbo-windows-64: 1.5.3
-      turbo-windows-arm64: 1.5.3
+      turbo-darwin-64: 1.5.4
+      turbo-darwin-arm64: 1.5.4
+      turbo-linux-64: 1.5.4
+      turbo-linux-arm64: 1.5.4
+      turbo-windows-64: 1.5.4
+      turbo-windows-arm64: 1.5.4
     dev: true
 
-  /twin.macro/3.0.0-rc.4.1_tailwindcss@3.1.8:
-    resolution: {integrity: sha512-OEPit//0mKHZwTzDfgvOksJ6Y5HwOYptRJlPP3EgRgnA2uLqTtDsnr67tokSaK2zsccnflbJ7+UWTQ1XsuW7+g==}
+  /twin.macro/3.0.0-rc.4.2_tailwindcss@3.1.8:
+    resolution: {integrity: sha512-eMXh9uhj8UO22zvhPBfC+gNt5yrpSGFeDU0+wzoN4wO+lEYQaWogvum7l0uQFUspzNFih3cWsgXaGxu4cCTkHQ==}
     engines: {node: '>=16.14.0'}
     peerDependencies:
       tailwindcss: '>=3.1.8'

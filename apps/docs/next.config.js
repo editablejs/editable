@@ -18,7 +18,13 @@ const plugins = [
  * @type {import('next').NextConfig}
  */
 const nextConfig = withPlugins(plugins, {
-  swcMinify: true,
+  // swc 还未支持 babel-plugin-macros 插件
+  // swcMinify: true,
+  // removeConsole: true,
+  // styledComponents: {
+  //   displayName: true,
+  //   ssr: true,
+  // }
 });
 
 module.exports = nextConfig;

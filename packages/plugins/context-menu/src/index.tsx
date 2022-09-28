@@ -1,5 +1,10 @@
-import { Editable } from '@editablejs/editor'
-import { FC } from 'react'
+import {
+  Editable,
+  useEditable,
+  useEditableStatic,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
+import { FC, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { styled } from 'twin.macro'
 import {
@@ -81,39 +86,42 @@ const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
   return <StyledContextMenu event={event}>{renderItems(items)}</StyledContextMenu>
 }
 
+const ContextComponent = () => {
+  const [items, setItems] = useState<ContextMenuItem[]>([])
+  const [event, setEvent] = useState<MouseEvent | null>(null)
+
+  const editor = useEditableStatic() as ContextMenuEditor
+
+  useIsomorphicLayoutEffect(() => {
+    const container = Editable.toDOMNode(editor, editor)
+    const handleContextMenu = (e: MouseEvent) => {
+      setItems(editor.onContextMenu([]))
+      setEvent(e)
+    }
+    container.addEventListener('contextmenu', handleContextMenu)
+    return () => {
+      container.removeEventListener('contextmenu', handleContextMenu)
+    }
+  }, [editor])
+
+  if (items.length > 0 && event)
+    return (
+      <ContextMenu items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))} event={event} />
+    )
+  return null
+}
+
 export const withContextMenu = <T extends Editable>(
   editor: T,
   options: ContextMenuOptions = {},
 ) => {
   const newEditor = editor as T & ContextMenuEditor
 
-  const { onRenderFinish } = newEditor
+  const { onRenderContextComponents } = newEditor
 
-  newEditor.onRenderFinish = () => {
-    const contentlEl = Editable.toDOMNode(newEditor, newEditor)
-
-    const root = document.createElement('div')
-    contentlEl.after(root)
-
-    const handleContextMenu = (e: MouseEvent) => {
-      const items = newEditor.onContextMenu([])
-      if (items.length > 0) {
-        ReactDOM.render(
-          <ContextMenu items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))} event={e} />,
-          root,
-        )
-      }
-    }
-
-    contentlEl.addEventListener('contextmenu', handleContextMenu)
-
-    const destory = onRenderFinish()
-
-    return () => {
-      contentlEl.removeEventListener('contextmenu', handleContextMenu)
-      if (destory) destory()
-      root.parentNode?.removeChild(root)
-    }
+  newEditor.onRenderContextComponents = components => {
+    components.push(ContextComponent)
+    return onRenderContextComponents(components)
   }
 
   newEditor.onContextMenu = items => {

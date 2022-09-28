@@ -1,4 +1,3 @@
-import { Grid } from '@editablejs/editor'
 import {
   FontSizeEditor,
   HeadingEditor,

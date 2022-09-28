@@ -1,6 +1,6 @@
 import { Editor, Element, Node, Operation, Path, Text } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { Delta } from '../model/types'
+import { Delta } from '../types'
 import { deltaInsertToSlateNode } from '../utils/convert'
 import { getSlateNodeYLength, getSlatePath, yOffsetToSlateOffsets } from '../utils/location'
 import { deepEquals, omitNullEntries, pick } from '../utils/object'

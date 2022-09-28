@@ -1,7 +1,7 @@
 import { BaseEditor, Descendant, Editor, Operation, Point } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { applyYjsEvents } from '../applyToSlate'
-import { applySlateOp } from '../applyToYjs'
+import { applyYjsEvents } from '../apply-to-slate'
+import { applySlateOp } from '../apply-to-yjs'
 import { yTextToSlateElement } from '../utils/convert'
 import {
   getStoredPosition,

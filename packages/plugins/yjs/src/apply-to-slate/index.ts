@@ -1,6 +1,6 @@
 import { Editor, Operation } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { translateYTextEvent } from './textEvent'
+import { translateYTextEvent } from './text-event'
 
 /**
  * Translate a yjs event into slate operations. The editor state has to match the

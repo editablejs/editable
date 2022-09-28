@@ -29,6 +29,7 @@ import {
   IS_DRAW_SELECTION,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
+  EDITOR_TO_ELEMENT,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
@@ -718,7 +719,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
     fn(selection)
   }
 
-  e.onRenderFinish = () => {}
+  e.onRenderContextComponents = components => {
+    return components
+  }
 
   e.getFragment = () => {
     const { selection } = e

@@ -6,9 +6,11 @@ import {
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
 import { Toolbar, withPlugins } from '@editablejs/plugins'
-import { withYHistory, withYjs, YjsEditor } from '@editablejs/plugin-yjs'
+import { withYHistory, withYjs, withCursors, YjsEditor, CursorData } from '@editablejs/plugin-yjs'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styles from './index.module.css'
+import randomColor from 'randomcolor'
+import { faker } from '@faker-js/faker'
+import tw, { styled } from 'twin.macro'
 import { defaultToolbarConfig } from '../toolbar-config'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
@@ -43,14 +45,13 @@ export default function Docs() {
   const [value, setValue] = useState<Descendant[]>([])
   const [connected, setConnected] = useState(false)
   const document = useMemo(() => new Y.Doc(), [])
-  const [provider, setProvider] = useState<WebsocketProvider | null>(null)
-  useIsomorphicLayoutEffect(() => {
-    const provider = new WebsocketProvider('ws://localhost:1234', 'editablejs', document)
-    provider.on('status', (event: any) => {
-      setConnected(event.status === 'connected')
-    })
-    setProvider(provider)
-  }, [document])
+  const provider = useMemo(
+    () =>
+      typeof window === 'undefined'
+        ? null
+        : new WebsocketProvider('ws://localhost:1234', 'editablejs', document),
+    [document],
+  )
 
   const toggleConnection = useCallback(() => {
     if (!provider) return
@@ -62,12 +63,29 @@ export default function Docs() {
   }, [provider, connected])
 
   const editor = useMemo(() => {
+    const { name } = faker
+    const cursorData: CursorData = {
+      color: randomColor({
+        luminosity: 'dark',
+        alpha: 1,
+        format: 'hex',
+      }),
+      name: `${name.firstName()} ${name.lastName()}`,
+    }
+
     const sharedType = document.get('content', Y.XmlText) as Y.XmlText
 
-    return withPlugins(withYHistory(withYjs(createEditor(), sharedType, { autoConnect: false })), {
+    let editor = withYjs(createEditor(), sharedType, { autoConnect: false })
+    if (provider) {
+      editor = withCursors(editor, provider.awareness, {
+        data: cursorData,
+      })
+    }
+
+    return withPlugins(withYHistory(editor), {
       'font-size': { defaultSize: '14px' },
     })
-  }, [document])
+  }, [document, provider])
 
   // Connect editor and provider in useEffect to comply with concurrent mode
   // requirements.
@@ -81,14 +99,22 @@ export default function Docs() {
     return () => YjsEditor.disconnect(editor as any)
   }, [editor])
 
+  const StyledWrapper = styled.div`
+    cursor: default;
+    width: 600px;
+    margin: 60px auto;
+  `
+
+  const StyledContainer = tw.div`mt-5`
+
   return (
-    <div className={styles.wrapper}>
+    <StyledWrapper>
       <EditableComposer editor={editor} value={initialValue}>
-        <Toolbar className={styles.toolbar} items={defaultToolbarConfig} />
-        <div className={styles.container}>
+        <Toolbar items={defaultToolbarConfig} />
+        <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />
-        </div>
+        </StyledContainer>
       </EditableComposer>
-    </div>
+    </StyledWrapper>
   )
 }

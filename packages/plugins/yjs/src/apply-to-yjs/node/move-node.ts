@@ -1,6 +1,6 @@
 import { MoveNodeOperation, Node, Path, Text } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { Delta } from '../../model/types'
+import { Delta } from '../../types'
 import { cloneInsertDeltaDeep } from '../../utils/clone'
 import { getInsertDeltaLength, yTextToInsertDelta } from '../../utils/delta'
 import { getYTarget } from '../../utils/location'

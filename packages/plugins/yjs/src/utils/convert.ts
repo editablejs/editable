@@ -1,6 +1,6 @@
 import { Element, Node, Text } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { DeltaInsert, InsertDelta } from '../model/types'
+import { DeltaInsert, InsertDelta } from '../types'
 import { yTextToInsertDelta } from './delta'
 import { getProperties } from './slate'
 

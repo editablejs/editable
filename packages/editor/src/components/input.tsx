@@ -2,18 +2,18 @@ import { Range, Selection } from 'slate'
 import { FC, useState } from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
-import { useEditable } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
 import { getRectsByRange } from '../utils/selection'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { useEditableStatic } from '../hooks/use-editable-static'
 
 interface InputProps {
   selection: Selection
 }
 
 const InputComponent: FC<InputProps> = ({ selection }) => {
-  const editor = useEditable()
+  const editor = useEditableStatic()
 
   const [focused, setFocused] = useFocused()
 

@@ -1,6 +1,7 @@
 import { FC, useCallback, useRef, useState } from 'react'
 import { Selection, Range } from 'slate'
 import { useEditable } from '../hooks/use-editable'
+import { useEditableStatic } from '../hooks/use-editable-static'
 import { useFocused } from '../hooks/use-focused'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { getRectsByRange } from '../utils/selection'
@@ -20,7 +21,7 @@ const CaretComponent: FC<CaretProps> = ({
   color = '#000',
   timeout = 530,
 }) => {
-  const editor = useEditable()
+  const editor = useEditableStatic()
 
   const [focused] = useFocused()
 

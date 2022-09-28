@@ -1,8 +1,8 @@
 import { Editor, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { HistoryStackItem, RelativeRange } from '../model/types'
+import { HistoryStackItem, RelativeRange } from '../types'
 import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
-import { YjsEditor } from './withYjs'
+import { YjsEditor } from './yjs'
 
 const LAST_SELECTION: WeakMap<Editor, RelativeRange | null> = new WeakMap()
 const DEFAULT_WITHOUT_SAVING_ORIGIN = Symbol('slate-yjs-history-without-saving')
