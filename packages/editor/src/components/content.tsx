@@ -5,7 +5,6 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import useChildren from '../hooks/use-children'
 import { Editable, useEditableStatic } from '..'
 import { ReadOnlyContext } from '../hooks/use-read-only'
-import { useEditable } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { DOMRange, getDefaultView } from '../utils/dom'
 import {
@@ -278,51 +277,57 @@ export const ContentEditable = (props: EditableProps) => {
 
   return (
     <ReadOnlyContext.Provider value={readOnly}>
-      <Component
-        role={readOnly ? undefined : 'textbox'}
-        {...attributes}
-        data-slate-editor
-        data-slate-node="value"
-        zindex={-1}
-        ref={ref}
+      <div
+        data-slate-content="true"
         style={{
-          // Prevent the default outline styles.
-          outline: 'none',
-          // Preserve adjacent whitespace and new lines.
-          whiteSpace: 'pre-wrap',
-          // Allow words to break if they are too long.
-          wordBreak: 'break-word',
-          // Disable the default user-select behavior.
-          userSelect: 'none',
-          // Set cursor to text.
-          cursor: 'text',
-          //
-          overflowWrap: 'break-word',
-          // Allow for passed-in styles to override anything.
           ...style,
+          position: 'relative',
         }}
-        onMouseDown={handleRootMouseDown}
-        onClick={handleMultipleClick}
       >
-        <Children node={editor} selection={editor.selection} />
-      </Component>
-      <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
-        {isDrawSelection && (
-          <CaretComponent
-            selection={drawSelection}
-            width={drawSelectionStyle?.caretWidth}
-            color={drawSelectionStyle?.caretColor}
-          />
-        )}
-        {isDrawSelection && (
-          <SelectionComponent
-            selection={drawSelection}
-            color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
-          />
-        )}
-        <InputComponent selection={drawSelection} />
-      </Shadow>
-      {rendered && contextElements.map((Component, index) => <Component key={index} />)}
+        <Component
+          role={readOnly ? undefined : 'textbox'}
+          {...attributes}
+          data-slate-editor
+          data-slate-node="value"
+          zindex={-1}
+          ref={ref}
+          style={{
+            // Prevent the default outline styles.
+            outline: 'none',
+            // Preserve adjacent whitespace and new lines.
+            whiteSpace: 'pre-wrap',
+            // Allow words to break if they are too long.
+            wordBreak: 'break-word',
+            // Disable the default user-select behavior.
+            userSelect: 'none',
+            // Set cursor to text.
+            cursor: 'text',
+            //
+            overflowWrap: 'break-word',
+          }}
+          onMouseDown={handleRootMouseDown}
+          onClick={handleMultipleClick}
+        >
+          <Children node={editor} selection={editor.selection} />
+        </Component>
+        <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
+          {isDrawSelection && (
+            <CaretComponent
+              selection={drawSelection}
+              width={drawSelectionStyle?.caretWidth}
+              color={drawSelectionStyle?.caretColor}
+            />
+          )}
+          {isDrawSelection && (
+            <SelectionComponent
+              selection={drawSelection}
+              color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
+            />
+          )}
+          <InputComponent selection={drawSelection} />
+        </Shadow>
+        {rendered && contextElements.map((Component, index) => <Component key={index} />)}
+      </div>
     </ReadOnlyContext.Provider>
   )
 }

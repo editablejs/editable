@@ -1,18 +1,10 @@
-import React, { FC, useLayoutEffect, useRef } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import tw, { css } from 'twin.macro'
-import {
-  Content,
-  Item,
-  Root,
-  Trigger,
-  ContextMenuProps as UIContextMenuProps,
-  Sub,
-  SubTrigger,
-  SubContent,
-  Separator,
-} from '@radix-ui/react-context-menu'
 import { unbundleFocusRadixUi } from './utils'
 import { Icon } from './icon'
+import { Popper, PopperAnchor, PopperContent } from './popper'
+import { DismissableLayer } from './dismissable-layer'
+import { Anchor, Content, Item, Root, Separator, Sub, SubContent, SubTrigger } from './menu'
 export interface ContextMenuItem {
   icon?: JSX.Element
   rightText?: JSX.Element | string
@@ -64,7 +56,6 @@ export const ContextMenuItem: FC<ContextMenuItem> = ({
         e.preventDefault()
         if (onSelect) onSelect(e)
       }}
-      ref={unbundleFocusRadixUi}
       disabled={disabled}
     >
       {href ? (
@@ -117,43 +108,59 @@ export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({
   )
 }
 
-export interface ContextMenu extends Omit<UIContextMenuProps, 'modal'> {
-  event: MouseEvent
+type Point = { x: number; y: number }
+
+export interface ContextMenu {
+  container?: HTMLElement | Point
   className?: string
+  onOpenChange?: (open: boolean) => void
 }
 
-export const ContextMenu: FC<ContextMenu> = ({ event, className, children, ...props }) => {
-  const triggerRef = useRef<HTMLSpanElement | null>(null)
+export const ContextMenu: FC<ContextMenu> = ({
+  container = document.body,
+  className,
+  onOpenChange,
+  children,
+}) => {
+  const [open, setOpen] = useState(false)
+  const pointRef = React.useRef<Point>(
+    container instanceof HTMLElement ? { x: 0, y: 0 } : container,
+  )
+  const virtualRef = React.useRef({
+    getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
+  })
 
-  useLayoutEffect(() => {
-    const e = document.createEvent('MouseEvents')
-    e.initMouseEvent(
-      'contextmenu',
-      true,
-      false,
-      window,
-      event.detail,
-      event.screenX,
-      event.screenY,
-      event.clientX,
-      event.clientY,
-      false,
-      false,
-      false,
-      false,
-      2,
-      null,
-    )
-    event.preventDefault()
-    triggerRef.current?.dispatchEvent(e)
-  }, [event])
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (onOpenChange) onOpenChange(open)
+      setOpen(open)
+    },
+    [onOpenChange],
+  )
+
+  useEffect(() => {
+    if (!(container instanceof HTMLElement)) return
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      pointRef.current = { x: e.clientX, y: e.clientY }
+      handleOpenChange(true)
+    }
+    container.addEventListener('contextmenu', handleContextMenu)
+
+    return () => {
+      container.removeEventListener('contextmenu', handleContextMenu)
+    }
+  }, [container, handleOpenChange])
 
   return (
-    <Root {...props} modal={false}>
-      <Trigger ref={ref => unbundleFocusRadixUi(ref, triggerRef)} />
+    <Root open={open} onOpenChange={handleOpenChange}>
+      <Anchor virtualRef={virtualRef} />
       <Content
-        ref={unbundleFocusRadixUi}
-        loop={true}
+        side="right"
+        sideOffset={2}
+        align="start"
+        onEscapeKeyDown={() => handleOpenChange(false)}
+        onPointerDownOutside={() => handleOpenChange(false)}
         css={[
           tw`z-50 overflow-hidden rounded border border-solid border-transparent bg-white py-2 shadow-[0_2px_6px_2px_rgb(60,64,67,0.15)]`,
           className,

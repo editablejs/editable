@@ -1079,4 +1079,11 @@ export const Editable = {
     const { anchor, focus } = range
     return Editor.hasPath(editor, anchor.path) && Editor.hasPath(editor, focus.path)
   },
+
+  toRelativePosition(editor: Editable, x: number, y: number) {
+    const container = Editable.toDOMNode(editor, editor)
+    const rootRect = container.getBoundingClientRect()
+
+    return [x - rootRect.left, y - rootRect.top]
+  },
 }

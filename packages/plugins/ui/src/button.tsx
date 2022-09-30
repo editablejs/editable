@@ -1,4 +1,4 @@
-import React, { FC, AnchorHTMLAttributes } from 'react'
+import React, { FC, AnchorHTMLAttributes, forwardRef } from 'react'
 import tw, { css, styled } from 'twin.macro'
 
 export interface ButtonProps {
@@ -16,20 +16,24 @@ const ButtonStyles = styled.button(({ active, disabled }: ButtonProps) => [
     css`
       color: inherit;
     `,
+  disabled && tw`text-gray-400`,
   css`
     font-size: inherit;
   `,
 ])
 
-export const Button: FC<ButtonProps & AnchorHTMLAttributes<HTMLButtonElement>> = ({
-  type,
-  ...props
-}) => {
+export const Button = forwardRef<
+  HTMLButtonElement,
+  ButtonProps & AnchorHTMLAttributes<HTMLButtonElement>
+>(({ type, ...props }, ref) => {
   return (
     <ButtonStyles
       onMouseDown={e => e.preventDefault()}
       {...props}
+      ref={ref}
       type={(type as any) ?? 'button'}
     />
   )
-}
+})
+
+Button.displayName = 'UIButton'

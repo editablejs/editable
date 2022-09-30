@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 
@@ -58,24 +58,25 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
   ShadowProps
 >(({ children }, ref) => {
   const [root, setRoot] = useState<ShadowRoot>()
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useIsomorphicLayoutEffect(() => {
-    const shadow = document.createElement('div')
-    shadow.setAttribute('style', 'position: "absolute"; z-index: 2, top: 0px')
-    shadow.setAttribute('data-slate-shadow', 'true')
-    document.body.appendChild(shadow)
-    const root = shadow.attachShadow({ mode: 'open' })
+    if (!containerRef.current) return
+    const root = containerRef.current.attachShadow({ mode: 'open' })
     setRoot(root)
-    return () => {
-      document.body.removeChild(shadow)
-    }
   }, [])
 
   useImperativeHandle(ref, () => root!, [root])
 
-  return root
-    ? ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{children}</div>, root)
-    : null
+  return (
+    <div
+      data-slate-shadow="true"
+      ref={containerRef}
+      style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}
+    >
+      {root && ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{children}</div>, root)}
+    </div>
+  )
 })
 
 Shadow.displayName = 'Shadow'

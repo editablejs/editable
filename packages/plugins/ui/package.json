@@ -41,9 +41,7 @@
     "react-dom": ">=16.8.0"
   },
   "dependencies": {
-    "@radix-ui/react-context-menu": "1.0.0",
-    "@radix-ui/react-dropdown-menu": "1.0.0",
-    "@radix-ui/react-tooltip": "1.0.0",
+    "@floating-ui/react-dom": "1.0.0",
     "styled-components": "5.3.5"
   },
   "lint-staged": {

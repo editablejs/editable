@@ -13,12 +13,7 @@ export type CaretPosition = {
   left: number
 }
 
-export function getSelectionRects(
-  editor: Editable,
-  range: BaseRange,
-  xOffset: number,
-  yOffset: number,
-): SelectionRect[] {
+export function getSelectionRects(editor: Editable, range: BaseRange): SelectionRect[] {
   const [start, end] = Range.edges(range)
   const domRange = Editable.toDOMRange(editor, range)
 
@@ -53,12 +48,12 @@ export function getSelectionRects(
       if (!clientRect) {
         continue
       }
-
+      const [left, top] = Editable.toRelativePosition(editor, clientRect.left, clientRect.top)
       selectionRects.push({
         width: clientRect.width,
         height: clientRect.height,
-        top: clientRect.top - yOffset,
-        left: clientRect.left - xOffset,
+        top,
+        left,
       })
     }
   }

@@ -1,6 +1,6 @@
 import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
 import { Editable } from '../plugin/editable'
-import { DOMElement, DOMRange, isDOMElement } from './dom'
+import { DOMElement, DOMRange, getDefaultView, isDOMElement } from './dom'
 
 interface LineRect {
   top: number
@@ -301,5 +301,11 @@ export const getRectsByRange = (editor: Editable, range: Range) => {
   } else {
     rects = getLineRectsByRange(editor, range)
   }
-  return rects
+
+  return rects.map(r => {
+    const [x, y] = Editable.toRelativePosition(editor, r.left, r.top)
+    r.x = x
+    r.y = y
+    return r
+  })
 }

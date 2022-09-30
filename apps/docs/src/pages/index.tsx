@@ -30,20 +30,20 @@ const initialValue = [
   },
 ]
 
+const StyledWrapper = styled.div`
+  cursor: default;
+  width: 600px;
+  margin: 60px auto;
+`
+
+const StyledContainer = tw.div`mt-5`
+
 export default function Docs() {
   const [editor] = useState(
     withPlugins(createEditor(), {
       'font-size': { defaultSize: '14px' },
     }),
   )
-
-  const StyledWrapper = styled.div`
-    cursor: default;
-    width: 600px;
-    margin: 60px auto;
-  `
-
-  const StyledContainer = tw.div`mt-5`
 
   return (
     <StyledWrapper>

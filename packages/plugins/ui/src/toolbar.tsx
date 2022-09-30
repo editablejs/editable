@@ -1,15 +1,13 @@
-import { Tooltip, Provider, Trigger, Content } from '@radix-ui/react-tooltip'
 import { FC, HTMLAttributes, ReactNode } from 'react'
-import tw, { css, styled } from 'twin.macro'
+import tw, { styled } from 'twin.macro'
 import { Button, ButtonProps } from './button'
 import { Dropdown, DropdownProps } from './dropdown'
+import { Tooltip } from './tooltip'
 
 export interface ToolbarButton extends ButtonProps {
   title?: ReactNode
   onToggle: () => void
 }
-
-const StyledButton = styled(Button)(({ active }: ToolbarButton) => [])
 
 export const ToolbarButton: FC<ToolbarButton> = ({ title, children, onToggle, ...props }) => {
   const renderButton = () => (
@@ -17,17 +15,7 @@ export const ToolbarButton: FC<ToolbarButton> = ({ title, children, onToggle, ..
       {children}
     </Button>
   )
-
-  return title ? (
-    <Provider>
-      <Tooltip>
-        <Trigger asChild>{renderButton()}</Trigger>
-        <Content>{title}</Content>
-      </Tooltip>
-    </Provider>
-  ) : (
-    renderButton()
-  )
+  return title ? <Tooltip content={title}>{renderButton()}</Tooltip> : renderButton()
 }
 
 export interface ToolbarSeparator {}

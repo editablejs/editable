@@ -106,14 +106,6 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   // Update selection rects after paint
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
-    let xOffset = 0
-    let yOffset = 0
-    if (containerRef) {
-      // const contentRect = containerRef.current.getBoundingClientRect()
-      // xOffset = contentRect.x
-      // yOffset = contentRect.y
-    }
-
     let selectionRectsChanged =
       Object.keys(selectionRects).length !== Object.keys(cursorStates).length
 
@@ -130,7 +122,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
           return [key, cached]
         }
 
-        const rects = getSelectionRects(editor, range, xOffset, yOffset)
+        const rects = getSelectionRects(editor, range)
         selectionRectsChanged = true
         selectionRectCache.current.set(range, rects)
         return [key, rects]

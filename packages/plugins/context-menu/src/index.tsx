@@ -4,7 +4,7 @@ import {
   useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import { FC, useState } from 'react'
+import { FC, useCallback, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { styled } from 'twin.macro'
 import {
@@ -60,7 +60,7 @@ const StyledContextMenu = styled(UIContextMenu)`
   min-width: 200px;
 `
 
-const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
+const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
   const renderItems = (items: ContextMenuItem[]) => {
     return items.map((item, index) => {
       if ('type' in item) {
@@ -83,30 +83,46 @@ const ContextMenu: FC<ContextMenu> = ({ event, items }) => {
     })
   }
 
-  return <StyledContextMenu event={event}>{renderItems(items)}</StyledContextMenu>
+  return (
+    <StyledContextMenu container={container} {...props}>
+      {renderItems(items)}
+    </StyledContextMenu>
+  )
 }
 
 const ContextComponent = () => {
   const [items, setItems] = useState<ContextMenuItem[]>([])
-  const [event, setEvent] = useState<MouseEvent | null>(null)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLElement | null>(null)
 
   const editor = useEditableStatic() as ContextMenuEditor
 
   useIsomorphicLayoutEffect(() => {
-    const container = Editable.toDOMNode(editor, editor)
-    const handleContextMenu = (e: MouseEvent) => {
-      setItems(editor.onContextMenu([]))
-      setEvent(e)
-    }
-    container.addEventListener('contextmenu', handleContextMenu)
+    containerRef.current = Editable.toDOMNode(editor, editor)
+    const root = document.createElement('div')
+    rootRef.current = root
+    document.body.appendChild(root)
     return () => {
-      container.removeEventListener('contextmenu', handleContextMenu)
+      document.body.removeChild(root)
     }
   }, [editor])
 
-  if (items.length > 0 && event)
-    return (
-      <ContextMenu items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))} event={event} />
+  const handleOpenChange = useCallback(
+    open => {
+      if (!open) setItems([])
+      else setItems(editor.onContextMenu([]))
+    },
+    [editor],
+  )
+
+  if (containerRef.current && rootRef.current)
+    return ReactDOM.createPortal(
+      <ContextMenu
+        items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))}
+        container={containerRef.current}
+        onOpenChange={handleOpenChange}
+      />,
+      rootRef.current,
     )
   return null
 }

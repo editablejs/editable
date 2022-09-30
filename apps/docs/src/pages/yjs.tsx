@@ -41,6 +41,14 @@ const initialValue = [
   },
 ]
 
+const StyledWrapper = styled.div`
+  cursor: default;
+  width: 600px;
+  margin: 60px auto;
+`
+
+const StyledContainer = tw.div`mt-5`
+
 export default function Docs() {
   const [value, setValue] = useState<Descendant[]>([])
   const [connected, setConnected] = useState(false)
@@ -98,14 +106,6 @@ export default function Docs() {
     YjsEditor.connect(editor as any)
     return () => YjsEditor.disconnect(editor as any)
   }, [editor])
-
-  const StyledWrapper = styled.div`
-    cursor: default;
-    width: 600px;
-    margin: 60px auto;
-  `
-
-  const StyledContainer = tw.div`mt-5`
 
   return (
     <StyledWrapper>
