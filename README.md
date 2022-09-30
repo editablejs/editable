@@ -6,7 +6,6 @@ An experimental rich text editor framework which aims to replace the native `con
 
 ## Development
 
-Use `nextjs` & `turbo` to build a development environment, use `typescript` for development, and use jest for unit testing.
 
 ```bash
 # Install
@@ -17,19 +16,23 @@ pnpm dev
 
 ```
 
+### Yjs
+
+After `pnpm dev` starts, visit `/yjs`
+
 ## Directory Structure
 
 All source codes are in packages, and the apps directory is mainly used for documentation and test cases. Now, in the initial development phase, a React rendering editor model and the logic of model update are written for visual testing.
 
-### packages/editable-breaker
+### packages/breaker
 
 Mainly index some `unicode` characters. Because the number of bytes occupied by some characters is uncertain, resulting in inaccurate indexes after some characters are split, so this toolkit is needed to solve this problem.
 
-### packages/editable-editor
+### packages/editor
 
 Use the slatejs data model, and use react to render in the self-drawn cursor mode, no longer relying on the contenteditable attribute
 
-### packages/editable-plugins
+### packages/plugins
 
 plugin directory
 
@@ -81,3 +84,8 @@ plugin directory
 - [ ] Table
 - [ ] Hr
 - [x] Toolbar
+- [x] Yjs
+- [x] Serializes
+- [x] ContextMenu
+- [x] Clipboard
+- [ ] Drag
