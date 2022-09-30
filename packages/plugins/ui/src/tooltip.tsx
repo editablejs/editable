@@ -44,6 +44,10 @@ export const Tooltip: FC<TooltipProps> = ({
       <Anchor
         onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
         onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
+        onMouseDown={event => {
+          event.preventDefault()
+          delaySetOpen(true, 0)
+        }}
       >
         {children}
       </Anchor>
