@@ -1,45 +1,35 @@
-import { FC, useCallback, useRef, useState } from 'react'
+import { FC, useCallback, useMemo, useRef, useState } from 'react'
 import { Selection, Range } from 'slate'
 import { useEditable } from '../hooks/use-editable'
 import { useEditableStatic } from '../hooks/use-editable-static'
 import { useFocused } from '../hooks/use-focused'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { useDrawSelection } from '../hooks/user-draw-selection'
 import { getRectsByRange } from '../utils/selection'
 import { IS_MOUSEDOWN } from '../utils/weak-maps'
 import { ShadowRect } from './shadow'
 
 interface CaretProps {
-  selection: Selection
   width?: number
   color?: string
   timeout?: number | false
 }
 
-const CaretComponent: FC<CaretProps> = ({
-  selection,
-  width = 1,
-  color = '#000',
-  timeout = 530,
-}) => {
+const CaretComponent: FC<CaretProps> = ({ width = 1, color = '#000', timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()
 
   const timer = useRef<number>()
 
-  const [rect, setRect] = useState<ShadowRect | null>(null)
-
   const ref = useRef<HTMLDivElement>(null)
 
-  useIsomorphicLayoutEffect(() => {
-    if (selection && Range.isCollapsed(selection) && focused) {
-      const rects = getRectsByRange(editor, selection)
-      if (rects.length === 0) return setRect(null)
-      setRect(rects[0].toJSON())
-    } else {
-      setRect(null)
-    }
-  }, [editor, selection, focused])
+  const { selection, rects } = useDrawSelection()
+
+  const rect = useMemo(() => {
+    if (!selection || rects.length === 0 || !focused || !Range.isCollapsed(selection)) return null
+    return rects[0].toJSON()
+  }, [focused, rects, selection])
 
   const clearActive = useCallback(() => {
     clearTimeout(timer.current)

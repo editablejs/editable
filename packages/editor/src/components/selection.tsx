@@ -2,39 +2,30 @@ import { FC, useState } from 'react'
 import { Range, Selection } from 'slate'
 import { useEditableStatic } from '../hooks/use-editable-static'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { useDrawSelection } from '../hooks/user-draw-selection'
 import { getRectsByRange } from '../utils/selection'
 import { ShadowRect } from './shadow'
 
 interface SelectionProps {
-  selection: Selection
   color?: string
 }
 
-const SelectionComponent: FC<SelectionProps> = ({ selection, color = 'rgba(0,127,255,0.3)' }) => {
-  const editor = useEditableStatic()
-
-  const [rects, setRects] = useState<ShadowRect[]>([])
-
-  useIsomorphicLayoutEffect(() => {
-    if (!selection || Range.isCollapsed(selection)) setRects([])
-    else {
-      const rects = getRectsByRange(editor, selection).map(r => r.toJSON())
-      setRects(rects)
-    }
-    return
-  }, [editor, selection])
+const SelectionComponent: FC<SelectionProps> = ({ color = 'rgba(0,127,255,0.3)' }) => {
+  const { rects, selection } = useDrawSelection()
 
   return (
     <>
-      {rects.map((rect, index) => {
-        return (
-          <ShadowRect
-            key={`sel-${index}`}
-            rect={Object.assign({}, rect, { color })}
-            style={{ willChange: 'transform' }}
-          />
-        )
-      })}
+      {selection &&
+        Range.isExpanded(selection) &&
+        rects.map((rect, index) => {
+          return (
+            <ShadowRect
+              key={`sel-${index}`}
+              rect={Object.assign({}, rect.toJSON(), { color })}
+              style={{ willChange: 'transform' }}
+            />
+          )
+        })}
     </>
   )
 }

@@ -19,6 +19,7 @@ import {
   EDITOR_TO_SHADOW,
   IS_DRAW_SELECTION,
   IS_MOUSEDOWN,
+  EDITOR_TO_SELECTION_RECTS,
 } from '../utils/weak-maps'
 import { getWordRange } from '../utils/text'
 import { useMultipleClick } from '../hooks/use-multiple-click'
@@ -28,6 +29,8 @@ import Shadow from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
+import { DrawSelectionContext } from '../hooks/user-draw-selection'
+import { getRectsByRange } from '../utils/selection'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -85,6 +88,7 @@ export const ContentEditable = (props: EditableProps) => {
   const [drawSelectionStyle, setDrawSelectionStyle] = useState(
     mergeSelectionStyle(selectionStyle ?? {}),
   )
+  const [drawRects, setDrawRects] = useState<DOMRect[]>([])
   const [isDrawSelection, setIsDrawSelection] = useState(true)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -273,6 +277,12 @@ export const ContentEditable = (props: EditableProps) => {
     }
   }, [editor])
 
+  useIsomorphicLayoutEffect(() => {
+    const rects = drawSelection ? getRectsByRange(editor, drawSelection) : []
+    EDITOR_TO_SELECTION_RECTS.set(editor, rects)
+    setDrawRects(rects)
+  }, [drawSelection])
+
   const contextElements = useMemo(() => editor.onRenderContextComponents([]), [editor])
 
   return (
@@ -310,22 +320,27 @@ export const ContentEditable = (props: EditableProps) => {
         >
           <Children node={editor} selection={editor.selection} />
         </Component>
-        <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
-          {isDrawSelection && (
-            <CaretComponent
-              selection={drawSelection}
-              width={drawSelectionStyle?.caretWidth}
-              color={drawSelectionStyle?.caretColor}
-            />
-          )}
-          {isDrawSelection && (
-            <SelectionComponent
-              selection={drawSelection}
-              color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
-            />
-          )}
-          <InputComponent selection={drawSelection} />
-        </Shadow>
+        <DrawSelectionContext.Provider
+          value={{
+            selection: drawSelection,
+            rects: drawRects,
+          }}
+        >
+          <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
+            {isDrawSelection && (
+              <CaretComponent
+                width={drawSelectionStyle?.caretWidth}
+                color={drawSelectionStyle?.caretColor}
+              />
+            )}
+            {isDrawSelection && (
+              <SelectionComponent
+                color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
+              />
+            )}
+            <InputComponent selection={drawSelection} />
+          </Shadow>
+        </DrawSelectionContext.Provider>
         {rendered && contextElements.map((Component, index) => <Component key={index} />)}
       </div>
     </ReadOnlyContext.Provider>

@@ -1,5 +1,12 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect, Range } from '@editablejs/editor'
-import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
+import {
+  DismissableLayer,
+  Popper,
+  PopperAnchor,
+  PopperContent,
+  Portal,
+  Presence,
+} from '@editablejs/plugin-ui'
 import { useRef, useState } from 'react'
 import { Toolbar, ToolbarItem } from './toolbar'
 
@@ -53,13 +60,26 @@ const InlineToolbar = () => {
     editor.onSelectEnd = () => {
       const { selection } = editor
       if (selection && Range.isExpanded(selection)) {
-        const range = Editable.toDOMRange(editor, selection)
+        let x = 0,
+          y = 0
+
+        const rects = Editable.getCurrentSelectionRects(editor, false)
         const isBackward = Range.isBackward(selection)
-        range.collapse(isBackward)
-        const { x, y, height } = range.getBoundingClientRect()
+        if (rects) {
+          const rect = isBackward ? rects[0] : rects[rects.length - 1]
+          x = isBackward ? rect.x : rect.right
+          y = isBackward ? rect.y : rect.bottom
+        } else {
+          const range = Editable.toDOMRange(editor, selection)
+          range.collapse(isBackward)
+          const rect = range.getBoundingClientRect()
+          x = isBackward ? rect.x : rect.right
+          y = isBackward ? rect.y : rect.bottom
+        }
+
         pointRef.current = {
           x,
-          y: isBackward ? y : y + height,
+          y,
         }
         setSide(isBackward ? 'top' : 'bottom')
         setItems(editor.onInlineToolbar(items))
@@ -85,7 +105,7 @@ const InlineToolbar = () => {
           <Portal container={rootRef.current}>
             <PopperContent
               side={side}
-              sideOffset={10}
+              sideOffset={5}
               tw="bg-white shadow-outer z-50 px-2 py-1 rounded border-gray-300 border-solid border"
             >
               <Toolbar items={items} />

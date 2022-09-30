@@ -138,11 +138,11 @@ export const Toolbar: React.FC<Toolbar & React.HTMLAttributes<HTMLDivElement>> =
 }) => {
   const editor = useEditableStatic() as ToolbarEditor
 
-  const [items, setItems] = useState<ToolbarItem[]>([])
+  const [items, setItems] = useState<ToolbarItem[]>(itemsProp || [])
 
   const eventListeners = useRef<EditorChangeHandler[]>([]).current
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const { onSelectionChange } = editor
     const dispatch = () => {
       eventListeners.forEach(callback => callback(editor))

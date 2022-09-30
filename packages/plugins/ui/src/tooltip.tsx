@@ -57,7 +57,7 @@ export const Tooltip: FC<TooltipProps> = ({
             <PopperContent
               onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
               onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
-              tw="text-white bg-black bg-opacity-80 text-center text-sm rounded-sm px-3 py-2 z-50"
+              tw="text-white bg-black bg-opacity-80 text-center text-sm rounded px-3 py-2 z-50"
             >
               {content}
               <PopperArrow />

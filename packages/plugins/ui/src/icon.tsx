@@ -1,7 +1,7 @@
 import React from 'react'
 import tw, { styled } from 'twin.macro'
 
-export const BoldIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const BoldIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -17,7 +17,7 @@ export const BoldIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
   )
 }
 
-export const ItalicIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ItalicIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -36,7 +36,7 @@ export const ItalicIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = prop
   )
 }
 
-export const UnderlineIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const UnderlineIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -55,7 +55,7 @@ export const UnderlineIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = p
   )
 }
 
-export const StrikethroughIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const StrikethroughIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -74,7 +74,7 @@ export const StrikethroughIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>
   )
 }
 
-export const CodeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const CodeIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -93,7 +93,7 @@ export const CodeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
   )
 }
 
-export const SubIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const SubIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -112,7 +112,7 @@ export const SubIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props =
   )
 }
 
-export const SupIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const SupIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -131,7 +131,7 @@ export const SupIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props =
   )
 }
 
-export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const CheckIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -150,7 +150,7 @@ export const CheckIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props
   )
 }
 
-export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const BlockquoteIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -169,7 +169,7 @@ export const BlockquoteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
   )
 }
 
-export const UnorderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const UnorderedListIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -188,7 +188,7 @@ export const UnorderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>
   )
 }
 
-export const OrderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const OrderedListIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -207,7 +207,7 @@ export const OrderedListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> =
   )
 }
 
-export const TaskListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const TaskListIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -226,7 +226,7 @@ export const TaskListIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = pr
   )
 }
 
-export const TableIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const TableIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -242,7 +242,7 @@ export const TableIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props
   )
 }
 
-export const TableSplitIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const TableSplitIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -258,7 +258,7 @@ export const TableSplitIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
   )
 }
 
-export const TableMergeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const TableMergeIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -274,7 +274,7 @@ export const TableMergeIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
   )
 }
 
-export const PlusIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const PlusIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -296,7 +296,7 @@ export const PlusIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
   )
 }
 
-export const ArrowDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ArrowDownIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -312,7 +312,7 @@ export const ArrowDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = p
   )
 }
 
-export const ArrowUpIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ArrowUpIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -328,7 +328,7 @@ export const ArrowUpIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = pro
   )
 }
 
-export const ArrowLeftIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ArrowLeftIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -344,7 +344,7 @@ export const ArrowLeftIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = p
   )
 }
 
-export const ArrowRightIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ArrowRightIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -360,7 +360,7 @@ export const ArrowRightIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = 
   )
 }
 
-export const ArrowCaretDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const ArrowCaretDownIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -379,7 +379,7 @@ export const ArrowCaretDownIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>
   )
 }
 
-export const CutIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const CutIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -395,7 +395,7 @@ export const CutIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props =
   )
 }
 
-export const CopyIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const CopyIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -411,7 +411,7 @@ export const CopyIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props 
   )
 }
 
-export const PasteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const PasteIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -427,7 +427,7 @@ export const PasteIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props
   )
 }
 
-export const PasteTextIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+export const PasteTextIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -476,7 +476,7 @@ const IconStyles = tw.span`overflow-hidden inline-flex
   `
 
 export const Icon: React.FC<
-  React.HTMLAttributes<HTMLOrSVGElement> & Record<'name', keyof typeof ICON_LIST>
+  React.HTMLAttributes<SVGSVGElement> & Record<'name', keyof typeof ICON_LIST>
 > = ({ name, ...props }) => {
   const IconComponent = ICON_LIST[name]
 

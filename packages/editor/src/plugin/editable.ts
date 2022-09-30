@@ -25,6 +25,7 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
+  EDITOR_TO_SELECTION_RECTS,
 } from '../utils/weak-maps'
 import {
   DOMElement,
@@ -1085,5 +1086,18 @@ export const Editable = {
     const rootRect = container.getBoundingClientRect()
 
     return [x - rootRect.left, y - rootRect.top]
+  },
+
+  getCurrentSelectionRects(editor: Editable, relative = true) {
+    const rects = EDITOR_TO_SELECTION_RECTS.get(editor)
+    if (!rects || relative)
+      return rects?.map(rect => new DOMRect(rect.x, rect.y, rect.width, rect.height))
+    const container = Editable.toDOMNode(editor, editor)
+    const rootRect = container.getBoundingClientRect()
+    return rects.map(rect => {
+      const x = rect.x + rootRect.left
+      const y = rect.y + rootRect.top
+      return new DOMRect(x, y, rect.width, rect.height)
+    })
   },
 }

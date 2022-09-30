@@ -5,7 +5,7 @@ import {
   Descendant,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import { Toolbar, withPlugins } from '@editablejs/plugins'
+import { Toolbar, withInlineToolbar, withPlugins, withToolbar } from '@editablejs/plugins'
 import { withYHistory, withYjs, withCursors, YjsEditor, CursorData } from '@editablejs/plugin-yjs'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import randomColor from 'randomcolor'
@@ -90,9 +90,16 @@ export default function Docs() {
       })
     }
 
-    return withPlugins(withYHistory(editor), {
-      'font-size': { defaultSize: '14px' },
-    })
+    return withInlineToolbar(
+      withToolbar(
+        withPlugins(withYHistory(editor), {
+          'font-size': { defaultSize: '14px' },
+        }),
+      ),
+      {
+        items: defaultToolbarConfig,
+      },
+    )
   }, [document, provider])
 
   // Connect editor and provider in useEffect to comply with concurrent mode

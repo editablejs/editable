@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
-import tw from 'twin.macro'
+import tw, { styled } from 'twin.macro'
 import { Icon } from './icon'
 import {
   MenuAnchor,
@@ -111,13 +111,9 @@ export const Dropdown: FC<Dropdown> = ({
           ]}
           {...triggerProps}
           onPointerDown={event => {
-            // only call handler if it's the left button (mousedown gets triggered by all mouse buttons)
-            // but not when the control key is pressed (avoiding MacOS right click)
             if (!disabled && event.button === 0 && event.ctrlKey === false) {
               setOpen(!open)
-              // prevent trigger focusing when opening
-              // this allows the content to be given focus without competition
-              if (!open) event.preventDefault()
+              event.preventDefault()
             }
           }}
           onKeyDown={event => {
@@ -130,15 +126,19 @@ export const Dropdown: FC<Dropdown> = ({
           }}
         >
           {children ?? activeItem?.children ?? value}
-          <Icon name="arrowCaretDown" tw="text-xxs text-gray-400" />
+          <Icon
+            name="arrowCaretDown"
+            css={[tw`text-xxs text-gray-400`, open && tw`rotate-180 mt-1`]}
+          />
         </button>
       </MenuAnchor>
       <Portal>
         <MenuContent
           align="start"
+          sideOffset={1}
           onEscapeKeyDown={() => setOpen(false)}
           onPointerDownOutside={() => setOpen(false)}
-          tw="absolute overflow-hidden rounded-sm border border-solid border-gray-200 bg-white shadow-md"
+          tw="absolute overflow-hidden rounded border border-solid border-gray-200 bg-white shadow-md z-50"
         >
           <MenuRadioGroup value={value} onValueChange={onValueChange}>
             {renderItems(items)}
