@@ -1,18 +1,16 @@
 import { Range, Selection } from 'slate'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
-import { getRectsByRange } from '../utils/selection'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { useEditableStatic } from '../hooks/use-editable-static'
+import { useDrawSelection } from '../hooks/user-draw-selection'
 
-interface InputProps {
-  selection: Selection
-}
+interface InputProps {}
 
-const InputComponent: FC<InputProps> = ({ selection }) => {
+const InputComponent: FC<InputProps> = () => {
   const editor = useEditableStatic()
 
   const [focused, setFocused] = useFocused()
@@ -71,18 +69,18 @@ const InputComponent: FC<InputProps> = ({ selection }) => {
     editor.onCompositionEnd(value)
   }
 
+  const { selection, rects } = useDrawSelection()
+
   useIsomorphicLayoutEffect(() => {
-    if (!selection || !focused) return setRect(null)
-    const rects = getRectsByRange(editor, selection)
-    if (rects.length === 0) return setRect(null)
+    if (!selection || !focused || rects.length === 0) return setRect(null)
     if (Range.isCollapsed(selection)) {
       setRect(rects[0].toJSON())
     } else {
       const rect = rects[rects.length - 1].toJSON()
       rect.left = rect.left + rect.width
-      setRect(rect)
+      return setRect(rect)
     }
-  }, [editor, selection, focused])
+  }, [focused, rects, selection])
 
   return (
     <ShadowRect

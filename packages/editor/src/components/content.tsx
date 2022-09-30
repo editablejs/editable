@@ -338,7 +338,7 @@ export const ContentEditable = (props: EditableProps) => {
                 color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
               />
             )}
-            <InputComponent selection={drawSelection} />
+            <InputComponent />
           </Shadow>
         </DrawSelectionContext.Provider>
         {rendered && contextElements.map((Component, index) => <Component key={index} />)}
