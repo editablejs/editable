@@ -2,25 +2,24 @@ import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
 import tw from 'twin.macro'
 import { Icon } from './icon'
 import {
-  Anchor,
-  Content,
-  ItemIndicator,
-  MenuItemProps,
-  MenuProps,
-  RadioGroup,
-  RadioItem,
-  Root,
-  Separator,
+  MenuAnchor,
+  MenuContent,
+  MenuItemIndicator,
+  MenuRadioGroup,
+  MenuRadioItem,
+  Menu,
+  MenuSeparator,
+  MenuItem,
 } from './menu'
 import { Portal } from './portal'
 
-export interface DropdownItemProps extends Omit<MenuItemProps, 'onSelect' | 'textValue'> {
+export interface DropdownItemProps extends Omit<MenuItem, 'onSelect' | 'textValue'> {
   value: string
   content?: ReactNode
   disabled?: boolean
 }
 
-export interface DropdownProps extends MenuProps {
+export interface Dropdown extends Menu {
   value?: string
   defaultValue?: string
   defaultActiveFirstItem?: boolean
@@ -32,7 +31,7 @@ export interface DropdownProps extends MenuProps {
 
 type DropdownItem = DropdownItemProps | 'separator'
 
-export const Dropdown: FC<DropdownProps> = ({
+export const Dropdown: FC<Dropdown> = ({
   children,
   disabled,
   items,
@@ -64,11 +63,11 @@ export const Dropdown: FC<DropdownProps> = ({
   const renderItems = (items: DropdownItem[]) => {
     return items.map((item, index) => {
       if (item === 'separator') {
-        return <Separator key={index} />
+        return <MenuSeparator key={index} />
       } else {
         const { value, content, disabled, ...props } = item
         return (
-          <RadioItem
+          <MenuRadioItem
             disabled={disabled}
             key={value}
             value={value}
@@ -77,11 +76,11 @@ export const Dropdown: FC<DropdownProps> = ({
             onMouseDown={e => e.preventDefault()}
             {...props}
           >
-            <ItemIndicator tw="absolute left-3 top-0 my-2 text-gray-400">
+            <MenuItemIndicator tw="absolute left-3 top-0 my-2 text-gray-400">
               <Icon name="check" />
-            </ItemIndicator>
+            </MenuItemIndicator>
             {content ?? value}
-          </RadioItem>
+          </MenuRadioItem>
         )
       }
     })
@@ -102,8 +101,8 @@ export const Dropdown: FC<DropdownProps> = ({
   }, [items, value])
 
   return (
-    <Root open={open} onOpenChange={onOpenChange} dir={dir}>
-      <Anchor>
+    <Menu open={open} onOpenChange={onOpenChange} dir={dir}>
+      <MenuAnchor>
         <button
           disabled={disabled}
           css={[
@@ -133,19 +132,19 @@ export const Dropdown: FC<DropdownProps> = ({
           {children ?? activeItem?.children ?? value}
           <Icon name="arrowCaretDown" tw="text-xxs text-gray-400" />
         </button>
-      </Anchor>
+      </MenuAnchor>
       <Portal>
-        <Content
+        <MenuContent
           align="start"
           onEscapeKeyDown={() => setOpen(false)}
           onPointerDownOutside={() => setOpen(false)}
           tw="absolute overflow-hidden rounded-sm border border-solid border-gray-200 bg-white shadow-md"
         >
-          <RadioGroup value={value} onValueChange={onValueChange}>
+          <MenuRadioGroup value={value} onValueChange={onValueChange}>
             {renderItems(items)}
-          </RadioGroup>
-        </Content>
+          </MenuRadioGroup>
+        </MenuContent>
       </Portal>
-    </Root>
+    </Menu>
   )
 }

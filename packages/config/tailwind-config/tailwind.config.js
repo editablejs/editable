@@ -32,6 +32,7 @@ module.exports = {
       '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
       inner: 'inset 0 1px 4px 0 rgba(0, 0, 0, 0.05)',
       none: 'none',
+      outer: '0 2px 6px 2px rgb(60 64 67 / 15%)'
     },
     extend: {
       maxWidth: {

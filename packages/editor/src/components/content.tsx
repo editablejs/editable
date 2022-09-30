@@ -141,8 +141,8 @@ export const ContentEditable = (props: EditableProps) => {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         Editable.focus(editor)
       }
-      const range = handleSelecting(Editable.findEventPoint(editor, event), !isContextMenu.current)
-      if (range) editor.onSelectEnd()
+      handleSelecting(Editable.findEventPoint(editor, event), !isContextMenu.current)
+      editor.onSelectEnd()
     }
     isContextMenu.current = false
     IS_MOUSEDOWN.set(editor, false)

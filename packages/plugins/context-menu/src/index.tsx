@@ -1,17 +1,12 @@
-import {
-  Editable,
-  useEditable,
-  useEditableStatic,
-  useIsomorphicLayoutEffect,
-} from '@editablejs/editor'
+import { Editable, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { FC, useCallback, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
 import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
   ContextMenuSeparator,
   ContextMenuSub,
+  Portal,
 } from '@editablejs/plugin-ui'
 
 export interface ContextMenuOptions {}
@@ -116,13 +111,14 @@ const ContextComponent = () => {
   )
 
   if (containerRef.current && rootRef.current)
-    return ReactDOM.createPortal(
-      <ContextMenu
-        items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))}
-        container={containerRef.current}
-        onOpenChange={handleOpenChange}
-      />,
-      rootRef.current,
+    return (
+      <Portal container={rootRef.current}>
+        <ContextMenu
+          items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))}
+          container={containerRef.current}
+          onOpenChange={handleOpenChange}
+        />
+      </Portal>
     )
   return null
 }

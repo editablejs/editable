@@ -1,10 +1,10 @@
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import tw, { styled } from 'twin.macro'
-import { Button, ButtonProps } from './button'
-import { Dropdown, DropdownProps } from './dropdown'
+import { Button } from './button'
+import { Dropdown } from './dropdown'
 import { Tooltip } from './tooltip'
 
-export interface ToolbarButton extends ButtonProps {
+export interface ToolbarButton extends Button {
   title?: ReactNode
   onToggle: () => void
 }
@@ -26,7 +26,7 @@ export const ToolbarSeparator: FC<HTMLAttributes<HTMLDivElement>> = props => (
   </div>
 )
 
-export interface ToolbarDropdown extends DropdownProps {
+export interface ToolbarDropdown extends Dropdown {
   onToggle: (value: string) => void
 }
 

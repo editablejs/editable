@@ -28,7 +28,7 @@ import { useSize } from './hooks/use-size'
 import { useComposedRefs } from './compose-refs'
 import { Measurable } from './observeElementRect'
 import { useIsomorphicLayoutEffect } from './utils'
-import { Root as ArrowRoot } from './arrow'
+import { Arrow } from './arrow'
 import { Slot } from './slot'
 
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
@@ -352,8 +352,8 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 }
 
-type PopperArrowElement = ElementRef<typeof ArrowRoot>
-type ArrowProps = ComponentPropsWithoutRef<typeof ArrowRoot>
+type PopperArrowElement = ElementRef<typeof Arrow>
+type ArrowProps = ComponentPropsWithoutRef<typeof Arrow>
 interface PopperArrowProps extends ArrowProps {}
 
 const PopperArrow = forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
@@ -390,7 +390,7 @@ const PopperArrow = forwardRef<PopperArrowElement, PopperArrowProps>(function Po
         visibility: contentContext.shouldHideArrow ? 'hidden' : undefined,
       }}
     >
-      <ArrowRoot
+      <Arrow
         {...arrowProps}
         ref={forwardedRef}
         style={{
@@ -457,22 +457,12 @@ function getSideAndAlignFromPlacement(placement: Placement) {
   return [side as Side, align as Align] as const
 }
 
-const Root = Popper
-const Anchor = PopperAnchor
-const Content = PopperContent
-const Arrow = PopperArrow
-
 export {
   //
   Popper,
   PopperAnchor,
   PopperContent,
   PopperArrow,
-  //
-  Root,
-  Anchor,
-  Content,
-  Arrow,
   //
   SIDE_OPTIONS,
   ALIGN_OPTIONS,

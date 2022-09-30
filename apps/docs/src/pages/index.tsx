@@ -1,5 +1,5 @@
 import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor'
-import { Toolbar, withPlugins } from '@editablejs/plugins'
+import { Toolbar, withPlugins, withInlineToolbar } from '@editablejs/plugins'
 import React, { useState } from 'react'
 import tw, { styled } from 'twin.macro'
 import { defaultToolbarConfig } from '../toolbar-config'
@@ -40,9 +40,11 @@ const StyledContainer = tw.div`mt-5`
 
 export default function Docs() {
   const [editor] = useState(
-    withPlugins(createEditor(), {
-      'font-size': { defaultSize: '14px' },
-    }),
+    withInlineToolbar(
+      withPlugins(createEditor(), {
+        'font-size': { defaultSize: '14px' },
+      }),
+    ),
   )
 
   return (

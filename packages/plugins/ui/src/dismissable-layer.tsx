@@ -24,7 +24,7 @@ const DismissableLayerContext = React.createContext({
 
 type DismissableLayerElement = React.ElementRef<'div'>
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
-interface DismissableLayerProps extends PrimitiveDivProps {
+interface DismissableLayer extends PrimitiveDivProps {
   /**
    * When `true`, hover/focus/click interactions will be disabled on elements outside
    * the `DismissableLayer`. Users will need to click twice on outside elements to
@@ -58,7 +58,7 @@ interface DismissableLayerProps extends PrimitiveDivProps {
   onDismiss?: () => void
 }
 
-const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayerProps>(
+const DismissableLayer = React.forwardRef<DismissableLayerElement, DismissableLayer>(
   (props, forwardedRef) => {
     const {
       disableOutsidePointerEvents = false,
@@ -336,14 +336,4 @@ function handleAndDispatchCustomEvent<E extends CustomEvent, OriginalEvent exten
   }
 }
 
-const Root = DismissableLayer
-const Branch = DismissableLayerBranch
-
-export {
-  DismissableLayer,
-  DismissableLayerBranch,
-  //
-  Root,
-  Branch,
-}
-export type { DismissableLayerProps }
+export { DismissableLayer, DismissableLayerBranch }

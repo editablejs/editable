@@ -8,9 +8,9 @@ const NAME = 'Arrow'
 
 type ArrowElement = React.ElementRef<'svg'>
 type PrimitiveSvgProps = React.ComponentPropsWithoutRef<'svg'>
-interface ArrowProps extends PrimitiveSvgProps {}
+interface Arrow extends PrimitiveSvgProps {}
 
-const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) => {
+const Arrow = React.forwardRef<ArrowElement, Arrow>((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props
   return (
     <svg
@@ -28,13 +28,4 @@ const Arrow = React.forwardRef<ArrowElement, ArrowProps>((props, forwardedRef) =
 
 Arrow.displayName = NAME
 
-/* -----------------------------------------------------------------------------------------------*/
-
-const Root = Arrow
-
-export {
-  Arrow,
-  //
-  Root,
-}
-export type { ArrowProps }
+export { Arrow }

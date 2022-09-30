@@ -1,6 +1,5 @@
 import { Editable } from '@editablejs/editor'
 import * as UI from '@editablejs/plugin-ui'
-import Toolbar from '@editablejs/plugin-toolbar'
 import { MarkEditor, MarkOptions, withMark } from '@editablejs/plugin-mark'
 import { FontSizeEditor, FontSizeOptions, withFontSize } from '@editablejs/plugin-fontsize'
 import { HeadingEditor, HeadingOptions, withHeading } from '@editablejs/plugin-heading'
@@ -80,5 +79,5 @@ export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
 export * from '@editablejs/plugin-clipboard'
 export * from '@editablejs/plugin-serializes'
-
-export { Toolbar, UI }
+export * from '@editablejs/plugin-toolbar'
+export { UI }

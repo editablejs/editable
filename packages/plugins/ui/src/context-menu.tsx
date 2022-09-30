@@ -1,10 +1,16 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import tw, { css } from 'twin.macro'
-import { unbundleFocusRadixUi } from './utils'
 import { Icon } from './icon'
-import { Popper, PopperAnchor, PopperContent } from './popper'
-import { DismissableLayer } from './dismissable-layer'
-import { Anchor, Content, Item, Root, Separator, Sub, SubContent, SubTrigger } from './menu'
+import {
+  MenuAnchor,
+  MenuContent,
+  MenuItem,
+  Menu,
+  MenuSeparator,
+  MenuSub,
+  MenuSubContent,
+  MenuSubTrigger,
+} from './menu'
 export interface ContextMenuItem {
   icon?: JSX.Element
   rightText?: JSX.Element | string
@@ -50,7 +56,7 @@ export const ContextMenuItem: FC<ContextMenuItem> = ({
     )
   }
   return (
-    <Item
+    <MenuItem
       css={itemCls(disabled)}
       onMouseDown={e => {
         e.preventDefault()
@@ -65,7 +71,7 @@ export const ContextMenuItem: FC<ContextMenuItem> = ({
       ) : (
         render()
       )}
-    </Item>
+    </MenuItem>
   )
 }
 
@@ -75,18 +81,18 @@ export interface ContextMenuSub extends Omit<ContextMenuItem, 'rightText' | 'hre
 
 export const ContextMenuSub: FC<ContextMenuSub> = ({ title, icon, children, disabled }) => {
   return (
-    <Sub>
-      <SubTrigger disabled={disabled} css={itemCls(disabled)}>
+    <MenuSub>
+      <MenuSubTrigger disabled={disabled} css={itemCls(disabled)}>
         {icon && <span css={iconCls(disabled)}>{icon}</span>}
         {title}
         <div css={rightCls(disabled)}>
           <Icon name="arrowRight" />
         </div>
-      </SubTrigger>
-      <SubContent sideOffset={2} alignOffset={-5}>
+      </MenuSubTrigger>
+      <MenuSubContent sideOffset={2} alignOffset={-5}>
         {children}
-      </SubContent>
-    </Sub>
+      </MenuSubContent>
+    </MenuSub>
   )
 }
 
@@ -96,7 +102,7 @@ export interface ContextMenuSeparatorProps {
 
 export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
   return (
-    <Separator
+    <MenuSeparator
       css={[
         tw`my-1 bg-gray-300`,
         css`
@@ -153,21 +159,21 @@ export const ContextMenu: FC<ContextMenu> = ({
   }, [container, handleOpenChange])
 
   return (
-    <Root open={open} onOpenChange={handleOpenChange}>
-      <Anchor virtualRef={virtualRef} />
-      <Content
+    <Menu open={open} onOpenChange={handleOpenChange}>
+      <MenuAnchor virtualRef={virtualRef} />
+      <MenuContent
         side="right"
         sideOffset={2}
         align="start"
         onEscapeKeyDown={() => handleOpenChange(false)}
         onPointerDownOutside={() => handleOpenChange(false)}
         css={[
-          tw`z-50 overflow-hidden rounded border border-solid border-transparent bg-white py-2 shadow-[0_2px_6px_2px_rgb(60,64,67,0.15)]`,
+          tw`z-50 overflow-hidden rounded border border-solid border-gray-300 bg-white py-2 shadow-outer`,
           className,
         ]}
       >
         {children}
-      </Content>
-    </Root>
+      </MenuContent>
+    </Menu>
   )
 }

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as Popper from './popper'
+import { Popper, PopperAnchor, PopperArrow, PopperContent } from './popper'
 import { createCollection } from './collection'
 import { useCallbackRef } from './hooks/use-callback-ref'
 import { Presence } from './presence'
@@ -54,14 +54,14 @@ const MenuRootContext = React.createContext<MenuRootContextValue>({} as any)
 
 const useMenuRootContext = () => React.useContext(MenuRootContext)
 
-interface MenuProps {
+interface Menu {
   children?: React.ReactNode
   open?: boolean
   onOpenChange?(open: boolean): void
   dir?: Direction
 }
 
-const Menu: React.FC<MenuProps> = props => {
+const Menu: React.FC<Menu> = props => {
   const { open = false, children, dir, onOpenChange } = props
   const [content, setContent] = React.useState<MenuContentElement | null>(null)
   const isUsingKeyboardRef = React.useRef(false)
@@ -86,7 +86,7 @@ const Menu: React.FC<MenuProps> = props => {
   }, [])
 
   return (
-    <Popper.Root>
+    <Popper>
       <MenuContext.Provider
         value={{
           open,
@@ -105,7 +105,7 @@ const Menu: React.FC<MenuProps> = props => {
           {children}
         </MenuRootContext.Provider>
       </MenuContext.Provider>
-    </Popper.Root>
+    </Popper>
   )
 }
 
@@ -117,13 +117,13 @@ Menu.displayName = MENU_NAME
 
 const ANCHOR_NAME = 'MenuAnchor'
 
-type MenuAnchorElement = React.ElementRef<typeof Popper.Anchor>
-type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof Popper.Anchor>
-interface MenuAnchorProps extends PopperAnchorProps {}
+type MenuAnchorElement = React.ElementRef<typeof PopperAnchor>
+type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperAnchor>
+interface MenuAnchor extends PopperAnchorProps {}
 
-const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchorProps>((props, forwardedRef) => {
+const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchor>((props, forwardedRef) => {
   const { ...anchorProps } = props
-  return <Popper.Anchor {...anchorProps} ref={forwardedRef} />
+  return <PopperAnchor {...anchorProps} ref={forwardedRef} />
 })
 
 MenuAnchor.displayName = ANCHOR_NAME
@@ -195,9 +195,9 @@ MenuRootContent.displayName = 'MenuRootContent'
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuContentImplElement = React.ElementRef<typeof Popper.Content>
+type MenuContentImplElement = React.ElementRef<typeof PopperContent>
 type DismissableLayerProps = React.ComponentPropsWithoutRef<typeof DismissableLayer>
-type PopperContentProps = React.ComponentPropsWithoutRef<typeof Popper.Content>
+type PopperContentProps = React.ComponentPropsWithoutRef<typeof PopperContent>
 type MenuContentImplPrivateProps = {
   onDismiss?: DismissableLayerProps['onDismiss']
   disableOutsidePointerEvents?: DismissableLayerProps['disableOutsidePointerEvents']
@@ -290,7 +290,7 @@ const MenuContentImpl = React.forwardRef<MenuContentImplElement, MenuContentImpl
           onInteractOutside={onInteractOutside}
           onDismiss={onDismiss}
         >
-          <Popper.Content
+          <PopperContent
             role="menu"
             aria-orientation="vertical"
             data-state={getOpenState(context.open)}
@@ -374,9 +374,9 @@ MenuGroup.displayName = GROUP_NAME
 const LABEL_NAME = 'MenuLabel'
 
 type MenuLabelElement = React.ElementRef<'div'>
-interface MenuLabelProps extends PrimitiveDivProps {}
+interface MenuLabel extends PrimitiveDivProps {}
 
-const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabelProps>((props, forwardedRef) => {
+const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabel>((props, forwardedRef) => {
   return <div {...props} ref={forwardedRef} />
 })
 
@@ -390,11 +390,11 @@ const ITEM_NAME = 'MenuItem'
 const ITEM_SELECT = 'menu.itemSelect'
 
 type MenuItemElement = MenuItemImplElement
-interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
+interface MenuItem extends Omit<MenuItemImplProps, 'onSelect'> {
   onSelect?: (event: Event) => void
 }
 
-const MenuItem = React.forwardRef<MenuItemElement, MenuItemProps>((props, forwardedRef) => {
+const MenuItem = React.forwardRef<MenuItemElement, MenuItem>((props, forwardedRef) => {
   const { disabled = false, onSelect, ...itemProps } = props
   const ref = React.useRef<HTMLDivElement>(null)
   const rootContext = useMenuRootContext()
@@ -527,7 +527,7 @@ MenuItemImpl.displayName = 'MenuItemImpl'
 
 const RADIO_GROUP_NAME = 'MenuRadioGroup'
 
-const RadioGroupContext = React.createContext<MenuRadioGroupProps>({
+const RadioGroupContext = React.createContext<MenuRadioGroup>({
   value: undefined,
   onValueChange: () => {},
 })
@@ -535,12 +535,12 @@ const RadioGroupContext = React.createContext<MenuRadioGroupProps>({
 const useRadioGroupContext = () => React.useContext(RadioGroupContext)
 
 type MenuRadioGroupElement = React.ElementRef<typeof MenuGroup>
-interface MenuRadioGroupProps extends MenuGroupProps {
+interface MenuRadioGroup extends MenuGroupProps {
   value?: string
   onValueChange?: (value: string) => void
 }
 
-const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroupProps>(
+const MenuRadioGroup = React.forwardRef<MenuRadioGroupElement, MenuRadioGroup>(
   (props, forwardedRef) => {
     const { value, onValueChange, ...groupProps } = props
     const handleValueChange = useCallbackRef(onValueChange)
@@ -566,11 +566,11 @@ MenuRadioGroup.displayName = RADIO_GROUP_NAME
 const RADIO_ITEM_NAME = 'MenuRadioItem'
 
 type MenuRadioItemElement = React.ElementRef<typeof MenuItem>
-interface MenuRadioItemProps extends MenuItemProps {
+interface MenuRadioItem extends MenuItem {
   value: string
 }
 
-const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItemProps>(
+const MenuRadioItem = React.forwardRef<MenuRadioItemElement, MenuRadioItem>(
   (props, forwardedRef) => {
     const { value, ...radioItemProps } = props
     const context = useRadioGroupContext()
@@ -610,7 +610,7 @@ const useItemIndicatorContext = () => React.useContext(ItemIndicatorContext)
 
 type MenuItemIndicatorElement = React.ElementRef<'span'>
 type PrimitiveSpanProps = React.ComponentPropsWithoutRef<'span'>
-interface MenuItemIndicatorProps extends PrimitiveSpanProps {
+interface MenuItemIndicator extends PrimitiveSpanProps {
   /**
    * Used to force mounting when more control is needed. Useful when
    * controlling animation with React animation libraries.
@@ -618,7 +618,7 @@ interface MenuItemIndicatorProps extends PrimitiveSpanProps {
   forceMount?: true
 }
 
-const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemIndicatorProps>(
+const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemIndicator>(
   (props, forwardedRef) => {
     const { forceMount, ...itemIndicatorProps } = props
     const indicatorContext = useItemIndicatorContext()
@@ -643,9 +643,9 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME
 const SEPARATOR_NAME = 'MenuSeparator'
 
 type MenuSeparatorElement = React.ElementRef<'div'>
-interface MenuSeparatorProps extends PrimitiveDivProps {}
+interface MenuSeparator extends PrimitiveDivProps {}
 
-const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparatorProps>(
+const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparator>(
   (props, forwardedRef) => {
     return <div role="separator" aria-orientation="horizontal" {...props} ref={forwardedRef} />
   },
@@ -659,13 +659,13 @@ MenuSeparator.displayName = SEPARATOR_NAME
 
 const ARROW_NAME = 'MenuArrow'
 
-type MenuArrowElement = React.ElementRef<typeof Popper.Arrow>
-type PopperArrowProps = React.ComponentPropsWithoutRef<typeof Popper.Arrow>
-interface MenuArrowProps extends PopperArrowProps {}
+type MenuArrowElement = React.ElementRef<typeof PopperArrow>
+type PopperArrowProps = React.ComponentPropsWithoutRef<typeof PopperArrow>
+interface MenuArrow extends PopperArrowProps {}
 
-const MenuArrow = React.forwardRef<MenuArrowElement, MenuArrowProps>(
-  (props: MenuArrowProps, forwardedRef) => {
-    return <Popper.Arrow {...props} ref={forwardedRef} />
+const MenuArrow = React.forwardRef<MenuArrowElement, MenuArrow>(
+  (props: MenuArrow, forwardedRef) => {
+    return <PopperArrow {...props} ref={forwardedRef} />
   },
 )
 
@@ -688,13 +688,13 @@ const MenuSubContext = React.createContext<MenuSubContextValue>({} as any)
 
 const useMenuSubContext = () => React.useContext(MenuSubContext)
 
-interface MenuSubProps {
+interface MenuSub {
   children?: React.ReactNode
   open?: boolean
   onOpenChange?(open: boolean): void
 }
 
-const MenuSub: React.FC<MenuSubProps> = props => {
+const MenuSub: React.FC<MenuSub> = props => {
   const { children, open = false, onOpenChange } = props
   const parentMenuContext = useMenuContext()
   const [trigger, setTrigger] = React.useState<MenuSubTriggerElement | null>(null)
@@ -708,7 +708,7 @@ const MenuSub: React.FC<MenuSubProps> = props => {
   }, [parentMenuContext.open, handleOpenChange])
 
   return (
-    <Popper.Root>
+    <Popper>
       <MenuContext.Provider
         value={{
           open,
@@ -728,7 +728,7 @@ const MenuSub: React.FC<MenuSubProps> = props => {
           {children}
         </MenuSubContext.Provider>
       </MenuContext.Provider>
-    </Popper.Root>
+    </Popper>
   )
 }
 
@@ -741,9 +741,9 @@ MenuSub.displayName = SUB_NAME
 const SUB_TRIGGER_NAME = 'MenuSubTrigger'
 
 type MenuSubTriggerElement = MenuItemImplElement
-interface MenuSubTriggerProps extends MenuItemImplProps {}
+interface MenuSubTrigger extends MenuItemImplProps {}
 
-const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTriggerProps>(
+const MenuSubTrigger = React.forwardRef<MenuSubTriggerElement, MenuSubTrigger>(
   (props, forwardedRef) => {
     const context = useMenuContext()
     const rootContext = useMenuRootContext()
@@ -863,7 +863,7 @@ MenuSubTrigger.displayName = SUB_TRIGGER_NAME
 const SUB_CONTENT_NAME = 'MenuSubContent'
 
 type MenuSubContentElement = MenuContentImplElement
-interface MenuSubContentProps
+interface MenuSubContent
   extends Omit<
     MenuContentImplProps,
     keyof MenuContentImplPrivateProps | 'onCloseAutoFocus' | 'side' | 'align'
@@ -875,7 +875,7 @@ interface MenuSubContentProps
   forceMount?: true
 }
 
-const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContentProps>(
+const MenuSubContent = React.forwardRef<MenuSubContentElement, MenuSubContent>(
   (props, forwardedRef) => {
     const context = useMenuContext()
     const rootContext = useMenuRootContext()
@@ -1002,22 +1002,7 @@ function whenMouse<E>(handler: React.PointerEventHandler<E>): React.PointerEvent
   return event => (event.pointerType === 'mouse' ? handler(event) : undefined)
 }
 
-const Root = Menu
-const Anchor = MenuAnchor
-const Content = MenuContent
-const Label = MenuLabel
-const Item = MenuItem
-const RadioGroup = MenuRadioGroup
-const RadioItem = MenuRadioItem
-const ItemIndicator = MenuItemIndicator
-const Separator = MenuSeparator
-const Arrow = MenuArrow
-const Sub = MenuSub
-const SubTrigger = MenuSubTrigger
-const SubContent = MenuSubContent
-
 export {
-  //
   Menu,
   MenuAnchor,
   MenuContent,
@@ -1031,32 +1016,4 @@ export {
   MenuSub,
   MenuSubTrigger,
   MenuSubContent,
-  //
-  Root,
-  Anchor,
-  Content,
-  Label,
-  Item,
-  RadioGroup,
-  RadioItem,
-  ItemIndicator,
-  Separator,
-  Arrow,
-  Sub,
-  SubTrigger,
-  SubContent,
-}
-export type {
-  MenuProps,
-  MenuAnchorProps,
-  MenuLabelProps,
-  MenuItemProps,
-  MenuRadioGroupProps,
-  MenuRadioItemProps,
-  MenuItemIndicatorProps,
-  MenuSeparatorProps,
-  MenuArrowProps,
-  MenuSubProps,
-  MenuSubTriggerProps,
-  MenuSubContentProps,
 }

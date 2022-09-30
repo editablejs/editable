@@ -1,13 +1,13 @@
-import React, { FC, AnchorHTMLAttributes, forwardRef } from 'react'
+import React, { AnchorHTMLAttributes, forwardRef } from 'react'
 import tw, { css, styled } from 'twin.macro'
 
-export interface ButtonProps {
+export interface Button {
   active?: boolean
   disabled?: boolean
   children?: React.ReactNode
 }
 
-const ButtonStyles = styled.button(({ active, disabled }: ButtonProps) => [
+const ButtonStyles = styled.button(({ active, disabled }: Button) => [
   tw`flex cursor-pointer items-center rounded-sm border-0 bg-transparent px-1 py-1 disabled:cursor-not-allowed disabled:hover:bg-transparent`,
   active && tw`text-primary bg-blue-100 hover:bg-blue-100`,
   !active && tw`hover:(bg-gray-100)`,
@@ -24,7 +24,7 @@ const ButtonStyles = styled.button(({ active, disabled }: ButtonProps) => [
 
 export const Button = forwardRef<
   HTMLButtonElement,
-  ButtonProps & AnchorHTMLAttributes<HTMLButtonElement>
+  Button & AnchorHTMLAttributes<HTMLButtonElement>
 >(({ type, ...props }, ref) => {
   return (
     <ButtonStyles

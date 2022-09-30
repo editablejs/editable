@@ -1,6 +1,6 @@
 import { FC, ReactNode, useRef, useState } from 'react'
 import { DismissableLayer } from './dismissable-layer'
-import { Anchor, Arrow, Content, Popper } from './popper'
+import { PopperAnchor, PopperArrow, PopperContent, Popper } from './popper'
 import { Portal } from './portal'
 import { Presence } from './presence'
 
@@ -41,7 +41,7 @@ export const Tooltip: FC<TooltipProps> = ({
 
   return (
     <Popper>
-      <Anchor
+      <PopperAnchor
         onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
         onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
         onMouseDown={event => {
@@ -50,18 +50,18 @@ export const Tooltip: FC<TooltipProps> = ({
         }}
       >
         {children}
-      </Anchor>
+      </PopperAnchor>
       <Presence present={open}>
         <DismissableLayer onPointerDownOutside={() => setOpen(false)}>
           <Portal>
-            <Content
+            <PopperContent
               onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
               onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
               tw="text-white bg-black bg-opacity-80 text-center text-sm rounded-sm px-3 py-2 z-50"
             >
               {content}
-              <Arrow />
-            </Content>
+              <PopperArrow />
+            </PopperContent>
           </Portal>
         </DismissableLayer>
       </Presence>

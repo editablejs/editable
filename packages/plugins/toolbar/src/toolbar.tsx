@@ -1,10 +1,14 @@
-import React, { createContext, FC, memo, useContext, useEffect, useRef, useState } from 'react'
-import {
-  Editable,
-  useEditable,
-  useEditableStatic,
-  useIsomorphicLayoutEffect,
-} from '@editablejs/editor'
+import React, {
+  createContext,
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
+import { Editable, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import {
   Toolbar as UIToolbar,
   ToolbarButton as UIToolbarButton,
@@ -123,20 +127,22 @@ export const ToolbarDropdown = memo(ToolbarDropdownDefault, (prev, next) => {
 
 export type ToolbarItem = ToolbarButton | ToolbarDropdown | 'separator'
 
-export interface ToolbarProps {
-  items: ToolbarItem[]
+export interface Toolbar {
+  items?: ToolbarItem[]
 }
 
-const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = ({
-  items,
+export const Toolbar: React.FC<Toolbar & React.HTMLAttributes<HTMLDivElement>> = ({
+  items: itemsProp,
   className,
   ...props
 }) => {
-  const editor = useEditableStatic()
+  const editor = useEditableStatic() as ToolbarEditor
+
+  const [items, setItems] = useState<ToolbarItem[]>([])
 
   const eventListeners = useRef<EditorChangeHandler[]>([]).current
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const { onSelectionChange } = editor
     const dispatch = () => {
       eventListeners.forEach(callback => callback(editor))
@@ -144,12 +150,13 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
     editor.onSelectionChange = () => {
       onSelectionChange()
       dispatch()
+      setItems(editor.onToolbar(itemsProp || []))
     }
     dispatch()
     return () => {
       editor.onSelectionChange = onSelectionChange
     }
-  }, [editor, eventListeners])
+  }, [editor, eventListeners, itemsProp])
 
   const renderItem = (item: ToolbarItem, key: any) => {
     if (item === 'separator') return <ToolbarSeparator key={key} />
@@ -172,9 +179,33 @@ const Toolbar: React.FC<ToolbarProps & React.HTMLAttributes<HTMLDivElement>> = (
         },
       }}
     >
-      <UIToolbar {...props}>{items.map(renderItem)}</UIToolbar>
+      <UIToolbar {...props}>{(items ?? []).map(renderItem)}</UIToolbar>
     </ToolbarContext.Provider>
   )
 }
 
-export default Toolbar
+export const TOOLBAR_OPTIONS = new WeakMap<Editable, Toolbar>()
+
+export interface ToolbarEditor extends Editable {
+  onToolbar: (items: ToolbarItem[]) => ToolbarItem[]
+}
+
+export const ToolbarEditor = {
+  isToolbarEditor: (editor: Editable): editor is ToolbarEditor => {
+    return !!(editor as ToolbarEditor).onToolbar
+  },
+
+  getOptions: (editor: Editable): Toolbar => {
+    return TOOLBAR_OPTIONS.get(editor) ?? {}
+  },
+}
+
+export const withToolbar = <T extends Editable>(editor: T, options: Toolbar = {}) => {
+  const newEditor = editor as T & ToolbarEditor
+
+  TOOLBAR_OPTIONS.set(editor, options)
+
+  newEditor.onToolbar = items => items
+
+  return newEditor
+}

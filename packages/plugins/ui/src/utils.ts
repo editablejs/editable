@@ -1,14 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
 import ReactDOM from 'react-dom'
 
-export const unbundleFocusRadixUi = (
-  el: HTMLElement | null,
-  ref?: React.MutableRefObject<HTMLElement | null>,
-) => {
-  if (el) el.focus = () => {}
-  if (ref) ref.current = el
-}
-
 export const composeEventHandlers = <E>(
   originalEventHandler?: (event: E) => void,
   ourEventHandler?: (event: E) => void,

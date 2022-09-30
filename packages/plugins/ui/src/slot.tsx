@@ -5,11 +5,11 @@ import { composeRefs } from './compose-refs'
  * Slot
  * -----------------------------------------------------------------------------------------------*/
 
-interface SlotProps extends React.HTMLAttributes<HTMLElement> {
+interface Slot extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode
 }
 
-const Slot = React.forwardRef<HTMLElement, SlotProps>((props, forwardedRef) => {
+const Slot = React.forwardRef<HTMLElement, Slot>((props, forwardedRef) => {
   const { children, ...slotProps } = props
   const childrenArray = React.Children.toArray(children)
   const slottable = childrenArray.find(isSlottable)
@@ -53,15 +53,15 @@ Slot.displayName = 'Slot'
  * SlotClone
  * -----------------------------------------------------------------------------------------------*/
 
-interface SlotCloneProps {
+interface SlotClone {
   children: React.ReactNode
 }
 
-const SlotClone = React.forwardRef<any, SlotCloneProps>((props, forwardedRef) => {
+const SlotClone = React.forwardRef<any, SlotClone>((props, forwardedRef) => {
   const { children, ...slotProps } = props
 
   if (React.isValidElement(children)) {
-    return React.cloneElement(children, {
+    return React.cloneElement<any>(children, {
       ...mergeProps(slotProps, children.props),
       ref: composeRefs(forwardedRef, (children as any).ref),
     })
@@ -115,12 +115,4 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   return { ...slotProps, ...overrideProps }
 }
 
-const Root = Slot
-
-export {
-  Slot,
-  Slottable,
-  //
-  Root,
-}
-export type { SlotProps }
+export { Slot, Slottable }
