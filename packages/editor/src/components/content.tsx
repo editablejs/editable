@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Editor, Node, Range, Transforms, Point, Selection } from 'slate'
+import { Editor, Node, Range, Transforms, Point, Selection, Descendant } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
@@ -25,12 +25,12 @@ import { getWordRange } from '../utils/text'
 import { useMultipleClick } from '../hooks/use-multiple-click'
 import { SelectionStyle } from '../plugin/editable'
 import { useFocused } from '../hooks/use-focused'
-import Shadow from './shadow'
+import Shadow, { ShadowRect } from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
-import { DrawSelectionContext } from '../hooks/user-draw-selection'
-import { getRectsByRange } from '../utils/selection'
+import { DrawSelectionContext } from '../hooks/use-draw-selection'
+import { cloneDeep } from 'lodash'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -40,6 +40,7 @@ const SELECTION_DEFAULT_BLUR_COLOR = 'rgba(136, 136, 136, 0.3)'
 const SELECTION_DEFAULT_FOCUS_COLOR = 'rgba(0,127,255,0.3)'
 const SELECTION_DEFAULT_CARET_COLOR = '#000'
 const SELECTION_DEFAULT_CARET_WIDTH = 1
+const SELECTION_DEFAULT_DRAG_COLOR = 'rgb(37, 99, 235)'
 
 /**
  * `EditableProps` are passed to the `<Editable>` component.
@@ -62,9 +63,15 @@ const mergeSelectionStyle = (
     blurColor: SELECTION_DEFAULT_BLUR_COLOR,
     caretColor: SELECTION_DEFAULT_CARET_COLOR,
     caretWidth: SELECTION_DEFAULT_CARET_WIDTH,
+    dragColor: SELECTION_DEFAULT_DRAG_COLOR,
   },
 ): Required<SelectionStyle> => {
   return Object.assign({}, oldStyle, selectionStyle) as Required<SelectionStyle>
+}
+
+interface Drag {
+  from: Range
+  data: Descendant[]
 }
 
 /**
@@ -83,7 +90,7 @@ export const ContentEditable = (props: EditableProps) => {
   } = props
   const editor = useEditableStatic()
   const [rendered, setRendered] = useState(false)
-  // 当前编辑器 selection 对象，设置后重绘光标位置
+
   const [drawSelection, setDrawSelection] = useState<Selection>(null)
   const [drawSelectionStyle, setDrawSelectionStyle] = useState(
     mergeSelectionStyle(selectionStyle ?? {}),
@@ -92,6 +99,8 @@ export const ContentEditable = (props: EditableProps) => {
   const [isDrawSelection, setIsDrawSelection] = useState(true)
 
   const ref = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<Drag | null>(null)
+  const [dragTo, setDragTo] = useState<Range | null>(null)
 
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
@@ -145,7 +154,32 @@ export const ContentEditable = (props: EditableProps) => {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         Editable.focus(editor)
       }
-      handleSelecting(Editable.findEventPoint(editor, event), !isContextMenu.current)
+      const point = Editable.findEventPoint(editor, event)
+      if (point && dragRef.current) {
+        const { from, data } = dragRef.current
+        if (!Range.includes(from, point)) {
+          Transforms.delete(editor, {
+            at: from,
+            unit: 'line',
+            hanging: true,
+          })
+          Transforms.select(editor, point)
+          Transforms.insertFragment(editor, data)
+          const { selection } = editor
+          if (selection) {
+            Transforms.select(editor, {
+              anchor: point,
+              focus: selection.focus,
+            })
+          }
+        } else {
+          Transforms.select(editor, point)
+        }
+      } else {
+        handleSelecting(point, !isContextMenu.current)
+      }
+      dragRef.current = null
+      setDragTo(null)
       editor.onSelectEnd()
     }
     isContextMenu.current = false
@@ -157,6 +191,14 @@ export const ContentEditable = (props: EditableProps) => {
     if (event.button !== 0 || !isMouseDown || event.defaultPrevented || isContextMenu.current)
       return
     const point = Editable.findEventPoint(editor, event)
+
+    if (point && dragRef.current) {
+      setDragTo({
+        anchor: point,
+        focus: point,
+      })
+      return
+    }
     const range = handleSelecting(point)
     if (range) editor.onSelecting()
   }
@@ -176,10 +218,24 @@ export const ContentEditable = (props: EditableProps) => {
     if (point) {
       const isShift = IS_SHIFT_PRESSED.get(editor)
       if (!isShift) {
-        startPointRef.current = point
+        const { selection } = editor
         if (event.button === 2) {
           isContextMenu.current = true
+        } else if (
+          selection &&
+          Range.isExpanded(selection) &&
+          Range.includes(selection, point) &&
+          !Point.equals(Range.end(selection), point) &&
+          !Point.equals(Range.start(selection), point)
+        ) {
+          dragRef.current = {
+            from: selection,
+            data: cloneDeep(Node.fragment(editor, selection)),
+          }
+          editor.onSelectStart()
+          return
         }
+        startPointRef.current = point
       }
       const range = handleSelecting(point, !isContextMenu.current)
       if (range) editor.onSelectStart()
@@ -278,12 +334,17 @@ export const ContentEditable = (props: EditableProps) => {
   }, [editor])
 
   useIsomorphicLayoutEffect(() => {
-    const rects = drawSelection ? getRectsByRange(editor, drawSelection) : []
+    const rects = drawSelection ? Editable.getSelectionRects(editor, drawSelection) : []
     EDITOR_TO_SELECTION_RECTS.set(editor, rects)
     setDrawRects(rects)
   }, [drawSelection])
 
   const contextElements = useMemo(() => editor.onRenderContextComponents([]), [editor])
+
+  const dragCaretRects = useMemo(
+    () => (dragTo ? Editable.getSelectionRects(editor, dragTo) : null),
+    [dragTo, editor],
+  )
 
   return (
     <ReadOnlyContext.Provider value={readOnly}>
@@ -329,13 +390,22 @@ export const ContentEditable = (props: EditableProps) => {
           <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
             {isDrawSelection && (
               <CaretComponent
-                width={drawSelectionStyle?.caretWidth}
-                color={drawSelectionStyle?.caretColor}
+                width={drawSelectionStyle.caretWidth}
+                color={drawSelectionStyle.caretColor}
               />
             )}
             {isDrawSelection && (
               <SelectionComponent
-                color={focused ? drawSelectionStyle?.focusColor : drawSelectionStyle?.blurColor}
+                color={focused ? drawSelectionStyle.focusColor : drawSelectionStyle.blurColor}
+              />
+            )}
+            {dragCaretRects && dragCaretRects.length > 0 && (
+              <ShadowRect
+                rect={Object.assign({}, dragCaretRects[0].toJSON(), {
+                  width: drawSelectionStyle.caretWidth,
+                  color: drawSelectionStyle.dragColor,
+                })}
+                style={{ willChange: 'transform' }}
               />
             )}
             <InputComponent />

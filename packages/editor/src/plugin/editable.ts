@@ -56,6 +56,7 @@ export interface SelectionStyle {
   blurColor?: string
   caretColor?: string
   caretWidth?: number
+  dragColor?: string
 }
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
@@ -1086,6 +1087,25 @@ export const Editable = {
     const rootRect = container.getBoundingClientRect()
 
     return [x - rootRect.left, y - rootRect.top]
+  },
+
+  getSelectionRects(editor: Editable, range: Range, relative = true) {
+    let rects: DOMRect[] = []
+    if (Range.isCollapsed(range)) {
+      const domRange = Editable.toDOMRange(editor, range)
+      rects = [domRange.getBoundingClientRect()]
+    } else {
+      rects = getLineRectsByRange(editor, range)
+    }
+
+    return relative
+      ? rects.map(r => {
+          const [x, y] = Editable.toRelativePosition(editor, r.left, r.top)
+          r.x = x
+          r.y = y
+          return r
+        })
+      : rects
   },
 
   getCurrentSelectionRects(editor: Editable, relative = true) {

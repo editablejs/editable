@@ -292,20 +292,3 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   }
   return lineRects
 }
-
-export const getRectsByRange = (editor: Editable, range: Range) => {
-  let rects: DOMRect[] = []
-  if (Range.isCollapsed(range)) {
-    const domRange = Editable.toDOMRange(editor, range)
-    rects = [domRange.getBoundingClientRect()]
-  } else {
-    rects = getLineRectsByRange(editor, range)
-  }
-
-  return rects.map(r => {
-    const [x, y] = Editable.toRelativePosition(editor, r.left, r.top)
-    r.x = x
-    r.y = y
-    return r
-  })
-}

@@ -1,9 +1,6 @@
-import { FC, useState } from 'react'
-import { Range, Selection } from 'slate'
-import { useEditableStatic } from '../hooks/use-editable-static'
-import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { useDrawSelection } from '../hooks/user-draw-selection'
-import { getRectsByRange } from '../utils/selection'
+import { FC } from 'react'
+import { Range } from 'slate'
+import { useDrawSelection } from '../hooks/use-draw-selection'
 import { ShadowRect } from './shadow'
 
 interface SelectionProps {

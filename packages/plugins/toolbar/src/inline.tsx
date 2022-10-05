@@ -33,6 +33,7 @@ const InlineToolbarEditor = {
 const InlineToolbar = () => {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLElement | null>(null)
+  const isSelectEnded = useRef(false)
 
   const editor = useEditableStatic() as InlineToolbarEditor
 
@@ -44,54 +45,70 @@ const InlineToolbar = () => {
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
+  const handle = (force = false) => {
+    const { selection } = editor
+    if (selection && Range.isExpanded(selection)) {
+      let x = 0,
+        y = 0
+
+      const rects = force
+        ? Editable.getSelectionRects(editor, selection, false)
+        : Editable.getCurrentSelectionRects(editor, false)
+      const isBackward = Range.isBackward(selection)
+      if (rects) {
+        const rect = isBackward ? rects[0] : rects[rects.length - 1]
+        x = isBackward ? rect.x : rect.right
+        y = isBackward ? rect.y : rect.bottom
+      } else {
+        const range = Editable.toDOMRange(editor, selection)
+        range.collapse(isBackward)
+        const rect = range.getBoundingClientRect()
+        x = isBackward ? rect.x : rect.right
+        y = isBackward ? rect.y : rect.bottom
+      }
+
+      pointRef.current = {
+        x,
+        y,
+      }
+      isSelectEnded.current = true
+      setSide(isBackward ? 'top' : 'bottom')
+      setItems(editor.onInlineToolbar(items))
+      setOpen(true)
+    } else {
+      setOpen(false)
+    }
+  }
+
   useIsomorphicLayoutEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root
     document.body.appendChild(root)
 
-    const { onSelectEnd, onSelectStart } = editor
+    const { onSelectEnd, onSelectStart, onChange } = editor
+
+    editor.onChange = () => {
+      if (isSelectEnded.current) {
+        handle(true)
+      }
+      onChange()
+    }
 
     editor.onSelectStart = () => {
       setOpen(false)
+      isSelectEnded.current = false
       onSelectStart()
     }
 
     editor.onSelectEnd = () => {
-      const { selection } = editor
-      if (selection && Range.isExpanded(selection)) {
-        let x = 0,
-          y = 0
-
-        const rects = Editable.getCurrentSelectionRects(editor, false)
-        const isBackward = Range.isBackward(selection)
-        if (rects) {
-          const rect = isBackward ? rects[0] : rects[rects.length - 1]
-          x = isBackward ? rect.x : rect.right
-          y = isBackward ? rect.y : rect.bottom
-        } else {
-          const range = Editable.toDOMRange(editor, selection)
-          range.collapse(isBackward)
-          const rect = range.getBoundingClientRect()
-          x = isBackward ? rect.x : rect.right
-          y = isBackward ? rect.y : rect.bottom
-        }
-
-        pointRef.current = {
-          x,
-          y,
-        }
-        setSide(isBackward ? 'top' : 'bottom')
-        setItems(editor.onInlineToolbar(items))
-        setOpen(true)
-      } else {
-        setOpen(false)
-      }
+      handle()
       onSelectEnd()
     }
 
     return () => {
       document.body.removeChild(root)
+      editor.onChange = onChange
       editor.onSelectStart = onSelectStart
       editor.onSelectEnd = onSelectEnd
     }

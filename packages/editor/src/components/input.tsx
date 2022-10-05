@@ -6,7 +6,7 @@ import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { useEditableStatic } from '../hooks/use-editable-static'
-import { useDrawSelection } from '../hooks/user-draw-selection'
+import { useDrawSelection } from '../hooks/use-draw-selection'
 
 interface InputProps {}
 

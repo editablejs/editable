@@ -314,7 +314,6 @@ export const withClipboard = <T extends Editable>(editor: T, options: ClipboardO
     const fragment = SerializeEditor.deserializeHtml(newEditor, {
       node: document.body,
     })
-    console.log(fragment)
     newEditor.insertFragment(fragment)
   }
 
