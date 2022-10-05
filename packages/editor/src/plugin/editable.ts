@@ -11,6 +11,7 @@ import {
   Transforms,
   NodeEntry,
   Selection,
+  Descendant,
 } from 'slate'
 
 import { Key } from '../utils/key'
@@ -125,6 +126,7 @@ export interface Editable extends BaseEditor {
   isGridRow: (value: any) => value is GridRow
   isGridCell: (value: any) => value is GridCell
   hasRange: (editor: Editable, range: Range) => boolean
+  getFragment: (range?: Range) => Descendant[]
   blur(): void
   focus(): void
   queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>

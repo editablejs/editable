@@ -230,7 +230,7 @@ export const ContentEditable = (props: EditableProps) => {
         ) {
           dragRef.current = {
             from: selection,
-            data: cloneDeep(Node.fragment(editor, selection)),
+            data: cloneDeep(editor.getFragment(selection)),
           }
           editor.onSelectStart()
           return

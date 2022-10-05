@@ -723,23 +723,34 @@ export const withEditable = <T extends Editor>(editor: T) => {
     return components
   }
 
-  e.getFragment = () => {
-    const { selection } = e
+  e.getFragment = (range?: Range) => {
+    const { selection = range } = e
     if (!selection) return []
     const grid = Grid.findGrid(e)
     if (grid) {
       const sel = Grid.getSelection(e, grid)
-      if (sel) {
-        let { start, end } = sel
-        const [startRow, startCol] = start
-        const [endRow, endCol] = end
-
-        const rowCount = endRow - startRow
-        const colCount = endCol - startCol
-
-        if (rowCount > 0 || colCount > 0) {
+      const selected = Grid.getSelected(e, grid, sel)
+      if (selected) {
+        const { colFull, rowFull, cols, rows } = selected
+        if (colFull || rowFull || cols.length > 1 || rows.length > 1) {
           const fragment = Grid.getFragment(e, grid, sel)
           return fragment ? [fragment] : []
+        } else if (cols.length === 1 || rows.length === 1) {
+          const cell = Grid.getCell(e, grid, [rows[0], cols[0]])
+          if (cell) {
+            const { anchor, focus } = selection
+            const [n, p] = cell
+            return Node.fragment(n, {
+              anchor: {
+                path: anchor.path.slice(p.length),
+                offset: anchor.offset,
+              },
+              focus: {
+                path: focus.path.slice(p.length),
+                offset: focus.offset,
+              },
+            })
+          }
         }
       }
     }

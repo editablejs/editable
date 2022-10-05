@@ -69,6 +69,7 @@ export const Grid = {
     const [grid] = Editor.nodes<Grid>(editor, {
       at,
       match: n => editor.isGrid(n),
+      mode: 'lowest',
     })
     return grid
   },
