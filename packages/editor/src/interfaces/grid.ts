@@ -1110,8 +1110,7 @@ export const Grid = {
 
   avgColWidth: (editor: Editable, options: AvgColWidthOptions): number[] => {
     const { minWidth = 10, cols, getWidth } = options
-    const editorElement = Editable.toDOMNode(editor, editor)
-    const rect = editorElement.getBoundingClientRect()
+    const rect = Editable.getBoundingClientRect(editor)
     const width = getWidth ? getWidth(rect.width) : 0
     const colWidth = Math.max(minWidth, Math.floor(width / cols))
 

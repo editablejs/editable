@@ -1122,4 +1122,9 @@ export const Editable = {
       return new DOMRect(x, y, rect.width, rect.height)
     })
   },
+
+  getBoundingClientRect(editor: Editable) {
+    const container = Editable.toDOMNode(editor, editor)
+    return container.getBoundingClientRect()
+  },
 }

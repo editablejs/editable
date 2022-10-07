@@ -1,6 +1,6 @@
 import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
 import { Editable } from '../plugin/editable'
-import { DOMElement, DOMRange, getDefaultView, isDOMElement } from './dom'
+import { DOMElement, DOMRange, isDOMElement } from './dom'
 
 interface LineRect {
   top: number

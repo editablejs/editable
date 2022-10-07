@@ -30,8 +30,7 @@ import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
 import { DrawSelectionContext } from '../hooks/use-draw-selection'
-import { cloneDeep } from 'lodash'
-import ReactDOM from 'react-dom'
+import cloneDeep from 'lodash/cloneDeep'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
