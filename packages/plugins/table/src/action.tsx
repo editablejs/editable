@@ -63,7 +63,6 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
   }
 
   const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
-  const cls = type === 'cols' ? 'table-cols-insert' : 'table-rows-insert'
 
   const { getOptions } = useContext(TableContext)
 

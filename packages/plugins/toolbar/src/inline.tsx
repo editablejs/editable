@@ -1,12 +1,5 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect, Range } from '@editablejs/editor'
-import {
-  DismissableLayer,
-  Popper,
-  PopperAnchor,
-  PopperContent,
-  Portal,
-  Presence,
-} from '@editablejs/plugin-ui'
+import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
 import { useRef, useState } from 'react'
 import { Toolbar, ToolbarItem } from './toolbar'
 
@@ -33,7 +26,6 @@ const InlineToolbarEditor = {
 const InlineToolbar = () => {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLElement | null>(null)
-  const isSelectEnded = useRef(false)
 
   const editor = useEditableStatic() as InlineToolbarEditor
 
@@ -71,7 +63,6 @@ const InlineToolbar = () => {
         x,
         y,
       }
-      isSelectEnded.current = true
       setSide(isBackward ? 'top' : 'bottom')
       setItems(editor.onInlineToolbar(items))
       setOpen(true)
@@ -86,18 +77,10 @@ const InlineToolbar = () => {
     rootRef.current = root
     document.body.appendChild(root)
 
-    const { onSelectEnd, onSelectStart, onChange } = editor
-
-    editor.onChange = () => {
-      if (isSelectEnded.current) {
-        handle(true)
-      }
-      onChange()
-    }
+    const { onSelectEnd, onSelectStart } = editor
 
     editor.onSelectStart = () => {
       setOpen(false)
-      isSelectEnded.current = false
       onSelectStart()
     }
 
@@ -108,7 +91,6 @@ const InlineToolbar = () => {
 
     return () => {
       document.body.removeChild(root)
-      editor.onChange = onChange
       editor.onSelectStart = onSelectStart
       editor.onSelectEnd = onSelectEnd
     }

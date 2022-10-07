@@ -31,6 +31,7 @@ import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
 import { DrawSelectionContext } from '../hooks/use-draw-selection'
 import { cloneDeep } from 'lodash'
+import ReactDOM from 'react-dom'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -101,6 +102,7 @@ export const ContentEditable = (props: EditableProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const dragRef = useRef<Drag | null>(null)
   const [dragTo, setDragTo] = useState<Range | null>(null)
+  const isDragEnded = useRef(false)
 
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
@@ -172,6 +174,7 @@ export const ContentEditable = (props: EditableProps) => {
               focus: selection.focus,
             })
           }
+          isDragEnded.current = true
         } else {
           Transforms.select(editor, point)
         }
@@ -180,7 +183,7 @@ export const ContentEditable = (props: EditableProps) => {
       }
       dragRef.current = null
       setDragTo(null)
-      editor.onSelectEnd()
+      if (!isDragEnded.current) editor.onSelectEnd()
     }
     isContextMenu.current = false
     IS_MOUSEDOWN.set(editor, false)
@@ -300,6 +303,10 @@ export const ContentEditable = (props: EditableProps) => {
       const { selection } = editor
       onChange()
       setDrawSelection(selection ? { ...selection } : null)
+      if (isDragEnded.current) {
+        editor.onSelectEnd()
+        isDragEnded.current = false
+      }
     }
 
     const handleShift = (event: KeyboardEvent) => {
