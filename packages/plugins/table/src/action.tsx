@@ -84,6 +84,7 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
         index,
         { type: TABLE_CELL_KEY },
         colWidth,
+        options.minColWidth,
       )
     } else if (type === TYPE_ROWS) {
       Grid.insertRow(
@@ -174,6 +175,19 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
         const newColsWidth = colsWidth.concat()
         let width = newColsWidth[start] + val
         width = Math.max(width, options.minColWidth)
+        if (start < newColsWidth.length - 1) {
+          width = Math.min(
+            newColsWidth[start] + newColsWidth[start + 1] - options.minColWidth,
+            width,
+          )
+          let nextW = newColsWidth[start + 1] - val
+          nextW = Math.max(nextW, options.minColWidth)
+          nextW = Math.min(
+            newColsWidth[start] + newColsWidth[start + 1] - options.minColWidth,
+            nextW,
+          )
+          newColsWidth[start + 1] = nextW
+        }
         newColsWidth[start] = width
         Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
       } else if (type === 'rows') {

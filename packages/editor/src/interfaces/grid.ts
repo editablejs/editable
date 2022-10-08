@@ -609,6 +609,7 @@ export const Grid = {
     index: number,
     cell: Partial<Omit<C, 'children'>>,
     width?: number,
+    minWidth: number = 5,
   ) => {
     if (Path.isPath(at)) {
       const entry = Grid.findGrid(editor, at)
@@ -616,10 +617,12 @@ export const Grid = {
       at = entry
     }
     const [grid, path] = at
-    const { children, colsWidth } = grid
-    const newColsWidth = colsWidth?.concat() ?? []
-    newColsWidth.splice(index, 0, width ?? 5)
-    Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
+    const { children, colsWidth = [] } = grid
+    const newColsWidth = colsWidth.concat()
+    newColsWidth.splice(index, 0, width ?? minWidth)
+    const fitWidths = Grid.getFitWidths(editor, newColsWidth, minWidth)
+
+    Transforms.setNodes<Grid>(editor, { colsWidth: fitWidths }, { at: path })
     for (let r = 0; r < children.length; r++) {
       const insertCell = GridCell.create(cell)
 
@@ -1128,5 +1131,27 @@ export const Grid = {
       }
     }
     return tableColsWdith
+  },
+
+  getFitWidths: (editor: Editable, colsWidth: number[], minWidth = 5): number[] => {
+    const containerRect = Editable.getBoundingClientRect(editor)
+    const { width: containerWidth } = containerRect
+    const widths = colsWidth.concat()
+    let gridWidth = widths.reduce((a, b) => a + b, 0)
+    while (gridWidth > containerWidth) {
+      let minCount = 0
+      for (let i = 0; i < widths.length; i++) {
+        const w = widths[i]
+        if (w > minWidth) {
+          widths[i] = w - 1
+          gridWidth--
+          if (gridWidth <= containerWidth) break
+        } else {
+          minCount++
+        }
+      }
+      if (minCount === widths.length) break
+    }
+    return widths
   },
 }
