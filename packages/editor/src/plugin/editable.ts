@@ -51,6 +51,7 @@ import { GridCell } from '../interfaces/cell'
 import { GridRow } from '../interfaces/row'
 import { Grid } from '../interfaces/grid'
 import { FC } from 'react'
+import { List } from '../interfaces/list'
 
 export interface SelectionStyle {
   focusColor?: string
@@ -125,6 +126,7 @@ export interface Editable extends BaseEditor {
   isGrid: (value: any) => value is Grid
   isGridRow: (value: any) => value is GridRow
   isGridCell: (value: any) => value is GridCell
+  isList: (value: any) => value is List
   hasRange: (editor: Editable, range: Range) => boolean
   getFragment: (range?: Range) => Descendant[]
   blur(): void
@@ -195,6 +197,10 @@ export const Editable = {
 
   isGridCell(editor: Editable, value: any): value is GridCell {
     return editor.isGridCell(value)
+  },
+
+  isList(editor: Editable, value: any): value is List {
+    return editor.isList(value)
   },
 
   /**

@@ -29,7 +29,6 @@ import {
   IS_DRAW_SELECTION,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
-  EDITOR_TO_ELEMENT,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
 import Hotkeys from '../utils/hotkeys'
@@ -37,6 +36,7 @@ import { getWordOffsetBackward, getWordOffsetForward } from '../utils/text'
 import { Grid } from '../interfaces/grid'
 import { GridRow } from '../interfaces/row'
 import { GridCell } from '../interfaces/cell'
+import { List } from '../interfaces/list'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -67,6 +67,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.isGridRow = (value: any): value is GridRow => false
 
   e.isGridCell = (value: any): value is GridCell => false
+
+  e.isList = (value: any): value is List => false
 
   e.deleteForward = unit => {
     const { selection } = editor
@@ -102,6 +104,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
         if (Point.equals(selection.anchor, start)) {
           return
         }
+      }
+      const list = List.find(e)
+      if (list && Editor.isStart(e, selection.focus, list[1])) {
+        List.unwrapList(e)
+        return
       }
     }
     if (unit !== 'line') {
@@ -755,6 +762,24 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
     }
     return Node.fragment(e, selection)
+  }
+
+  const { insertBreak } = e
+  e.insertBreak = () => {
+    const { selection } = editor
+
+    if (!Editable.isEditor(editor) || !selection || Range.isExpanded(selection)) {
+      insertBreak()
+      return
+    }
+    const entrie = Editor.above<List>(editor, {
+      match: n => editor.isList(n),
+    })
+    if (!entrie) {
+      insertBreak()
+      return
+    }
+    List.splitList(editor)
   }
 
   return e

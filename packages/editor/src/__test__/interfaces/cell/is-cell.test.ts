@@ -1,5 +1,5 @@
 import { GridCell } from '../../../interfaces/cell'
-import { createEditor } from '../../../plugin/custom'
+import { createEditor } from '../../../plugin/expand'
 import { Editable } from '../../../plugin/editable'
 
 describe('interfaces/cell', () => {

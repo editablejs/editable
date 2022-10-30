@@ -1,7 +1,6 @@
 import { Editor, createEditor as createSlateEditor, Text } from 'slate'
 import { Editable } from './editable'
 import { withEditable } from './with-editable'
-import { Transforms } from './transforms'
 
 const { marks: slateMarks } = Editor
 
@@ -27,9 +26,9 @@ export const createEditor = () => {
   return withEditable(createSlateEditor())
 }
 
-export { Editor, Transforms }
-
 export * from 'slate'
+export { Editor }
+export * from '../transforms'
 
 export {
   Element,

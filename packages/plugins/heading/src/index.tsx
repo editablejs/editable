@@ -9,6 +9,7 @@ import {
   Node,
   Path,
   Descendant,
+  List,
 } from '@editablejs/editor'
 import { FontSize, FontSizeEditor } from '@editablejs/plugin-fontsize'
 import { Mark, MarkEditor } from '@editablejs/plugin-mark'
@@ -213,12 +214,17 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
     const { selection } = editor
     if (selection && Range.isCollapsed(selection) && isHotkey('enter', e)) {
       const entry = Editor.above(newEditor, {
-        match: n => Editor.isBlock(newEditor, n) && !!n.type && n.type in HeadingTags,
+        match: n => HeadingEditor.isHeading(editor, n),
       })
       if (entry) {
-        const [_, path] = entry
+        let [_, path] = entry
         if (Editor.isEnd(newEditor, selection.focus, path)) {
           e.preventDefault()
+          // 在列表下方插入段落
+          const entry = List.find(editor)
+          if (entry) {
+            path = entry[1]
+          }
           Transforms.insertNodes(
             newEditor,
             { type: PARAGRAPH_KEY, children: [{ text: '' }] },

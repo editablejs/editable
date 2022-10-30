@@ -1,7 +1,15 @@
-import { Descendant, Editable, generateRandomKey, isDOMText, isHotkey } from '@editablejs/editor'
+import {
+  Descendant,
+  Editable,
+  generateRandomKey,
+  isDOMText,
+  isHotkey,
+  List,
+  ListTemplate,
+} from '@editablejs/editor'
 import { Indent, IndentEditor } from '@editablejs/plugin-indent'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
-import { List, ListEditor, ListTemplate, ToggleListOptions, withList } from './base'
+import { renderList } from './styles'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -13,7 +21,9 @@ export interface UnOrderedListOptions {
   hotkey?: Hotkey
 }
 
-export interface ToggleUnOrderedListOptions extends Omit<ToggleListOptions, 'start'> {}
+export interface ToggleUnOrderedListOptions {
+  template?: string
+}
 
 export interface UnOrdered extends List {
   type: typeof UNORDERED_LIST_KEY
@@ -24,7 +34,7 @@ export interface UnOrderedListEditor extends Editable {
 }
 
 export const UnOrderedListEditor = {
-  isListEditor: (editor: Editable): editor is UnOrderedListEditor => {
+  isUnOrderedListEditor: (editor: Editable): editor is UnOrderedListEditor => {
     return !!(editor as UnOrderedListEditor).toggleUnOrderedList
   },
 
@@ -33,7 +43,8 @@ export const UnOrderedListEditor = {
   },
 
   queryActive: (editor: Editable) => {
-    return ListEditor.queryActive(editor, UNORDERED_LIST_KEY)
+    const elements = List.queryActive(editor, UNORDERED_LIST_KEY)
+    return elements.length > 0 ? elements : null
   },
 
   toggle: (editor: UnOrderedListEditor, options?: ToggleUnOrderedListOptions) => {
@@ -65,20 +76,18 @@ export const withUnOrderedList = <T extends Editable>(
 ) => {
   const hotkey = options.hotkey || defaultHotkey
 
-  const e = editor as T & UnOrderedListEditor
-
-  const newEditor = withList(e, UNORDERED_LIST_KEY)
+  const newEditor = editor as T & UnOrderedListEditor
 
   UnOrderedListTemplates.forEach(template => {
-    ListEditor.addTemplate(newEditor, UNORDERED_LIST_KEY, template)
+    List.addTemplate(newEditor, UNORDERED_LIST_KEY, template)
   })
 
   const { renderElement } = newEditor
 
   newEditor.renderElement = props => {
     const { element, attributes, children } = props
-    if (ListEditor.isList(newEditor, element, UNORDERED_LIST_KEY)) {
-      return ListEditor.render(newEditor, {
+    if (UnOrderedListEditor.isUnOrdered(newEditor, element)) {
+      return renderList(newEditor, {
         props: {
           element,
           attributes,
@@ -95,7 +104,7 @@ export const withUnOrderedList = <T extends Editable>(
       const { node, attributes, styles = {} } = options
       if (UnOrderedListEditor.isUnOrdered(e, node)) {
         const { start, template } = node
-        const listTemplate = ListEditor.getTemplate(
+        const listTemplate = List.getTemplate(
           newEditor,
           UNORDERED_LIST_KEY,
           template || UnOrderedListTemplates[0].key,
@@ -151,7 +160,7 @@ export const withUnOrderedList = <T extends Editable>(
             }
             list.lineIndent = IndentEditor.getSize(e) * list.level
             list.children.forEach(child => {
-              if (ListEditor.isList(e, child)) {
+              if (e.isList(child)) {
                 addLevel(child, list.level)
               }
             })
@@ -162,7 +171,7 @@ export const withUnOrderedList = <T extends Editable>(
           for (const child of node.childNodes) {
             const fragment = e.deserializeHtml({ node: child, markAttributes })
             for (const f of fragment) {
-              if (ListEditor.isList(e, f)) {
+              if (e.isList(f)) {
                 addLevel(f, f.level)
                 lists.push(f)
                 isAddList = true
@@ -188,14 +197,26 @@ export const withUnOrderedList = <T extends Editable>(
     }
   })
 
-  newEditor.toggleUnOrderedList = (options?: ToggleUnOrderedListOptions) => {
-    ListEditor.toggle(editor, UNORDERED_LIST_KEY, {
-      ...options,
-      template: options?.template ?? UnOrderedListTemplates[0].key,
-    })
+  newEditor.toggleUnOrderedList = (options: ToggleUnOrderedListOptions = {}) => {
+    const activeElements = UnOrderedListEditor.queryActive(editor)
+    if (activeElements) {
+      List.unwrapList(editor, {
+        type: UNORDERED_LIST_KEY,
+      })
+    } else {
+      const { template } = options
+      List.wrapList(editor, {
+        type: UNORDERED_LIST_KEY,
+        template: template ?? UnOrderedListTemplates[0].key,
+      })
+    }
   }
 
-  const { onKeydown } = newEditor
+  const { onKeydown, isList } = newEditor
+
+  newEditor.isList = (value: any): value is List => {
+    return UnOrderedListEditor.isUnOrdered(newEditor, value) || isList(value)
+  }
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {

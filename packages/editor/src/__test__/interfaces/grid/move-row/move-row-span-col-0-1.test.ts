@@ -1,7 +1,7 @@
 import { GridCell } from '../../../../interfaces/cell'
 import { Grid } from '../../../../interfaces/grid'
 import { GridRow } from '../../../../interfaces/row'
-import { createEditor } from '../../../../plugin/custom'
+import { createEditor } from '../../../../plugin/expand'
 
 describe('interfaces/grid', () => {
   const editor = createEditor()

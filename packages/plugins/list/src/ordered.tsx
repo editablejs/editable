@@ -2,24 +2,26 @@ import {
   Descendant,
   Editable,
   generateRandomKey,
-  isDOMElement,
+  List,
   isDOMText,
   isHotkey,
   Path,
+  ListTemplate,
 } from '@editablejs/editor'
 import React, { useLayoutEffect } from 'react'
-import {
-  List,
-  ListEditor,
-  ListLabelStyles,
-  ListStyles,
-  ListTemplate,
-  ToggleListOptions,
-  withList,
-} from './base'
+// import {
+//   List,
+//   ListEditor,
+//   ListLabelStyles,
+//   ListStyles,
+//   ListTemplate,
+//   ToggleListOptions,
+//   withList,
+// } from './base'
 import tw, { styled } from 'twin.macro'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { Indent, IndentEditor } from '@editablejs/plugin-indent'
+import { ListLabelStyles, ListStyles, renderList } from './styles'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -31,7 +33,10 @@ export interface OrderedListOptions {
   hotkey?: Hotkey
 }
 
-export interface ToggleOrderedListOptions extends ToggleListOptions {}
+export interface ToggleOrderedListOptions {
+  start?: number
+  template?: string
+}
 
 export interface Ordered extends List {
   type: typeof ORDERED_LIST_KEY
@@ -41,16 +46,17 @@ export interface OrderedListEditor extends Editable {
 }
 
 export const OrderedListEditor = {
-  isListEditor: (editor: Editable): editor is OrderedListEditor => {
+  isOrderedListEditor: (editor: Editable): editor is OrderedListEditor => {
     return !!(editor as OrderedListEditor).toggleOrderedList
   },
 
   isOrdered: (editor: Editable, value: any): value is Ordered => {
-    return ListEditor.isList(editor, value, ORDERED_LIST_KEY) && value.type === ORDERED_LIST_KEY
+    return value && value.type === ORDERED_LIST_KEY
   },
 
   queryActive: (editor: Editable) => {
-    return ListEditor.queryActive(editor, ORDERED_LIST_KEY)
+    const elements = List.queryActive(editor, ORDERED_LIST_KEY)
+    return elements.length > 0 ? elements : null
   },
 
   toggle: (editor: OrderedListEditor, options?: ToggleOrderedListOptions) => {
@@ -129,7 +135,7 @@ const LabelElement = ({
     const { current: label } = ref
     if (level % template.depth > 0 && label) {
       const path = Editable.findPath(editor, element)
-      const [start, startPath] = ListEditor.findStartList(editor, {
+      const [start, startPath] = List.findTop(editor, {
         path,
         key,
         level,
@@ -178,20 +184,18 @@ export const withOrderedList = <T extends Editable>(
 ) => {
   const hotkey = options.hotkey || defaultHotkey
 
-  const e = editor as T & OrderedListEditor
-
-  const newEditor = withList(e, ORDERED_LIST_KEY)
+  const newEditor = editor as T & OrderedListEditor
 
   const { renderElement } = newEditor
 
   OrderedListTemplates.forEach(template => {
-    ListEditor.addTemplate(newEditor, ORDERED_LIST_KEY, template)
+    List.addTemplate(newEditor, ORDERED_LIST_KEY, template)
   })
 
   newEditor.renderElement = props => {
     const { element, attributes, children } = props
-    if (ListEditor.isList(newEditor, element, ORDERED_LIST_KEY)) {
-      return ListEditor.render(newEditor, {
+    if (OrderedListEditor.isOrdered(newEditor, element)) {
+      return renderList(newEditor, {
         props: {
           element,
           attributes,
@@ -212,7 +216,7 @@ export const withOrderedList = <T extends Editable>(
       const { node, attributes, styles = {} } = options
       if (OrderedListEditor.isOrdered(e, node)) {
         const { start, template } = node
-        const listTemplate = ListEditor.getTemplate(
+        const listTemplate = List.getTemplate(
           newEditor,
           ORDERED_LIST_KEY,
           template || OrderedListTemplates[0].key,
@@ -269,7 +273,7 @@ export const withOrderedList = <T extends Editable>(
             }
             list.lineIndent = IndentEditor.getSize(e) * list.level
             list.children.forEach(child => {
-              if (ListEditor.isList(e, child)) {
+              if (editor.isList(child)) {
                 addLevel(child, list.level)
               }
             })
@@ -280,7 +284,7 @@ export const withOrderedList = <T extends Editable>(
           for (const child of node.childNodes) {
             const fragment = e.deserializeHtml({ node: child, markAttributes })
             for (const f of fragment) {
-              if (ListEditor.isList(e, f)) {
+              if (editor.isList(f)) {
                 addLevel(f, f.level)
                 lists.push(f)
                 isAddList = true
@@ -306,14 +310,27 @@ export const withOrderedList = <T extends Editable>(
     }
   })
 
-  newEditor.toggleOrderedList = (options?: ToggleOrderedListOptions) => {
-    ListEditor.toggle(editor, ORDERED_LIST_KEY, {
-      ...options,
-      template: options?.template ?? OrderedListTemplates[0].key,
-    })
+  newEditor.toggleOrderedList = (options: ToggleOrderedListOptions = {}) => {
+    const activeElements = OrderedListEditor.queryActive(editor)
+    if (activeElements) {
+      List.unwrapList(editor, {
+        type: ORDERED_LIST_KEY,
+      })
+    } else {
+      const { start, template } = options
+      List.wrapList(editor, {
+        type: ORDERED_LIST_KEY,
+        start,
+        template,
+      })
+    }
   }
 
-  const { onKeydown } = newEditor
+  const { onKeydown, isList } = newEditor
+
+  newEditor.isList = (value: any): value is List => {
+    return OrderedListEditor.isOrdered(newEditor, value) || isList(value)
+  }
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {

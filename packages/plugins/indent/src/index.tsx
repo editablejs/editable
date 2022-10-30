@@ -12,6 +12,7 @@ import {
   Path,
   Range,
   isDOMElement,
+  List,
 } from '@editablejs/editor'
 import { CSSProperties } from 'react'
 import tw from 'twin.macro'
@@ -70,6 +71,11 @@ export const IndentEditor = {
 
   isIndent: (editor: Editor, node: Node): node is Indent => {
     return Element.isElement(node) && node.type === INDENT_KEY
+  },
+
+  isIndentBlock: (editor: Editor, node: Node): node is Indent => {
+    const indent = node as Indent
+    return !!(indent.textIndent || indent.lineIndent)
   },
 
   queryActive: (editor: Editable) => {
@@ -142,9 +148,9 @@ export const IndentEditor = {
     }
   },
 
-  canSetIndent: (editor: IndentEditor, mode: IndentMode = 'auto') => {
+  canSetIndent: (editor: Editable, mode: IndentMode = 'auto') => {
     const { selection } = editor
-    if (!selection) return false
+    if (!selection || !IndentEditor.isIndentEditor(editor)) return false
     // 是否选中一行
     const selectLine = Editable.getSelectLine(editor)
     // 是否选中在一行的开始或结尾位置
@@ -163,7 +169,6 @@ export const IndentEditor = {
     } else {
       return selectLine
     }
-    return false
   },
 
   insertIndent: (editor: Editable) => {
@@ -266,51 +271,151 @@ export const renderIndentAttributes = (
   return next({ attributes: Object.assign({}, attributes, { style }), element })
 }
 
+const toggleListIndent = (
+  editor: Editable,
+  entry: NodeEntry<List>,
+  size: number,
+  mode: IndentMode = 'auto',
+) => {
+  if (!IndentEditor.isIndentEditor(editor)) return
+  if (!IndentEditor.canSetIndent(editor, 'line')) {
+    IndentEditor.insertIndent(editor)
+    return
+  }
+  const isSub = size < 0
+  let [list, path] = entry
+  const { key, type } = list
+  const isTop = List.isTop(editor, {
+    path,
+    key,
+    type,
+  })
+  // 如果是列表的开头，则更新所有后代的缩进
+  if (isTop) {
+    IndentEditor.addLineIndent(editor, path, isSub)
+    let next: NodeEntry<List> | undefined = undefined
+    while (true) {
+      next = Editor.next(editor, {
+        at: path,
+        match: n => editor.isList(n) && n.type === type && n.key === key,
+      })
+      if (!next) break
+      path = next[1]
+      IndentEditor.addLineIndent(editor, path, isSub)
+      if (isSub) {
+        const level = List.getLevelFromElement(editor, { path, key: key, type, node: next[0] })
+        Transforms.setNodes<List>(
+          editor,
+          { level },
+          {
+            at: path,
+          },
+        )
+      }
+    }
+    if (isSub) {
+      List.updateStart(editor, {
+        path,
+        key,
+        type,
+      })
+    }
+  }
+  // 非开头缩进
+  else {
+    // 减去缩进
+    if (isSub) {
+      toggleNormalIndent(editor, size, mode)
+    } else {
+      toggleNormalIndent(editor, size, 'line')
+    }
+    const listEntries = Editor.nodes<List>(editor, {
+      match: n => editor.isList(n) && n.type === type,
+    })
+    for (const [node, p] of listEntries) {
+      const level = List.getLevelFromElement(editor, {
+        path: p,
+        key: key,
+        node,
+        type,
+      })
+      Transforms.setNodes<List>(
+        editor,
+        { level },
+        {
+          at: p,
+        },
+      )
+    }
+    List.updateStart(editor, {
+      path,
+      key,
+      type,
+    })
+  }
+}
+
+const toggleNormalIndent = (editor: Editable, size: number, mode: IndentMode = 'auto') => {
+  const { selection } = editor
+  if (!selection || !IndentEditor.isIndentEditor(editor)) return
+  // 是否选中一行
+  const selectLine = Editable.getSelectLine(editor)
+  // 是否选中在一行的开始或结尾位置
+  const selectLineEdge = Editable.isSelectLineEdge(editor)
+
+  const isCollapsed = Range.isCollapsed(selection)
+  // text indent
+  if (isCollapsed && (!selectLine || mode === 'line')) {
+    const entry = Editor.above(editor, {
+      match: editor.onIndentMatch,
+      at: selection.anchor,
+    })
+    if (!entry) return
+    const [_, path] = entry
+    // 在节点的开始位置，设置text indent
+    if (Editor.isStart(editor, selection.focus, path)) {
+      mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
+      return
+    }
+    // 在一行的开始位置，设置line indent
+    else if (selectLineEdge) {
+      if (size > 0) {
+        setTextIndent(editor, entry, -size)
+      }
+      setLineIndent(editor, entry, size)
+    }
+  }
+  // line indent
+  else if (selectLine) {
+    const blockEntrys = Editor.nodes<Indent>(editor, {
+      match: editor.onIndentMatch,
+      mode: 'lowest',
+    })
+    if (!blockEntrys) return
+    for (const entry of blockEntrys) {
+      setLineIndent(editor, entry, size)
+    }
+    return
+  }
+
+  IndentEditor.insertIndent(editor)
+}
+
 const toggleIndent = (editor: IndentEditor, size: number, mode: IndentMode = 'auto') => {
   editor.normalizeSelection(selection => {
     if (!selection) return
     if (editor.selection !== selection) editor.selection = selection
-    // 是否选中一行
-    const selectLine = Editable.getSelectLine(editor)
-    // 是否选中在一行的开始或结尾位置
-    const selectLineEdge = Editable.isSelectLineEdge(editor)
-
-    const isCollapsed = Range.isCollapsed(selection)
-    // text indent
-    if (isCollapsed && (!selectLine || mode === 'line')) {
-      const entry = Editor.above(editor, {
-        match: editor.onIndentMatch,
-        at: selection.anchor,
-      })
-      if (!entry) return
-      const [_, path] = entry
-      // 在节点的开始位置，设置text indent
-      if (Editor.isStart(editor, selection.focus, path)) {
-        mode === 'line' ? setLineIndent(editor, entry, size) : setTextIndent(editor, entry, size)
-        return
-      }
-      // 在一行的开始位置，设置line indent
-      else if (selectLineEdge) {
-        if (size > 0) {
-          setTextIndent(editor, entry, -size)
-        }
-        setLineIndent(editor, entry, size)
-      }
+    if (!IndentEditor.isIndentEditor(editor)) return
+    const entry = Editor.above<List>(editor, {
+      at: selection.anchor.path,
+      match: n => editor.isList(n),
+    })
+    // 设置列表的缩进
+    if (entry) {
+      toggleListIndent(editor, entry, size, mode)
+    } else {
+      toggleNormalIndent(editor, size, mode)
     }
-    // line indent
-    else if (selectLine) {
-      const blockEntrys = Editor.nodes<Indent>(editor, {
-        match: editor.onIndentMatch,
-        mode: 'lowest',
-      })
-      if (!blockEntrys) return
-      for (const entry of blockEntrys) {
-        setLineIndent(editor, entry, size)
-      }
-      return
-    }
-
-    IndentEditor.insertIndent(editor)
   })
 }
 
@@ -329,7 +434,12 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
     toggleIndent(newEditor, -size)
   }
 
-  newEditor.onIndentMatch = (n: Node) => {
+  newEditor.onIndentMatch = (n: Node, path: Path) => {
+    if (editor.isList(n)) {
+      return true
+    } else if (Editor.above(newEditor, { match: n => editor.isList(n), at: path })) {
+      return false
+    }
     return Editor.isBlock(editor, n)
   }
 
@@ -452,4 +562,89 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
   }
 
   return newEditor
+}
+
+const { wrapList, unwrapList, splitList } = List
+
+List.wrapList = (editor, entry, options = {}) => {
+  const { props } = options
+
+  wrapList(editor, entry, {
+    ...options,
+    props(key, node, path) {
+      const p = props ? props(key, node, path) : {}
+      if (IndentEditor.isIndentBlock(editor, node)) {
+        const { lineIndent = 0, textIndent = 0 } = node
+        Transforms.setNodes<Indent>(
+          editor,
+          { lineIndent: 0, textIndent: 0 },
+          {
+            at: path,
+          },
+        )
+        return {
+          ...p,
+          lineIndent: lineIndent + textIndent,
+        }
+      }
+      return p
+    },
+  })
+}
+
+List.unwrapList = (editor, options = {}) => {
+  const { props } = options
+
+  unwrapList(editor, {
+    ...options,
+    props(list, path) {
+      const p = props ? props(list, path) : {}
+      if (IndentEditor.isIndentBlock(editor, list)) {
+        const { lineIndent = 0 } = list as Indent
+        return {
+          ...p,
+          lineIndent,
+        }
+      }
+      return p
+    },
+  })
+}
+
+List.splitList = (editor, options = {}) => {
+  const { props } = options
+
+  splitList(editor, {
+    ...options,
+    props(list, path) {
+      const p = props ? props(list, path) : {}
+      if (IndentEditor.isIndentBlock(editor, list)) {
+        const size = IndentEditor.getSize(editor)
+        const { lineIndent = 0 } = list as Indent
+        const indent = Math.max(lineIndent - size, 0)
+        return {
+          ...p,
+          lineIndent: indent,
+        }
+      }
+      return p
+    },
+  })
+}
+
+List.getLevelFromElement = (editor, options) => {
+  const { path, key, type } = options
+  const [element] = Editor.nodes<Indent>(editor, {
+    at: path,
+    match: n => Editor.isBlock(editor, n) && (n as Indent).lineIndent !== undefined,
+    mode: 'highest',
+  })
+  const prev = Editor.previous<List & Indent>(editor, {
+    at: path,
+    match: n => editor.isList(n) && n.type === type && n.key === key,
+  })
+  const prevIndentLevel = prev ? IndentEditor.getLevel(editor, prev[0]) : 0
+  const prefixIndentLevel = prev ? prevIndentLevel - prev[0].level : 0
+  const elementIndentLevel = element ? IndentEditor.getLevel(editor, element[0]) : 0
+  return elementIndentLevel - prefixIndentLevel
 }

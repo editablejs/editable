@@ -3,8 +3,9 @@ import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
 export * from './interfaces/cell'
 export * from './interfaces/row'
 export * from './interfaces/grid'
+export * from './interfaces/list'
 
-export * from './plugin/custom'
+export * from './plugin/expand'
 
 // Locale
 export * from './hooks/use-locale'

@@ -10,11 +10,12 @@ import {
   isDOMText,
   Descendant,
   DOMNode,
+  List,
 } from '@editablejs/editor'
 import { Indent, IndentEditor } from '@editablejs/plugin-indent'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import tw, { css, styled, theme } from 'twin.macro'
-import { List, ListEditor, ListLabelStyles, ListStyles, ToggleListOptions, withList } from './base'
+import { ListLabelStyles, ListStyles, renderList } from './styles'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -33,7 +34,8 @@ export interface Task extends List {
   checked?: boolean
 }
 
-export interface ToggleTaskListOptions extends Omit<ToggleListOptions, 'start' | 'values'> {
+export interface ToggleTaskListOptions {
+  template?: string
   checked?: boolean
 }
 
@@ -42,16 +44,17 @@ export interface TaskListEditor extends Editable {
 }
 
 export const TaskListEditor = {
-  isListEditor: (editor: Editable): editor is TaskListEditor => {
+  isTaskListEditor: (editor: Editable): editor is TaskListEditor => {
     return !!(editor as TaskListEditor).toggleTaskList
   },
 
-  isTask: (editor: Editable, n: Node): n is Task => {
-    return ListEditor.isList(editor, n, TASK_LIST_KEY) && n.type === TASK_LIST_KEY
+  isTask: (editor: Editable, n: any): n is Task => {
+    return n && n.type === TASK_LIST_KEY
   },
 
   queryActive: (editor: Editable) => {
-    return ListEditor.queryActive(editor, TASK_LIST_KEY)
+    const elements = List.queryActive(editor, TASK_LIST_KEY)
+    return elements.length > 0 ? elements : null
   },
 
   toggle: (editor: TaskListEditor, options?: ToggleTaskListOptions) => {
@@ -71,7 +74,7 @@ interface RenderTaskElementProps extends RenderElementProps {
 const TaskCheckboxStyles = styled.span(() => [
   tw`relative m-0 p-0 list-none whitespace-nowrap cursor-pointer outline-none inline-block`,
   css`
-    top: 2px;
+    top: 4px;
     width: 18px;
     height: 18px;
   `,
@@ -149,9 +152,7 @@ const StyledTask = styled(ListStyles)`
 export const withTaskList = <T extends Editable>(editor: T, options: TaskListOptions = {}) => {
   const hotkey = options.hotkey || defaultHotkey
 
-  const e = editor as T & TaskListEditor
-
-  const newEditor = withList(e, TASK_LIST_KEY)
+  const newEditor = editor as T & TaskListEditor
 
   const { renderElement } = newEditor
 
@@ -159,7 +160,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
     const { element, attributes, children } = props
     if (TaskListEditor.isTask(newEditor, element)) {
       attributes[DATA_TASK_CHECKED_KEY] = element.checked ?? false
-      return ListEditor.render(newEditor, {
+      return renderList(newEditor, {
         props: {
           element,
           attributes,
@@ -267,7 +268,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
             }
             list.lineIndent = IndentEditor.getSize(e) * list.level
             list.children.forEach(child => {
-              if (ListEditor.isList(e, child)) {
+              if (e.isList(child)) {
                 addLevel(child, list.level)
               }
             })
@@ -278,7 +279,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
           for (const child of node.childNodes) {
             const fragment = e.deserializeHtml({ node: child, markAttributes })
             for (const f of fragment) {
-              if (ListEditor.isList(e, f)) {
+              if (e.isList(f)) {
                 addLevel(f, f.level)
                 lists.push(f)
                 isAddList = true
@@ -305,16 +306,27 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
     }
   })
 
-  newEditor.toggleTaskList = (options?: ToggleTaskListOptions) => {
-    ListEditor.toggle(editor, TASK_LIST_KEY, {
-      ...options,
-      values: {
-        checked: options?.checked ?? false,
-      },
-    })
+  newEditor.toggleTaskList = (options: ToggleTaskListOptions = {}) => {
+    const activeElements = TaskListEditor.queryActive(editor)
+    if (activeElements) {
+      List.unwrapList(editor, {
+        type: TASK_LIST_KEY,
+      })
+    } else {
+      const { checked, template } = options
+      List.wrapList<Task>(editor, {
+        type: TASK_LIST_KEY,
+        template,
+        checked: checked ?? false,
+      })
+    }
   }
 
-  const { onKeydown } = newEditor
+  const { onKeydown, isList } = newEditor
+
+  newEditor.isList = (value: any): value is List => {
+    return TaskListEditor.isTask(newEditor, value) || isList(value)
+  }
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const toggle = () => {
@@ -326,9 +338,9 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
       (typeof hotkey === 'function' && hotkey(e))
     ) {
       toggle()
-      return
+    } else {
+      onKeydown(e)
     }
-    onKeydown(e)
   }
 
   return newEditor

@@ -10,10 +10,6 @@
   "files": [
     "dist/**"
   ],
-  "exports": {
-    ".": "./dist",
-    "./styles.css": "./dist/styles.css"
-  },
   "scripts": {
     "test": "jest",
     "build": "tsup",

@@ -1,4 +1,4 @@
-import { createEditor } from '../../../../plugin/custom'
+import { createEditor } from '../../../../plugin/expand'
 import { GridCell } from '../../../../interfaces/cell'
 import { Grid } from '../../../../interfaces/grid'
 import { GridRow } from '../../../../interfaces/row'

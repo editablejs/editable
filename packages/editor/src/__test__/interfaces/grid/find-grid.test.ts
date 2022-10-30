@@ -1,5 +1,5 @@
 import { Grid } from '../../../interfaces/grid'
-import { createEditor } from '../../../plugin/custom'
+import { createEditor } from '../../../plugin/expand'
 
 describe('interfaces/grid', () => {
   const editor = createEditor()

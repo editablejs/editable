@@ -115,7 +115,7 @@ export const defaultToolbarConfig: ToolbarItem[] = [
       return !!UnOrderedListEditor.queryActive(editor)
     },
     onToggle: editor => {
-      if (UnOrderedListEditor.isListEditor(editor)) UnOrderedListEditor.toggle(editor)
+      if (UnOrderedListEditor.isUnOrderedListEditor(editor)) UnOrderedListEditor.toggle(editor)
     },
     children: <Icon name="unorderedList" />,
   },
@@ -125,7 +125,7 @@ export const defaultToolbarConfig: ToolbarItem[] = [
       return !!OrderedListEditor.queryActive(editor)
     },
     onToggle: editor => {
-      if (OrderedListEditor.isListEditor(editor)) OrderedListEditor.toggle(editor)
+      if (OrderedListEditor.isOrderedListEditor(editor)) OrderedListEditor.toggle(editor)
     },
     children: <Icon name="orderedList" />,
   },
@@ -135,7 +135,7 @@ export const defaultToolbarConfig: ToolbarItem[] = [
       return !!TaskListEditor.queryActive(editor)
     },
     onToggle: editor => {
-      if (TaskListEditor.isListEditor(editor)) TaskListEditor.toggle(editor)
+      if (TaskListEditor.isTaskListEditor(editor)) TaskListEditor.toggle(editor)
     },
     children: <Icon name="taskList" />,
   },

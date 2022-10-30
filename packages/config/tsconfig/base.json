@@ -14,11 +14,7 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "strict": true,
-    "rootDir": "src",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "strict": true
   },
   "exclude": ["node_modules"]
 }
