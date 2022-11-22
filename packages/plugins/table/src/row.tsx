@@ -10,9 +10,9 @@ import {
   Descendant,
 } from '@editablejs/editor'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
-import React, { useContext, useLayoutEffect } from 'react'
+import React, { useLayoutEffect } from 'react'
 import { TableCell, TableCellEditor } from './cell'
-import { TableContext } from './context'
+import { useTableSize } from './context'
 import { getOptions } from './options'
 import { RowStyles } from './styles'
 
@@ -67,7 +67,7 @@ const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowEle
 }) => {
   const { style, ref, ...rest } = attributes
   // 表格宽度变化导致挤压内容需要重新计算高度
-  const { width } = useContext(TableContext)
+  const { width } = useTableSize()
   // 单元格内容变动后重新计算行的高度
   useLayoutEffect(() => {
     let maxHeight = getOptions(editor).minRowHeight

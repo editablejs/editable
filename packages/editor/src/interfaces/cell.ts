@@ -6,11 +6,20 @@ export type CellPoint = [number, number]
 
 export const CELL_KEY = 'grid-cell'
 
-export interface GridCell extends Element {
+export interface GridBaseCell extends Element {
   type: string
+  colspan?: number
+  rowspan?: number
+  span?: CellPoint
+}
+
+export interface GridCell extends GridBaseCell {
   colspan: number
   rowspan: number
-  span?: CellPoint
+}
+
+export interface GridSpanCell extends GridBaseCell {
+  span: CellPoint
 }
 
 export const GridCell = {
@@ -51,5 +60,9 @@ export const GridCell = {
   toPoint: (path: Path): CellPoint => {
     if (path.length < 2) throw new Error('Invalid path')
     return path.slice(path.length - 2) as CellPoint
+  },
+
+  isSpan: (cell: GridBaseCell): cell is GridSpanCell => {
+    return (cell as GridSpanCell).span !== undefined
   },
 }

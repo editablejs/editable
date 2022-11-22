@@ -44,6 +44,7 @@ export interface GridGeneratorCellsOptions {
 export interface GridMoveOptions {
   at?: GridLocation
   move: number
+  count?: number
   to: number
 }
 
@@ -364,23 +365,27 @@ export const Grid = {
       if (!entry) return
       at = entry
     }
-    const { move, to } = options
+    const { move, count = 1, to } = options
     if (move === to) return
     const isBackward = to < move
     const [grid] = at
     const endRow = grid.children.length - 1
     // 找到需要移动列的包含合并列的范围
-    const moveSelection = Grid.edges(editor, at, {
-      start: [0, move],
-      end: [endRow, move],
-    })
-
+    let moveStart = [0, move]
+    let moveEnd = [endRow, move]
+    for (let i = move; i < count; i++) {
+      const { start, end } = Grid.edges(editor, at, {
+        start: [0, i],
+        end: [endRow, i],
+      })
+      if (start[1] < moveStart[1]) moveStart = start
+      if (end[1] > moveEnd[1]) moveEnd = end
+    }
     // 找到移动目标索引列的包含合并列的范围
     const toSelection = Grid.edges(editor, at, {
       start: [0, to],
       end: [endRow, to],
     })
-    const { start: moveStart, end: moveEnd } = moveSelection
     const { start: toStart, end: toEnd } = toSelection
     let toIndex = isBackward ? toStart[1] : Math.max(toStart[1], toEnd[1])
     if (isBackward && toIndex > moveStart[1]) {
@@ -498,22 +503,26 @@ export const Grid = {
       if (!entry) return
       at = entry
     }
-    const { move, to } = options
+    const { move, count = 1, to } = options
     if (move === to) return
     const isBackward = to < move
     const endCol = Grid.getColCount(editor, at) - 1
     // 找到需要移动行的包含合并行的范围
-    const moveSelection = Grid.edges(editor, at, {
-      start: [move, 0],
-      end: [move, endCol],
-    })
-
+    let moveStart = [move, 0]
+    let moveEnd = [move, endCol]
+    for (let i = move; i < count; i++) {
+      const { start, end } = Grid.edges(editor, at, {
+        start: [i, 0],
+        end: [i, endCol],
+      })
+      if (start[0] < moveStart[0]) moveStart = start
+      if (end[0] > moveEnd[0]) moveEnd = end
+    }
     // 找到移动目标索引行的包含合并行的范围
     const toSelection = Grid.edges(editor, at, {
       start: [to, 0],
       end: [to, endCol],
     })
-    const { start: moveStart, end: moveEnd } = moveSelection
     const { start: toStart, end: toEnd } = toSelection
     let toIndex = isBackward ? toStart[0] : Math.max(toStart[0], toEnd[0])
     if (isBackward && toIndex > moveStart[0]) {

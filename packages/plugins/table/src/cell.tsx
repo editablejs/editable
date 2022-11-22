@@ -1,4 +1,13 @@
-import { Editable, Editor, Node, GridCell, isDOMElement, Descendant } from '@editablejs/editor'
+import {
+  Editable,
+  Editor,
+  Node,
+  GridCell,
+  isDOMElement,
+  Descendant,
+  DOMNode,
+  isDOMNode,
+} from '@editablejs/editor'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { CellInnerStyles, CellStyles } from './styles'
 
@@ -27,6 +36,16 @@ export const TableCellEditor = {
       ...cell,
       type: TABLE_CELL_KEY,
     })
+  },
+
+  closest: (editor: Editable, node: DOMNode): TableCell | null => {
+    const el = isDOMElement(node) ? node : node.parentElement
+    if (!el) return null
+    const tdEl = el.closest('td')
+    if (!tdEl) return null
+    const slateNode = Editable.toSlateNode(editor, tdEl)
+    if (TableCellEditor.isTableCell(editor, slateNode)) return slateNode
+    return null
   },
 }
 

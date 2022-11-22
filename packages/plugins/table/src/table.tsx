@@ -13,12 +13,17 @@ import {
   useGridSelection,
   Transforms,
   useGridSelected,
+  isDOMNode,
+  GridCell,
 } from '@editablejs/editor'
-import { useState, useRef, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import { createStore } from 'zustand'
 import { TableCell, TableCellEditor } from './cell'
-import { TableContext, TableDragOptions, TableOptions } from './context'
+import { TableContext } from './context'
+import { Dragging } from './dragging'
 import { TableColHeader, TableRowHeader } from './header'
-import { getOptions } from './options'
+import { TableDrag, useTableDragging } from './hooks/use-drag'
+import { getOptions, TableOptions } from './options'
 import { TableRow, TableRowEditor } from './row'
 import { TableSelection as TableSelectionElement } from './selection'
 import { AllHeaderStyles, TableStyles } from './styles'
@@ -96,9 +101,6 @@ interface TableProps extends RenderElementProps<Table> {
 }
 
 const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
-  // drag
-  const dragRef = useRef<TableDragOptions | null>(null)
-
   const nodeSelected = useNodeSelected()
 
   const nodeFocused = useNodeFocused()
@@ -106,6 +108,10 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
   const selection = useGridSelection()
 
   const selected = useGridSelected()
+
+  const tableRef = useRef<HTMLTableElement>(null)
+
+  const dragging = useTableDragging()
 
   /**
    * 部分选中表格，让选中部分选中表格的整行
@@ -197,6 +203,26 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
 
   const [isHover, setHover] = useState(false)
 
+  const store = useMemo(
+    () =>
+      createStore(() => ({
+        selection,
+        selected,
+        width: tableWidth,
+        height: tableHeight,
+        rows: element.children.length,
+        cols: element.colsWidth?.length ?? 0,
+      })),
+    [
+      element.children.length,
+      element.colsWidth?.length,
+      selected,
+      selection,
+      tableHeight,
+      tableWidth,
+    ],
+  )
+
   const renderAllHeader = () => {
     const handleMouseDown = (e: React.MouseEvent) => {
       e.preventDefault()
@@ -224,20 +250,106 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     setHover(false)
   }, [cancellablePromisesApi])
 
+  const getMoveColToIndex = useCallback(
+    (col: number, offsetX: number) => {
+      const cells = Grid.cells(editor, Editable.findPath(editor, element), {
+        startCol: col,
+        endCol: col,
+      })
+      let minCol = col
+      let maxCol = col
+      for (const [cell] of cells) {
+        const isSpan = GridCell.isSpan(cell)
+        if (isSpan) {
+          minCol = Math.min(minCol, cell.span[1])
+        } else {
+          maxCol = Math.max(maxCol, col + cell.colspan - 1)
+        }
+      }
+      const leftWidth = colsWidth[minCol] / 2
+      const rightWidth = colsWidth[maxCol] / 2
+      if (col === minCol && offsetX < leftWidth) {
+        return minCol
+      }
+      if (col === maxCol && offsetX > rightWidth) {
+        return maxCol + 1
+      }
+      return -1
+    },
+    [colsWidth, element, editor],
+  )
+
+  const getMoveRowToIndex = useCallback(
+    (row: number, offsetY: number) => {
+      const cells = Grid.cells(editor, Editable.findPath(editor, element), {
+        startRow: row,
+        endRow: row,
+      })
+      let minRow = row
+      let maxRow = row
+      for (const [cell] of cells) {
+        const isSpan = GridCell.isSpan(cell)
+        if (isSpan) {
+          minRow = Math.min(minRow, cell.span[0])
+        } else {
+          maxRow = Math.max(maxRow, row + cell.rowspan - 1)
+        }
+      }
+      const rows = element.children
+      const topHeight = (rows[minRow].height ?? 0) / 2
+      const bottomHeight = (rows[maxRow].height ?? 0) / 2
+
+      if (row === minRow && offsetY < topHeight) {
+        return minRow
+      }
+      if (row === maxRow && offsetY > bottomHeight) {
+        return maxRow + 1
+      }
+      return -1
+    },
+    [element, editor],
+  )
+
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      const tableEl = tableRef.current
+      const { target, offsetX, offsetY } = event
+      TableDrag.setPoint({ x: event.clientX, y: event.clientY })
+      if (!tableEl || !isDOMNode(target) || !tableEl.contains(target)) {
+        TableDrag.setTo(-1)
+        return
+      }
+
+      const cell = TableCellEditor.closest(editor, target)
+      if (!cell) {
+        TableDrag.setTo(-1)
+        return
+      }
+      const path = Editable.findPath(editor, cell)
+
+      const col = path[path.length - 1]
+      const row = path[path.length - 2]
+      const type = TableDrag.getDragType()
+      const to = type === 'row' ? getMoveRowToIndex(row, offsetY) : getMoveColToIndex(col, offsetX)
+      TableDrag.setTo(to)
+    },
+    [editor, getMoveRowToIndex, getMoveColToIndex],
+  )
+
+  useEffect(() => {
+    if (dragging) {
+      window.addEventListener('mousemove', handleMouseMove)
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [dragging, handleMouseMove])
+
   return (
-    <TableContext.Provider
-      value={{
-        dragRef,
-        selection,
-        selected,
-        width: tableWidth,
-        height: tableHeight,
-        rows: element.children.length,
-        cols: element.colsWidth?.length ?? 0,
-        getOptions: () => TableEditor.getOptions(editor),
-      }}
-    >
+    <TableContext.Provider value={store}>
       <TableStyles
+        isDragging={dragging}
         isHover={isHover}
         isSelected={!!~~selected.count}
         {...attributes}
@@ -247,12 +359,13 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
         <TableColHeader editor={editor} table={element} />
         <TableRowHeader editor={editor} table={element} />
         {renderAllHeader()}
-        <table style={{ width: tableWidth }}>
+        <table ref={tableRef} style={{ width: tableWidth }}>
           {renderColgroup()}
           <tbody>{children}</tbody>
         </table>
         <TableSelectionElement editor={editor} table={element} />
       </TableStyles>
+      <Dragging />
     </TableContext.Provider>
   )
 }

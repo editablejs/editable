@@ -176,6 +176,7 @@ export const ContentEditable = (props: EditableProps) => {
           isDragEnded.current = true
         } else {
           Transforms.select(editor, point)
+          editor.focus()
         }
       } else {
         handleSelecting(point, !isContextMenu.current)
@@ -295,7 +296,6 @@ export const ContentEditable = (props: EditableProps) => {
     },
   })
 
-  // Whenever the editor updates...
   useIsomorphicLayoutEffect(() => {
     const { onChange } = editor
     editor.onChange = () => {

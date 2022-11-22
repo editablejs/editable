@@ -4,8 +4,8 @@ import { Editable } from '../plugin/editable'
 import { FocusedContext } from '../hooks/use-focused'
 import { EditorContext } from '../hooks/use-editable-static'
 import { EditableContext } from '../hooks/use-editable'
-import { EDITOR_TO_LANG, IS_FOCUSED } from '../utils/weak-maps'
-import { Locale, LocaleContext } from '../hooks/use-locale'
+import { IS_FOCUSED } from '../utils/weak-maps'
+import { LocaleStore } from '../hooks/use-locale'
 
 export const EditableComposer = (props: {
   editor: Editable
@@ -38,7 +38,7 @@ export const EditableComposer = (props: {
   }, [editor, focused])
 
   useEffect(() => {
-    EDITOR_TO_LANG.set(editor, lang)
+    LocaleStore.setLang(editor, lang)
   }, [editor, lang])
 
   const changeFocused = (value: boolean) => {
@@ -66,14 +66,12 @@ export const EditableComposer = (props: {
   }, [editor, onChange])
 
   return (
-    <LocaleContext.Provider value={Locale.getLocale(editor)}>
-      <EditableContext.Provider value={context}>
-        <EditorContext.Provider value={editor}>
-          <FocusedContext.Provider value={[focused, changeFocused]}>
-            {children}
-          </FocusedContext.Provider>
-        </EditorContext.Provider>
-      </EditableContext.Provider>
-    </LocaleContext.Provider>
+    <EditableContext.Provider value={context}>
+      <EditorContext.Provider value={editor}>
+        <FocusedContext.Provider value={[focused, changeFocused]}>
+          {children}
+        </FocusedContext.Provider>
+      </EditorContext.Provider>
+    </EditableContext.Provider>
   )
 }

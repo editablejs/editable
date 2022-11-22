@@ -1,7 +1,16 @@
+import { Icon } from '@editablejs/plugin-ui'
 import tw, { css, styled, theme } from 'twin.macro'
 
 export const TableStyles = styled.div(
-  ({ isHover, isSelected }: { isHover: boolean; isSelected: boolean }) => [
+  ({
+    isHover,
+    isSelected,
+    isDragging,
+  }: {
+    isHover: boolean
+    isSelected: boolean
+    isDragging: boolean
+  }) => [
     tw`relative`,
     css`
       --table-padding-top: 14px;
@@ -20,6 +29,7 @@ export const TableStyles = styled.div(
         }
       }
     `,
+    isDragging && tw`cursor-default`,
     (isHover || isSelected) &&
       css`
         ${ColsHeaderStyles} {
@@ -68,8 +78,15 @@ export const ColsHeaderStyles = styled.div(() => [
   `,
 ])
 
+export const HeaderDragStyles = styled(Icon)`
+  position: absolute;
+  font-size: 8px;
+  color: #fff;
+  display: none;
+`
+
 export const ColsHeaderItemStyles = styled.div(
-  ({ isHover, isFull }: { isHover: boolean; isFull: boolean }) => [
+  ({ isHover, isFull, allFull }: { isHover: boolean; isFull: boolean; allFull: boolean }) => [
     css`
       height: var(--table-item-wh);
       background: var(--table-item-bg);
@@ -96,6 +113,18 @@ export const ColsHeaderItemStyles = styled.div(
           background: var(--table-split-bg);
         }
       `,
+    isFull &&
+      !allFull &&
+      css`
+        cursor: move;
+      `,
+    isFull &&
+      !allFull &&
+      `${HeaderDragStyles} {
+      display: flex;
+      left: calc(50% - 8px);
+      transform: rotate(90deg);
+    }`,
   ],
 )
 
@@ -109,7 +138,7 @@ export const RowsHeaderStyles = styled.div(() => [
 ])
 
 export const RowsHeaderItemStyles = styled.div(
-  ({ isHover, isFull }: { isHover: boolean; isFull: boolean }) => [
+  ({ isHover, isFull, allFull }: { isHover: boolean; isFull: boolean; allFull: boolean }) => [
     css`
       width: var(--table-item-wh);
       background: var(--table-item-bg);
@@ -136,6 +165,18 @@ export const RowsHeaderItemStyles = styled.div(
           background: var(--table-split-bg);
         }
       `,
+
+    isFull &&
+      !allFull &&
+      css`
+        cursor: move;
+      `,
+    isFull &&
+      !allFull &&
+      `${HeaderDragStyles} {
+      display: flex;
+      top: calc(50% - 4px);
+    }`,
   ],
 )
 
@@ -168,12 +209,13 @@ export const AllHeaderStyles = styled.div(({ allFull }: { allFull: boolean }) =>
     `,
 ])
 
-export const ColsInsertStyles = styled.div(() => [
+export const ColsInsertStyles = styled.div(({ isActive }: { isActive?: boolean }) => [
   css`
     position: absolute;
     top: calc(0px - var(--table-item-wh) + 2px);
     line-height: 0;
     cursor: pointer;
+    z-index: ${isActive ? 3 : 'unset'};
     &:hover {
       z-index: 3;
 
@@ -182,6 +224,7 @@ export const ColsInsertStyles = styled.div(() => [
       }
     }
   `,
+  isActive && tw`pointer-events-none`,
 ])
 
 export const ColsInsertPlusStyles = styled.div(() => [
@@ -202,6 +245,8 @@ export const ColsInsertLineStyles = styled(ColsInsertPlusStyles)`
   left: 0.5px;
   width: 2px;
   background-color: var(--table-split-bg);
+  ${({ isActive }: { isActive?: boolean }) =>
+    isActive ? 'display: flex; z-index: 3; pointer-events: none;' : ''}
 `
 
 export const ColsInsertIconStyles = styled.div(() => [
@@ -216,12 +261,13 @@ export const ColsInsertIconStyles = styled.div(() => [
   `,
 ])
 
-export const RowsInsertStyles = styled.div(() => [
+export const RowsInsertStyles = styled.div(({ isActive }: { isActive?: boolean }) => [
   css`
     position: absolute;
     left: calc(0px - var(--table-item-wh) + 2px);
     line-height: 0;
     cursor: pointer;
+    z-index: ${isActive ? 3 : 'unset'};
 
     &:hover {
       z-index: 3;
@@ -263,6 +309,8 @@ export const RowsInsertLineStyles = styled(ColsInsertPlusStyles)`
   left: 3px;
   height: 2px;
   background-color: var(--table-split-bg);
+  ${({ isActive }: { isActive?: boolean }) =>
+    isActive ? 'display: flex; z-index: 3; pointer-events: none;' : ''}
 `
 
 export const ColsSplitStyles = styled.div(({ isHover }: { isHover: boolean }) => [
@@ -271,10 +319,9 @@ export const ColsSplitStyles = styled.div(({ isHover }: { isHover: boolean }) =>
     top: 0;
     height: var(--table-item-wh) + 2px;
     padding: 0 1px;
-    cursor: col-resize;
     z-index: 1;
   `,
-  isHover && tw`z-[3]`,
+  isHover && tw`z-[3] cursor-col-resize`,
 ])
 
 export const ColsSplitLineStyles = styled.div(({ isHover }: { isHover: boolean }) => [
@@ -295,10 +342,9 @@ export const RowsSplitStyles = styled.div(({ isHover }: { isHover: boolean }) =>
     left: 0;
     width: calc(var(--table-item-bg) + 2px);
     padding: 1px 0;
-    cursor: row-resize;
     z-index: 1;
   `,
-  isHover && tw`z-[3]`,
+  isHover && tw`z-[3] cursor-row-resize`,
 ])
 
 export const RowsSplitLineStyles = styled.div(({ isHover }: { isHover: boolean }) => [

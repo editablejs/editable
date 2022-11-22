@@ -2,12 +2,12 @@ import {
   Descendant,
   Editable,
   isHotkey,
-  Locale,
   Range,
   formatHotkey,
   Editor,
   Transforms,
   Node,
+  LocaleStore,
 } from '@editablejs/editor'
 import writeClipboard from 'copy-to-clipboard'
 import { Icon } from '@editablejs/plugin-ui'
@@ -166,7 +166,7 @@ export const withClipboard = <T extends Editable>(editor: T, options: ClipboardO
   const { onKeydown } = newEditor
 
   for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
+    LocaleStore.setLocale(newEditor, key, locales[key])
   }
 
   const vaildHotkey = (type: ClipboardType, e: KeyboardEvent) => {
@@ -220,7 +220,7 @@ export const withClipboard = <T extends Editable>(editor: T, options: ClipboardO
     e.onContextMenu = items => {
       const { selection } = newEditor
 
-      const locale = Locale.getLocale<ClipboardLocale>(newEditor).clipboard
+      const locale = LocaleStore.getLocale<ClipboardLocale>(newEditor).clipboard
 
       const isDisabled = !selection || Range.isCollapsed(selection)
 

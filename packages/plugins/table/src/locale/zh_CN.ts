@@ -5,6 +5,8 @@ const locale: TableLocale = {
   table: {
     mergeCells: '合并单元格',
     splitCells: '拆分单元格',
+    moveRows: '正在移动{count}行',
+    moveCols: '正在移动{count}列',
   },
 }
 

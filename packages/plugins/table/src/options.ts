@@ -1,10 +1,15 @@
 import { Editable } from '@editablejs/editor'
-import { TableOptions } from './context'
+import { useRef } from 'react'
 
 export const defaultTableMinRowHeight = 35
 export const defaultTableMinColWidth = 35
 
 export const TABLE_OPTIONS_WEAKMAP = new WeakMap<Editable, TableOptions>()
+
+export interface TableOptions {
+  minRowHeight?: number
+  minColWidth?: number
+}
 
 export const getOptions = (editor: Editable): Required<TableOptions> => {
   const options = TABLE_OPTIONS_WEAKMAP.get(editor) ?? {}
@@ -15,4 +20,8 @@ export const getOptions = (editor: Editable): Required<TableOptions> => {
 
 export const setOptions = (editor: Editable, options: TableOptions) => {
   TABLE_OPTIONS_WEAKMAP.set(editor, options)
+}
+
+export const useOptions = (editor: Editable) => {
+  return useRef(getOptions(editor)).current
 }

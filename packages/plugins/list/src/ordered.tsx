@@ -9,15 +9,6 @@ import {
   ListTemplate,
 } from '@editablejs/editor'
 import React, { useLayoutEffect } from 'react'
-// import {
-//   List,
-//   ListEditor,
-//   ListLabelStyles,
-//   ListStyles,
-//   ListTemplate,
-//   ToggleListOptions,
-//   withList,
-// } from './base'
 import tw, { styled } from 'twin.macro'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { Indent, IndentEditor } from '@editablejs/plugin-indent'

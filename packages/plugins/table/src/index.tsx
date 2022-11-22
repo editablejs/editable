@@ -5,15 +5,14 @@ import {
   Node,
   Grid,
   isDOMElement,
-  Locale,
+  LocaleStore,
 } from '@editablejs/editor'
 import { ContextMenuEditor } from '@editablejs/plugin-context-menu'
 import { SerializeEditor } from '@editablejs/plugin-serializes'
 import { Icon } from '@editablejs/plugin-ui'
 import { withTableCell } from './cell'
-import { TableOptions } from './context'
 import locales, { TableLocale } from './locale'
-import { getOptions, setOptions } from './options'
+import { getOptions, setOptions, TableOptions } from './options'
 import { TableRow, withTableRow } from './row'
 import { TableEditor, TableComponent, Table, TABLE_KEY } from './table'
 
@@ -23,7 +22,7 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
   setOptions(newEditor, options)
 
   for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
+    LocaleStore.setLocale(newEditor, key, locales[key])
   }
 
   newEditor = withTableCell(newEditor)
@@ -122,7 +121,7 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
     e.onContextMenu = items => {
       const grid = Grid.findGrid(e)
       if (!grid) return onContextMenu(items)
-      const locale = Locale.getLocale<TableLocale>(e).table
+      const locale = LocaleStore.getLocale<TableLocale>(e).table
 
       items.push({
         type: 'separator',

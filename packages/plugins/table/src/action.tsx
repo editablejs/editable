@@ -5,10 +5,9 @@ import {
   Transforms,
   Grid,
 } from '@editablejs/editor'
-import React, { useRef, useState, useCallback, useContext } from 'react'
+import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { Icon } from '@editablejs/plugin-ui'
 import { TABLE_CELL_KEY } from './cell'
-import { TableContext } from './context'
 import { TableRow, TABLE_ROW_KEY } from './row'
 import {
   ColsInsertIconStyles,
@@ -24,9 +23,11 @@ import {
   RowsSplitLineStyles,
   RowsSplitStyles,
 } from './styles'
+import { useOptions } from './options'
+import { TableDrag, useTableDragging, useTableDragTo } from './hooks/use-drag'
 
-const TYPE_COLS = 'cols'
-const TYPE_ROWS = 'rows'
+const TYPE_COL = 'col'
+const TYPE_ROW = 'row'
 
 export interface TableActionProps {
   editor: Editable
@@ -62,15 +63,16 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
     width += 11
   }
 
-  const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
+  const type = left !== undefined ? TYPE_COL : TYPE_ROW
 
-  const { getOptions } = useContext(TableContext)
+  const { minColWidth, minRowHeight } = useOptions(editor)
+
+  const draggingTo = useTableDragTo()
 
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault()
-    const options = getOptions()
-    if (type === TYPE_COLS) {
-      let colWidth = options.minColWidth
+    if (type === TYPE_COL) {
+      let colWidth = minColWidth
       const { colsWidth } = table
       if (colsWidth) {
         if (index >= colsWidth.length) colWidth = colsWidth[colsWidth.length - 1]
@@ -84,35 +86,41 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
         index,
         { type: TABLE_CELL_KEY },
         colWidth,
-        options.minColWidth,
+        minColWidth,
       )
-    } else if (type === TYPE_ROWS) {
+    } else if (type === TYPE_ROW) {
       Grid.insertRow(
         editor,
         Editable.findPath(editor, table),
         index,
         { type: TABLE_ROW_KEY },
         { type: TABLE_CELL_KEY },
-        options.minRowHeight,
+        minRowHeight,
       )
     }
   }
 
-  const InsertStyles = type === 'cols' ? ColsInsertStyles : RowsInsertStyles
-  const InsertIconStyles = type === 'cols' ? ColsInsertIconStyles : RowsInsertIconStyles
-  const InsertLineStyles = type === 'cols' ? ColsInsertLineStyles : RowsInsertLineStyles
-  const InsertPlusStyles = type === 'cols' ? ColsInsertPlusStyles : RowsInsertPlusStyles
+  const draggingActive = useMemo(() => {
+    return draggingTo > -1 && draggingTo === index && TableDrag.getDrag().type === type
+  }, [draggingTo, index, type])
+
+  const InsertStyles = type === TYPE_COL ? ColsInsertStyles : RowsInsertStyles
+  const InsertIconStyles = type === TYPE_COL ? ColsInsertIconStyles : RowsInsertIconStyles
+  const InsertLineStyles = type === TYPE_COL ? ColsInsertLineStyles : RowsInsertLineStyles
+  const InsertPlusStyles = type === TYPE_COL ? ColsInsertPlusStyles : RowsInsertPlusStyles
   return (
-    <InsertStyles style={{ left, top }} onMouseDown={handleMouseDown}>
+    <InsertStyles isActive={draggingActive} style={{ left, top }} onMouseDown={handleMouseDown}>
       <InsertIconStyles>
         <svg width="3" height="3" viewBox="0 0 3 3" fill="none">
           <circle cx="1.5" cy="1.5" r="1.5" fill="#BBBFC4"></circle>
         </svg>
       </InsertIconStyles>
-      <InsertPlusStyles>
-        <Icon name="plus" />
-      </InsertPlusStyles>
-      <InsertLineStyles style={{ height, width }}></InsertLineStyles>
+      {!draggingActive && (
+        <InsertPlusStyles>
+          <Icon name="plus" />
+        </InsertPlusStyles>
+      )}
+      <InsertLineStyles isActive={draggingActive} style={{ height, width }}></InsertLineStyles>
     </InsertStyles>
   )
 }
@@ -131,6 +139,13 @@ export const InsertAction = React.memo(InsertActionDefault, (prev, next) => {
   )
 })
 
+interface TableDragSplitOptions {
+  type: typeof TYPE_COL | typeof TYPE_ROW
+  x: number
+  y: number
+  start: number
+  end: number
+}
 // split action
 const SplitActionDefault: React.FC<TableActionProps> = ({
   editor,
@@ -154,48 +169,40 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
   if (top !== undefined) {
     top -= 1
   }
-  const type = left !== undefined ? TYPE_COLS : TYPE_ROWS
+  const type = left !== undefined ? TYPE_COL : TYPE_ROW
 
-  const { dragRef, getOptions } = useContext(TableContext)
-
+  const dragRef = useRef<TableDragSplitOptions | null>(null)
+  const { minColWidth, minRowHeight } = useOptions(editor)
   const [isHover, setHover] = useState(false)
   const isDrag = useRef(false)
 
-  const handleDragMove = useCallback(
+  const handleDragSplitMove = useCallback(
     (e: MouseEvent) => {
       if (!dragRef.current) return
       const { type, x, y, start } = dragRef.current
       const path = Editable.findPath(editor, table)
-      const options = getOptions()
-      if (type === 'cols') {
+      if (type === TYPE_COL) {
         const { colsWidth } = table
         if (!colsWidth) return
         const cX = e.clientX
         const val = cX - x
         const newColsWidth = colsWidth.concat()
         let width = newColsWidth[start] + val
-        width = Math.max(width, options.minColWidth)
+        width = Math.max(width, minColWidth)
         if (start < newColsWidth.length - 1) {
-          width = Math.min(
-            newColsWidth[start] + newColsWidth[start + 1] - options.minColWidth,
-            width,
-          )
+          width = Math.min(newColsWidth[start] + newColsWidth[start + 1] - minColWidth, width)
           let nextW = newColsWidth[start + 1] - val
-          nextW = Math.max(nextW, options.minColWidth)
-          nextW = Math.min(
-            newColsWidth[start] + newColsWidth[start + 1] - options.minColWidth,
-            nextW,
-          )
+          nextW = Math.max(nextW, minColWidth)
+          nextW = Math.min(newColsWidth[start] + newColsWidth[start + 1] - minColWidth, nextW)
           newColsWidth[start + 1] = nextW
         }
         newColsWidth[start] = width
         Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
-      } else if (type === 'rows') {
+      } else if (type === TYPE_ROW) {
         const { height, children: cells, contentHeight: ch = height } = table.children[start]
         if (height) {
           const cY = e.clientY
           const val = cY - y
-          const { minRowHeight } = options
           let h = Math.max(height, ch!) + val
           h = Math.max(h, minRowHeight)
           let contentHeight = 0
@@ -216,22 +223,19 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
         }
       }
     },
-    [dragRef, editor, table, getOptions],
+    [editor, minColWidth, minRowHeight, table],
   )
 
   const cancellablePromisesApi = useCancellablePromises()
 
-  const handleDragUp = useCallback(
-    (e: MouseEvent) => {
-      dragRef.current = null
-      isDrag.current = false
-      setHover(false)
-      cancellablePromisesApi.clearPendingPromises()
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragUp)
-    },
-    [cancellablePromisesApi, dragRef, handleDragMove],
-  )
+  const handleDragSplitUp = useCallback(() => {
+    dragRef.current = null
+    isDrag.current = false
+    setHover(false)
+    cancellablePromisesApi.clearPendingPromises()
+    window.removeEventListener('mousemove', handleDragSplitMove)
+    window.removeEventListener('mouseup', handleDragSplitUp)
+  }, [cancellablePromisesApi, dragRef, handleDragSplitMove])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -244,11 +248,13 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
     }
     isDrag.current = true
     setHover(true)
-    window.addEventListener('mousemove', handleDragMove)
-    window.addEventListener('mouseup', handleDragUp)
+    window.addEventListener('mousemove', handleDragSplitMove)
+    window.addEventListener('mouseup', handleDragSplitUp)
   }
 
+  const draging = useTableDragging()
   const handleMouseOver = useCallback(() => {
+    if (draging) return
     cancellablePromisesApi.clearPendingPromises()
     const wait = cancellablePromise(cancellablePromisesApi.delay(200))
     cancellablePromisesApi.appendPendingPromise(wait)
@@ -257,7 +263,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
         setHover(true)
       })
       .catch(err => {})
-  }, [cancellablePromisesApi])
+  }, [cancellablePromisesApi, draging])
 
   const handleMouseLeave = useCallback(() => {
     if (isDrag.current) return
@@ -265,17 +271,18 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
     setHover(false)
   }, [cancellablePromisesApi])
 
-  const SplitStyles = type === 'cols' ? ColsSplitStyles : RowsSplitStyles
-  const SplitLineStyles = type === 'cols' ? ColsSplitLineStyles : RowsSplitLineStyles
+  const SplitStyles = type === TYPE_COL ? ColsSplitStyles : RowsSplitStyles
+  const SplitLineStyles = type === TYPE_COL ? ColsSplitLineStyles : RowsSplitLineStyles
+  if (draging) return null
   return (
     <SplitStyles
-      isHover={isHover}
+      isHover={isHover && !draging}
       style={{ left, top, height, width }}
       onMouseDown={handleMouseDown}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
     >
-      <SplitLineStyles isHover={isHover} />
+      <SplitLineStyles isHover={isHover && !draging} />
     </SplitStyles>
   )
 }

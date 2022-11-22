@@ -443,6 +443,22 @@ export const PasteTextIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = prop
   )
 }
 
+export const DragIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M290 196c54.124 0 98-43.876 98-98S344.124 0 290 0s-98 43.876-98 98 43.876 98 98 98z m0 414c54.124 0 98-43.876 98-98s-43.876-98-98-98-98 43.876-98 98 43.876 98 98 98z m0 414c54.124 0 98-43.876 98-98s-43.876-98-98-98-98 43.876-98 98 43.876 98 98 98z m444-828c54.124 0 98-43.876 98-98S788.124 0 734 0s-98 43.876-98 98 43.876 98 98 98z m0 414c54.124 0 98-43.876 98-98s-43.876-98-98-98-98 43.876-98 98 43.876 98 98 98z m0 414c54.124 0 98-43.876 98-98s-43.876-98-98-98-98 43.876-98 98 43.876 98 98 98z"></path>
+    </svg>
+  )
+}
+
 const ICON_LIST = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -469,6 +485,7 @@ const ICON_LIST = {
   cut: CutIcon,
   paste: PasteIcon,
   pasteText: PasteTextIcon,
+  drag: DragIcon,
 }
 
 const IconStyles = tw.span`overflow-hidden inline-flex
@@ -477,11 +494,11 @@ const IconStyles = tw.span`overflow-hidden inline-flex
 
 export const Icon: React.FC<
   React.HTMLAttributes<SVGSVGElement> & Record<'name', keyof typeof ICON_LIST>
-> = ({ name, ...props }) => {
+> = ({ name, className, ...props }) => {
   const IconComponent = ICON_LIST[name]
 
   return (
-    <IconStyles>
+    <IconStyles className={className}>
       <IconComponent {...props} />
     </IconStyles>
   )
