@@ -31,6 +31,7 @@ import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
 import { DrawSelectionContext } from '../hooks/use-draw-selection'
 import cloneDeep from 'lodash/cloneDeep'
+import { Drag, useDragging, useDragTo } from '../hooks/use-drag'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -99,10 +100,10 @@ export const ContentEditable = (props: EditableProps) => {
   const [isDrawSelection, setIsDrawSelection] = useState(true)
 
   const ref = useRef<HTMLDivElement>(null)
-  const dragRef = useRef<Drag | null>(null)
-  const [dragTo, setDragTo] = useState<Range | null>(null)
+  // 标记是否是刚拖拽完毕
   const isDragEnded = useRef(false)
-
+  const dragTo = useDragTo()
+  const dragging = useDragging()
   // Update internal state on each render.
   IS_READ_ONLY.set(editor, readOnly)
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
@@ -156,8 +157,8 @@ export const ContentEditable = (props: EditableProps) => {
         Editable.focus(editor)
       }
       const point = Editable.findEventPoint(editor, event)
-      if (point && dragRef.current) {
-        const { from, data } = dragRef.current
+      if (point && Drag.isDragging()) {
+        const { from, data } = Drag.getDrag()
         if (!Range.includes(from, point)) {
           Transforms.delete(editor, {
             at: from,
@@ -181,8 +182,7 @@ export const ContentEditable = (props: EditableProps) => {
       } else {
         handleSelecting(point, !isContextMenu.current)
       }
-      dragRef.current = null
-      setDragTo(null)
+      Drag.clear()
       if (!isDragEnded.current) editor.onSelectEnd()
     }
     isContextMenu.current = false
@@ -195,8 +195,8 @@ export const ContentEditable = (props: EditableProps) => {
       return
     const point = Editable.findEventPoint(editor, event)
 
-    if (point && dragRef.current) {
-      setDragTo({
+    if (point && Drag.isDragging()) {
+      Drag.setTo({
         anchor: point,
         focus: point,
       })
@@ -231,10 +231,10 @@ export const ContentEditable = (props: EditableProps) => {
           !Point.equals(Range.end(selection), point) &&
           !Point.equals(Range.start(selection), point)
         ) {
-          dragRef.current = {
-            from: selection,
-            data: cloneDeep(editor.getFragment(selection)),
-          }
+          Drag.setFrom(selection, cloneDeep(editor.getFragment(selection)), {
+            x: event.clientX,
+            y: event.clientY,
+          })
           editor.onSelectStart()
           return
         }
@@ -302,6 +302,7 @@ export const ContentEditable = (props: EditableProps) => {
       const { selection } = editor
       onChange()
       setDrawSelection(selection ? { ...selection } : null)
+      // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
       if (isDragEnded.current) {
         editor.onSelectEnd()
         isDragEnded.current = false
@@ -352,6 +353,13 @@ export const ContentEditable = (props: EditableProps) => {
     [dragTo, editor],
   )
 
+  const cursor = useMemo(() => {
+    if (dragging && dragTo) {
+      return 'default'
+    }
+    return 'text'
+  }, [dragTo, dragging])
+
   return (
     <ReadOnlyContext.Provider value={readOnly}>
       <div
@@ -378,7 +386,7 @@ export const ContentEditable = (props: EditableProps) => {
             // Disable the default user-select behavior.
             userSelect: 'none',
             // Set cursor to text.
-            cursor: 'text',
+            cursor,
             //
             overflowWrap: 'break-word',
           }}
