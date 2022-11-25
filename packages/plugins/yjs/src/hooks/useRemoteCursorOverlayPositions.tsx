@@ -1,13 +1,11 @@
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  RefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { BaseRange, Descendant, Editable, useEditable } from '@editablejs/editor'
+  BaseRange,
+  Descendant,
+  Editable,
+  useEditable,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
 import { useRequestReRender } from './useRequestReRender'
 import {
   CaretPosition,
@@ -105,7 +103,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
 
   // Update selection rects after paint
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     let selectionRectsChanged =
       Object.keys(selectionRects).length !== Object.keys(cursorStates).length
 

@@ -3,17 +3,20 @@ import { Range } from 'slate'
 import { useEditableStatic } from '../hooks/use-editable-static'
 import { useFocused } from '../hooks/use-focused'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { useDrawSelection } from '../hooks/use-draw-selection'
 import { IS_MOUSEDOWN } from '../utils/weak-maps'
 import { ShadowRect } from './shadow'
+import {
+  useSelectionDrawingEnabled,
+  useSelectionDrawingRects,
+  useSelectionDrawingSelection,
+  useSelectionDrawingStyle,
+} from '../hooks/use-selection-drawing'
 
 interface CaretProps {
-  width?: number
-  color?: string
   timeout?: number | false
 }
 
-const CaretComponent: FC<CaretProps> = ({ width = 1, color = '#000', timeout = 530 }) => {
+const CaretComponent: FC<CaretProps> = ({ timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()
@@ -22,7 +25,10 @@ const CaretComponent: FC<CaretProps> = ({ width = 1, color = '#000', timeout = 5
 
   const ref = useRef<HTMLDivElement>(null)
 
-  const { selection, rects } = useDrawSelection()
+  const enabled = useSelectionDrawingEnabled()
+  const selection = useSelectionDrawingSelection()
+  const rects = useSelectionDrawingRects()
+  const style = useSelectionDrawingStyle()
 
   const rect = useMemo(() => {
     if (!selection || rects.length === 0 || !focused || !Range.isCollapsed(selection)) return null
@@ -62,10 +68,14 @@ const CaretComponent: FC<CaretProps> = ({ width = 1, color = '#000', timeout = 5
     return () => clearActive()
   }, [editor, active, clearActive])
 
+  if (!enabled) return null
+
   return (
     <ShadowRect
       rect={
-        rect ? Object.assign({}, rect, { width, color }) : { width: 0, height: 0, top: 0, left: 0 }
+        rect
+          ? Object.assign({}, rect, { width: style.caretWidth, color: style.caretColor })
+          : { width: 0, height: 0, top: 0, left: 0 }
       }
       ref={ref}
       style={{ willChange: 'opacity, transform', opacity: rect ? 1 : 0 }}

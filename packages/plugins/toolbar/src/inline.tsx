@@ -1,23 +1,16 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect, Range } from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
 import { useRef, useState } from 'react'
-import { Toolbar, ToolbarItem } from './toolbar'
+import { useInlineToolbarItems, useInlineToolbarOpened } from './store'
+import { Toolbar } from './toolbar'
 
-export interface InlineToolbarOptions {
-  items?: ToolbarItem[]
-}
+export interface InlineToolbarOptions {}
 
 export const INLINE_TOOLBAR_OPTIONS = new WeakMap<Editable, InlineToolbarOptions>()
 
-interface InlineToolbarEditor extends Editable {
-  onInlineToolbar: (items: ToolbarItem[]) => ToolbarItem[]
-}
+interface InlineToolbarEditor extends Editable {}
 
 const InlineToolbarEditor = {
-  isInlineToolbarEditor: (editor: Editable): editor is InlineToolbarEditor => {
-    return !!(editor as InlineToolbarEditor).onInlineToolbar
-  },
-
   getOptions: (editor: Editable): InlineToolbarOptions => {
     return INLINE_TOOLBAR_OPTIONS.get(editor) ?? {}
   },
@@ -27,11 +20,14 @@ const InlineToolbar = () => {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLElement | null>(null)
 
-  const editor = useEditableStatic() as InlineToolbarEditor
+  const editor = useEditableStatic()
 
-  const [open, setOpen] = useState(false)
+  const items = useInlineToolbarItems(editor)
+
+  const [opened, setOpened] = useInlineToolbarOpened(editor)
+
   const [side, setSide] = useState<'bottom' | 'top'>('bottom')
-  const [items, setItems] = useState(InlineToolbarEditor.getOptions(editor).items ?? [])
+
   const pointRef = useRef({ x: 0, y: 0 })
   const virtualRef = useRef({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
@@ -64,10 +60,9 @@ const InlineToolbar = () => {
         y,
       }
       setSide(isBackward ? 'top' : 'bottom')
-      setItems(editor.onInlineToolbar(items))
-      setOpen(true)
+      setOpened(true)
     } else {
-      setOpen(false)
+      setOpened(false)
     }
   }
 
@@ -80,7 +75,7 @@ const InlineToolbar = () => {
     const { onSelectEnd, onSelectStart } = editor
 
     editor.onSelectStart = () => {
-      setOpen(false)
+      setOpened(false)
       onSelectStart()
     }
 
@@ -100,7 +95,7 @@ const InlineToolbar = () => {
     return (
       <Popper>
         <PopperAnchor virtualRef={virtualRef} />
-        <Presence present={open}>
+        <Presence present={opened}>
           <Portal container={rootRef.current}>
             <PopperContent
               side={side}
@@ -124,14 +119,7 @@ export const withInlineToolbar = <T extends Editable>(
 
   INLINE_TOOLBAR_OPTIONS.set(newEditor, options)
 
-  const { onRenderContextComponents } = newEditor
-
-  newEditor.onRenderContextComponents = components => {
-    components.push(InlineToolbar)
-    return onRenderContextComponents(components)
-  }
-
-  newEditor.onInlineToolbar = items => items
+  Editable.mountSlot(editor, InlineToolbar)
 
   return newEditor
 }

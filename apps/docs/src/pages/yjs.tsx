@@ -1,19 +1,21 @@
+import { EditableComposer, ContentEditable, createEditor, Descendant } from '@editablejs/editor'
 import {
-  EditableComposer,
-  ContentEditable,
-  createEditor,
-  Descendant,
-  useIsomorphicLayoutEffect,
-} from '@editablejs/editor'
-import { Toolbar, withInlineToolbar, withPlugins, withToolbar } from '@editablejs/plugins'
+  withInlineToolbar,
+  withPlugins,
+  withToolbar,
+  useContextMenuEffect,
+  useInlineToolbarEffect,
+} from '@editablejs/plugins'
 import { withYHistory, withYjs, withCursors, YjsEditor, CursorData } from '@editablejs/plugin-yjs'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import randomColor from 'randomcolor'
 import { faker } from '@faker-js/faker'
 import tw, { styled } from 'twin.macro'
-import { defaultToolbarConfig } from '../toolbar-config'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
+import { createContextMenuItems } from '../configs/context-menu'
+import { createToolbarConfig } from '../configs/toolbar'
+import { Toolbar } from '../components/toolbar'
 
 const initialValue = [
   {
@@ -96,9 +98,6 @@ export default function Docs() {
           'font-size': { defaultSize: '14px' },
         }),
       ),
-      {
-        items: defaultToolbarConfig,
-      },
     )
   }, [document, provider])
 
@@ -114,10 +113,14 @@ export default function Docs() {
     return () => YjsEditor.disconnect(editor as any)
   }, [editor])
 
+  useContextMenuEffect(createContextMenuItems, editor)
+
+  useInlineToolbarEffect(createToolbarConfig, editor)
+
   return (
     <StyledWrapper>
       <EditableComposer editor={editor} value={initialValue}>
-        <Toolbar items={defaultToolbarConfig} />
+        <Toolbar />
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />
         </StyledContainer>

@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import {
   BaseEditor,
   Editor,
@@ -13,12 +14,12 @@ import {
   Selection,
   Descendant,
 } from 'slate'
+import { SelectionEdge } from 'slate/dist/interfaces/types'
 
 import { Key } from '../utils/key'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
-  IS_FOCUSED,
   IS_READ_ONLY,
   NODE_TO_INDEX,
   NODE_TO_KEY,
@@ -43,23 +44,15 @@ import {
   isDOMText,
 } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
-import findClosestNode, { isAlignY } from '../utils/closest'
+import findNearbyNodes, { isAlignY } from '../utils/nearby'
 import { getTextOffset } from '../utils/text'
 import { getLineRectsByNode, getLineRectsByRange } from '../utils/selection'
-import { SelectionEdge } from 'slate/dist/interfaces/types'
 import { GridCell } from '../interfaces/cell'
 import { GridRow } from '../interfaces/row'
 import { Grid } from '../interfaces/grid'
-import { FC } from 'react'
 import { List } from '../interfaces/list'
-
-export interface SelectionStyle {
-  focusColor?: string
-  blurColor?: string
-  caretColor?: string
-  caretWidth?: number
-  dragColor?: string
-}
+import { Slots } from '../hooks/use-slots'
+import { FocusedStore } from '../hooks/use-focused'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -118,6 +111,21 @@ export interface EditorElements {
   [key: string]: NodeEntry<Element>[]
 }
 
+export interface SerializeHtmlOptions {
+  node: Node
+  attributes?: Record<string, any>
+  styles?: Record<string, any>
+}
+
+export interface DeserializeHtmlOptions {
+  node: DOMNode
+  attributes?: Record<string, any>
+  markAttributes?: Record<string, any>
+  stripBreak?: true | ((text: string) => boolean)
+}
+
+export type DispatchEventType = 'cut' | 'copy' | 'paste' | 'paste-text'
+
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -138,6 +146,8 @@ export interface Editable extends BaseEditor {
   onFocus: () => void
   onBlur: () => void
   onPaste: (event: ClipboardEvent) => void
+  onCut: (event: ClipboardEvent) => void
+  onCopy: (event: ClipboardEvent) => void
   onInput: (value: string) => void
   onBeforeInput: (value: string) => void
   onCompositionStart: (value: string) => void
@@ -146,21 +156,22 @@ export interface Editable extends BaseEditor {
   onSelecting: () => void
   onSelectEnd: () => void
   onSelectionChange: () => void
-  onRenderContextComponents: (components: FC[]) => FC[]
-  setSelectionStyle: (style: SelectionStyle) => void
+  onContextMenu: (event: MouseEvent) => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
-  clearSelectionDraw: () => void
-  startSelectionDraw: () => void
+  pauseSelectionDrawing: () => void
+  enableSelectionDrawing: () => void
   normalizeSelection: (
     fn: (
       selection: Selection,
       options?: { grid: NodeEntry<Grid>; row: number; col: number },
     ) => void,
   ) => void
+  getDataTransfer: (range?: Range) => DataTransfer | null
+  dispatchEvent: (type: DispatchEventType) => void
 }
 
 export const Editable = {
@@ -360,7 +371,7 @@ export const Editable = {
    * Check if the editor is focused.
    */
   isFocused(editor: Editable): boolean {
-    return !!IS_FOCUSED.get(editor)
+    return FocusedStore.is(editor)
   },
 
   /**
@@ -623,52 +634,52 @@ export const Editable = {
     }
     let top = y,
       left = x
-    const nodes = findClosestNode(elements, x, y)
+    const nodes = findNearbyNodes(elements, x, y)
     if (!nodes) return null
     let offsetNode: DOMElement | null = null
     if (isDOMNode(nodes)) {
       offsetNode = nodes
     } else {
-      const { top: closestTop, left: closestLeft, right: closestRight, below: closestBelow } = nodes
+      const { top: nearbyTop, left: nearbyLeft, right: nearbyRight, below: nearbyBelow } = nodes
 
-      if (closestLeft && closestBelow) {
-        if (isAlignY(closestBelow.rect, closestLeft.rect)) {
-          offsetNode = closestBelow.node
-          top = closestBelow.rect.top
+      if (nearbyLeft && nearbyBelow) {
+        if (isAlignY(nearbyBelow.rect, nearbyLeft.rect)) {
+          offsetNode = nearbyBelow.node
+          top = nearbyBelow.rect.top
         } else {
-          offsetNode = closestLeft.node
-          left = closestLeft.rect.right
+          offsetNode = nearbyLeft.node
+          left = nearbyLeft.rect.right
         }
-      } else if (closestRight && closestBelow) {
-        if (isAlignY(closestBelow.rect, closestRight.rect)) {
-          offsetNode = closestBelow.node
-          top = closestBelow.rect.top
+      } else if (nearbyRight && nearbyBelow) {
+        if (isAlignY(nearbyBelow.rect, nearbyRight.rect)) {
+          offsetNode = nearbyBelow.node
+          top = nearbyBelow.rect.top
         } else {
-          offsetNode = closestRight.node
-          left = closestRight.rect.left
+          offsetNode = nearbyRight.node
+          left = nearbyRight.rect.left
         }
-      } else if (closestLeft) {
-        offsetNode = closestLeft.node
-        left = closestLeft.rect.right
-      } else if (closestRight) {
-        offsetNode = closestRight.node
-        left = closestRight.rect.left
-      } else if (closestBelow) {
-        if (left < closestBelow.rect.left) {
-          left = closestBelow.rect.left
-        } else if (left > closestBelow.rect.right) {
-          left = closestBelow.rect.right
+      } else if (nearbyLeft) {
+        offsetNode = nearbyLeft.node
+        left = nearbyLeft.rect.right
+      } else if (nearbyRight) {
+        offsetNode = nearbyRight.node
+        left = nearbyRight.rect.left
+      } else if (nearbyBelow) {
+        if (left < nearbyBelow.rect.left) {
+          left = nearbyBelow.rect.left
+        } else if (left > nearbyBelow.rect.right) {
+          left = nearbyBelow.rect.right
         }
-        top = closestBelow.rect.top
-        offsetNode = closestBelow.node
-      } else if (closestTop) {
-        offsetNode = closestTop.node
-        if (left < closestTop.rect.left) {
-          left = closestTop.rect.left
-        } else if (left > closestTop.rect.right) {
-          left = closestTop.rect.right
+        top = nearbyBelow.rect.top
+        offsetNode = nearbyBelow.node
+      } else if (nearbyTop) {
+        offsetNode = nearbyTop.node
+        if (left < nearbyTop.rect.left) {
+          left = nearbyTop.rect.left
+        } else if (left > nearbyTop.rect.right) {
+          left = nearbyTop.rect.right
         }
-        top = closestTop.rect.bottom
+        top = nearbyTop.rect.bottom
       }
     }
     if (!offsetNode) return null
@@ -1132,5 +1143,12 @@ export const Editable = {
   getBoundingClientRect(editor: Editable) {
     const container = Editable.toDOMNode(editor, editor)
     return container.getBoundingClientRect()
+  },
+
+  mountSlot(editor: Editable, component: FC) {
+    Slots.add(editor, component)
+    return () => {
+      Slots.remove(editor, component)
+    }
   },
 }

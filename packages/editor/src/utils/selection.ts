@@ -62,9 +62,9 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
  * @param bottom
  * @returns
  */
-const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bottom: number) => {
+const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom: number) => {
   let height = bottom - top
-  const lineReact = {
+  const lineRect = {
     top: top,
     height: height,
     bottom: bottom,
@@ -76,14 +76,14 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
       (rect.top <= top && rect.bottom >= bottom && rect.height > height)
     ) {
       if (rect.height > height) {
-        lineReact.height = rect.height
-        lineReact.top = rect.top
-        lineReact.bottom = rect.bottom
+        lineRect.height = rect.height
+        lineRect.top = rect.top
+        lineRect.bottom = rect.bottom
       }
     }
   }
 
-  const findHeight = (element: DOMElement) => {
+  const match = (element: DOMElement) => {
     for (const child of element.childNodes) {
       if (isDOMElement(child)) {
         const hasNode = child.hasAttribute('data-slate-node')
@@ -100,7 +100,7 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
                 compareHeight(rect)
               }
             } else {
-              findHeight(child)
+              match(child)
             }
           } else {
             const nodes = child.querySelectorAll(
@@ -115,7 +115,7 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
             })
           }
         } else {
-          findHeight(child)
+          match(child)
         }
         // else if(!child.hasAttribute('data-no-selection')){
         //   const display = window.getComputedStyle(child).display
@@ -126,15 +126,15 @@ const findMaxPosition = (editor: Editable, element: DOMElement, top: number, bot
         //       compareHeight(rect)
         //     }
         //   } else {
-        //     findHeight(child)
+        //     match(child)
         //   }
         // }
       }
     }
   }
 
-  findHeight(element)
-  return lineReact
+  match(element)
+  return lineRect
 }
 
 export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) => {
@@ -162,7 +162,7 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
         .reverse()
         .find(r => r.width > 0) ?? rects[rects.length - 1]
     let width = last.right - rects[0].left
-    const lineRect = findMaxPosition(editor, domEl, line.top, line.bottom)
+    const lineRect = matchHighest(editor, domEl, line.top, line.bottom)
     line.top = lineRect.top
     line.height = lineRect.height
     line.bottom = lineRect.bottom
@@ -278,7 +278,7 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
         .find(r => r.width > 0) ?? rects[rects.length - 1]
     let width = last.right - rects[0].left
     if (el) {
-      const lineRect = findMaxPosition(editor, el, line.top, line.bottom)
+      const lineRect = matchHighest(editor, el, line.top, line.bottom)
       line.top = lineRect.top
       line.height = lineRect.height
       line.bottom = lineRect.bottom

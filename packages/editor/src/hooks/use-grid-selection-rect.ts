@@ -1,4 +1,4 @@
-import { useContext, useState, useLayoutEffect } from 'react'
+import { useState } from 'react'
 import { GridCell } from '../interfaces/cell'
 import { Grid } from '../interfaces/grid'
 import { Editable } from '../plugin/editable'

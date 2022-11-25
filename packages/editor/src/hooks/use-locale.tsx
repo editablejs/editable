@@ -1,5 +1,5 @@
-import merge from 'lodash/merge'
-import { useMemo, createContext } from 'react'
+import merge from 'lodash.merge'
+import { useMemo } from 'react'
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable-static'

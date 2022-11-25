@@ -1,4 +1,4 @@
-import { isKeyHotkey } from 'is-hotkey'
+import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
 import { IS_APPLE } from './environment'
 
 /**
@@ -7,6 +7,10 @@ import { IS_APPLE } from './environment'
 
 const HOTKEYS: Record<string, string | string[]> = {
   compose: ['down', 'left', 'right', 'up', 'backspace', 'enter'],
+  cut: 'mod+x',
+  copy: 'mod+c',
+  paste: 'mod+v',
+  pasteText: 'mod+shift+v',
   moveUp: 'up',
   moveDown: 'down',
   moveBackward: 'left',
@@ -73,6 +77,10 @@ const create = (key: string) => {
  */
 
 const Hotkeys = {
+  isCut: create('cut'),
+  isCopy: create('copy'),
+  isPaste: create('paste'),
+  isPasteText: create('pasteText'),
   isMoveUp: create('moveUp'),
   isMoveDown: create('moveDown'),
   isCompose: create('compose'),
@@ -103,3 +111,24 @@ const Hotkeys = {
 }
 
 export default Hotkeys
+
+export const Hotkey = {
+  is: isHotkey,
+  isCode: isCodeHotkey,
+  isKey: isKeyHotkey,
+
+  format: (key: string, char = '+') => {
+    let keys = key.toLowerCase().split('+')
+    keys = keys.map(key => {
+      if (key === 'mod') {
+        return IS_APPLE ? '⌘' : 'Ctrl'
+      } else if (key === 'opt') {
+        return IS_APPLE ? 'Option' : 'Alt'
+      } else if (key.length > 1) {
+        return key.substring(0, 1).toUpperCase() + key.substring(1).toLowerCase()
+      }
+      return key.toUpperCase()
+    })
+    return keys.join(char)
+  },
+}

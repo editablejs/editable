@@ -255,12 +255,7 @@ export function withCursors<TCursorData extends Record<string, unknown>, TEditor
 ): TEditor & CursorEditor<TCursorData> {
   const e = editor as Editable & TEditor & CursorEditor<TCursorData>
 
-  const { onRenderContextComponents } = e
-
-  e.onRenderContextComponents = components => {
-    components.push(RemoteCursors)
-    return onRenderContextComponents(components)
-  }
+  Editable.mountSlot(e, RemoteCursors)
 
   e.awareness = awareness
   e.cursorDataField = cursorDataField

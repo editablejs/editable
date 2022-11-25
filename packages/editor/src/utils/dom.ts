@@ -1,13 +1,10 @@
-/**
- * Types.
- */
-
 // COMPAT: This is required to prevent TypeScript aliases from doing some very
 // weird things for Slate's types with the same name as globals. (2019/11/27)
 // https://github.com/microsoft/TypeScript/issues/35002
 type DOMNode = globalThis.Node
 type DOMComment = globalThis.Comment
 type DOMElement = globalThis.Element
+type DOMHTMLElement = globalThis.HTMLElement
 type DOMText = globalThis.Text
 type DOMRange = globalThis.Range
 type DOMSelection = globalThis.Selection
@@ -48,6 +45,11 @@ export const isDOMElement = (value: any): value is DOMElement => {
   return isDOMNode(value) && value.nodeType === 1
 }
 
+export const isDOMHTMLElement = (value: any): value is DOMHTMLElement => {
+  if (!isDOMElement(value)) return false
+  if (typeof HTMLElement !== 'undefined') return value instanceof HTMLElement
+  return (value as DOMHTMLElement).style instanceof CSSStyleDeclaration
+}
 /**
  * Check if a value is a DOM node.
  */
@@ -72,18 +74,6 @@ export const isDOMSelection = (value: any): value is DOMSelection => {
 
 export const isDOMText = (value: any): value is DOMText => {
   return isDOMNode(value) && value.nodeType === 3
-}
-
-/**
- * Checks whether a paste event is a plaintext-only event.
- */
-
-export const isPlainTextOnlyPaste = (event: ClipboardEvent) => {
-  return (
-    event.clipboardData &&
-    event.clipboardData.getData('text/plain') !== '' &&
-    event.clipboardData.types.length === 1
-  )
 }
 
 /**
@@ -182,4 +172,38 @@ export const getEditableChild = (
 ): DOMNode => {
   const [child] = getEditableChildAndIndex(parent, index, direction)
   return child
+}
+
+const kebabCase = (str: string) => {
+  const regex = new RegExp(/[A-Z]/g)
+  return str.replace(regex, v => `-${v.toLowerCase()}`)
+}
+/**
+ * CSSStyle 转换为 style 字符串
+ */
+export const cssStyleToString = (style: Partial<CSSStyleDeclaration>): string => {
+  return Object.keys(style).reduce((accumulator, key) => {
+    // transform the key from camelCase to kebab-case
+    const cssKey = kebabCase(key)
+    // remove ' in value
+    const cssValue = (style as Record<string, any>)[key].replace("'", '')
+    // build the result
+    // you can break the line, add indent for it if you need
+    return `${accumulator}${cssKey}:${cssValue};`
+  }, '')
+}
+
+/**
+ * React.HTMLAttributes<HTMLElement> 转换为 attributes 字符串
+ */
+export const htmlAttributesToString = (attributes: Record<string, any>): string => {
+  return Object.keys(attributes).reduce((accumulator, key) => {
+    // transform the key from camelCase to kebab-case
+    const attrKey = kebabCase(key)
+    // remove ' in value
+    const attrValue = attributes[key].replace("'", '')
+    // build the result
+    // you can break the line, add indent for it if you need
+    return `${accumulator}${attrKey}="${attrValue}" `
+  }, '')
 }

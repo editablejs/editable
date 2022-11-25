@@ -88,7 +88,7 @@ describe('interfaces/grid', () => {
 
   it('split-multiple-0', () => {
     editor.children = children.concat()
-    debugger
+
     Grid.splitCell(editor, [0], {
       start: [0, 0],
       end: [0, 0],

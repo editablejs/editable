@@ -1,5 +1,3 @@
-import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
-
 export * from './interfaces/cell'
 export * from './interfaces/row'
 export * from './interfaces/grid'
@@ -30,13 +28,13 @@ export { useGridSelected } from './hooks/use-grid-selected'
 // Plugin
 export { Editable } from './plugin/editable'
 export { withEditable } from './plugin/with-editable'
+export * from './plugin/deserializer'
+export * from './plugin/serializer'
 
 // Environment
 export * from './utils/environment'
 // Key
-export * from './utils/key'
-// format
-export * from './utils/format'
+export { generateRandomKey } from './utils/key'
 // dom
 export * from './utils/dom'
 
@@ -53,4 +51,4 @@ export type {
 
 export { useCancellablePromises, cancellablePromise } from './hooks/use-cancellable-promises'
 
-export { isHotkey, isCodeHotkey, isKeyHotkey }
+export { Hotkey } from './utils/hotkeys'

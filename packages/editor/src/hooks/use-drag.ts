@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import create, { useStore } from 'zustand'
-import { Descendant, Range } from 'slate'
+import { Range } from 'slate'
 
 export interface DragStore {
   drag: {
@@ -13,9 +13,9 @@ export interface DragStore {
      */
     to: Range | null
     /**
-     * 拖拽的节点
+     * 拖拽的数据
      */
-    data: Descendant[]
+    data: DataTransfer
     /**
      * 当前鼠标位置
      */
@@ -105,7 +105,7 @@ export const Drag = {
    * @param type
    * @param from
    */
-  setFrom: (from: Range, data: Descendant[], point: Record<'x' | 'y', number>) => {
+  setFrom: (from: Range, data: DataTransfer, point: Record<'x' | 'y', number>) => {
     store.setState({ drag: { data, from, point, to: null } })
   },
   /**

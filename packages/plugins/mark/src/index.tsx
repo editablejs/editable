@@ -1,7 +1,8 @@
-import { Editable, RenderLeafProps, isHotkey, Editor, Text, isDOMElement } from '@editablejs/editor'
+import { Editable, RenderLeafProps, Hotkey, Editor } from '@editablejs/editor'
 import { CSSProperties } from 'react'
-import { SerializeEditor } from '@editablejs/plugin-serializes'
 import tw, { css, styled } from 'twin.macro'
+import { MarkFormat, Mark } from './types'
+import { isMark } from './utils'
 
 type Hotkeys = Record<MarkFormat, string | ((e: KeyboardEvent) => boolean)>
 export interface MarkOptions {
@@ -11,8 +12,6 @@ export interface MarkOptions {
 }
 
 export const MARK_OPTIONS = new WeakMap<Editable, MarkOptions>()
-
-export type MarkFormat = 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'sub' | 'sup'
 
 const defaultHotkeys: Hotkeys = {
   bold: 'mod+b',
@@ -24,15 +23,6 @@ const defaultHotkeys: Hotkeys = {
   sup: 'mod+.',
 }
 
-export interface Mark extends Text {
-  bold?: string | boolean
-  italic?: boolean
-  underline?: boolean
-  strikethrough?: boolean
-  code?: boolean
-  sup?: boolean
-  sub?: boolean
-}
 export interface MarkEditor extends Editable {
   toggleMark: (format: MarkFormat) => void
 }
@@ -42,8 +32,8 @@ export const MarkEditor = {
     return !!(editor as MarkEditor).toggleMark
   },
 
-  isMark: (node: any): node is Mark => {
-    return Text.isText(node)
+  isMark: (value: any) => {
+    return isMark(value)
   },
 
   isActive: (editor: Editable, format: MarkFormat) => {
@@ -166,7 +156,7 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
         newEditor.toggleMark(format)
       }
       if (
-        (typeof hotkey === 'string' && isHotkey(hotkey, e)) ||
+        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
         (typeof hotkey === 'function' && hotkey(e))
       ) {
         toggle()
@@ -175,68 +165,8 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     }
     onKeydown(e)
   }
-  SerializeEditor.with(
-    newEditor,
-    e => {
-      const { serializeHtml, deserializeHtml } = e
-
-      e.serializeHtml = options => {
-        const { node } = options
-        if (MarkEditor.isMark(node)) {
-          let html = node.text
-          if (node.bold) html = `<strong>${html}</strong>`
-          if (node.italic) html = `<em>${html}</em>`
-          if (node.underline) html = `<u>${html}</u>`
-          if (node.strikethrough) html = `<s>${html}</s>`
-          if (node.code) html = `<code>${html}</code>`
-          if (node.sub) html = `<sub>${html}</sub>`
-          if (node.sup) html = `<sup>${html}</sup>`
-          return html
-        }
-        return serializeHtml(options)
-      }
-
-      e.deserializeHtml = options => {
-        const { node } = options
-        if (isDOMElement(node)) {
-          const markAttributes = { ...options.markAttributes }
-          const { style } = node as HTMLElement
-          if (node.nodeName === 'STRONG') {
-            markAttributes.bold = true
-          } else if (!markAttributes.bold) {
-            const weight = markAttributes.fontWeight || style.fontWeight || ''
-            if (/^\d+$/.test(weight) && parseInt(weight, 10) >= 500) {
-              markAttributes.bold = true
-            } else if (/bold/i.test(weight)) {
-              markAttributes.bold = true
-            }
-          }
-
-          if (node.nodeName === 'EM' || style.fontStyle === 'italic') {
-            markAttributes.italic = true
-          }
-          if (node.nodeName === 'U' || style.textDecoration === 'underline') {
-            markAttributes.underline = true
-          }
-          if (node.nodeName === 'S' || style.textDecoration === 'line-through') {
-            markAttributes.strikethrough = true
-          }
-          if (node.nodeName === 'CODE' || style.fontFamily === 'monospace') {
-            markAttributes.code = true
-          }
-          if (node.nodeName === 'SUB' || style.verticalAlign === 'sub') {
-            markAttributes.sub = true
-          }
-          if (node.nodeName === 'SUP' || style.verticalAlign === 'super') {
-            markAttributes.sup = true
-          }
-          return deserializeHtml({ ...options, markAttributes })
-        }
-        return deserializeHtml(options)
-      }
-    },
-    true,
-  )
 
   return newEditor
 }
+
+export * from './types'

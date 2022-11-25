@@ -1,69 +1,28 @@
 import {
   Editable,
-  isHotkey,
+  Hotkey,
   Transforms,
   Text,
   Element,
   Editor,
   Range,
-  Node,
   Path,
-  Descendant,
   List,
 } from '@editablejs/editor'
-import { FontSize, FontSizeEditor } from '@editablejs/plugin-fontsize'
-import { Mark, MarkEditor } from '@editablejs/plugin-mark'
-import { SerializeEditor } from '@editablejs/plugin-serializes'
 import tw from 'twin.macro'
-
-export const HEADING_KEY = 'heading'
-export const PARAGRAPH_KEY = 'paragraph'
-export const HEADING_ONE_KEY = 'heading-one'
-export const HEADING_TWO_KEY = 'heading-two'
-export const HEADING_THREE_KEY = 'heading-three'
-export const HEADING_FOUR_KEY = 'heading-four'
-export const HEADING_FIVE_KEY = 'heading-five'
-export const HEADING_SIX_KEY = 'heading-six'
-
-export type HeadingType = keyof typeof HeadingTags
-
-export const HeadingTags = {
-  [HEADING_ONE_KEY]: 'h1',
-  [HEADING_TWO_KEY]: 'h2',
-  [HEADING_THREE_KEY]: 'h3',
-  [HEADING_FOUR_KEY]: 'h4',
-  [HEADING_FIVE_KEY]: 'h5',
-  [HEADING_SIX_KEY]: 'h6',
-}
-
-const defaultHeadingStyle = {
-  [HEADING_ONE_KEY]: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-  },
-  [HEADING_TWO_KEY]: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-  },
-  [HEADING_THREE_KEY]: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-  },
-  [HEADING_FOUR_KEY]: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  [HEADING_FIVE_KEY]: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  [HEADING_SIX_KEY]: {
-    fontSize: '12px',
-    fontWeight: 'bold',
-  },
-}
-
-type Hotkeys = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
+import {
+  HEADING_ONE_KEY,
+  HEADING_TWO_KEY,
+  HEADING_THREE_KEY,
+  HEADING_FOUR_KEY,
+  HEADING_FIVE_KEY,
+  HEADING_SIX_KEY,
+  PARAGRAPH_KEY,
+  HeadingTags,
+} from './constants'
+import { getOptions, getStyle, getTextMark, HeadingOptions, Hotkeys, setOptions } from './options'
+import { Heading, HeadingType } from './types'
+import { isHeading } from './utils'
 
 const defaultHotkeys: Hotkeys = {
   [HEADING_ONE_KEY]: 'mod+opt+1',
@@ -72,19 +31,6 @@ const defaultHotkeys: Hotkeys = {
   [HEADING_FOUR_KEY]: 'mod+opt+4',
   [HEADING_FIVE_KEY]: 'mod+opt+5',
   [HEADING_SIX_KEY]: 'mod+opt+6',
-}
-
-export interface HeadingOptions {
-  enabled?: HeadingType[]
-  disabled?: HeadingType[]
-  hotkeys?: Hotkeys
-  style?: Partial<Record<HeadingType, Record<'fontSize' | 'fontWeight', string>>>
-}
-
-export const HEADING_OPTIONS = new WeakMap<Editable, HeadingOptions>()
-
-export interface Heading extends Element {
-  type: HeadingType
 }
 
 export interface HeadingEditor extends Editable {
@@ -97,12 +43,12 @@ export const HeadingEditor = {
   },
 
   isHeading: (editor: Editable, n: any): n is Heading => {
-    return Editor.isBlock(editor, n) && !!n.type && n.type in HeadingTags
+    return isHeading(n)
   },
 
   isEnabled: (editor: Editable, type: HeadingType) => {
     if (!HeadingEditor.isHeadingEditor(editor)) return false
-    const { enabled, disabled } = HEADING_OPTIONS.get(editor) ?? {}
+    const { enabled, disabled } = getOptions(editor) ?? {}
     if (enabled && ~~enabled.indexOf(type)) return false
     if (disabled && ~disabled.indexOf(type)) return false
     return true
@@ -116,13 +62,8 @@ export const HeadingEditor = {
     return null
   },
 
-  getOptions: (editor: Editable): HeadingOptions => {
-    return HEADING_OPTIONS.get(editor) ?? {}
-  },
-
-  getStyle: (editor: Editable, type: HeadingType): Record<'fontSize' | 'fontWeight', string> => {
-    const { style = {} } = HeadingEditor.getOptions(editor)
-    return { ...defaultHeadingStyle[type], ...style[type] }
+  getOptions: (editor: Editable) => {
+    return getOptions(editor)
   },
 
   toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
@@ -135,7 +76,7 @@ const StyledHeading = tw.h1`font-medium mb-2 mt-0`
 export const withHeading = <T extends Editable>(editor: T, options: HeadingOptions = {}) => {
   const newEditor = editor as T & HeadingEditor
 
-  HEADING_OPTIONS.set(newEditor, options)
+  setOptions(newEditor, options)
 
   newEditor.toggleHeading = type => {
     editor.normalizeSelection(selection => {
@@ -152,23 +93,20 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
         match: n => Editor.isBlock(editor, n),
       })
       for (const [_, path] of lowestBlocks) {
+        const textMark = getTextMark(editor)
         if (type !== PARAGRAPH_KEY) {
-          const style = HeadingEditor.getStyle(editor, type)
-          const mark: Partial<FontSize & Mark> = {}
-          if (FontSizeEditor.isFontSizeEditor(editor)) {
-            mark.fontSize = style.fontSize
-          }
-          if (MarkEditor.isMarkEditor(editor)) {
-            mark.bold = style.fontWeight
-          }
-          Transforms.setNodes<FontSize & Mark>(editor, mark, {
+          const style = getStyle(editor, type)
+          const mark: Partial<Record<string, string>> = {}
+          mark[textMark.fontSize] = style.fontSize
+          mark[textMark.fontWeight] = style.fontWeight
+          Transforms.setNodes(editor, mark, {
             at: path,
             match: n => Text.isText(n),
           })
         } else {
-          Transforms.setNodes<FontSize & Mark>(
+          Transforms.setNodes(
             editor,
-            { fontSize: '', bold: false },
+            { [textMark.fontSize]: '', [textMark.fontWeight]: false },
             {
               at: path,
               match: n => Text.isText(n),
@@ -204,7 +142,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
         newEditor.toggleHeading(type)
       }
       if (
-        (typeof hotkey === 'string' && isHotkey(hotkey, e)) ||
+        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
         (typeof hotkey === 'function' && hotkey(e))
       ) {
         toggle()
@@ -212,7 +150,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
       }
     }
     const { selection } = editor
-    if (selection && Range.isCollapsed(selection) && isHotkey('enter', e)) {
+    if (selection && Range.isCollapsed(selection) && Hotkey.is('enter', e)) {
       const entry = Editor.above(newEditor, {
         match: n => HeadingEditor.isHeading(editor, n),
       })
@@ -235,59 +173,10 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
     }
     onKeydown(e)
   }
-  SerializeEditor.with(newEditor, e => {
-    const { serializeHtml, deserializeHtml } = e
 
-    e.serializeHtml = options => {
-      const { node, attributes, styles } = options
-      if (HeadingEditor.isHeading(newEditor, node)) {
-        return SerializeEditor.createHtml(
-          HeadingTags[node.type],
-          attributes,
-          styles,
-          node.children.map(child => e.serializeHtml({ node: child })).join(''),
-        )
-      }
-      return serializeHtml(options)
-    }
-
-    e.deserializeHtml = options => {
-      const { node, attributes } = options
-      const tags = Object.values(HeadingTags)
-      const nodeName = node.nodeName.toLowerCase()
-      if (tags.includes(nodeName)) {
-        let type: HeadingType = 'heading-one'
-        switch (nodeName) {
-          case 'h1':
-            type = HEADING_ONE_KEY
-            break
-          case 'h2':
-            type = HEADING_TWO_KEY
-            break
-          case 'h3':
-            type = HEADING_THREE_KEY
-            break
-          case 'h4':
-            type = HEADING_FOUR_KEY
-            break
-          case 'h5':
-            type = HEADING_FIVE_KEY
-            break
-          case 'h6':
-            type = HEADING_SIX_KEY
-            break
-        }
-        const style = HeadingEditor.getStyle(editor, type)
-        const markAttributes = { ...options.markAttributes, ...style }
-        const children: Descendant[] = []
-        for (const child of node.childNodes) {
-          children.push(...e.deserializeHtml({ node: child, markAttributes }))
-        }
-        return [{ ...attributes, type, children }]
-      }
-
-      return deserializeHtml(options)
-    }
-  })
   return newEditor
 }
+
+export type { HeadingOptions }
+
+export * from './types'

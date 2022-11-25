@@ -1,15 +1,23 @@
 import { FC } from 'react'
 import { Range } from 'slate'
-import { useDrawSelection } from '../hooks/use-draw-selection'
+import { useFocused } from '../hooks/use-focused'
+import {
+  useSelectionDrawingSelection,
+  useSelectionDrawingRects,
+  useSelectionDrawingEnabled,
+  useSelectionDrawingStyle,
+} from '../hooks/use-selection-drawing'
 import { ShadowRect } from './shadow'
 
-interface SelectionProps {
-  color?: string
-}
+interface SelectionProps {}
 
-const SelectionComponent: FC<SelectionProps> = ({ color = 'rgba(0,127,255,0.3)' }) => {
-  const { rects, selection } = useDrawSelection()
-
+const SelectionComponent: FC<SelectionProps> = () => {
+  const selection = useSelectionDrawingSelection()
+  const rects = useSelectionDrawingRects()
+  const enabled = useSelectionDrawingEnabled()
+  const style = useSelectionDrawingStyle()
+  const [focused] = useFocused()
+  if (!enabled) return null
   return (
     <>
       {selection &&
@@ -18,7 +26,9 @@ const SelectionComponent: FC<SelectionProps> = ({ color = 'rgba(0,127,255,0.3)' 
           return (
             <ShadowRect
               key={`sel-${index}`}
-              rect={Object.assign({}, rect.toJSON(), { color })}
+              rect={Object.assign({}, rect.toJSON(), {
+                color: focused ? style.focusColor : style.blurColor,
+              })}
               style={{ willChange: 'transform' }}
             />
           )

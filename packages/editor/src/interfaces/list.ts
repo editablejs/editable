@@ -240,7 +240,7 @@ export const List = {
       const { props } = opitons
       let nextPath: Path = []
       for (const [node, path] of entrys) {
-        const newLevel = List.getLevelFromElement(editor, {
+        const newLevel = List.getLevel(editor, {
           type,
           path,
           key,
@@ -449,8 +449,29 @@ export const List = {
     }
   },
 
-  getLevelFromElement: (editor: Editable, options: GetLevelOptions) => {
+  /**
+   * 根据列表缩进的获取 level
+   * @param editor
+   * @param options
+   * @returns
+   */
+  getLevel: (editor: Editable, options: GetLevelOptions) => {
+    console.warn(
+      '`List.getLevel` method is unimplemented and always returns 0. You can install `plugin-indent` plugin to make it work. Or implement it yourself.',
+    )
     return 0
+  },
+
+  /**
+   * 根据 level 设置列表的缩进
+   * @param editor
+   * @param list
+   */
+  setIndent: (editor: Editable, list: List): List => {
+    console.warn(
+      '`List.setIndent` method is unimplemented. You can install `plugin-indent` plugin to make it work. Or implement it yourself.',
+    )
+    return list
   },
 
   addTemplate: (editor: Editable, type: string, template: ListTemplate) => {

@@ -10,23 +10,15 @@ import {
   Element,
   EditorMarks,
   Point,
-  Descendant,
 } from 'slate'
 import getDirection from 'direction'
-import {
-  Editable,
-  EditorElements,
-  RenderElementProps,
-  RenderLeafProps,
-  SelectionStyle,
-} from './editable'
+import { Editable, EditorElements, RenderElementProps, RenderLeafProps } from './editable'
 import { Key } from '../utils/key'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
   NODE_TO_KEY,
   IS_SHIFT_PRESSED,
   IS_COMPOSING,
-  IS_DRAW_SELECTION,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
@@ -37,6 +29,19 @@ import { Grid } from '../interfaces/grid'
 import { GridRow } from '../interfaces/row'
 import { GridCell } from '../interfaces/cell'
 import { List } from '../interfaces/list'
+import { isDOMText } from '../utils/dom'
+import { SelectionDrawing } from '../hooks/use-selection-drawing'
+import { fragmentToString, parseDataTransfer } from '../utils/data-transfer'
+import {
+  APPLICATION_FRAGMENT_TYPE,
+  DATA_EDITABLEJS_FRAGMENT,
+  TEXT_HTML,
+  TEXT_PLAIN,
+} from '../utils/constants'
+import { readClipboardData, writeClipboardData } from '../utils/clipboard'
+import { HTMLSerializer, TextSerializer } from './serializer'
+import { HTMLDeserializer } from './deserializer'
+import { CompositionText } from '../interfaces/composition-text'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -213,7 +218,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.onChange = () => {
-    let prevSelection: Range | undefined
+    let prevSelection: Range | null = null
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
     // COMPAT: React doesn't batch `setState` hook calls, which means that the
@@ -223,6 +228,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     ReactDOM.unstable_batchedUpdates(() => {
       if (!prevSelection || !e.selection || Range.equals(prevSelection, e.selection)) {
         e.onSelectionChange()
+        prevSelection = e.selection ? Object.assign({}, e.selection) : null
       }
 
       onChange()
@@ -275,40 +281,37 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   }
+  let isPasteText = false
   e.onKeydown = (event: KeyboardEvent) => {
     if (event.defaultPrevented) return
     const { selection } = editor
     const element = editor.children[selection !== null ? selection.focus.path[0] : 0]
     const isRTL = getDirection(Node.string(element)) === 'rtl'
 
-    // COMPAT: Since we prevent the default behavior on
-    // `beforeinput` events, the browser doesn't think there's ever
-    // any history stack to undo or redo, so we have to manage these
-    // hotkeys ourselves. (2019/11/06)
-    if (Hotkeys.isRedo(event)) {
-      event.preventDefault()
-      const maybeHistoryEditor: any = editor
-
-      if (typeof maybeHistoryEditor.redo === 'function') {
-        maybeHistoryEditor.redo()
-      }
-
-      return
-    }
-
-    if (Hotkeys.isUndo(event)) {
-      event.preventDefault()
-      const maybeHistoryEditor: any = editor
-
-      if (typeof maybeHistoryEditor.undo === 'function') {
-        maybeHistoryEditor.undo()
-      }
-
-      return
-    }
-
     if (Hotkeys.isShift(event)) {
       IS_SHIFT_PRESSED.set(e, true)
+    }
+
+    if (Hotkeys.isCut(event)) {
+      event.preventDefault()
+      e.dispatchEvent('cut')
+      return
+    }
+
+    if (Hotkeys.isCopy(event)) {
+      event.preventDefault()
+      e.dispatchEvent('copy')
+      return
+    }
+
+    if (Hotkeys.isPaste(event)) {
+      isPasteText = false
+      return
+    }
+
+    if (Hotkeys.isPasteText(event)) {
+      isPasteText = true
+      return
     }
 
     if (Hotkeys.isExtendForward(event)) {
@@ -424,11 +427,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
       return
     }
 
-    // COMPAT: If a void node is selected, or a zero-width text node
-    // adjacent to an inline is selected, we need to handle these
-    // hotkeys manually because browsers won't be able to skip over
-    // the void node with the zero-width space not being an empty
-    // string.
     if (Hotkeys.isMoveBackward(event)) {
       event.preventDefault()
 
@@ -555,27 +553,29 @@ export const withEditable = <T extends Editor>(editor: T) => {
       let [node, path] = Editor.node(editor, selection)
       if (marks) {
         // 使用零宽字符绕过slate里面不能插入空字符的问题。组合输入法完成后会删除掉
-        node = {
+        const compositionText: CompositionText = {
           text: '\u200b',
           ...marks,
           composition: {
             text: value,
             offset: 0,
-            emptyText: true,
+            isEmpty: true,
           },
         }
-        Transforms.insertNodes(editor, node)
+        Transforms.insertNodes(editor, compositionText)
         e.marks = null
       } else if (Text.isText(node)) {
         if (Range.isExpanded(selection)) {
           Editor.deleteFragment(editor)
         }
-        const offset = node.composition?.offset ?? selection.anchor.offset
-        Transforms.setNodes<Text>(
+        const composition = CompositionText.isCompositionText(node) ? node.composition : null
+        const offset = composition?.offset ?? selection.anchor.offset
+
+        Transforms.setNodes<CompositionText>(
           editor,
           {
             composition: {
-              ...node.composition,
+              ...composition,
               text: value,
               offset,
             },
@@ -593,9 +593,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
-  e.onBeforeInput = (value: string) => {}
+  e.onBeforeInput = () => {}
 
-  e.onCompositionStart = (value: string) => {
+  e.onCompositionStart = () => {
     IS_COMPOSING.set(editor, true)
   }
 
@@ -605,8 +605,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (!selection) return
     const [node, path] = Editor.node(editor, selection)
     if (Text.isText(node)) {
-      const { composition } = node
-      Transforms.setNodes<Text>(
+      const composition = CompositionText.isCompositionText(node) ? node.composition : null
+      Transforms.setNodes<CompositionText>(
         editor,
         {
           composition: undefined,
@@ -614,7 +614,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         { at: path },
       )
       const point = { path, offset: composition?.offset ?? selection.anchor.offset }
-      const range = composition?.emptyText
+      const range = composition?.isEmpty
         ? {
             anchor: { path, offset: 0 },
             focus: { path, offset: 1 },
@@ -624,13 +624,67 @@ export const withEditable = <T extends Editor>(editor: T) => {
       Transforms.insertText(editor, value)
     }
   }
-  e.onPaste = () => {}
+
+  e.onCut = event => {
+    if (event.defaultPrevented) return
+    const { selection } = e
+    const { clipboardData } = event
+    if (clipboardData) writeClipboardData(clipboardData)
+    if (selection) {
+      if (Range.isExpanded(selection)) {
+        Editor.deleteFragment(e)
+      } else {
+        const node = Node.parent(e, selection.anchor.path)
+        if (Editor.isVoid(e, node)) {
+          Transforms.delete(e)
+        }
+      }
+    }
+  }
+
+  e.onCopy = event => {
+    if (event.defaultPrevented) return
+    const { clipboardData } = event
+    if (clipboardData) writeClipboardData(clipboardData)
+  }
+
+  e.onPaste = event => {
+    if (event.defaultPrevented) return
+    const { clipboardData } = event
+    if (!clipboardData) return
+    event.preventDefault()
+    const { text, fragment, html } = parseDataTransfer(clipboardData)
+    if (!isPasteText && fragment.length > 0) {
+      e.insertFragment(fragment)
+    } else if (!isPasteText && html) {
+      const document = new DOMParser().parseFromString(html, TEXT_HTML)
+      const fragment = HTMLDeserializer.transformWithEditor(e, document.body)
+      e.insertFragment(fragment)
+    } else {
+      const lines = text.split(/\r\n|\r|\n/)
+      let split = false
+
+      for (const line of lines) {
+        if (split) {
+          Transforms.splitNodes(e, { always: true })
+        }
+        e.normalizeSelection(selection => {
+          if (selection !== e.selection) e.selection = selection
+          e.insertText(line)
+        })
+        split = true
+      }
+    }
+  }
+
   e.onSelectStart = () => {}
   e.onSelecting = () => {}
   e.onSelectEnd = () => {}
   e.onSelectionChange = () => {}
 
-  e.setSelectionStyle = (style: SelectionStyle) => {}
+  e.onContextMenu = event => {
+    event.preventDefault()
+  }
 
   e.renderElementAttributes = ({ attributes }) => {
     return attributes
@@ -670,18 +724,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
     )
   }
 
-  e.clearSelectionDraw = () => {
-    const setSelectionDraw = IS_DRAW_SELECTION.get(e)
-    if (setSelectionDraw) {
-      setSelectionDraw(false)
-    }
+  e.pauseSelectionDrawing = () => {
+    SelectionDrawing.setEnabled(e, false)
   }
 
-  e.startSelectionDraw = () => {
-    const setSelectionDraw = IS_DRAW_SELECTION.get(e)
-    if (setSelectionDraw) {
-      setSelectionDraw(true)
-    }
+  e.enableSelectionDrawing = () => {
+    SelectionDrawing.setEnabled(e, true)
   }
 
   e.normalizeSelection = fn => {
@@ -724,10 +772,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
     }
     fn(selection)
-  }
-
-  e.onRenderContextComponents = components => {
-    return components
   }
 
   e.getFragment = (range?: Range) => {
@@ -780,6 +824,45 @@ export const withEditable = <T extends Editor>(editor: T) => {
       return
     }
     List.splitList(editor)
+  }
+
+  e.getDataTransfer = range => {
+    const fragment = e.getFragment(range)
+    const fragmentString = fragmentToString(fragment)
+
+    const text = fragment.map(node => TextSerializer.transformWithEditor(e, node)).join('\n')
+
+    let html = fragment.map(node => HTMLSerializer.transformWithEditor(e, node)).join('')
+    html = `<div ${DATA_EDITABLEJS_FRAGMENT}="${fragmentString}">${html}</div>`
+    html = `<html><head><meta name="source" content="${DATA_EDITABLEJS_FRAGMENT}" /></head><body>${html}</body></html>`
+    const dataTransfer = new DataTransfer()
+    dataTransfer.setData(TEXT_PLAIN, text)
+    dataTransfer.setData(TEXT_HTML, html)
+    dataTransfer.setData(APPLICATION_FRAGMENT_TYPE, fragmentString)
+    return dataTransfer
+  }
+
+  e.dispatchEvent = type => {
+    if (~['paste', 'paste-text'].indexOf(type)) {
+      readClipboardData().then(data => {
+        if (type === 'paste-text') {
+          isPasteText = true
+        }
+        const event = new ClipboardEvent(type, { clipboardData: data })
+        e.onPaste(event)
+      })
+    } else {
+      const data = e.getDataTransfer()
+      const event = new ClipboardEvent(type, { clipboardData: data })
+      switch (type) {
+        case 'cut':
+          e.onCut(event)
+          break
+        case 'copy':
+          e.onCopy(event)
+          break
+      }
+    }
   }
 
   return e

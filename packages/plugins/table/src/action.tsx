@@ -7,8 +7,6 @@ import {
 } from '@editablejs/editor'
 import React, { useRef, useState, useCallback, useMemo } from 'react'
 import { Icon } from '@editablejs/plugin-ui'
-import { TABLE_CELL_KEY } from './cell'
-import { TableRow, TABLE_ROW_KEY } from './row'
 import {
   ColsInsertIconStyles,
   ColsInsertLineStyles,
@@ -25,6 +23,8 @@ import {
 } from './styles'
 import { useOptions } from './options'
 import { TableDrag, useTableDragging, useTableDragTo } from './hooks/use-drag'
+import { TABLE_CELL_KEY, TABLE_ROW_KEY } from './constants'
+import { TableRow } from './types'
 
 const TYPE_COL = 'col'
 const TYPE_ROW = 'row'

@@ -19,13 +19,13 @@ const TableSelection: React.FC<TableSelectionProps> = () => {
 
   useIsomorphicLayoutEffect(() => {
     if (rect) {
-      editor.clearSelectionDraw()
+      editor.pauseSelectionDrawing()
     } else {
-      editor.startSelectionDraw()
+      editor.enableSelectionDrawing()
     }
 
     return () => {
-      editor.startSelectionDraw()
+      editor.enableSelectionDrawing()
     }
   }, [editor, rect])
 

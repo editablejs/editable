@@ -45,9 +45,9 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       styled-components: 5.3.5
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
       y-websocket: 1.4.5
       yjs: ^13.5.41
@@ -74,9 +74,9 @@ importers:
       next-transpile-modules: 9.0.0
       prettier-config: link:../../packages/config/prettier-config
       randomcolor: 0.6.2
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../packages/config/tsconfig
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.6.3
 
   apps/server:
@@ -187,14 +187,14 @@ importers:
       prettier: latest
       prettier-plugin-tailwindcss: 0.1.13
     devDependencies:
-      prettier: 2.7.1
-      prettier-plugin-tailwindcss: 0.1.13_prettier@2.7.1
+      prettier: 2.8.0
+      prettier-plugin-tailwindcss: 0.1.13_prettier@2.8.0
 
   packages/config/tailwind-config:
     specifiers:
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
     dependencies:
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
 
   packages/config/tsconfig:
     specifiers: {}
@@ -208,18 +208,20 @@ importers:
   packages/editor:
     specifiers:
       '@editablejs/breaker': workspace:*
+      '@types/escape-html': ^1.0.2
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
-      '@types/lodash': ^4.14.149
+      '@types/lodash.merge': ^4.6.7
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       direction: ^1.0.3
+      escape-html: ^1.0.3
       eslint-config-editable: workspace:*
       is-hotkey: ^0.1.6
       is-plain-object: ^5.0.0
       jest: ^27.5.1
       jest-presets: workspace:*
-      lodash: ^4.17.4
+      lodash.merge: ^4.6.2
       prettier-config: workspace:*
       react: ^17.x
       react-dom: ^17.x
@@ -233,16 +235,18 @@ importers:
     dependencies:
       '@editablejs/breaker': link:../breaker
       direction: 1.0.4
+      escape-html: 1.0.3
       is-hotkey: 0.1.8
       is-plain-object: 5.0.0
-      lodash: 4.17.21
+      lodash.merge: 4.6.2
       scroll-into-view-if-needed: 2.2.29
       slate: 0.85.0
       zustand: 4.1.4_react@17.0.2
     devDependencies:
+      '@types/escape-html': 1.0.2
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
-      '@types/lodash': 4.14.182
+      '@types/lodash.merge': 4.6.7
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
       eslint-config-editable: link:../config/eslint-config-editable
@@ -259,7 +263,6 @@ importers:
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       '@types/styled-components': 5.1.26
@@ -271,14 +274,13 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-serializes': link:../serializes
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -292,50 +294,11 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
-      typescript: 4.8.3
-
-  packages/plugins/clipboard:
-    specifiers:
-      '@editablejs/editor': workspace:*
-      '@editablejs/plugin-context-menu': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
-      '@editablejs/plugin-ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
-      copy-to-clipboard: 3.3.2
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
-      tsconfig: workspace:*
-      tsup: ^6.1.2
-      tsup-config: workspace:*
-      typescript: ^4.5.3
-    dependencies:
-      '@editablejs/plugin-context-menu': link:../context-menu
-      '@editablejs/plugin-serializes': link:../serializes
-      '@editablejs/plugin-ui': link:../ui
-      copy-to-clipboard: 3.3.2
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.8.3
-      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/context-menu:
@@ -354,15 +317,17 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
+      zustand: 4.1.4
     dependencies:
       '@editablejs/plugin-ui': link:../ui
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/escape-html': 1.0.2
@@ -376,17 +341,16 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/fontsize:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       eslint-config-editable: workspace:*
@@ -399,8 +363,6 @@ importers:
       tsup: ^6.1.2
       tsup-config: workspace:*
       typescript: ^4.5.3
-    dependencies:
-      '@editablejs/plugin-serializes': link:../serializes
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/react': 17.0.47
@@ -419,9 +381,6 @@ importers:
   packages/plugins/heading:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-fontsize': workspace:*
-      '@editablejs/plugin-mark': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       '@types/styled-components': 5.1.26
@@ -433,16 +392,13 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-fontsize': link:../fontsize
-      '@editablejs/plugin-mark': link:../mark
-      '@editablejs/plugin-serializes': link:../serializes
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -456,17 +412,16 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/indent:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       '@types/styled-components': 5.1.26
@@ -481,14 +436,13 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-serializes': link:../serializes
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -505,19 +459,16 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/list:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-heading': workspace:*
-      '@editablejs/plugin-indent': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       '@types/styled-components': 5.1.26
@@ -529,16 +480,13 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-heading': link:../heading
-      '@editablejs/plugin-indent': link:../indent
-      '@editablejs/plugin-serializes': link:../serializes
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -552,17 +500,16 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/mark:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       '@types/styled-components': 5.1.26
@@ -574,14 +521,13 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
-      '@editablejs/plugin-serializes': link:../serializes
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -595,25 +541,23 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/plugins:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
-      '@editablejs/plugin-clipboard': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-fontsize': workspace:*
       '@editablejs/plugin-heading': workspace:*
       '@editablejs/plugin-indent': workspace:*
       '@editablejs/plugin-list': workspace:*
       '@editablejs/plugin-mark': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@editablejs/plugin-table': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-ui': workspace:*
@@ -631,14 +575,12 @@ importers:
       typescript: ^4.5.3
     dependencies:
       '@editablejs/plugin-blockquote': link:../blockquote
-      '@editablejs/plugin-clipboard': link:../clipboard
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-fontsize': link:../fontsize
       '@editablejs/plugin-heading': link:../heading
       '@editablejs/plugin-indent': link:../indent
       '@editablejs/plugin-list': link:../list
       '@editablejs/plugin-mark': link:../mark
-      '@editablejs/plugin-serializes': link:../serializes
       '@editablejs/plugin-table': link:../table
       '@editablejs/plugin-toolbar': link:../toolbar
       '@editablejs/plugin-ui': link:../ui
@@ -657,38 +599,9 @@ importers:
       tsup-config: link:../../config/tsup-config
       typescript: 4.8.3
 
-  packages/plugins/serializes:
-    specifiers:
-      '@editablejs/editor': workspace:*
-      '@types/escape-html': ^1.0.2
-      escape-html: ^1.0.3
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.1.2
-      tsup-config: workspace:*
-      typescript: ^4.5.3
-    dependencies:
-      escape-html: 1.0.3
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@types/escape-html': 1.0.2
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.8.3
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.8.3
-
   packages/plugins/table:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-context-menu': workspace:*
-      '@editablejs/plugin-serializes': workspace:*
       '@editablejs/plugin-ui': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
@@ -701,16 +614,14 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
       zustand: 4.1.4
     dependencies:
-      '@editablejs/plugin-context-menu': link:../context-menu
-      '@editablejs/plugin-serializes': link:../serializes
       '@editablejs/plugin-ui': link:../ui
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       zustand: 4.1.4_react@17.0.2
@@ -726,11 +637,11 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/toolbar:
@@ -748,15 +659,17 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
+      zustand: 4.1.4
     dependencies:
       '@editablejs/plugin-ui': link:../ui
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/react': 17.0.47
@@ -769,11 +682,11 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/ui:
@@ -790,11 +703,11 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
     dependencies:
       '@floating-ui/react-dom': 1.0.0_sfoxds7t5ydpegc3knd667wn6m
@@ -810,11 +723,11 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: link:../../config/tailwind-config
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
   packages/plugins/yjs:
@@ -833,11 +746,11 @@ importers:
       react-dom: ^17.x
       styled-components: 5.3.5
       tailwind-config: 0.1.2
-      tailwindcss: ^3.1.4
+      tailwindcss: ^3.2.4
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
-      twin.macro: 3.0.0-rc.4.2
+      twin.macro: 3.0.1
       typescript: ^4.5.3
       y-protocols: 1.0.5
       yjs: ^13.5.41
@@ -858,11 +771,11 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tailwind-config: 0.1.2
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
-      twin.macro: 3.0.0-rc.4.2_tailwindcss@3.1.8
+      twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
       yjs: 13.5.41
 
@@ -2274,6 +2187,12 @@ packages:
       '@types/lodash': 4.14.182
     dev: true
 
+  /@types/lodash.merge/4.6.7:
+    resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
+    dependencies:
+      '@types/lodash': 4.14.182
+    dev: true
+
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
     dev: true
@@ -3113,12 +3032,6 @@ packages:
     resolution: {integrity: sha512-+OQdjP49zViI/6i7nIJpA8rAl4sV/JdPfU9nZs3VqOwGIgizICvuN2ru6fMd+4llL0tar18UYJXfZ/TWtmhUjA==}
     dependencies:
       safe-buffer: 5.1.2
-
-  /copy-to-clipboard/3.3.2:
-    resolution: {integrity: sha512-Vme1Z6RUDzrb6xAI7EZlVZ5uvOk2F//GaxKUxajDqm9LhOVM1inxNAD2vy+UZDYsd0uyA9s7b3/FVZPSxqrCfg==}
-    dependencies:
-      toggle-selection: 1.0.6
-    dev: false
 
   /core-js-pure/3.23.4:
     resolution: {integrity: sha512-lizxkcgj3XDmi7TUBFe+bQ1vNpD5E4t76BrBWI3HdUxdw/Mq1VF4CkiHzIKyieECKtcODK2asJttoofEeUKICQ==}
@@ -4146,6 +4059,17 @@ packages:
 
   /fast-glob/3.2.11:
     resolution: {integrity: sha512-xrO3+1bxSo3ZVHAnqzyuewYT6aMFHRAd4Kcs92MAonjwQZLsK9d0SF1IyQ3k5PoirxTW0Oe/RqFgMQ6TcNE5Ew==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.5
+    dev: true
+
+  /fast-glob/3.2.12:
+    resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
     engines: {node: '>=8.6.0'}
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -5642,7 +5566,6 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
 
   /lodash.sortby/4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
@@ -6353,8 +6276,8 @@ packages:
       yaml: 2.1.1
     dev: true
 
-  /postcss-nested/5.0.6_postcss@8.4.16:
-    resolution: {integrity: sha512-rKqm2Fk0KbA8Vt3AdGN0FB9OBOMDVajMG6ZCf/GoHgdxUJ4sBFp0A/uMIRm+MJUdo33YXEtjqIz8u7DAp8B7DA==}
+  /postcss-nested/6.0.0_postcss@8.4.16:
+    resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
@@ -6419,13 +6342,13 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-tailwindcss/0.1.13_prettier@2.7.1:
+  /prettier-plugin-tailwindcss/0.1.13_prettier@2.8.0:
     resolution: {integrity: sha512-/EKQURUrxLu66CMUg4+1LwGdxnz8of7IDvrSLqEtDqhLH61SAlNNUSr90UTvZaemujgl3OH/VHg+fyGltrNixw==}
     engines: {node: '>=12.17.0'}
     peerDependencies:
       prettier: '>=2.2.0'
     dependencies:
-      prettier: 2.7.1
+      prettier: 2.8.0
     dev: true
 
   /prettier/1.19.1:
@@ -6434,8 +6357,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier/2.7.1:
-    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+  /prettier/2.8.0:
+    resolution: {integrity: sha512-9Lmg8hTFZKG0Asr/kW9Bp8tJjRVluO8EJQVfY2T7FMw9T5jy4I/Uvx0Rca/XWf50QQ1/SS48+6IJWnrb+2yemA==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -7150,8 +7073,8 @@ packages:
     resolution: {integrity: sha512-7ASrC14CermwwDh0kWeNGrmjZbL7L1fKLopqtSSpVjnwwZvrdo3iSVPWAlmHGkvdEZ7JtZ8UBq3p9qaT+it8+w==}
     dev: true
 
-  /tailwindcss/3.1.8_postcss@8.4.16:
-    resolution: {integrity: sha512-YSneUCZSFDYMwk+TGq8qYFdCA3yfBRdBlS7txSq0LUmzyeqRe3a8fBQzbz9M3WS/iFT4BNf/nmw9mEzrnSaC0g==}
+  /tailwindcss/3.2.4_postcss@8.4.16:
+    resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
     engines: {node: '>=12.13.0'}
     hasBin: true
     peerDependencies:
@@ -7163,10 +7086,11 @@ packages:
       detective: 5.2.1
       didyoumean: 1.2.2
       dlv: 1.1.3
-      fast-glob: 3.2.11
+      fast-glob: 3.2.12
       glob-parent: 6.0.2
       is-glob: 4.0.3
       lilconfig: 2.0.6
+      micromatch: 4.0.5
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.0
@@ -7174,7 +7098,7 @@ packages:
       postcss-import: 14.1.0_postcss@8.4.16
       postcss-js: 4.0.0_postcss@8.4.16
       postcss-load-config: 3.1.4_postcss@8.4.16
-      postcss-nested: 5.0.6_postcss@8.4.16
+      postcss-nested: 6.0.0_postcss@8.4.16
       postcss-selector-parser: 6.0.10
       postcss-value-parser: 4.2.0
       quick-lru: 5.1.1
@@ -7273,10 +7197,6 @@ packages:
     engines: {node: '>=8.0'}
     dependencies:
       is-number: 7.0.0
-
-  /toggle-selection/1.0.6:
-    resolution: {integrity: sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==}
-    dev: false
 
   /touch/3.1.0:
     resolution: {integrity: sha512-WBx8Uy5TLtOSRtIq+M03/sKDrXCLHxwDcquSP2c43Le03/9serjQBIztjRz6FkJez9D/hleyAXTBGLwwZUw9lA==}
@@ -7628,11 +7548,11 @@ packages:
       turbo-windows-arm64: 1.6.3
     dev: true
 
-  /twin.macro/3.0.0-rc.4.2_tailwindcss@3.1.8:
-    resolution: {integrity: sha512-eMXh9uhj8UO22zvhPBfC+gNt5yrpSGFeDU0+wzoN4wO+lEYQaWogvum7l0uQFUspzNFih3cWsgXaGxu4cCTkHQ==}
+  /twin.macro/3.0.1_tailwindcss@3.2.4:
+    resolution: {integrity: sha512-0mpdfQYpfCyPYa37MC/WKHCLQrwlqe6b2bM+uKaku5Iwe6bxHvEhcfXp8E8TyAdTupenYTvI6nHZvrh7msSFkQ==}
     engines: {node: '>=16.14.0'}
     peerDependencies:
-      tailwindcss: '>=3.1.8'
+      tailwindcss: ^3.2.4
     dependencies:
       '@babel/template': 7.18.10
       babel-plugin-macros: 3.1.0
@@ -7640,7 +7560,7 @@ packages:
       lodash.get: 4.4.2
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.1.8_postcss@8.4.16
+      tailwindcss: 3.2.4_postcss@8.4.16
     dev: true
 
   /type-check/0.3.2:

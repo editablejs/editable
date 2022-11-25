@@ -1,5 +1,5 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { FC, useCallback, useRef, useState } from 'react'
+import { FC, useRef } from 'react'
 import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
@@ -8,44 +8,18 @@ import {
   ContextMenuSub,
   Portal,
 } from '@editablejs/plugin-ui'
+import { ContextMenuItem, useContextMenuItems, useContextMenuOpened } from './store'
 
 export interface ContextMenuOptions {}
 
-type WithFunction = (editor: ContextMenuEditor) => void
-
-const withSet = new Set<WithFunction>()
-export interface ContextMenuEditor extends Editable {
-  onContextMenu: (items: ContextMenuItem[]) => ContextMenuItem[]
-}
+export const CONTEXT_MENU_OPTIONS = new WeakMap<Editable, ContextMenuOptions>()
+export interface ContextMenuEditor extends Editable {}
 
 export const ContextMenuEditor = {
-  isContextMenuEditor(value: Editable): value is ContextMenuEditor {
-    return 'onContextMenu' in value
-  },
-
-  with: (editor: Editable, fn: WithFunction) => {
-    if (ContextMenuEditor.isContextMenuEditor(editor)) {
-      fn(editor)
-    } else {
-      withSet.add(fn)
-    }
+  getOptions: (editor: Editable): ContextMenuOptions => {
+    return CONTEXT_MENU_OPTIONS.get(editor) ?? {}
   },
 }
-
-interface ContextMenuItemBase extends UIContextMenuItem {
-  key: string
-  title: JSX.Element | string
-  index?: number
-  href?: string
-  children?: ContextMenuItem[]
-}
-
-type ContextMenuItem =
-  | ContextMenuItemBase
-  | {
-      type: 'separator'
-      index?: number
-    }
 
 interface ContextMenu extends UIContextMenu {
   items: ContextMenuItem[]
@@ -85,12 +59,13 @@ const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
   )
 }
 
-const ContextComponent = () => {
-  const [items, setItems] = useState<ContextMenuItem[]>([])
+const ContextMenuPortal = () => {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLElement | null>(null)
 
-  const editor = useEditableStatic() as ContextMenuEditor
+  const editor = useEditableStatic()
+  const [_, setOpened] = useContextMenuOpened(editor)
+  const items = useContextMenuItems(editor)
 
   useIsomorphicLayoutEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
@@ -102,22 +77,10 @@ const ContextComponent = () => {
     }
   }, [editor])
 
-  const handleOpenChange = useCallback(
-    open => {
-      if (!open) setItems([])
-      else setItems(editor.onContextMenu([]))
-    },
-    [editor],
-  )
-
   if (containerRef.current && rootRef.current)
     return (
       <Portal container={rootRef.current}>
-        <ContextMenu
-          items={items.sort((a, b) => (a.index ?? 99) - (b.index ?? 99))}
-          container={containerRef.current}
-          onOpenChange={handleOpenChange}
-        />
+        <ContextMenu items={items} container={containerRef.current} onOpenChange={setOpened} />
       </Portal>
     )
   return null
@@ -129,19 +92,11 @@ export const withContextMenu = <T extends Editable>(
 ) => {
   const newEditor = editor as T & ContextMenuEditor
 
-  const { onRenderContextComponents } = newEditor
+  CONTEXT_MENU_OPTIONS.set(newEditor, options)
 
-  newEditor.onRenderContextComponents = components => {
-    components.push(ContextComponent)
-    return onRenderContextComponents(components)
-  }
-
-  newEditor.onContextMenu = items => {
-    return items
-  }
-
-  withSet.forEach(fn => fn(newEditor))
-  withSet.clear()
+  Editable.mountSlot(editor, ContextMenuPortal)
 
   return newEditor
 }
+
+export * from './store'

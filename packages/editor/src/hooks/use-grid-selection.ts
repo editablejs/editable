@@ -1,9 +1,10 @@
-import { useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { Path } from 'slate'
 import { Grid, GridSelection } from '../interfaces/grid'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable-static'
 import { useGrid } from './use-grid'
+import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 import { useNodeFocused } from './use-node-focused'
 
 const useGridSelection = () => {
@@ -13,7 +14,7 @@ const useGridSelection = () => {
   const [selection, setSelection] = useState<GridSelection | null>(null)
   const nodeFocused = useNodeFocused()
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (grid && nodeFocused) {
       const selection = Grid.getSelection(editor, [grid, Editable.findPath(editor, grid)])
       if (selection) {

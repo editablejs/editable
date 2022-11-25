@@ -22,7 +22,6 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
   const { element, selection } = props
   const ref = useRef<HTMLElement>(null)
   const editor = useEditableStatic()
-  const readOnly = useReadOnly()
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)
   let children: React.ReactNode = useChildren({

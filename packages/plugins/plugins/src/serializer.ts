@@ -1,0 +1,41 @@
+import { Editable, HTMLSerializer, TextSerializer } from '@editablejs/editor'
+import { withMarkHTMLTransform } from '@editablejs/plugin-mark/serializer'
+import { withFontSizeHTMLTransform } from '@editablejs/plugin-fontsize/serializer'
+import { withHeadingHTMLTransform } from '@editablejs/plugin-heading/serializer'
+import {
+  withBlockquoteHTMLTransform,
+  withBlockquoteTextTransform,
+} from '@editablejs/plugin-blockquote/serializer'
+import { withIndentHTMLTransform } from '@editablejs/plugin-indent/serializer'
+import {
+  withOrderedListHTMLTransform,
+  withTaskListHTMLTransform,
+  withUnOrderedListHTMLTransform,
+  withListTextTransform,
+} from '@editablejs/plugin-list/serializer'
+import {
+  withTableCellHTMLTransform,
+  withTableRowHTMLTransform,
+  withTableHTMLTransform,
+  withTableTextTransform,
+} from '@editablejs/plugin-table/serializer'
+
+export const withHTMLSerializer = (editor: Editable) => {
+  HTMLSerializer.with(withTableHTMLTransform, {})
+  HTMLSerializer.with(withTableRowHTMLTransform, {})
+  HTMLSerializer.with(withTableCellHTMLTransform, {})
+  HTMLSerializer.with(withBlockquoteHTMLTransform, {})
+  HTMLSerializer.with(withUnOrderedListHTMLTransform, { editor })
+  HTMLSerializer.with(withTaskListHTMLTransform, {})
+  HTMLSerializer.with(withOrderedListHTMLTransform, { editor })
+  HTMLSerializer.with(withHeadingHTMLTransform, {})
+  HTMLSerializer.with(withFontSizeHTMLTransform, {})
+  HTMLSerializer.with(withMarkHTMLTransform, {})
+  HTMLSerializer.with(withIndentHTMLTransform, {})
+}
+
+export const withTextSerializer = (editor: Editable) => {
+  TextSerializer.with(withTableTextTransform, {})
+  TextSerializer.with(withListTextTransform, { editor })
+  TextSerializer.with(withBlockquoteTextTransform, {})
+}

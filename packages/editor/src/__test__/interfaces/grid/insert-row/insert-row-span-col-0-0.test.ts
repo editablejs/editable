@@ -121,7 +121,7 @@ describe('interfaces/grid', () => {
 
   it('insert-row-span-col-0-0-0', () => {
     editor.children = children.concat()
-    debugger
+
     Grid.insertRow(
       editor,
       [0],

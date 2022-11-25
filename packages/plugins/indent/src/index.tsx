@@ -1,7 +1,7 @@
 import {
   Editable,
   ElementAttributes,
-  isHotkey,
+  Hotkey,
   RenderElementAttributes,
   RenderElementProps,
   Editor,
@@ -11,31 +11,13 @@ import {
   NodeEntry,
   Path,
   Range,
-  isDOMElement,
   List,
 } from '@editablejs/editor'
 import { CSSProperties } from 'react'
 import tw from 'twin.macro'
-import { SerializeEditor } from '@editablejs/plugin-serializes'
-
-export interface Indent extends Element {
-  /**
-   * The indentation level of the text.
-   */
-  textIndent?: number
-  /**
-   * The indentation level of the element.
-   */
-  lineIndent?: number
-}
-
-type IndentType = 'text' | 'line'
-
-const INDENT_KEY = 'indent'
-const OUTDENT_KEY = 'outdent'
-const DEFAULT_SIZE = 32
-
-type IndentPluginType = typeof INDENT_KEY | typeof OUTDENT_KEY
+import { INDENT_KEY, OUTDENT_KEY, DEFAULT_SIZE } from './constants'
+import { Indent, IndentPluginType, IndentType } from './types'
+import { isIndent } from './utils'
 
 type Hotkeys = Record<IndentPluginType, string | ((e: KeyboardEvent) => boolean)>
 
@@ -70,7 +52,7 @@ export const IndentEditor = {
   },
 
   isIndent: (editor: Editor, node: Node): node is Indent => {
-    return Element.isElement(node) && node.type === INDENT_KEY
+    return isIndent(node)
   },
 
   isIndentBlock: (editor: Editor, node: Node): node is Indent => {
@@ -303,7 +285,7 @@ const toggleListIndent = (
       path = next[1]
       IndentEditor.addLineIndent(editor, path, isSub)
       if (isSub) {
-        const level = List.getLevelFromElement(editor, { path, key: key, type, node: next[0] })
+        const level = List.getLevel(editor, { path, key: key, type, node: next[0] })
         Transforms.setNodes<List>(
           editor,
           { level },
@@ -333,7 +315,7 @@ const toggleListIndent = (
       match: n => editor.isList(n) && n.type === type,
     })
     for (const [node, p] of listEntries) {
-      const level = List.getLevelFromElement(editor, {
+      const level = List.getLevel(editor, {
         path: p,
         key: key,
         node,
@@ -453,62 +435,6 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
     return renderIndent(newEditor, props, renderElement)
   }
 
-  SerializeEditor.with(
-    newEditor,
-    e => {
-      const { serializeHtml, deserializeHtml } = e
-      e.serializeHtml = options => {
-        const { node, attributes, styles } = options
-        if (IndentEditor.isIndent(e, node)) {
-          return SerializeEditor.createHtml(
-            'span',
-            attributes,
-            {
-              ...styles,
-              display: 'inline-block',
-              height: '100%',
-              width: `${node.textIndent}px`,
-            },
-            '&#xfeff;',
-          )
-        } else {
-          const indent = node as Indent
-          const { textIndent, lineIndent } = indent
-          const newStyles = { ...styles }
-          if (textIndent) {
-            newStyles['text-indent'] = `${textIndent}px`
-          }
-          if (lineIndent) {
-            newStyles['padding-left'] = `${lineIndent}px`
-          }
-
-          return serializeHtml({ node, attributes, styles: newStyles })
-        }
-      }
-
-      e.deserializeHtml = options => {
-        const { node } = options
-        if (isDOMElement(node)) {
-          const { textIndent, paddingLeft } = (node as HTMLElement).style
-          const attributes = { ...options.attributes }
-          if (!attributes.textIndent && textIndent) {
-            const val = parseInt(textIndent, 10)
-            if (val > 0) attributes.textIndent = val
-          }
-          if (!attributes.lineIndent && paddingLeft) {
-            const val = parseInt(paddingLeft, 10)
-            if (val > 0) attributes.lineIndent = val
-          }
-          if (attributes.textIndent || attributes.lineIndent) {
-            return deserializeHtml({ ...options, attributes })
-          }
-        }
-        return deserializeHtml(options)
-      }
-    },
-    true,
-  )
-
   const { onKeydown, isInline, isVoid, canFocusVoid } = newEditor
 
   newEditor.isInline = (el: Element) => {
@@ -535,7 +461,7 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
         else newEditor.toggleIndent()
       }
       if (
-        (typeof hotkey === 'string' && isHotkey(hotkey, e)) ||
+        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
         (typeof hotkey === 'function' && hotkey(e))
       ) {
         toggle()
@@ -543,7 +469,7 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
       }
     }
     const { selection } = editor
-    if (selection && Range.isCollapsed(selection) && isHotkey('backspace', e)) {
+    if (selection && Range.isCollapsed(selection) && Hotkey.is('backspace', e)) {
       const entry = Editor.above(newEditor, {
         match: newEditor.onIndentMatch,
       })
@@ -632,7 +558,7 @@ List.splitList = (editor, options = {}) => {
   })
 }
 
-List.getLevelFromElement = (editor, options) => {
+List.getLevel = (editor, options) => {
   const { path, key, type } = options
   const [element] = Editor.nodes<Indent>(editor, {
     at: path,
@@ -648,3 +574,11 @@ List.getLevelFromElement = (editor, options) => {
   const elementIndentLevel = element ? IndentEditor.getLevel(editor, element[0]) : 0
   return elementIndentLevel - prefixIndentLevel
 }
+
+List.setIndent = (editor, list) => {
+  const indent = list as Indent
+  indent.lineIndent = list.level * IndentEditor.getSize(editor)
+  return list
+}
+
+export * from './types'

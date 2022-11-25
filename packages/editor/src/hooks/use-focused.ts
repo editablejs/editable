@@ -1,9 +1,47 @@
-import { createContext, useContext } from 'react'
+import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
+import { Editable } from '../plugin/editable'
+import { useEditableStatic } from './use-editable-static'
 
-type FocusedContext = [boolean, (focused: boolean) => void]
+interface FocusedStore {
+  isFocused: boolean
+}
 
-export const FocusedContext = createContext<FocusedContext>(null as any)
+const EDITABLE_TO_FOCUSED_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<FocusedStore>>>()
 
-export const useFocused = (): FocusedContext => {
-  return useContext(FocusedContext)
+const getStore = (editor: Editable) => {
+  let store = EDITABLE_TO_FOCUSED_STORE.get(editor)
+  if (!store) {
+    store = create<FocusedStore>(() => ({
+      isFocused: false,
+    }))
+    EDITABLE_TO_FOCUSED_STORE.set(editor, store)
+  }
+  store.subscribe(({ isFocused }) => {
+    if (isFocused) {
+      editor.onFocus()
+    } else {
+      editor.onBlur()
+    }
+  })
+  return store
+}
+
+export const useFocused = (): [boolean, (isFocused: boolean) => void] => {
+  const editor = useEditableStatic()
+  const store = getStore(editor)
+  const isFocused = useStore(store, state => state.isFocused)
+
+  return [
+    isFocused,
+    (isFocused: boolean) => {
+      store.setState({ isFocused })
+    },
+  ]
+}
+
+export const FocusedStore = {
+  is: (editor: Editable) => {
+    const store = getStore(editor)
+    return store.getState().isFocused
+  },
 }

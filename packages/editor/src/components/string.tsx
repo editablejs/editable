@@ -2,6 +2,7 @@ import React from 'react'
 import { Editor, Text, Path, Element, Node } from 'slate'
 
 import { Editable, useEditableStatic } from '..'
+import { CompositionText } from '../interfaces/composition-text'
 
 /**
  * Leaf content strings.
@@ -22,7 +23,7 @@ const String: React.FC<{
     return <ZeroWidthString length={Node.string(parent).length} />
   }
 
-  if (text.composition) {
+  if (CompositionText.isCompositionText(text)) {
     const { offset, text: compositionText } = text.composition
     const t = text.text
     const left = t.substring(0, offset)

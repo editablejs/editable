@@ -1,20 +1,12 @@
-import {
-  Editable,
-  RenderLeafProps,
-  Editor,
-  Text,
-  isDOMText,
-  isDOMElement,
-} from '@editablejs/editor'
+import { Editable, RenderLeafProps, Editor, Text } from '@editablejs/editor'
 import { CSSProperties } from 'react'
-import { SerializeEditor } from '@editablejs/plugin-serializes'
+import { FONTSIZE_KEY } from './constants'
+import { isFontSize } from './utils'
 export interface FontSizeOptions {
   defaultSize?: string
 }
 
 export const FONTSIZE_OPTIONS = new WeakMap<Editable, FontSizeOptions>()
-
-export const FONTSIZE_KEY = 'fontSize'
 
 export interface FontSizeEditor extends Editable {
   toggleFontSize: (size: string) => void
@@ -30,7 +22,7 @@ export const FontSizeEditor = {
   },
 
   isFontSize: (editor: Editable, node: any): node is FontSize => {
-    return Text.isText(node) && !!(node as FontSize)[FONTSIZE_KEY]
+    return isFontSize(node)
   },
 
   queryActive: (editor: Editable) => {
@@ -74,38 +66,7 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 
-  SerializeEditor.with(
-    newEditor,
-    e => {
-      const { serializeHtml, deserializeHtml } = e
-      e.serializeHtml = options => {
-        const { node, attributes, styles } = options
-        if (FontSizeEditor.isFontSize(e, node)) {
-          const { fontSize, text } = node
-          return SerializeEditor.createHtml(
-            'span',
-            attributes,
-            { ...styles, 'font-size': fontSize },
-            text,
-          )
-        }
-        return serializeHtml(options)
-      }
-
-      e.deserializeHtml = options => {
-        const { node, markAttributes } = options
-        if (isDOMElement(node)) {
-          const { fontSize } = (node as HTMLElement).style
-          if (fontSize) {
-            options.markAttributes = { ...markAttributes, fontSize }
-            return deserializeHtml(options)
-          }
-        }
-        return deserializeHtml(options)
-      }
-    },
-    true,
-  )
-
   return newEditor
 }
+
+export * from './types'

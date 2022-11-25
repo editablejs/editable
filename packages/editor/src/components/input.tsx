@@ -1,12 +1,15 @@
-import { Range, Selection } from 'slate'
-import { FC, useMemo, useState } from 'react'
+import { Range } from 'slate'
+import { FC, useState } from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { useEditableStatic } from '../hooks/use-editable-static'
-import { useDrawSelection } from '../hooks/use-draw-selection'
+import {
+  useSelectionDrawingSelection,
+  useSelectionDrawingRects,
+} from '../hooks/use-selection-drawing'
 
 interface InputProps {}
 
@@ -23,7 +26,7 @@ const InputComponent: FC<InputProps> = () => {
       IS_COMPOSING.set(editor, false)
     }
 
-    if (Editable.isComposing(editor)) {
+    if (event.defaultPrevented || Editable.isComposing(editor)) {
       return
     }
     editor.onKeydown(nativeEvent)
@@ -69,7 +72,8 @@ const InputComponent: FC<InputProps> = () => {
     editor.onCompositionEnd(value)
   }
 
-  const { selection, rects } = useDrawSelection()
+  const selection = useSelectionDrawingSelection()
+  const rects = useSelectionDrawingRects()
 
   useIsomorphicLayoutEffect(() => {
     if (!selection || !focused || rects.length === 0) return setRect(null)
@@ -89,8 +93,9 @@ const InputComponent: FC<InputProps> = () => {
     >
       <textarea
         ref={current => {
-          if (current) EDITOR_TO_INPUT.set(editor, current)
-          else EDITOR_TO_INPUT.delete(editor)
+          if (current) {
+            EDITOR_TO_INPUT.set(editor, current)
+          } else EDITOR_TO_INPUT.delete(editor)
         }}
         rows={1}
         style={{
@@ -103,6 +108,7 @@ const InputComponent: FC<InputProps> = () => {
           overflow: 'auto',
           resize: 'vertical',
         }}
+        autoFocus={true}
         onKeyDown={handleKeydown}
         onKeyUp={handleKeyup}
         onBeforeInput={handleBeforeInput}

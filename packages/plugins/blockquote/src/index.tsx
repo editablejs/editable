@@ -1,7 +1,5 @@
-import { Editable, isHotkey, Transforms, Editor, Range, Element, Path } from '@editablejs/editor'
-import { SerializeEditor } from '@editablejs/plugin-serializes'
-
-export const BLOCKQUOTE_KEY = 'blockquote'
+import { Editable, Hotkey, Transforms, Editor, Range, Element, Path } from '@editablejs/editor'
+import { BLOCKQUOTE_KEY } from './constants'
 
 type Hotkey = string | ((e: KeyboardEvent) => boolean)
 
@@ -97,7 +95,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
       newEditor.toggleBlockquote()
     }
     if (
-      (typeof hotkey === 'string' && isHotkey(hotkey, e)) ||
+      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
       (typeof hotkey === 'function' && hotkey(e))
     ) {
       toggle()
@@ -108,10 +106,10 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
       !selection ||
       !Range.isCollapsed(selection) ||
       !BlockquoteEditor.isActive(newEditor) ||
-      isHotkey('shift+enter', e)
+      Hotkey.is('shift+enter', e)
     )
       return onKeydown(e)
-    if (isHotkey('enter', e)) {
+    if (Hotkey.is('enter', e)) {
       const entry = Editor.above(newEditor, {
         match: n => Editor.isBlock(newEditor, n) && !Editor.isVoid(newEditor, n),
       })
@@ -131,39 +129,5 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
     onKeydown(e)
   }
 
-  SerializeEditor.with(newEditor, e => {
-    const { serializeHtml, deserializeHtml } = e
-
-    e.serializeHtml = options => {
-      const { node, attributes, styles } = options
-      if (BlockquoteEditor.isBlockquote(newEditor, node)) {
-        return SerializeEditor.createHtml(
-          BLOCKQUOTE_KEY,
-          attributes,
-          {
-            ...styles,
-            'border-left': '4px solid #e2e8f0',
-            'padding-left': '1rem',
-            'margin-left': '0',
-            opacity: '0.5',
-          },
-          node.children.map(child => e.serializeHtml({ node: child })).join(''),
-        )
-      }
-      return serializeHtml(options)
-    }
-
-    e.deserializeHtml = options => {
-      const { node, attributes, markAttributes } = options
-      if (node.nodeName.toLowerCase() === BLOCKQUOTE_KEY) {
-        const children = []
-        for (const child of node.childNodes) {
-          children.push(...e.deserializeHtml({ node: child, markAttributes }))
-        }
-        return [{ ...attributes, type: BLOCKQUOTE_KEY, children }]
-      }
-      return deserializeHtml(options)
-    }
-  })
   return newEditor
 }

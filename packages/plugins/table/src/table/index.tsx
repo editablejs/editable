@@ -1,0 +1,371 @@
+import {
+  RenderElementProps,
+  useCancellablePromises,
+  cancellablePromise,
+  Editable,
+  Grid,
+  Node,
+  Editor,
+  useIsomorphicLayoutEffect,
+  Range,
+  useNodeFocused,
+  useNodeSelected,
+  useGridSelection,
+  Transforms,
+  useGridSelected,
+  Element,
+  isDOMNode,
+  GridCell,
+} from '@editablejs/editor'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import { createStore } from 'zustand'
+import { TableCellEditor } from '../cell'
+import { TABLE_KEY } from '../constants'
+import { TableContext } from '../context'
+import { Dragging } from '../dragging'
+import { TableColHeader, TableRowHeader } from '../header'
+import { TableDrag, useTableDragging } from '../hooks/use-drag'
+import { isTable } from '../is'
+import { getOptions, TableOptions } from '../options'
+import { TableRowEditor } from '../row'
+import { TableSelection as TableSelectionElement } from '../selection'
+import { AllHeaderStyles, TableStyles } from '../styles'
+import { Table, TableCell, TableRow } from '../types'
+
+export interface CreateTableOptions {
+  rows?: number
+  cols?: number
+}
+export interface TableEditor extends Editable {
+  toggleTable: (options?: CreateTableOptions) => void
+}
+
+export interface TableEditor extends Editable {
+  toggleTable: (options?: CreateTableOptions) => void
+}
+
+export const TableEditor = {
+  isTableEditor: (editor: Editable): editor is TableEditor => {
+    return !!(editor as TableEditor).toggleTable
+  },
+
+  isTable: (editor: Editable, value: Node): value is Table => {
+    return isTable(value)
+  },
+
+  isActive: (editor: Editable): boolean => {
+    const elements = editor.queryActiveElements()[TABLE_KEY] ?? []
+    return elements.some(e => TableEditor.isTable(editor, e[0]))
+  },
+
+  getOptions: (editor: Editable): Required<TableOptions> => {
+    return getOptions(editor)
+  },
+
+  create: (editor: Editable, options: CreateTableOptions = {}): Table => {
+    const { rows = 3, cols = 3 } = options
+    const { minRowHeight, minColWidth } = TableEditor.getOptions(editor)
+    const rowHeight = minRowHeight
+    const tableRows: TableRow[] = []
+    const tableColsWdith = Grid.avgColWidth(editor, {
+      cols,
+      minWidth: minColWidth,
+      getWidth: width => width - 1,
+    })
+    for (let r = 0; r < rows; r++) {
+      tableRows.push(
+        TableRowEditor.create(
+          { height: rowHeight },
+          tableColsWdith.map(() => TableCellEditor.create()),
+        ),
+      )
+    }
+    return Grid.create<Table, TableRow, TableCell>(
+      {
+        type: TABLE_KEY,
+        colsWidth: tableColsWdith,
+      },
+      ...tableRows,
+    )
+  },
+
+  toggle: (editor: TableEditor, options?: CreateTableOptions) => {
+    editor.toggleTable(options)
+  },
+}
+
+interface TableProps extends RenderElementProps<Table> {
+  editor: TableEditor
+}
+
+const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, children }) => {
+  const nodeSelected = useNodeSelected()
+
+  const nodeFocused = useNodeFocused()
+
+  const selection = useGridSelection()
+
+  const selected = useGridSelected()
+
+  const tableRef = useRef<HTMLTableElement>(null)
+
+  const dragging = useTableDragging()
+
+  /**
+   * 部分选中表格，让选中部分选中表格的整行
+   */
+  useIsomorphicLayoutEffect(() => {
+    const { selection } = editor
+    if (selection && nodeSelected && !nodeFocused) {
+      let { anchor, focus } = selection
+      const isBackward = Range.isBackward(selection)
+      const [startRow] = Editor.nodes<TableRow>(editor, {
+        at: anchor.path,
+        match: n => TableRowEditor.isTableRow(editor, n),
+      })
+      if (startRow) {
+        const [row, path] = startRow
+        const { children: cells } = row
+        const table = Grid.findGrid(editor, path)
+        if (table) {
+          if (isBackward) {
+            const sel = Grid.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1],
+            })
+            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+          } else {
+            const sel = Grid.edges(editor, table, {
+              start: [path[path.length - 1], 0],
+              end: [table[0].children.length - 1, cells.length - 1],
+            })
+            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+          }
+        }
+      }
+      const [endRow] = Editor.nodes<TableRow>(editor, {
+        at: focus.path,
+        match: n => TableRowEditor.isTableRow(editor, n),
+      })
+      if (endRow) {
+        const [row, path] = endRow
+        const { children: cells } = row
+        const table = Grid.findGrid(editor, path)
+        if (table) {
+          if (isBackward) {
+            const sel = Grid.edges(editor, table, {
+              start: [table[0].children.length - 1, cells.length - 1],
+              end: [path[path.length - 1], 0],
+            })
+            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+          } else {
+            const sel = Grid.edges(editor, table, {
+              start: [0, 0],
+              end: [path[path.length - 1], cells.length - 1],
+            })
+            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+          }
+        }
+      }
+      const range = { anchor, focus }
+      if (!Range.equals(selection, range)) Transforms.select(editor, range)
+    }
+  }, [nodeSelected, nodeFocused, editor, editor.selection])
+
+  const { colsWidth = [] } = element
+
+  const renderColgroup = () => {
+    const colgroup = []
+    for (let i = 0; i < colsWidth.length; i++) {
+      colgroup.push(<col width={colsWidth[i]} key={i} />)
+    }
+    return colgroup.length > 0 ? <colgroup>{colgroup}</colgroup> : null
+  }
+  // table width
+  const tableWidth = useMemo(() => {
+    let width = 0
+    for (let i = 0; i < colsWidth.length; i++) {
+      width += colsWidth[i]
+    }
+    return width
+  }, [colsWidth])
+  // table height
+  const tableHeight = useMemo(() => {
+    const { children } = element
+    let height = 0
+    for (let i = 0; i < children.length; i++) {
+      height += children[i].contentHeight ?? 0
+    }
+    return height
+  }, [element])
+
+  const [isHover, setHover] = useState(false)
+
+  const store = useMemo(
+    () =>
+      createStore(() => ({
+        selection,
+        selected,
+        width: tableWidth,
+        height: tableHeight,
+        rows: element.children.length,
+        cols: element.colsWidth?.length ?? 0,
+      })),
+    [
+      element.children.length,
+      element.colsWidth?.length,
+      selected,
+      selection,
+      tableHeight,
+      tableWidth,
+    ],
+  )
+
+  const renderAllHeader = () => {
+    const handleMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault()
+      Grid.select(editor, Editable.findPath(editor, element))
+    }
+    return <AllHeaderStyles onMouseDown={handleMouseDown} allFull={selected.allFull} />
+  }
+
+  const cancellablePromisesApi = useCancellablePromises()
+
+  const handleMouseOver = useCallback(() => {
+    cancellablePromisesApi.clearPendingPromises()
+    if (~~selected.count) return
+    const wait = cancellablePromise(cancellablePromisesApi.delay(200))
+    cancellablePromisesApi.appendPendingPromise(wait)
+    wait.promise
+      .then(() => {
+        setHover(true)
+      })
+      .catch(err => {})
+  }, [selected, cancellablePromisesApi])
+
+  const handleMouseLeave = useCallback(() => {
+    cancellablePromisesApi.clearPendingPromises()
+    setHover(false)
+  }, [cancellablePromisesApi])
+
+  const getMoveColToIndex = useCallback(
+    (col: number, offsetX: number) => {
+      const cells = Grid.cells(editor, Editable.findPath(editor, element), {
+        startCol: col,
+        endCol: col,
+      })
+      let minCol = col
+      let maxCol = col
+      for (const [cell] of cells) {
+        const isSpan = GridCell.isSpan(cell)
+        if (isSpan) {
+          minCol = Math.min(minCol, cell.span[1])
+        } else {
+          maxCol = Math.max(maxCol, col + cell.colspan - 1)
+        }
+      }
+      const leftWidth = colsWidth[minCol] / 2
+      const rightWidth = colsWidth[maxCol] / 2
+      if (col === minCol && offsetX < leftWidth) {
+        return minCol
+      }
+      if (col === maxCol && offsetX > rightWidth) {
+        return maxCol + 1
+      }
+      return -1
+    },
+    [colsWidth, element, editor],
+  )
+
+  const getMoveRowToIndex = useCallback(
+    (row: number, offsetY: number) => {
+      const cells = Grid.cells(editor, Editable.findPath(editor, element), {
+        startRow: row,
+        endRow: row,
+      })
+      let minRow = row
+      let maxRow = row
+      for (const [cell] of cells) {
+        const isSpan = GridCell.isSpan(cell)
+        if (isSpan) {
+          minRow = Math.min(minRow, cell.span[0])
+        } else {
+          maxRow = Math.max(maxRow, row + cell.rowspan - 1)
+        }
+      }
+      const rows = element.children
+      const topHeight = (rows[minRow].height ?? 0) / 2
+      const bottomHeight = (rows[maxRow].height ?? 0) / 2
+
+      if (row === minRow && offsetY < topHeight) {
+        return minRow
+      }
+      if (row === maxRow && offsetY > bottomHeight) {
+        return maxRow + 1
+      }
+      return -1
+    },
+    [element, editor],
+  )
+
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      const tableEl = tableRef.current
+      const { target, offsetX, offsetY } = event
+      TableDrag.setPoint({ x: event.clientX, y: event.clientY })
+      if (!tableEl || !isDOMNode(target) || !tableEl.contains(target)) {
+        TableDrag.setTo(-1)
+        return
+      }
+
+      const cell = TableCellEditor.closest(editor, target)
+      if (!cell) {
+        TableDrag.setTo(-1)
+        return
+      }
+      const path = Editable.findPath(editor, cell)
+
+      const col = path[path.length - 1]
+      const row = path[path.length - 2]
+      const type = TableDrag.getDragType()
+      const to = type === 'row' ? getMoveRowToIndex(row, offsetY) : getMoveColToIndex(col, offsetX)
+      TableDrag.setTo(to)
+    },
+    [editor, getMoveRowToIndex, getMoveColToIndex],
+  )
+
+  useEffect(() => {
+    if (dragging) {
+      window.addEventListener('mousemove', handleMouseMove)
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [dragging, handleMouseMove])
+
+  return (
+    <TableContext.Provider value={store}>
+      <TableStyles
+        isDragging={dragging}
+        isHover={isHover}
+        isSelected={!!~~selected.count}
+        {...attributes}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
+      >
+        <TableColHeader editor={editor} table={element} />
+        <TableRowHeader editor={editor} table={element} />
+        {renderAllHeader()}
+        <table ref={tableRef} style={{ width: tableWidth }}>
+          {renderColgroup()}
+          <tbody>{children}</tbody>
+        </table>
+        <TableSelectionElement editor={editor} table={element} />
+      </TableStyles>
+      <Dragging />
+    </TableContext.Provider>
+  )
+}
+
+export { TableComponent }
