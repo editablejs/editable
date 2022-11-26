@@ -4,6 +4,7 @@ import {
   Grid,
   useEditableStatic,
   useIsomorphicLayoutEffect,
+  SelectionDrawing,
 } from '@editablejs/editor'
 import React from 'react'
 import { SelectionStyles } from './styles'
@@ -19,13 +20,13 @@ const TableSelection: React.FC<TableSelectionProps> = () => {
 
   useIsomorphicLayoutEffect(() => {
     if (rect) {
-      editor.pauseSelectionDrawing()
+      SelectionDrawing.setEnabled(editor, false)
     } else {
-      editor.enableSelectionDrawing()
+      SelectionDrawing.setEnabled(editor, true)
     }
 
     return () => {
-      editor.enableSelectionDrawing()
+      SelectionDrawing.setEnabled(editor, true)
     }
   }, [editor, rect])
 

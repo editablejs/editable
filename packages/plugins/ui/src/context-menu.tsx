@@ -11,6 +11,7 @@ import {
   MenuSubContent,
   MenuSubTrigger,
 } from './menu'
+import { useIsomorphicLayoutEffect } from './utils'
 export interface ContextMenuItem {
   icon?: JSX.Element
   rightText?: JSX.Element | string
@@ -114,21 +115,23 @@ export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({
   )
 }
 
-type Point = { x: number; y: number }
+export type Point = { x: number; y: number }
 
 export interface ContextMenu {
   container?: HTMLElement | Point
   className?: string
+  open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
 export const ContextMenu: FC<ContextMenu> = ({
   container = document.body,
   className,
+  open: openProps,
   onOpenChange,
   children,
 }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(openProps)
   const pointRef = React.useRef<Point>(
     container instanceof HTMLElement ? { x: 0, y: 0 } : container,
   )
@@ -144,8 +147,15 @@ export const ContextMenu: FC<ContextMenu> = ({
     [onOpenChange],
   )
 
+  useIsomorphicLayoutEffect(() => {
+    setOpen(openProps)
+  }, [openProps])
+
   useEffect(() => {
-    if (!(container instanceof HTMLElement)) return
+    if (!(container instanceof HTMLElement)) {
+      pointRef.current = container
+      return
+    }
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault()
       pointRef.current = { x: e.clientX, y: e.clientY }

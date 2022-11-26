@@ -8,9 +8,11 @@ export * from './plugin/expand'
 // Locale
 export * from './hooks/use-locale'
 
+// Component
 export { ContentEditable } from './components/content'
 export { EditableComposer } from './components/editable'
 
+// hooks
 export { useIsomorphicLayoutEffect } from './hooks/use-isomorphic-layout-effect'
 export { useEditableStatic } from './hooks/use-editable-static'
 export { useFocused } from './hooks/use-focused'
@@ -18,6 +20,7 @@ export { useReadOnly } from './hooks/use-read-only'
 export { useNodeSelected } from './hooks/use-node-selected'
 export { useNodeFocused } from './hooks/use-node-focused'
 export { useEditable } from './hooks/use-editable'
+export * from './hooks/use-selection-drawing'
 
 // Grid
 export { useGrid } from './hooks/use-grid'
@@ -30,6 +33,7 @@ export { Editable } from './plugin/editable'
 export { withEditable } from './plugin/with-editable'
 export * from './plugin/deserializer'
 export * from './plugin/serializer'
+export * from './plugin/event'
 
 // Environment
 export * from './utils/environment'

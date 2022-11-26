@@ -1,7 +1,7 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect, Range } from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
-import { useRef, useState } from 'react'
-import { useInlineToolbarItems, useInlineToolbarOpened } from './store'
+import { useCallback, useRef, useState } from 'react'
+import { useInlineToolbarItems, useInlineToolbarOpen } from './store'
 import { Toolbar } from './toolbar'
 
 export interface InlineToolbarOptions {}
@@ -24,7 +24,7 @@ const InlineToolbar = () => {
 
   const items = useInlineToolbarItems(editor)
 
-  const [opened, setOpened] = useInlineToolbarOpened(editor)
+  const [open, setOpen] = useInlineToolbarOpen(editor)
 
   const [side, setSide] = useState<'bottom' | 'top'>('bottom')
 
@@ -33,69 +33,75 @@ const InlineToolbar = () => {
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
-  const handle = (force = false) => {
-    const { selection } = editor
-    if (selection && Range.isExpanded(selection)) {
-      let x = 0,
-        y = 0
+  const handleSelectEnd = useCallback(
+    (force = false) => {
+      const { selection } = editor
+      if (selection && Range.isExpanded(selection)) {
+        let x = 0,
+          y = 0
 
-      const rects = force
-        ? Editable.getSelectionRects(editor, selection, false)
-        : Editable.getCurrentSelectionRects(editor, false)
-      const isBackward = Range.isBackward(selection)
-      if (rects) {
-        const rect = isBackward ? rects[0] : rects[rects.length - 1]
-        x = isBackward ? rect.x : rect.right
-        y = isBackward ? rect.y : rect.bottom
+        const rects = force
+          ? Editable.getSelectionRects(editor, selection, false)
+          : Editable.getCurrentSelectionRects(editor, false)
+        const isBackward = Range.isBackward(selection)
+        if (rects) {
+          const rect = isBackward ? rects[0] : rects[rects.length - 1]
+          x = isBackward ? rect.x : rect.right
+          y = isBackward ? rect.y : rect.bottom
+        } else {
+          const range = Editable.toDOMRange(editor, selection)
+          range.collapse(isBackward)
+          const rect = range.getBoundingClientRect()
+          x = isBackward ? rect.x : rect.right
+          y = isBackward ? rect.y : rect.bottom
+        }
+
+        pointRef.current = {
+          x,
+          y,
+        }
+        setSide(isBackward ? 'top' : 'bottom')
+        setOpen(true)
       } else {
-        const range = Editable.toDOMRange(editor, selection)
-        range.collapse(isBackward)
-        const rect = range.getBoundingClientRect()
-        x = isBackward ? rect.x : rect.right
-        y = isBackward ? rect.y : rect.bottom
+        setOpen(false)
       }
+    },
+    [editor, setOpen],
+  )
 
-      pointRef.current = {
-        x,
-        y,
-      }
-      setSide(isBackward ? 'top' : 'bottom')
-      setOpened(true)
-    } else {
-      setOpened(false)
+  const handleSelectStart = useCallback(() => {
+    setOpen(false)
+  }, [setOpen])
+
+  const handleSelectionChange = useCallback(() => {
+    const { selection } = editor
+    if (!selection || Range.isCollapsed(selection)) {
+      setOpen(false)
     }
-  }
+  }, [editor, setOpen])
 
   useIsomorphicLayoutEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root
     document.body.appendChild(root)
-
-    const { onSelectEnd, onSelectStart } = editor
-
-    editor.onSelectStart = () => {
-      setOpened(false)
-      onSelectStart()
-    }
-
-    editor.onSelectEnd = () => {
-      handle()
-      onSelectEnd()
-    }
-
+    editor.on('selectstart', handleSelectStart)
+    editor.on('selectend', handleSelectEnd)
+    editor.on('selectionchange', handleSelectionChange)
     return () => {
       document.body.removeChild(root)
-      editor.onSelectStart = onSelectStart
-      editor.onSelectEnd = onSelectEnd
+
+      editor.off('selectstart', handleSelectStart)
+      editor.off('selectend', handleSelectEnd)
+      editor.off('selectionchange', handleSelectionChange)
     }
-  }, [editor])
+  }, [editor, handleSelectEnd, handleSelectStart, handleSelectionChange])
 
   if (items.length > 0 && containerRef.current && rootRef.current)
     return (
       <Popper>
         <PopperAnchor virtualRef={virtualRef} />
-        <Presence present={opened}>
+        <Presence present={open}>
           <Portal container={rootRef.current}>
             <PopperContent
               side={side}

@@ -1122,7 +1122,8 @@ export const Grid = {
 
   avgColWidth: (editor: Editable, options: AvgColWidthOptions): number[] => {
     const { minWidth = 10, cols, getWidth } = options
-    const rect = Editable.getBoundingClientRect(editor)
+    const container = Editable.toDOMNode(editor, editor)
+    const rect = container.getBoundingClientRect()
     const width = getWidth ? getWidth(rect.width) : 0
     const colWidth = Math.max(minWidth, Math.floor(width / cols))
 
@@ -1143,7 +1144,8 @@ export const Grid = {
   },
 
   getFitWidths: (editor: Editable, colsWidth: number[], minWidth = 5): number[] => {
-    const containerRect = Editable.getBoundingClientRect(editor)
+    const container = Editable.toDOMNode(editor, editor)
+    const containerRect = container.getBoundingClientRect()
     const { width: containerWidth } = containerRect
     const widths = colsWidth.concat()
     let gridWidth = widths.reduce((a, b) => a + b, 0)

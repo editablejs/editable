@@ -19,7 +19,7 @@ const { Icon } = UI
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup']
 
-export const createToolbarConfig = (editor: Editable) => {
+export const createToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = marks.map(mark => ({
     type: 'button',
     active: MarkEditor.isActive(editor, mark),
@@ -161,6 +161,5 @@ export const createToolbarConfig = (editor: Editable) => {
       },
     )
   }
-
-  ToolbarStore.setToolbarItems(editor, items)
+  return items
 }

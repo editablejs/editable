@@ -53,6 +53,7 @@ import { Grid } from '../interfaces/grid'
 import { List } from '../interfaces/list'
 import { Slots } from '../hooks/use-slots'
 import { FocusedStore } from '../hooks/use-focused'
+import { EventHandler, EventType } from './event'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -139,8 +140,11 @@ export interface Editable extends BaseEditor {
   getFragment: (range?: Range) => Descendant[]
   blur(): void
   focus(): void
-  queryActiveMarks: <T extends Text>() => Omit<T, 'text' | 'composition'>
+  queryActiveMarks: <T extends Text>() => Omit<T, 'text'>
   queryActiveElements: () => EditorElements
+  on: <T extends EventType>(type: T, handler: EventHandler<T>) => void
+  off: <T extends EventType>(type: T, handler: EventHandler<T>) => void
+  emit: <T extends EventType>(type: T, ...args: Parameters<EventHandler<T>>) => void
   onKeydown: (event: KeyboardEvent) => void
   onKeyup: (event: KeyboardEvent) => void
   onFocus: () => void
@@ -162,8 +166,6 @@ export interface Editable extends BaseEditor {
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
-  pauseSelectionDrawing: () => void
-  enableSelectionDrawing: () => void
   normalizeSelection: (
     fn: (
       selection: Selection,
@@ -1138,11 +1140,6 @@ export const Editable = {
       const y = rect.y + rootRect.top
       return new DOMRect(x, y, rect.width, rect.height)
     })
-  },
-
-  getBoundingClientRect(editor: Editable) {
-    const container = Editable.toDOMNode(editor, editor)
-    return container.getBoundingClientRect()
   },
 
   mountSlot(editor: Editable, component: FC) {

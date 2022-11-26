@@ -22,6 +22,7 @@
     "@editablejs/breaker": "workspace:*",
     "direction": "^1.0.3",
     "escape-html": "^1.0.3",
+    "events": "3.3.0",
     "is-hotkey": "^0.1.6",
     "lodash.merge": "^4.6.2",
     "scroll-into-view-if-needed": "^2.2.20",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@types/escape-html": "^1.0.2",
+    "@types/events": "3.0.0",
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
     "@types/lodash.merge": "^4.6.7",

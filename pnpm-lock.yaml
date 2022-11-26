@@ -209,6 +209,7 @@ importers:
     specifiers:
       '@editablejs/breaker': workspace:*
       '@types/escape-html': ^1.0.2
+      '@types/events': 3.0.0
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/lodash.merge': ^4.6.7
@@ -217,8 +218,8 @@ importers:
       direction: ^1.0.3
       escape-html: ^1.0.3
       eslint-config-editable: workspace:*
+      events: 3.3.0
       is-hotkey: ^0.1.6
-      is-plain-object: ^5.0.0
       jest: ^27.5.1
       jest-presets: workspace:*
       lodash.merge: ^4.6.2
@@ -236,14 +237,15 @@ importers:
       '@editablejs/breaker': link:../breaker
       direction: 1.0.4
       escape-html: 1.0.3
+      events: 3.3.0
       is-hotkey: 0.1.8
-      is-plain-object: 5.0.0
       lodash.merge: 4.6.2
       scroll-into-view-if-needed: 2.2.29
       slate: 0.85.0
       zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@types/escape-html': 1.0.2
+      '@types/events': 3.0.0
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
       '@types/lodash.merge': 4.6.7
@@ -2135,6 +2137,10 @@ packages:
     resolution: {integrity: sha512-gaBLT8pdcexFztLSPRtriHeXY/Kn4907uOCZ4Q3lncFBkheAWOuNt53ypsF8szgxbEJ513UeBzcf4utN0EzEwA==}
     dev: true
 
+  /@types/events/3.0.0:
+    resolution: {integrity: sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==}
+    dev: true
+
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
@@ -3997,6 +4003,11 @@ packages:
   /esutils/2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
+
+  /events/3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+    dev: false
 
   /execa/5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}

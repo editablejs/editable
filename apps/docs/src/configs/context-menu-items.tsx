@@ -76,5 +76,5 @@ export const createContextMenuItems = (editor: Editable) => {
     )
   }
 
-  ContextMenuStore.setItems(editor, items)
+  return items
 }

@@ -1,5 +1,5 @@
 import { Editable, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { FC, useRef } from 'react'
+import { FC, useRef, useState } from 'react'
 import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
@@ -7,8 +7,9 @@ import {
   ContextMenuSeparator,
   ContextMenuSub,
   Portal,
+  Point,
 } from '@editablejs/plugin-ui'
-import { ContextMenuItem, useContextMenuItems, useContextMenuOpened } from './store'
+import { ContextMenuItem, useContextMenuItems, useContextMenuOpen } from './store'
 
 export interface ContextMenuOptions {}
 
@@ -64,14 +65,22 @@ const ContextMenuPortal = () => {
   const containerRef = useRef<HTMLElement | null>(null)
 
   const editor = useEditableStatic()
-  const [_, setOpened] = useContextMenuOpened(editor)
+  const [open, setOpen] = useContextMenuOpen(editor)
   const items = useContextMenuItems(editor)
+  const [point, setPoint] = useState<Point>({ x: 0, y: 0 })
 
   useIsomorphicLayoutEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root
     document.body.appendChild(root)
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      setPoint({ x: e.clientX, y: e.clientY })
+      setOpen(true)
+    }
+    editor.on('contextmenu', handleContextMenu)
     return () => {
       document.body.removeChild(root)
     }
@@ -80,7 +89,7 @@ const ContextMenuPortal = () => {
   if (containerRef.current && rootRef.current)
     return (
       <Portal container={rootRef.current}>
-        <ContextMenu items={items} container={containerRef.current} onOpenChange={setOpened} />
+        <ContextMenu open={open} items={items} container={point} onOpenChange={setOpen} />
       </Portal>
     )
   return null

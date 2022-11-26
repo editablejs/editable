@@ -1,18 +1,25 @@
-import { EditableComposer, ContentEditable, createEditor } from '@editablejs/editor'
+import {
+  EditableComposer,
+  ContentEditable,
+  createEditor,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
 import {
   withPlugins,
   withInlineToolbar,
   withToolbar,
   useContextMenuEffect,
   useInlineToolbarEffect,
+  ContextMenuStore,
+  ToolbarStore,
 } from '@editablejs/plugins'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useState } from 'react'
 import tw, { styled } from 'twin.macro'
 import { Toolbar } from '../components/toolbar'
-import { createContextMenuItems } from '../configs/context-menu'
-import { createToolbarConfig } from '../configs/toolbar'
+import { createContextMenuItems } from '../configs/context-menu-items'
+import { createToolbarItems } from '../configs/toolbar-items'
 
 const initialValue = [
   {
@@ -59,15 +66,19 @@ export default function Docs() {
     ),
   )
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     withHTMLSerializer(editor)
     withHTMLDeserializer(editor)
     withTextSerializer(editor)
   }, [editor])
 
-  useContextMenuEffect(createContextMenuItems, editor)
+  useContextMenuEffect(() => {
+    ContextMenuStore.setItems(editor, createContextMenuItems(editor))
+  }, editor)
 
-  useInlineToolbarEffect(createToolbarConfig, editor)
+  useInlineToolbarEffect(() => {
+    ToolbarStore.setInlineItems(editor, createToolbarItems(editor))
+  }, editor)
 
   return (
     <StyledWrapper>

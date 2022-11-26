@@ -42,6 +42,7 @@ import { readClipboardData, writeClipboardData } from '../utils/clipboard'
 import { HTMLSerializer, TextSerializer } from './serializer'
 import { HTMLDeserializer } from './deserializer'
 import { CompositionText } from '../interfaces/composition-text'
+import { EventEmitter } from './event'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -217,6 +218,18 @@ export const withEditable = <T extends Editor>(editor: T) => {
     normalizeNode(entry)
   }
 
+  e.on = (type, handler) => {
+    EventEmitter.on(e, type, handler)
+  }
+
+  e.off = (type, handler) => {
+    EventEmitter.off(e, type, handler)
+  }
+
+  e.emit = (type, ...args) => {
+    EventEmitter.emit(e, type, ...args)
+  }
+
   e.onChange = () => {
     let prevSelection: Range | null = null
     EDITOR_ACTIVE_MARKS.delete(editor)
@@ -232,6 +245,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
 
       onChange()
+      e.emit('change')
     })
   }
 
@@ -252,10 +266,11 @@ export const withEditable = <T extends Editor>(editor: T) => {
       textarea.focus({ preventScroll: true })
     }
   }
+
   e.queryActiveMarks = <T extends Text>() => {
     const marks = EDITOR_ACTIVE_MARKS.get(editor)
-    if (marks) return marks as Omit<T, 'text' | 'composition'>
-    const editorMarks: Omit<T, 'text' | 'composition'> = Editor.marks(e) as any
+    if (marks) return marks as Omit<T, 'text'>
+    const editorMarks: Omit<T, 'text'> = Editor.marks(e) as any
     if (editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
     return editorMarks ?? {}
   }
@@ -281,6 +296,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
     return elements
   }
+
   let isPasteText = false
   e.onKeydown = (event: KeyboardEvent) => {
     if (event.defaultPrevented) return
@@ -532,19 +548,24 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
       return
     }
+    e.emit('keydown', event)
   }
 
   e.onKeyup = (event: KeyboardEvent) => {
     if (event.key.toLowerCase() === 'shift') {
       IS_SHIFT_PRESSED.set(editor, false)
     }
+    e.emit('keyup', event)
   }
 
   e.onFocus = () => {
     Editable.focus(e)
+    e.emit('focus')
   }
 
-  e.onBlur = () => {}
+  e.onBlur = () => {
+    e.emit('blur')
+  }
 
   e.onInput = (value: string) => {
     const { selection, marks } = editor
@@ -591,12 +612,17 @@ export const withEditable = <T extends Editor>(editor: T) => {
     } else {
       editor.insertText(value)
     }
+
+    e.emit('input', value)
   }
 
-  e.onBeforeInput = () => {}
+  e.onBeforeInput = value => {
+    e.emit('beforeinput', value)
+  }
 
-  e.onCompositionStart = () => {
+  e.onCompositionStart = data => {
     IS_COMPOSING.set(editor, true)
+    e.emit('compositionstart', data)
   }
 
   e.onCompositionEnd = (value: string) => {
@@ -623,6 +649,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       Transforms.select(editor, range)
       Transforms.insertText(editor, value)
     }
+    e.emit('compositionend', value)
   }
 
   e.onCut = event => {
@@ -640,12 +667,14 @@ export const withEditable = <T extends Editor>(editor: T) => {
         }
       }
     }
+    e.emit('cut', event)
   }
 
   e.onCopy = event => {
     if (event.defaultPrevented) return
     const { clipboardData } = event
     if (clipboardData) writeClipboardData(clipboardData)
+    e.emit('copy', event)
   }
 
   e.onPaste = event => {
@@ -675,15 +704,27 @@ export const withEditable = <T extends Editor>(editor: T) => {
         split = true
       }
     }
+    e.emit('paste', event)
   }
 
-  e.onSelectStart = () => {}
-  e.onSelecting = () => {}
-  e.onSelectEnd = () => {}
-  e.onSelectionChange = () => {}
+  e.onSelectStart = () => {
+    e.emit('selectstart')
+  }
+
+  e.onSelecting = () => {
+    e.emit('selecting')
+  }
+
+  e.onSelectEnd = () => {
+    e.emit('selectend')
+  }
+
+  e.onSelectionChange = () => {
+    e.emit('selectionchange')
+  }
 
   e.onContextMenu = event => {
-    event.preventDefault()
+    e.emit('contextmenu', event)
   }
 
   e.renderElementAttributes = ({ attributes }) => {
@@ -722,14 +763,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
         </span>
       </span>
     )
-  }
-
-  e.pauseSelectionDrawing = () => {
-    SelectionDrawing.setEnabled(e, false)
-  }
-
-  e.enableSelectionDrawing = () => {
-    SelectionDrawing.setEnabled(e, true)
   }
 
   e.normalizeSelection = fn => {

@@ -5,6 +5,8 @@ import {
   withToolbar,
   useContextMenuEffect,
   useInlineToolbarEffect,
+  ContextMenuStore,
+  ToolbarStore,
 } from '@editablejs/plugins'
 import { withYHistory, withYjs, withCursors, YjsEditor, CursorData } from '@editablejs/plugin-yjs'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -13,8 +15,8 @@ import { faker } from '@faker-js/faker'
 import tw, { styled } from 'twin.macro'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
-import { createContextMenuItems } from '../configs/context-menu'
-import { createToolbarConfig } from '../configs/toolbar'
+import { createContextMenuItems } from '../configs/context-menu-items'
+import { createToolbarItems } from '../configs/toolbar-items'
 import { Toolbar } from '../components/toolbar'
 
 const initialValue = [
@@ -113,9 +115,13 @@ export default function Docs() {
     return () => YjsEditor.disconnect(editor as any)
   }, [editor])
 
-  useContextMenuEffect(createContextMenuItems, editor)
+  useContextMenuEffect(() => {
+    ContextMenuStore.setItems(editor, createContextMenuItems(editor))
+  }, editor)
 
-  useInlineToolbarEffect(createToolbarConfig, editor)
+  useInlineToolbarEffect(() => {
+    ToolbarStore.setInlineItems(editor, createToolbarItems(editor))
+  }, editor)
 
   return (
     <StyledWrapper>

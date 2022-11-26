@@ -1,14 +1,17 @@
-import { useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { Toolbar as ToolbarComponent, useToolbarEffect, useToolbarItems } from '@editablejs/plugins'
-import { createToolbarConfig } from '../configs/toolbar'
+import { useEditableStatic } from '@editablejs/editor'
+import {
+  Toolbar as ToolbarComponent,
+  ToolbarStore,
+  useToolbarEffect,
+  useToolbarItems,
+} from '@editablejs/plugins'
+import { createToolbarItems } from '../configs/toolbar-items'
 
 export const Toolbar = () => {
   const editor = useEditableStatic()
-  useToolbarEffect(createToolbarConfig, editor)
-
-  useIsomorphicLayoutEffect(() => {
-    createToolbarConfig(editor)
-  }, [editor])
+  useToolbarEffect(() => {
+    ToolbarStore.setToolbarItems(editor, createToolbarItems(editor))
+  }, editor)
 
   const items = useToolbarItems(editor)
   return <ToolbarComponent items={items} />

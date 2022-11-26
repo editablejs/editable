@@ -36,16 +36,15 @@ export const EditableComposer = (props: {
   }, [editor, lang])
 
   useEffect(() => {
-    const { onChange: onEditorChange } = editor
-    editor.onChange = () => {
-      onEditorChange()
+    const handleChange = () => {
       if (onChange) {
         onChange(editor.children)
       }
       setContext([editor])
     }
+    editor.on('change', handleChange)
     return () => {
-      editor.onChange = onEditorChange
+      editor.off('change', handleChange)
     }
   }, [editor, onChange])
 

@@ -272,10 +272,8 @@ export const ContentEditable = (props: EditableProps) => {
   const [awaitUpdateDrawingSelection, setAwaitUpdateDrawingSelection] = useState(editor.selection)
 
   useIsomorphicLayoutEffect(() => {
-    const { onChange } = editor
-    editor.onChange = () => {
+    const handleChange = () => {
       const { selection } = editor
-      onChange()
       setAwaitUpdateDrawingSelection(selection ? Object.assign({}, selection) : null)
       // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
       if (isDragEnded.current) {
@@ -283,6 +281,7 @@ export const ContentEditable = (props: EditableProps) => {
         isDragEnded.current = false
       }
     }
+    editor.on('change', handleChange)
 
     const handleShift = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === 'shift') {
@@ -307,7 +306,7 @@ export const ContentEditable = (props: EditableProps) => {
     }
 
     return () => {
-      editor.onChange = onChange
+      editor.off('change', handleChange)
       window?.removeEventListener('keyup', handleShift)
       window?.removeEventListener('mousedown', handleDocumentMouseDown)
       window?.removeEventListener('mouseup', handleDocumentMouseUp)

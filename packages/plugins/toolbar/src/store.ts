@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
@@ -25,7 +25,7 @@ interface ToolbarState {
   }
   inline: {
     items: ToolbarItem[]
-    opened: boolean
+    open: boolean
   }
 }
 
@@ -40,7 +40,7 @@ const getStore = (editor: Editable) => {
       },
       inline: {
         items: [],
-        opened: false,
+        open: false,
       },
     }))
     EDITOR_TO_TOOLBAR_STORE.set(editor, store)
@@ -62,44 +62,61 @@ export const useInlineToolbarItems = (editor: Editable) => {
   return useStore(store, state => state.inline.items, shallow)
 }
 
-export const useInlineToolbarOpened = (editor: Editable): [boolean, (opened: boolean) => void] => {
+export const useInlineToolbarOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useToolbarStore(editor)
-  const opened = useStore(store, state => state.inline.opened)
-  return [
-    opened,
-    (opened: boolean) => {
-      ToolbarStore.setInlineOpened(editor, opened)
-    },
-  ]
+  const open = useStore(store, state => state.inline.open)
+  return useMemo(
+    () => [
+      open,
+      (open: boolean) => {
+        ToolbarStore.setInlineOpen(editor, open)
+      },
+    ],
+    [editor, open],
+  )
 }
 
-type ToolbarStoreAction = (editor: Editable) => (() => void) | void
+type ToolbarStoreAction = () => (() => void) | void
 
 export const useToolbarEffect = (aciton: ToolbarStoreAction, editor: Editable) => {
+  const editorRef = useRef<Editable | null>(null)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
-    const { onSelectionChange } = editor
 
-    editor.onSelectionChange = () => {
-      onSelectionChange()
-      destroy = aciton(editor)
+    const handleSelectionChange = () => {
+      if (destroy) destroy()
+      destroy = aciton()
+    }
+    editor.on('selectionchange', handleSelectionChange)
+    if (editorRef.current !== editor) {
+      destroy = aciton()
+      editorRef.current = editor
     }
     return () => {
-      editor.onSelectionChange = onSelectionChange
+      editor.off('selectionchange', handleSelectionChange)
       if (destroy) destroy()
     }
   }, [editor, aciton])
 }
 
 export const useInlineToolbarEffect = (aciton: ToolbarStoreAction, editor: Editable) => {
-  const [opened] = useInlineToolbarOpened(editor)
+  const [open] = useInlineToolbarOpen(editor)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
-    if (opened) {
-      destroy = aciton(editor)
+
+    const handleSelectionChange = () => {
+      if (destroy) destroy()
+      destroy = aciton()
     }
-    return destroy
-  }, [opened, editor, aciton])
+    if (open) {
+      destroy = aciton()
+      editor.on('selectionchange', handleSelectionChange)
+    }
+    return () => {
+      editor.off('selectionchange', handleSelectionChange)
+      if (destroy) destroy()
+    }
+  }, [open, editor, aciton])
 }
 
 export const ToolbarStore = {
@@ -114,9 +131,9 @@ export const ToolbarStore = {
     })
   },
 
-  setInlineOpened(editor: Editable, opened: boolean) {
+  setInlineOpen(editor: Editable, open: boolean) {
     const store = getStore(editor)
-    store.setState(({ inline }) => ({ inline: { ...inline, opened } }))
+    store.setState(({ inline }) => ({ inline: { ...inline, open } }))
   },
 
   setInlineItems(editor: Editable, items: ToolbarItem[]) {

@@ -19,7 +19,7 @@ export type ContextMenuItem =
 
 interface ContextMenuState {
   items: ContextMenuItem[]
-  opened: boolean
+  open: boolean
 }
 
 const EDITOR_TO_CONTEXT_MENU_STORE = new WeakMap<
@@ -32,7 +32,7 @@ const getStore = (editor: Editable) => {
   if (!store) {
     store = create<ContextMenuState>(() => ({
       items: [],
-      opened: false,
+      open: false,
     }))
     EDITOR_TO_CONTEXT_MENU_STORE.set(editor, store)
   }
@@ -48,34 +48,34 @@ export const useContextMenuItems = (editor: Editable) => {
   return useStore(store, state => state.items, shallow)
 }
 
-export const useContextMenuOpened = (editor: Editable): [boolean, (opened: boolean) => void] => {
+export const useContextMenuOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useContextMenuStore(editor)
-  const opened = useStore(store, state => state.opened)
+  const open = useStore(store, state => state.open)
   return [
-    opened,
-    (opened: boolean) => {
-      ContextMenuStore.setOpened(editor, opened)
+    open,
+    (open: boolean) => {
+      ContextMenuStore.setOpen(editor, open)
     },
   ]
 }
 
-type ContextMenuStoreAction = (editor: Editable) => (() => void) | void
+type ContextMenuStoreAction = () => (() => void) | void
 
 export const useContextMenuEffect = (aciton: ContextMenuStoreAction, editor: Editable) => {
-  const [opened] = useContextMenuOpened(editor)
+  const [open] = useContextMenuOpen(editor)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
-    if (opened) {
-      destroy = aciton(editor)
+    if (open) {
+      destroy = aciton()
     }
     return destroy
-  }, [opened, editor, aciton])
+  }, [open, editor, aciton])
 }
 
 export const ContextMenuStore = {
-  setOpened(editor: Editable, opened: boolean) {
+  setOpen(editor: Editable, open: boolean) {
     const store = getStore(editor)
-    store.setState(() => ({ opened }))
+    store.setState(() => ({ open }))
   },
 
   setItems(editor: Editable, items: ContextMenuItem[]) {

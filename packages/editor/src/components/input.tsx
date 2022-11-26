@@ -33,7 +33,8 @@ const InputComponent: FC<InputProps> = () => {
   }
 
   const handleKeyup = (event: React.KeyboardEvent) => {
-    editor.onKeyup(event.nativeEvent)
+    const { nativeEvent } = event
+    editor.onKeyup(nativeEvent)
   }
 
   const handleBlur = () => {
@@ -47,7 +48,8 @@ const InputComponent: FC<InputProps> = () => {
   const handleBeforeInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
     const textarea = event.target
     if (!(textarea instanceof HTMLTextAreaElement)) return
-    editor.onBeforeInput(textarea.value)
+    const { value } = textarea
+    editor.onBeforeInput(value)
   }
 
   const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
@@ -61,7 +63,8 @@ const InputComponent: FC<InputProps> = () => {
   }
 
   const handleCompositionStart = (ev: React.CompositionEvent) => {
-    editor.onCompositionStart(ev.nativeEvent.data)
+    const { data } = ev.nativeEvent
+    editor.onCompositionStart(data)
   }
 
   const handleCompositionEnd = (ev: React.CompositionEvent) => {
@@ -70,6 +73,11 @@ const InputComponent: FC<InputProps> = () => {
     const value = textarea.value
     textarea.value = ''
     editor.onCompositionEnd(value)
+  }
+
+  const handlePaste = (event: React.ClipboardEvent) => {
+    const { nativeEvent } = event
+    editor.onPaste(nativeEvent)
   }
 
   const selection = useSelectionDrawingSelection()
@@ -117,7 +125,7 @@ const InputComponent: FC<InputProps> = () => {
         onCompositionEnd={handleCompositionEnd}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        onPaste={e => editor.onPaste(e.nativeEvent)}
+        onPaste={handlePaste}
       />
     </ShadowRect>
   )
