@@ -13,10 +13,11 @@ import {
   useGridSelection,
   Transforms,
   useGridSelected,
-  Element,
   isDOMNode,
   GridCell,
+  isDOMHTMLElement,
 } from '@editablejs/editor'
+import { useComposedRefs } from '@editablejs/plugin-ui'
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { createStore } from 'zustand'
 import { TableCellEditor } from '../cell'
@@ -312,6 +313,13 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     (event: MouseEvent) => {
       const tableEl = tableRef.current
       const { target, offsetX, offsetY } = event
+      const { type, point } = TableDrag.getDrag()
+      if (
+        (type === 'col' && Math.abs(point.x - offsetX) < 3) ||
+        (type === 'row' && Math.abs(point.y - offsetY) < 3)
+      )
+        return
+
       TableDrag.setPoint({ x: event.clientX, y: event.clientY })
       if (!tableEl || !isDOMNode(target) || !tableEl.contains(target)) {
         TableDrag.setTo(-1)
@@ -319,15 +327,28 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
       }
 
       const cell = TableCellEditor.closest(editor, target)
+      let col = -1
+      let row = -1
       if (!cell) {
+        if (isDOMHTMLElement(target)) {
+          const attrName = `data-table-${type}`
+          const header = target.closest(`[${attrName}]`)
+          if (header) {
+            const index = parseInt(header.getAttribute(attrName) || '-1')
+            col = type === 'col' ? index : -1
+            row = type === 'row' ? index : -1
+          }
+        }
+      } else {
+        const path = Editable.findPath(editor, cell)
+
+        col = path[path.length - 1]
+        row = path[path.length - 2]
+      }
+      if (col === -1 && row === -1) {
         TableDrag.setTo(-1)
         return
       }
-      const path = Editable.findPath(editor, cell)
-
-      const col = path[path.length - 1]
-      const row = path[path.length - 2]
-      const type = TableDrag.getDragType()
       const to = type === 'row' ? getMoveRowToIndex(row, offsetY) : getMoveColToIndex(col, offsetX)
       TableDrag.setTo(to)
     },
@@ -344,6 +365,8 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     }
   }, [dragging, handleMouseMove])
 
+  const composedRefs = useComposedRefs(attributes.ref, tableRef)
+
   return (
     <TableContext.Provider value={store}>
       <TableStyles
@@ -353,11 +376,12 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
         {...attributes}
         onMouseOver={handleMouseOver}
         onMouseLeave={handleMouseLeave}
+        ref={composedRefs}
       >
         <TableColHeader editor={editor} table={element} />
         <TableRowHeader editor={editor} table={element} />
         {renderAllHeader()}
-        <table ref={tableRef} style={{ width: tableWidth }}>
+        <table style={{ width: tableWidth }}>
           {renderColgroup()}
           <tbody>{children}</tbody>
         </table>

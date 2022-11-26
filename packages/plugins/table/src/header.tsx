@@ -101,6 +101,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
           isFull={!!hover && selected.rowFull}
           style={{ height: h + 1, top: currentHeight }}
           key={i}
+          data-table-row={i}
         >
           <HeaderDragStyles name="drag" />
         </RowsHeaderItemStyles>,
@@ -234,6 +235,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
           isFull={!!hover && selected.colFull}
           style={{ width: cw + 1, left: currentWidth }}
           key={i}
+          data-table-col={i}
         >
           <HeaderDragStyles name="drag" />
         </ColsHeaderItemStyles>,
