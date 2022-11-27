@@ -136,7 +136,7 @@ export const ContentEditable = (props: EditableProps) => {
           const fragment = parseFragmentFromString(data.getData(APPLICATION_FRAGMENT_TYPE))
           if (type === 'block') {
             const path = Drag.toBlockPath(editor)
-            if (path) {
+            if (path && fragment.length > 0) {
               const rangeRef = Editor.rangeRef(editor, {
                 anchor: {
                   path,
@@ -389,6 +389,7 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault()
+    event.stopPropagation()
     setDrag(null)
     const point = Editable.findEventPoint(editor, event)
     if (point) {

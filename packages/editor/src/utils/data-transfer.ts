@@ -30,7 +30,11 @@ export const fragmentToString = (fragment: Descendant[]) => {
  */
 export const parseFragmentFromString = (fragment: string): Descendant[] => {
   const string = decodeURIComponent(window.atob(fragment))
-  return JSON.parse(string)
+  try {
+    return JSON.parse(string)
+  } catch (error) {
+    return []
+  }
 }
 
 /**
