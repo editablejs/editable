@@ -62,7 +62,7 @@ const SideToolbar: FC<SideToolbar> = () => {
   }, [])
 
   const delayHide = useCallback(
-    (delayS: number = 0.3) => {
+    (delayS: number = 0.1) => {
       const delay = delayS * 1000
       clearHideDelayTimer()
       if (delay) {
@@ -81,7 +81,7 @@ const SideToolbar: FC<SideToolbar> = () => {
     (event: MouseEvent) => {
       if (dragging) return
       const { x: pX, y: pY } = prevEventPositionRef.current ?? { x: 0, y: 0 }
-      if (Math.abs(pX - event.clientX) <= 3 && Math.abs(pY - event.clientY)) return
+      if (Math.abs(pX - event.clientX) <= 3 && Math.abs(pY - event.clientY) <= 3) return
       prevEventPositionRef.current = {
         x: event.clientX,
         y: event.clientY,
@@ -136,10 +136,16 @@ const SideToolbar: FC<SideToolbar> = () => {
     }
   }, [])
 
+  const clearDelay = useCallback(() => {
+    clearHideDelayTimer()
+    clearUpdateDelayTimer()
+  }, [clearHideDelayTimer, clearUpdateDelayTimer])
+
   const delayUpdate = useCallback(
-    (event: MouseEvent, delayS: number = 0.1) => {
+    (event: MouseEvent, delayS: number = 0.05) => {
       const delay = delayS * 1000
-      clearUpdateDelayTimer()
+
+      clearDelay()
       if (delay) {
         delayUpdateTimer.current = window.setTimeout(() => {
           update(event)
@@ -149,13 +155,8 @@ const SideToolbar: FC<SideToolbar> = () => {
         update(event)
       }
     },
-    [clearUpdateDelayTimer, update],
+    [clearDelay, clearUpdateDelayTimer, update],
   )
-
-  const clearDelay = useCallback(() => {
-    clearHideDelayTimer()
-    clearUpdateDelayTimer()
-  }, [clearHideDelayTimer, clearUpdateDelayTimer])
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
