@@ -81,11 +81,11 @@ plugin directory
 - [ ] Image
 - [ ] Codeblock
 - [x] Heading
-- [ ] Table
+- [x] Table
 - [ ] Hr
 - [x] Toolbar
 - [x] Yjs
 - [x] Serializes
 - [x] ContextMenu
 - [x] Clipboard
-- [ ] Drag
+- [x] Drag
