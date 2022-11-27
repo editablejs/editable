@@ -139,7 +139,7 @@ export const createToolbarItems = (editor: Editable) => {
     },
   )
 
-  const grid = Grid.findGrid(editor)
+  const grid = Grid.find(editor)
   if (grid) {
     items.push(
       'separator',

@@ -1,4 +1,4 @@
-import { Element, Path, Transforms } from 'slate'
+import { Editor, Element, NodeEntry, Path, Transforms, Location } from 'slate'
 import { SelectionEdge } from 'slate/dist/interfaces/types'
 import { Editable } from '../plugin/editable'
 
@@ -23,6 +23,18 @@ export interface GridSpanCell extends GridBaseCell {
 }
 
 export const GridCell = {
+  find: (editor: Editable, at?: Location): NodeEntry<GridCell> | undefined => {
+    if (!at) {
+      const { selection } = editor
+      if (!selection) return
+      at = selection
+    }
+    const cell = Editor.above<GridCell>(editor, {
+      at,
+      match: n => editor.isGridCell(n),
+    })
+    return cell
+  },
   create: <C extends GridCell>(cell: Partial<Omit<C, 'children'>> = {}): C => {
     return {
       colspan: 1,

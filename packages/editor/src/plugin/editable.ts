@@ -1103,7 +1103,7 @@ export const Editable = {
     return Editor.hasPath(editor, anchor.path) && Editor.hasPath(editor, focus.path)
   },
 
-  toRelativePosition(editor: Editable, x: number, y: number) {
+  toRelativePosition(editor: Editable, x: number, y: number): [number, number] {
     const container = Editable.toDOMNode(editor, editor)
     const rootRect = container.getBoundingClientRect()
 
@@ -1127,19 +1127,6 @@ export const Editable = {
           return r
         })
       : rects
-  },
-
-  getCurrentSelectionRects(editor: Editable, relative = true) {
-    const rects = EDITOR_TO_SELECTION_RECTS.get(editor)
-    if (!rects || relative)
-      return rects?.map(rect => new DOMRect(rect.x, rect.y, rect.width, rect.height))
-    const container = Editable.toDOMNode(editor, editor)
-    const rootRect = container.getBoundingClientRect()
-    return rects.map(rect => {
-      const x = rect.x + rootRect.left
-      const y = rect.y + rootRect.top
-      return new DOMRect(x, y, rect.width, rect.height)
-    })
   },
 
   mountSlot(editor: Editable, component: FC) {

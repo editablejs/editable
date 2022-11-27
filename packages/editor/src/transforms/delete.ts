@@ -66,7 +66,7 @@ export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
       Transforms.collapse(editor, { edge: 'anchor' })
     } else {
       const removeRow = (path: Path, start = true) => {
-        const grid = Grid.findGrid(editor, path)
+        const grid = Grid.find(editor, path)
         if (grid) {
           const [row] = GridCell.toPoint(path)
           for (let r = start ? grid[0].children.length - 1 : row; r >= (start ? row : 0); r--) {
@@ -84,7 +84,7 @@ export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
         const { selection } = editor
         if (selection) {
           const { anchor, focus } = selection
-          const focusGrid = Grid.findGrid(editor, focus.path)
+          const focusGrid = Grid.find(editor, focus.path)
           if (focusGrid) {
             const path = Path.previous(focusGrid[1])
             Transforms.select(editor, {

@@ -30,13 +30,13 @@ describe('interfaces/grid', () => {
     },
   ]
 
-  it('findGrid-undefined', () => {
-    const grid = Grid.findGrid(editor)
+  it('find-undefined', () => {
+    const grid = Grid.find(editor)
     expect(grid).toBe(undefined)
   })
 
-  it('findGrid', () => {
-    const grid = Grid.findGrid(editor, [0])
+  it('find', () => {
+    const grid = Grid.find(editor, [0])
     expect(grid).toEqual([
       {
         type: 'grid',

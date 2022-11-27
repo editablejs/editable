@@ -32,7 +32,7 @@ export const findGridOfEdges = (editor: Editor, at: Location | null = editor.sel
       const [, startPath] = startCell
       const [, endPath] = endCell
       const gridPath = Path.common(startPath, endPath)
-      const grid = Grid.findGrid(editor, gridPath)
+      const grid = Grid.find(editor, gridPath)
       value.grid = grid
     }
   }
@@ -54,7 +54,7 @@ export const handleInsertOnGrid = (editor: Editable, at: Location | null = edito
   // anchor 在grid内
   else if (start) {
     const [, startPath] = start
-    const grid = Grid.findGrid(editor, startPath)
+    const grid = Grid.find(editor, startPath)
     if (grid) {
       const { children } = grid[0]
       const path = startPath.slice(0, -1)

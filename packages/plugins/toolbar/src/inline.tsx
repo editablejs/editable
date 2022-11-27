@@ -8,7 +8,7 @@ export interface InlineToolbarOptions {}
 
 export const INLINE_TOOLBAR_OPTIONS = new WeakMap<Editable, InlineToolbarOptions>()
 
-interface InlineToolbarEditor extends Editable {}
+export interface InlineToolbarEditor extends Editable {}
 
 const InlineToolbarEditor = {
   getOptions: (editor: Editable): InlineToolbarOptions => {
@@ -33,41 +33,36 @@ const InlineToolbar = () => {
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
-  const handleSelectEnd = useCallback(
-    (force = false) => {
-      const { selection } = editor
-      if (selection && Range.isExpanded(selection)) {
-        let x = 0,
-          y = 0
+  const handleSelectEnd = useCallback(() => {
+    const { selection } = editor
+    if (selection && Range.isExpanded(selection)) {
+      let x = 0,
+        y = 0
 
-        const rects = force
-          ? Editable.getSelectionRects(editor, selection, false)
-          : Editable.getCurrentSelectionRects(editor, false)
-        const isBackward = Range.isBackward(selection)
-        if (rects) {
-          const rect = isBackward ? rects[0] : rects[rects.length - 1]
-          x = isBackward ? rect.x : rect.right
-          y = isBackward ? rect.y : rect.bottom
-        } else {
-          const range = Editable.toDOMRange(editor, selection)
-          range.collapse(isBackward)
-          const rect = range.getBoundingClientRect()
-          x = isBackward ? rect.x : rect.right
-          y = isBackward ? rect.y : rect.bottom
-        }
-
-        pointRef.current = {
-          x,
-          y,
-        }
-        setSide(isBackward ? 'top' : 'bottom')
-        setOpen(true)
+      const rects = Editable.getSelectionRects(editor, selection, false)
+      const isBackward = Range.isBackward(selection)
+      if (rects) {
+        const rect = isBackward ? rects[0] : rects[rects.length - 1]
+        x = isBackward ? rect.x : rect.right
+        y = isBackward ? rect.y : rect.bottom
       } else {
-        setOpen(false)
+        const range = Editable.toDOMRange(editor, selection)
+        range.collapse(isBackward)
+        const rect = range.getBoundingClientRect()
+        x = isBackward ? rect.x : rect.right
+        y = isBackward ? rect.y : rect.bottom
       }
-    },
-    [editor, setOpen],
-  )
+
+      pointRef.current = {
+        x,
+        y,
+      }
+      setSide(isBackward ? 'top' : 'bottom')
+      setOpen(true)
+    } else {
+      setOpen(false)
+    }
+  }, [editor, setOpen])
 
   const handleSelectStart = useCallback(() => {
     setOpen(false)
@@ -85,12 +80,13 @@ const InlineToolbar = () => {
     const root = document.createElement('div')
     rootRef.current = root
     document.body.appendChild(root)
+    editor.on('blur', handleSelectStart)
     editor.on('selectstart', handleSelectStart)
     editor.on('selectend', handleSelectEnd)
     editor.on('selectionchange', handleSelectionChange)
     return () => {
       document.body.removeChild(root)
-
+      editor.off('blur', handleSelectStart)
       editor.off('selectstart', handleSelectStart)
       editor.off('selectend', handleSelectEnd)
       editor.off('selectionchange', handleSelectionChange)

@@ -6,6 +6,7 @@ import {
 } from '@editablejs/editor'
 import {
   withPlugins,
+  withSideToolbar,
   withInlineToolbar,
   withToolbar,
   useContextMenuEffect,
@@ -57,11 +58,13 @@ const StyledContainer = tw.div`mt-5`
 
 export default function Docs() {
   const [editor] = useState(
-    withInlineToolbar(
-      withToolbar(
-        withPlugins(createEditor(), {
-          'font-size': { defaultSize: '14px' },
-        }),
+    withSideToolbar(
+      withInlineToolbar(
+        withToolbar(
+          withPlugins(createEditor(), {
+            'font-size': { defaultSize: '14px' },
+          }),
+        ),
       ),
     ),
   )

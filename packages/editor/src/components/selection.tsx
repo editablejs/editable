@@ -29,7 +29,6 @@ const SelectionComponent: FC<SelectionProps> = () => {
               rect={Object.assign({}, rect.toJSON(), {
                 color: focused ? style.focusColor : style.blurColor,
               })}
-              style={{ willChange: 'transform' }}
             />
           )
         })}

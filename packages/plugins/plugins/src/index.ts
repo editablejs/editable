@@ -69,5 +69,4 @@ export * from '@editablejs/plugin-indent'
 export * from '@editablejs/plugin-table'
 export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
-export * from '@editablejs/plugin-toolbar'
 export { UI }

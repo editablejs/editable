@@ -767,7 +767,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.normalizeSelection = fn => {
     const { selection } = e
-    const grid = Grid.findGrid(e)
+    const grid = Grid.find(e)
     if (grid && selection) {
       const sel = Grid.getSelection(e, grid)
       if (sel) {
@@ -810,7 +810,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.getFragment = (range?: Range) => {
     const { selection = range } = e
     if (!selection) return []
-    const grid = Grid.findGrid(e)
+    const grid = Grid.find(e)
     if (grid) {
       const sel = Grid.getSelection(e, grid)
       const selected = Grid.getSelected(e, grid, sel)

@@ -1,6 +1,4 @@
 import { EventEmitter as EE } from 'events'
-import { useEditableStatic } from '../hooks/use-editable-static'
-import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { Editable } from './editable'
 
 const EDITOR_TO_EVENT: WeakMap<Editable, EE> = new WeakMap()
@@ -23,18 +21,6 @@ export type EventHandler<
   : T extends Lowercase<Key>
   ? Editable[`on${Key}`]
   : never
-
-export const useEvent = <T extends EventType>(type: T, handler: EventHandler<T>) => {
-  const editor = useEditableStatic()
-
-  useIsomorphicLayoutEffect(() => {
-    const event = EventEmitter.get(editor)
-    event.on(type, handler)
-    return () => {
-      event.off(type, handler)
-    }
-  }, [type, handler, editor])
-}
 
 export const EventEmitter = {
   get: (editor: Editable) => {

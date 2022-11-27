@@ -123,7 +123,7 @@ describe('interfaces/grid', () => {
         offset: 5,
       },
     }
-    const grid = Grid.findGrid(editor)
+    const grid = Grid.find(editor)
     const selected = Grid.getSelected(editor, grid)
     expect(selected).toEqual({
       rows: [0],
@@ -150,7 +150,7 @@ describe('interfaces/grid', () => {
         offset: 5,
       },
     }
-    const grid = Grid.findGrid(editor)
+    const grid = Grid.find(editor)
     const selected = Grid.getSelected(editor, grid)
     expect(selected).toEqual({
       rows: [0],

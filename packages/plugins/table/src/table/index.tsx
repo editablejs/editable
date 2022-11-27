@@ -127,7 +127,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
       if (startRow) {
         const [row, path] = startRow
         const { children: cells } = row
-        const table = Grid.findGrid(editor, path)
+        const table = Grid.find(editor, path)
         if (table) {
           if (isBackward) {
             const sel = Grid.edges(editor, table, {
@@ -151,7 +151,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
       if (endRow) {
         const [row, path] = endRow
         const { children: cells } = row
-        const table = Grid.findGrid(editor, path)
+        const table = Grid.find(editor, path)
         if (table) {
           if (isBackward) {
             const sel = Grid.edges(editor, table, {

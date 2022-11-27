@@ -61,7 +61,7 @@ export interface AvgColWidthOptions {
 }
 
 export const Grid = {
-  findGrid: (editor: Editable, at?: Location): NodeEntry<Grid> | undefined => {
+  find: (editor: Editable, at?: Location): NodeEntry<Grid> | undefined => {
     if (!at) {
       const { selection } = editor
       if (!selection) return
@@ -77,7 +77,7 @@ export const Grid = {
 
   getSelection: (editor: Editable, at?: GridLocation): GridSelection | undefined => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -123,7 +123,7 @@ export const Grid = {
     selection?: GridSelection,
   ): GridSelected | undefined => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -166,7 +166,7 @@ export const Grid = {
     selection?: GridSelection,
   ): Grid | undefined => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -204,7 +204,7 @@ export const Grid = {
 
   remove: (editor: Editable, at: GridLocation): void => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -216,7 +216,7 @@ export const Grid = {
 
   removeCol: (editor: Editable, at: GridLocation, index: number): void => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -294,7 +294,7 @@ export const Grid = {
 
   removeRow: (editor: Editable, at: GridLocation, index: number) => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -361,7 +361,7 @@ export const Grid = {
   getRangeOfMoveCol: (editor: Editable, options: GridMoveOptions): GridMoveRange | undefined => {
     let { at } = options
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -404,7 +404,7 @@ export const Grid = {
   moveCol: (editor: Editable, options: GridMoveOptions) => {
     let { at } = options
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -499,7 +499,7 @@ export const Grid = {
   getRangeOfMoveRow: (editor: Editable, options: GridMoveOptions): GridMoveRange | undefined => {
     let { at } = options
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -541,7 +541,7 @@ export const Grid = {
   moveRow: (editor: Editable, options: GridMoveOptions) => {
     let { at } = options
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -621,7 +621,7 @@ export const Grid = {
     minWidth: number = 5,
   ) => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -691,7 +691,7 @@ export const Grid = {
     height?: number,
   ) => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -763,7 +763,7 @@ export const Grid = {
 
   mergeCell: (editor: Editable, at?: GridLocation, selection?: GridSelection) => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -830,7 +830,7 @@ export const Grid = {
 
   canSplit: (editor: Editable, at?: GridLocation): boolean => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return false
       at = entry
     }
@@ -851,7 +851,7 @@ export const Grid = {
 
   splitCell: (editor: Editable, at?: GridLocation, selection?: GridSelection) => {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -905,7 +905,7 @@ export const Grid = {
     opitons: GridGeneratorCellsOptions = {},
   ): Generator<[GridCell, number, number]> {
     if (!at || Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -960,7 +960,7 @@ export const Grid = {
    */
   edges: (editor: Editable, at: GridLocation, selection?: GridSelection): GridSelection => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) throw new Error('invalid grid')
       at = entry
     }
@@ -1040,9 +1040,9 @@ export const Grid = {
   ) => {
     let { point, at, edge = 'start' } = options
     if (!at) {
-      at = Grid.findGrid(editor)
+      at = Grid.find(editor)
     } else if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -1059,7 +1059,7 @@ export const Grid = {
 
   select: (editor: Editable, at: GridLocation, selection: Partial<GridSelection> = {}) => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -1082,7 +1082,7 @@ export const Grid = {
     point: CellPoint,
   ): NodeEntry<GridCell> | undefined => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return
       at = entry
     }
@@ -1097,7 +1097,7 @@ export const Grid = {
 
   getRowCount: (editor: Editable, at: GridLocation): number => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return 0
       at = entry
     }
@@ -1107,7 +1107,7 @@ export const Grid = {
 
   getColCount: (editor: Editable, at: GridLocation): number => {
     if (Path.isPath(at)) {
-      const entry = Grid.findGrid(editor, at)
+      const entry = Grid.find(editor, at)
       if (!entry) return 0
       at = entry
     }

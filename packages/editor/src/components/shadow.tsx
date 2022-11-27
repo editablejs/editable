@@ -29,6 +29,7 @@ export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<H
         opacity: 1,
         backgroundColor: `${rect.color || 'transparent'}`,
         zIndex: 1,
+        willChange: 'transform',
         ...style,
       }}
       {...props}

@@ -26,12 +26,13 @@ import Shadow from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
-import { Drag, useDragging, useDragTo } from '../hooks/use-drag'
+import { useDragging, useDragMethods, useDragTo } from '../hooks/use-drag'
 import { SelectionDrawing, SelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { APPLICATION_FRAGMENT_TYPE } from '../utils/constants'
-import { DragCaretComponent } from './drag-caret'
-import { fragmentToString, parseFragmentFromString } from '../utils/data-transfer'
+import { DragSelectionComponent } from './drag-selection'
+import { parseFragmentFromString, setDataTransfer } from '../utils/data-transfer'
 import { Slots } from './slots'
+import { Drag } from '../plugin/drag'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -71,6 +72,8 @@ export const ContentEditable = (props: EditableProps) => {
   const isDragEnded = useRef(false)
   const dragTo = useDragTo()
   const dragging = useDragging()
+  const { getDrag, setDrag } = useDragMethods()
+
   // Update internal state on each render.
   EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
 
@@ -120,30 +123,54 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseUp = (event: MouseEvent) => {
+    const drag = getDrag()
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (isMouseDown && (!event.defaultPrevented || event.button === 2)) {
+    if (drag || (isMouseDown && (!event.defaultPrevented || event.button === 2))) {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         editor.focus()
       }
       const point = Editable.findEventPoint(editor, event)
-      if (point && Drag.isDragging()) {
-        const { from, data } = Drag.getDrag()
+      if (point && drag) {
+        const { from, data, type = 'text' } = drag
         if (!Range.includes(from, point)) {
-          Transforms.delete(editor, {
-            at: from,
-            unit: 'line',
-            hanging: true,
-          })
-          Transforms.select(editor, point)
           const fragment = parseFragmentFromString(data.getData(APPLICATION_FRAGMENT_TYPE))
-          Transforms.insertFragment(editor, fragment)
-          const { selection } = editor
-          if (selection) {
-            Transforms.select(editor, {
-              anchor: point,
-              focus: selection.focus,
+          if (type === 'block') {
+            const path = Drag.toBlockPath(editor)
+            if (path) {
+              const rangeRef = Editor.rangeRef(editor, {
+                anchor: {
+                  path,
+                  offset: 0,
+                },
+                focus: {
+                  path,
+                  offset: 0,
+                },
+              })
+              Transforms.removeNodes(editor, { at: from })
+              const at = rangeRef.unref()
+              Transforms.insertNodes(editor, fragment, {
+                at: at?.anchor.path ?? path,
+                select: true,
+              })
+            }
+          } else {
+            Transforms.delete(editor, {
+              at: from,
+              unit: 'line',
+              hanging: true,
             })
+            Transforms.select(editor, point)
+            Transforms.insertFragment(editor, fragment)
+            const focus = editor.selection?.focus
+            if (focus) {
+              Transforms.select(editor, {
+                anchor: point,
+                focus,
+              })
+            }
           }
+
           isDragEnded.current = true
         } else {
           Transforms.select(editor, point)
@@ -151,7 +178,7 @@ export const ContentEditable = (props: EditableProps) => {
       } else {
         handleSelecting(point, !isContextMenu.current)
       }
-      Drag.clear()
+      setDrag(null)
       if (!isDragEnded.current) editor.onSelectEnd()
     }
     isContextMenu.current = false
@@ -159,15 +186,24 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentMouseMove = (event: MouseEvent) => {
+    const darg = getDrag()
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (event.button !== 0 || !isMouseDown || event.defaultPrevented || isContextMenu.current)
+    if (
+      !darg &&
+      (event.button !== 0 || !isMouseDown || event.defaultPrevented || isContextMenu.current)
+    )
       return
     const point = Editable.findEventPoint(editor, event)
-
-    if (point && Drag.isDragging()) {
-      Drag.setTo({
-        anchor: point,
-        focus: point,
+    if (point && dragging) {
+      setDrag({
+        to: {
+          anchor: point,
+          focus: point,
+        },
+        position: {
+          x: event.clientX,
+          y: event.clientY,
+        },
       })
       return
     }
@@ -202,13 +238,16 @@ export const ContentEditable = (props: EditableProps) => {
           !Point.equals(Range.start(selection), point)
         ) {
           const dataTransfer = new DataTransfer()
-          dataTransfer.setData(
-            APPLICATION_FRAGMENT_TYPE,
-            fragmentToString(editor.getFragment(selection)),
-          )
-          Drag.setFrom(selection, dataTransfer, {
-            x: event.clientX,
-            y: event.clientY,
+          setDataTransfer(dataTransfer, {
+            fragment: editor.getFragment(selection),
+          })
+          setDrag({
+            from: selection,
+            data: dataTransfer,
+            position: {
+              x: event.clientX,
+              y: event.clientY,
+            },
           })
           editor.onSelectStart()
           return
@@ -275,11 +314,6 @@ export const ContentEditable = (props: EditableProps) => {
     const handleChange = () => {
       const { selection } = editor
       setAwaitUpdateDrawingSelection(selection ? Object.assign({}, selection) : null)
-      // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
-      if (isDragEnded.current) {
-        editor.onSelectEnd()
-        isDragEnded.current = false
-      }
     }
     editor.on('change', handleChange)
 
@@ -314,6 +348,14 @@ export const ContentEditable = (props: EditableProps) => {
     }
   })
 
+  useEffect(() => {
+    // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
+    if (isDragEnded.current) {
+      editor.onSelectEnd()
+      isDragEnded.current = false
+    }
+  }, [awaitUpdateDrawingSelection, editor])
+
   useIsomorphicLayoutEffect(() => {
     SelectionDrawing.setSelection(editor, awaitUpdateDrawingSelection)
   }, [awaitUpdateDrawingSelection])
@@ -332,16 +374,22 @@ export const ContentEditable = (props: EditableProps) => {
         y: event.clientY,
       }
       if (!dragging) {
-        Drag.setFrom(dragRange, event.dataTransfer, position)
+        setDrag({
+          type: 'block',
+          from: dragRange,
+          data: event.dataTransfer,
+        })
       }
-      Drag.setPoint(position)
-      Drag.setTo(dragRange)
+      setDrag({
+        position,
+        to: dragRange,
+      })
     }
   }
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault()
-    Drag.clear()
+    setDrag(null)
     const point = Editable.findEventPoint(editor, event)
     if (point) {
       Transforms.select(editor, point)
@@ -400,7 +448,7 @@ export const ContentEditable = (props: EditableProps) => {
       </Component>
       <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         <CaretComponent />
-        <DragCaretComponent />
+        <DragSelectionComponent />
         <SelectionComponent />
         <InputComponent />
       </Shadow>

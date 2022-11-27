@@ -49,7 +49,7 @@ export const createContextMenuItems = (editor: Editable) => {
       },
     },
   ]
-  const grid = Grid.findGrid(editor)
+  const grid = Grid.find(editor)
   if (grid) {
     items.push(
       {
