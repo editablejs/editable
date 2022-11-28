@@ -1,12 +1,5 @@
-import {
-  Editable,
-  List,
-  Hotkey,
-  Path,
-  ListTemplate,
-  useIsomorphicLayoutEffect,
-} from '@editablejs/editor'
-import React from 'react'
+import { Editable, List, Hotkey, Path, ListTemplate } from '@editablejs/editor'
+import React, { useEffect } from 'react'
 import tw, { styled } from 'twin.macro'
 import { ListLabelStyles, ListStyles, renderList } from '../styles'
 import { isOrdered } from './utils'
@@ -64,7 +57,7 @@ const LabelElement = ({
   const { level, key } = element
   const ref = React.useRef<HTMLSpanElement>(null)
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     const { current: label } = ref
     if (level % template.depth > 0 && label) {
       const path = Editable.findPath(editor, element)

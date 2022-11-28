@@ -31,7 +31,7 @@ import { SelectionDrawing, SelectionDrawingStyle } from '../hooks/use-selection-
 import { APPLICATION_FRAGMENT_TYPE } from '../utils/constants'
 import { DragSelectionComponent } from './drag-selection'
 import { parseFragmentFromString, setDataTransfer } from '../utils/data-transfer'
-import { Slots } from './slots'
+import { Slots } from './slot'
 import { Drag } from '../plugin/drag'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (

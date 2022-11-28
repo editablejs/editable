@@ -51,12 +51,14 @@ export const useContextMenuItems = (editor: Editable) => {
 export const useContextMenuOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useContextMenuStore(editor)
   const open = useStore(store, state => state.open)
-  return [
-    open,
-    (open: boolean) => {
-      ContextMenuStore.setOpen(editor, open)
-    },
-  ]
+  return useMemo(() => {
+    return [
+      open,
+      (open: boolean) => {
+        ContextMenuStore.setOpen(editor, open)
+      },
+    ]
+  }, [editor, open])
 }
 
 type ContextMenuStoreAction = () => (() => void) | void

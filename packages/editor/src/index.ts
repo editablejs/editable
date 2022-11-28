@@ -18,7 +18,7 @@ export * from './hooks/use-locale'
 
 // Component
 export { ContentEditable } from './components/content'
-export { EditableComposer } from './components/editable'
+export { EditableProvider } from './components/editable'
 
 // Hooks
 export { useIsomorphicLayoutEffect } from './hooks/use-isomorphic-layout-effect'
@@ -44,6 +44,7 @@ export * from './plugin/deserializer'
 export * from './plugin/serializer'
 export * from './plugin/event'
 export * from './plugin/drag'
+export * from './plugin/solt'
 
 // Environment
 export * from './utils/environment'

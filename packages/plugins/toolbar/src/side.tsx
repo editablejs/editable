@@ -6,11 +6,11 @@ import {
   Element,
   isDOMHTMLElement,
   useDragMethods,
-  Selection,
   FormatData,
   Range,
   GridCell,
   useDragging,
+  Slot,
 } from '@editablejs/editor'
 import { Icon, Point } from '@editablejs/plugin-ui'
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -170,7 +170,7 @@ const SideToolbar: FC<SideToolbar> = () => {
     if (!showingRef.current) delayHide()
   }, [clearDelay, delayHide])
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     const container = Editable.toDOMNode(editor, editor)
     container.addEventListener('mousemove', handleMouseMove)
     container.addEventListener('mouseleave', handleMoseLeave)
@@ -178,7 +178,7 @@ const SideToolbar: FC<SideToolbar> = () => {
       container.removeEventListener('mousemove', handleMouseMove)
       container.removeEventListener('mouseleave', handleMoseLeave)
     }
-  }, [editor, handleMouseMove])
+  }, [editor, handleMoseLeave, handleMouseMove])
 
   const visible = useMemo(() => {
     return !!position
@@ -262,7 +262,7 @@ export const withSideToolbar = <T extends Editable>(
 
   SIDE_TOOLBAR_OPTIONS.set(newEditor, options)
 
-  Editable.mountSlot(editor, SideToolbar)
+  Slot.mount(editor, SideToolbar)
 
   return newEditor
 }

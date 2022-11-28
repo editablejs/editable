@@ -1,5 +1,5 @@
-import { Editable, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { FC, useRef, useState } from 'react'
+import { Editable, Slot, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { FC, useEffect, useRef, useState } from 'react'
 import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
@@ -69,7 +69,7 @@ const ContextMenuPortal = () => {
   const items = useContextMenuItems(editor)
   const [point, setPoint] = useState<Point>({ x: 0, y: 0 })
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root
@@ -82,9 +82,18 @@ const ContextMenuPortal = () => {
     }
     editor.on('contextmenu', handleContextMenu)
     return () => {
+      editor.off('contextmenu', handleContextMenu)
       document.body.removeChild(root)
     }
-  }, [editor])
+  }, [editor, setOpen])
+
+  useIsomorphicLayoutEffect(() => {
+    if (open) {
+      Slot.disable(editor, component => component !== ContextMenuPortal)
+    } else {
+      Slot.enable(editor, component => component !== ContextMenuPortal)
+    }
+  }, [editor, open])
 
   if (containerRef.current && rootRef.current)
     return (
@@ -103,7 +112,7 @@ export const withContextMenu = <T extends Editable>(
 
   CONTEXT_MENU_OPTIONS.set(newEditor, options)
 
-  Editable.mountSlot(editor, ContextMenuPortal)
+  Slot.mount(editor, ContextMenuPortal)
 
   return newEditor
 }

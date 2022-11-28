@@ -2,10 +2,11 @@ import {
   Editable,
   Editor,
   Range,
+  Slot,
   useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import React, { CSSProperties, useRef } from 'react'
+import React, { CSSProperties, useEffect, useRef } from 'react'
 import { Awareness } from 'y-protocols/awareness'
 import * as Y from 'yjs'
 import {
@@ -82,7 +83,7 @@ const RemoteSelection = ({
 const RemoteCursors = () => {
   const containerRef = useRef<HTMLElement | null>(null)
   const editor = useEditableStatic()
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
   }, [editor])
 
@@ -255,7 +256,7 @@ export function withCursors<TCursorData extends Record<string, unknown>, TEditor
 ): TEditor & CursorEditor<TCursorData> {
   const e = editor as Editable & TEditor & CursorEditor<TCursorData>
 
-  Editable.mountSlot(e, RemoteCursors)
+  Slot.mount(e, RemoteCursors)
 
   e.awareness = awareness
   e.cursorDataField = cursorDataField

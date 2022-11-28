@@ -1,6 +1,12 @@
-import { Editable, useEditableStatic, useIsomorphicLayoutEffect, Range } from '@editablejs/editor'
+import {
+  Editable,
+  useEditableStatic,
+  useIsomorphicLayoutEffect,
+  Range,
+  Slot,
+} from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from './store'
 import { Toolbar } from './toolbar'
 
@@ -75,7 +81,7 @@ const InlineToolbar = () => {
     }
   }, [editor, setOpen])
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root
@@ -121,7 +127,7 @@ export const withInlineToolbar = <T extends Editable>(
 
   INLINE_TOOLBAR_OPTIONS.set(newEditor, options)
 
-  Editable.mountSlot(editor, InlineToolbar)
+  Slot.mount(editor, InlineToolbar)
 
   return newEditor
 }

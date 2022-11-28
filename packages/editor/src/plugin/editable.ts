@@ -51,7 +51,6 @@ import { GridCell } from '../interfaces/cell'
 import { GridRow } from '../interfaces/row'
 import { Grid } from '../interfaces/grid'
 import { List } from '../interfaces/list'
-import { Slots } from '../hooks/use-slots'
 import { FocusedStore } from '../hooks/use-focused'
 import { EventHandler, EventType } from './event'
 
@@ -161,6 +160,7 @@ export interface Editable extends BaseEditor {
   onSelectEnd: () => void
   onSelectionChange: () => void
   onContextMenu: (event: MouseEvent) => void
+  onDestory: () => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
   renderElement: (props: RenderElementProps) => JSX.Element
@@ -1127,12 +1127,5 @@ export const Editable = {
           return r
         })
       : rects
-  },
-
-  mountSlot(editor: Editable, component: FC) {
-    Slots.add(editor, component)
-    return () => {
-      Slots.remove(editor, component)
-    }
   },
 }

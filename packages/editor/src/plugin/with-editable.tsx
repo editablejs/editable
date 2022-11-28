@@ -727,6 +727,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
     e.emit('contextmenu', event)
   }
 
+  e.onDestory = () => {
+    e.emit('destory')
+  }
+
   e.renderElementAttributes = ({ attributes }) => {
     return attributes
   }

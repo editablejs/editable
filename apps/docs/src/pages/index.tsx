@@ -1,5 +1,5 @@
 import {
-  EditableComposer,
+  EditableProvider,
   ContentEditable,
   createEditor,
   useIsomorphicLayoutEffect,
@@ -16,7 +16,7 @@ import {
 } from '@editablejs/plugins'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import tw, { styled } from 'twin.macro'
 import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
@@ -57,8 +57,8 @@ const StyledWrapper = styled.div`
 const StyledContainer = tw.div`mt-5`
 
 export default function Docs() {
-  const [editor] = useState(
-    withSideToolbar(
+  const editor = useMemo(() => {
+    return withSideToolbar(
       withInlineToolbar(
         withToolbar(
           withPlugins(createEditor(), {
@@ -66,8 +66,8 @@ export default function Docs() {
           }),
         ),
       ),
-    ),
-  )
+    )
+  }, [])
 
   useIsomorphicLayoutEffect(() => {
     withHTMLSerializer(editor)
@@ -85,12 +85,12 @@ export default function Docs() {
 
   return (
     <StyledWrapper>
-      <EditableComposer editor={editor} value={initialValue}>
+      <EditableProvider editor={editor} value={initialValue}>
         <Toolbar />
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />
         </StyledContainer>
-      </EditableComposer>
+      </EditableProvider>
     </StyledWrapper>
   )
 }
