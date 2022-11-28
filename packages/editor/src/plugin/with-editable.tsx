@@ -29,12 +29,10 @@ import { Grid } from '../interfaces/grid'
 import { GridRow } from '../interfaces/row'
 import { GridCell } from '../interfaces/cell'
 import { List } from '../interfaces/list'
-import { isDOMText } from '../utils/dom'
-import { SelectionDrawing } from '../hooks/use-selection-drawing'
 import { fragmentToString, parseDataTransfer } from '../utils/data-transfer'
 import {
   APPLICATION_FRAGMENT_TYPE,
-  DATA_EDITABLEJS_FRAGMENT,
+  DATA_EDITABLE_FRAGMENT,
   TEXT_HTML,
   TEXT_PLAIN,
 } from '../utils/constants'
@@ -64,7 +62,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   // avoid collisions between editors in the DOM that share the same value.
   EDITOR_TO_KEY_TO_ELEMENT.set(e, new WeakMap())
 
-  e.canFocusVoid = (_element: Element) => {
+  e.isSolidVoid = (_element: Element) => {
     return true
   }
 
@@ -870,8 +868,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
     const text = fragment.map(node => TextSerializer.transformWithEditor(e, node)).join('\n')
 
     let html = fragment.map(node => HTMLSerializer.transformWithEditor(e, node)).join('')
-    html = `<div ${DATA_EDITABLEJS_FRAGMENT}="${fragmentString}">${html}</div>`
-    html = `<html><head><meta name="source" content="${DATA_EDITABLEJS_FRAGMENT}" /></head><body>${html}</body></html>`
+    html = `<div ${DATA_EDITABLE_FRAGMENT}="${fragmentString}">${html}</div>`
+    html = `<html><head><meta name="source" content="${DATA_EDITABLE_FRAGMENT}" /></head><body>${html}</body></html>`
     const dataTransfer = new DataTransfer()
     dataTransfer.setData(TEXT_PLAIN, text)
     dataTransfer.setData(TEXT_HTML, html)

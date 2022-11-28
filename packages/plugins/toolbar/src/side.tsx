@@ -2,7 +2,7 @@ import {
   Editable,
   Editor,
   useEditableStatic,
-  useIsomorphicLayoutEffect,
+  Constants,
   Element,
   isDOMHTMLElement,
   useDragMethods,
@@ -11,9 +11,10 @@ import {
   GridCell,
   useDragging,
   Slot,
+  SlotComponentProps,
 } from '@editablejs/editor'
-import { Icon, Point } from '@editablejs/plugin-ui'
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Icon, Point, Tooltip } from '@editablejs/plugin-ui'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface SideToolbarOptions {}
 
@@ -27,14 +28,17 @@ export const SideToolbarEditor = {
   },
 }
 
-export interface SideToolbar {}
+export interface SideToolbar extends SlotComponentProps {
+  mouseEnterDelay?: number
+  mouseLeaveDelay?: number
+}
 
 interface CurrentCapturedData {
   selection: Range
   element: Element
 }
 
-const SideToolbar: FC<SideToolbar> = () => {
+const SideToolbar: FC<SideToolbar> = ({ mouseEnterDelay = 0, mouseLeaveDelay = 0.1 }) => {
   const editor = useEditableStatic()
   const containerRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState<Point | null>(null)
@@ -62,7 +66,7 @@ const SideToolbar: FC<SideToolbar> = () => {
   }, [])
 
   const delayHide = useCallback(
-    (delayS: number = 0.1) => {
+    (delayS: number = mouseLeaveDelay) => {
       const delay = delayS * 1000
       clearHideDelayTimer()
       if (delay) {
@@ -74,17 +78,29 @@ const SideToolbar: FC<SideToolbar> = () => {
         hide()
       }
     },
-    [clearHideDelayTimer, hide],
+    [clearHideDelayTimer, hide, mouseLeaveDelay],
   )
 
   const update = useCallback(
     (event: MouseEvent) => {
       if (dragging) return
+
+      const { target, clientX, clientY } = event
       const { x: pX, y: pY } = prevEventPositionRef.current ?? { x: 0, y: 0 }
-      if (Math.abs(pX - event.clientX) <= 3 && Math.abs(pY - event.clientY) <= 3) return
+      if (Math.abs(pX - clientX) <= 3 && Math.abs(pY - clientY) <= 3) return
+      if (
+        target instanceof HTMLElement &&
+        !Object.keys(Constants).some(key => {
+          if (!key.startsWith('data')) return false
+          const value = Constants[key as keyof typeof Constants]
+          return target.hasAttribute(value)
+        })
+      ) {
+        return
+      }
       prevEventPositionRef.current = {
-        x: event.clientX,
-        y: event.clientY,
+        x: clientX,
+        y: clientY,
       }
       const point = Editable.findEventPoint(editor, event)
       if (!point) return
@@ -142,7 +158,7 @@ const SideToolbar: FC<SideToolbar> = () => {
   }, [clearHideDelayTimer, clearUpdateDelayTimer])
 
   const delayUpdate = useCallback(
-    (event: MouseEvent, delayS: number = 0.05) => {
+    (event: MouseEvent, delayS: number = mouseEnterDelay) => {
       const delay = delayS * 1000
 
       clearDelay()
@@ -155,7 +171,7 @@ const SideToolbar: FC<SideToolbar> = () => {
         update(event)
       }
     },
-    [clearDelay, clearUpdateDelayTimer, update],
+    [clearDelay, clearUpdateDelayTimer, mouseEnterDelay, update],
   )
 
   const handleMouseMove = useCallback(
@@ -231,26 +247,38 @@ const SideToolbar: FC<SideToolbar> = () => {
     showingRef.current = false
   }
 
+  const tooltip = () => {
+    return <div>Drag to move</div>
+  }
+
   return (
-    <div
-      ref={containerRef}
-      tw="absolute left-0 top-0 rounded-full bg-white border border-solid border-gray-300 shadow-sm text-xs text-gray-600 p-1 flex items-center justify-center cursor-grab z-50 hover:bg-gray-100"
-      style={{
-        opacity: visible ? 1 : 0,
-        visibility: visible ? 'visible' : 'hidden',
-        transform,
-        willChange: 'transform',
-        transition: isTransformAmimation ? 'all 0.2s linear 0s' : 'opacity 0.2s linear 0s',
-        cursor: dragging ? 'grabbing' : 'grab',
-      }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseDown={startDrag}
-      onMouseUp={endDrag}
-      onDragStart={e => e.preventDefault()}
+    <Tooltip
+      content={tooltip()}
+      mouseLeaveDelay={0}
+      mouseEnterDelay={0}
+      mouseEnterStay={false}
+      side="top"
     >
-      <Icon name="menu" />
-    </div>
+      <div
+        ref={containerRef}
+        tw="absolute left-0 top-0 rounded-full bg-white border border-solid border-gray-300 shadow-sm text-xs text-gray-600 p-1 flex items-center justify-center cursor-grab z-50 hover:bg-gray-100"
+        style={{
+          opacity: visible ? 1 : 0,
+          visibility: visible ? 'visible' : 'hidden',
+          transform,
+          willChange: 'transform',
+          transition: isTransformAmimation ? 'all 0.2s linear 0s' : 'opacity 0.2s linear 0s',
+          cursor: dragging ? 'grabbing' : 'grab',
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseDown={startDrag}
+        onMouseUp={endDrag}
+        onDragStart={e => e.preventDefault()}
+      >
+        <Icon name="menu" />
+      </div>
+    </Tooltip>
   )
 }
 
@@ -263,6 +291,10 @@ export const withSideToolbar = <T extends Editable>(
   SIDE_TOOLBAR_OPTIONS.set(newEditor, options)
 
   Slot.mount(editor, SideToolbar)
+
+  newEditor.on('destory', () => {
+    Slot.unmount(editor, SideToolbar)
+  })
 
   return newEditor
 }

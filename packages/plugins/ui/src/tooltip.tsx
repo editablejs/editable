@@ -4,17 +4,28 @@ import { PopperAnchor, PopperArrow, PopperContent, Popper } from './popper'
 import { Portal } from './portal'
 import { Presence } from './presence'
 
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
+
+type Side = typeof SIDE_OPTIONS[number]
+type Align = typeof ALIGN_OPTIONS[number]
 interface TooltipProps {
   content: ReactNode
+  side?: Side
+  align?: Align
   mouseEnterDelay?: number
   mouseLeaveDelay?: number
+  mouseEnterStay?: boolean
 }
 
 export const Tooltip: FC<TooltipProps> = ({
   children,
+  side = 'bottom',
+  align = 'center',
   content,
   mouseEnterDelay = 0,
   mouseLeaveDelay = 0.1,
+  mouseEnterStay = false,
 }) => {
   const [open, setOpen] = useState(false)
   const delayTimer = useRef<number | null>(null)
@@ -55,7 +66,13 @@ export const Tooltip: FC<TooltipProps> = ({
         <DismissableLayer onPointerDownOutside={() => setOpen(false)}>
           <Portal>
             <PopperContent
-              onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
+              side={side}
+              align={align}
+              onMouseEnter={() =>
+                mouseEnterStay
+                  ? delaySetOpen(true, mouseEnterDelay)
+                  : delaySetOpen(false, mouseLeaveDelay)
+              }
               onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
               tw="text-white bg-black bg-opacity-80 text-center text-sm rounded px-3 py-2 z-50"
             >

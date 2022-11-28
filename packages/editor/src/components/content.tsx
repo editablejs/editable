@@ -28,7 +28,7 @@ import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
 import { useDragging, useDragMethods, useDragTo } from '../hooks/use-drag'
 import { SelectionDrawing, SelectionDrawingStyle } from '../hooks/use-selection-drawing'
-import { APPLICATION_FRAGMENT_TYPE } from '../utils/constants'
+import { APPLICATION_FRAGMENT_TYPE, DATA_EDITABLE_NODE } from '../utils/constants'
 import { DragSelectionComponent } from './drag-selection'
 import { parseFragmentFromString, setDataTransfer } from '../utils/data-transfer'
 import { Slots } from './slot'
@@ -412,7 +412,6 @@ export const ContentEditable = (props: EditableProps) => {
 
   return (
     <div
-      data-slate-content="true"
       style={{
         ...style,
         position: 'relative',
@@ -421,8 +420,7 @@ export const ContentEditable = (props: EditableProps) => {
       <Component
         role={readOnly ? undefined : 'textbox'}
         {...attributes}
-        data-slate-editor
-        data-slate-node="value"
+        {...{ [DATA_EDITABLE_NODE]: 'editor' }}
         zindex={-1}
         ref={ref}
         style={{

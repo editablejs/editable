@@ -53,25 +53,36 @@ import { Grid } from '../interfaces/grid'
 import { List } from '../interfaces/list'
 import { FocusedStore } from '../hooks/use-focused'
 import { EventHandler, EventType } from './event'
+import {
+  DATA_EDITABLE_COMPOSITION,
+  DATA_EDITABLE_INLINE,
+  DATA_EDITABLE_LEAF,
+  DATA_EDITABLE_LENGTH,
+  DATA_EDITABLE_NODE,
+  DATA_EDITABLE_PLACEHOLDER,
+  DATA_EDITABLE_STRING,
+  DATA_EDITABLE_VOID,
+  DATA_EDITABLE_ZERO_WIDTH,
+} from '../utils/constants'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
 export interface ElementAttributes<T extends any = any> extends BaseAttributes {
-  'data-slate-node': 'element'
-  'data-slate-inline'?: true
-  'data-slate-void'?: true
+  [DATA_EDITABLE_NODE]: 'element'
+  [DATA_EDITABLE_INLINE]?: true
+  [DATA_EDITABLE_VOID]?: true
   dir?: 'rtl'
   ref: React.MutableRefObject<T>
 }
 
 export interface TextAttributes extends BaseAttributes {
-  'data-slate-leaf': true
+  [DATA_EDITABLE_LEAF]: true
 }
 
 export type NodeAttributes = ElementAttributes | TextAttributes
 
 export interface PlaceholderAttributes extends BaseAttributes {
-  'data-slate-placeholder': true
+  [DATA_EDITABLE_PLACEHOLDER]: true
 }
 
 export interface RenderElementAttributes<T extends Element = Element> {
@@ -130,7 +141,7 @@ export type DispatchEventType = 'cut' | 'copy' | 'paste' | 'paste-text'
  * A React and DOM-specific version of the `Editor` interface.
  */
 export interface Editable extends BaseEditor {
-  canFocusVoid: (element: Element) => boolean
+  isSolidVoid: (element: Element) => boolean
   isGrid: (value: any) => value is Grid
   isGridRow: (value: any) => value is GridRow
   isGridCell: (value: any) => value is GridCell
@@ -429,7 +440,7 @@ export const Editable = {
       return false
     }
 
-    return targetEl.closest(`[data-slate-editor]`) === editorEl
+    return targetEl.closest(`[${DATA_EDITABLE_NODE}="editor"]`) === editorEl
   },
 
   /**
@@ -490,7 +501,7 @@ export const Editable = {
     // For each leaf, we need to isolate its content, which means filtering
     // to its direct text and zero-width spans. (We have to filter out any
     // other siblings that may have been rendered alongside them.)
-    const selector = `[data-slate-string], [data-slate-composition], [data-slate-zero-width]`
+    const selector = `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`
     const texts = Array.from(el.querySelectorAll(selector))
     let start = 0
 
@@ -502,7 +513,7 @@ export const Editable = {
       }
 
       const { length } = offsetNode.textContent
-      const attr = text.getAttribute('data-slate-length')
+      const attr = text.getAttribute(DATA_EDITABLE_LENGTH)
       const trueLength = attr == null ? length : parseInt(attr, 10)
       const end = start + trueLength
 
@@ -546,9 +557,9 @@ export const Editable = {
     // zero-width node has an offset of 1 so we have to check if we are in a zero-width node and
     // adjust the offset accordingly.
     const startEl = (isDOMElement(startNode) ? startNode : startNode.parentElement) as HTMLElement
-    const isStartAtZeroWidth = !!startEl.getAttribute('data-slate-zero-width')
+    const isStartAtZeroWidth = !!startEl.getAttribute(DATA_EDITABLE_ZERO_WIDTH)
     const endEl = (isDOMElement(endNode) ? endNode : endNode.parentElement) as HTMLElement
-    const isEndAtZeroWidth = !!endEl.getAttribute('data-slate-zero-width')
+    const isEndAtZeroWidth = !!endEl.getAttribute(DATA_EDITABLE_ZERO_WIDTH)
 
     domRange.setStart(startNode, isStartAtZeroWidth ? 1 : startOffset)
     domRange.setEnd(endNode, isEndAtZeroWidth ? 1 : endOffset)
@@ -562,8 +573,8 @@ export const Editable = {
   toSlateNode(editor: Editable, offsetNode: DOMNode): Node {
     let domEl = isDOMElement(offsetNode) ? offsetNode : offsetNode.parentElement
 
-    if (domEl && !domEl.hasAttribute('data-slate-node')) {
-      domEl = domEl.closest(`[data-slate-node]`)
+    if (domEl && !domEl.hasAttribute(DATA_EDITABLE_NODE)) {
+      domEl = domEl.closest(`[${DATA_EDITABLE_NODE}]`)
     }
 
     const node = domEl ? ELEMENT_TO_NODE.get(domEl as HTMLElement) : null
@@ -579,7 +590,7 @@ export const Editable = {
     const domNode = Editable.toDOMNode(editor, node)
     if (Editor.isVoid(editor, node)) return [domNode]
     const nodes = domNode.querySelectorAll(
-      '[data-slate-string], [data-slate-composition], [data-slate-zero-width]',
+      `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
     )
     return Array.from(nodes)
   },
@@ -588,9 +599,9 @@ export const Editable = {
     const domEl = isDOMElement(domNode) ? domNode : domNode.parentElement
     if (!domEl) return null
     const elements: DOMElement[] = []
-    let element: DOMElement | null = domEl.hasAttribute('data-slate-node')
+    let element: DOMElement | null = domEl.hasAttribute(DATA_EDITABLE_NODE)
       ? domEl
-      : domEl.closest(`[data-slate-node]`)
+      : domEl.closest(`[${DATA_EDITABLE_NODE}]`)
 
     const addToElements = (node: Node) => {
       const children = Editable.findLowestDOMElements(editor, node)
@@ -610,7 +621,7 @@ export const Editable = {
       if (Text.isText(node)) {
         addToElements(node)
       } else {
-        if (!editor.canFocusVoid(node)) {
+        if (!editor.isSolidVoid(node)) {
           const rect = element.getBoundingClientRect()
           const reverse = x < rect.left + rect.width / 2
           const adjacent = (reverse ? Editor.previous : Editor.next)(editor, {
@@ -924,20 +935,20 @@ export const Editable = {
 
     if (parentNode) {
       const editorEl = Editable.toDOMNode(editor, editor)
-      const potentialVoidNode = parentNode.closest('[data-slate-void="true"]')
+      const potentialVoidNode = parentNode.closest(`[${DATA_EDITABLE_VOID}]`)
       // Need to ensure that the closest void node is actually a void node
       // within this editor, and not a void node within some parent editor. This can happen
       // if this editor is within a void node of another editor ("nested editors", like in
       // the "Editable Voids" example on the docs site).
       const voidNode =
         potentialVoidNode && editorEl.contains(potentialVoidNode) ? potentialVoidNode : null
-      let leafNode = parentNode.closest('[data-slate-leaf]')
+      let leafNode = parentNode.closest(`[${DATA_EDITABLE_LEAF}]`)
       let offsetNode: DOMElement | null = null
 
       // Calculate how far into the text node the `nearestNode` is, so that we
       // can determine what the offset relative to the text node is.
       if (leafNode) {
-        textNode = leafNode.closest('[data-slate-node="text"]')
+        textNode = leafNode.closest(`[${DATA_EDITABLE_NODE}="text"]`)
 
         if (textNode) {
           const window = Editable.getWindow(editor)
@@ -947,7 +958,9 @@ export const Editable = {
 
           const contents = range.cloneContents()
           const removals = [
-            ...Array.prototype.slice.call(contents.querySelectorAll('[data-slate-zero-width]')),
+            ...Array.prototype.slice.call(
+              contents.querySelectorAll(`[${DATA_EDITABLE_ZERO_WIDTH}]`),
+            ),
           ]
 
           removals.forEach(el => {
@@ -965,16 +978,16 @@ export const Editable = {
       } else if (voidNode) {
         // For void nodes, the element with the offset key will be a cousin, not an
         // ancestor, so find it by going down from the nearest void parent.
-        leafNode = voidNode.querySelector('[data-slate-leaf]')!
+        leafNode = voidNode.querySelector(`[${DATA_EDITABLE_LEAF}]`)!
 
         // COMPAT: In read-only editors the leaf is not rendered.
         if (!leafNode) {
           offset = 1
         } else {
-          textNode = leafNode.closest('[data-slate-node="text"]')!
+          textNode = leafNode.closest(`[${DATA_EDITABLE_NODE}="text"]`)!
           offsetNode = leafNode
           offset = offsetNode.textContent!.length
-          offsetNode.querySelectorAll('[data-slate-zero-width]').forEach(el => {
+          offsetNode.querySelectorAll(`[${DATA_EDITABLE_ZERO_WIDTH}]`).forEach(el => {
             offset -= el.textContent!.length
           })
         }
@@ -988,7 +1001,7 @@ export const Editable = {
         // composition the ASCII characters will be prepended to the zero-width
         // space, so subtract 1 from the offset to account for the zero-width
         // space character.
-        (parentNode.hasAttribute('data-slate-zero-width') ||
+        (parentNode.hasAttribute(DATA_EDITABLE_ZERO_WIDTH) ||
           // COMPAT: In Firefox, `range.cloneContents()` returns an extra trailing '\n'
           // when the document ends with a new-line character. This results in the offset
           // length being off by one, so we need to subtract one to account for this.

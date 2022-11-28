@@ -129,5 +129,9 @@ export const withInlineToolbar = <T extends Editable>(
 
   Slot.mount(editor, InlineToolbar)
 
+  newEditor.on('destory', () => {
+    Slot.unmount(editor, InlineToolbar)
+  })
+
   return newEditor
 }

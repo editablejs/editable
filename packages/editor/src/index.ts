@@ -1,5 +1,5 @@
 // Constants
-export * as Constants from './utils/constants'
+export * from './utils/constants'
 
 // FormatData
 export * as FormatData from './utils/data-transfer'

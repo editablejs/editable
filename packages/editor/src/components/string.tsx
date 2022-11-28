@@ -3,6 +3,12 @@ import { Editor, Text, Path, Element, Node } from 'slate'
 
 import { Editable, useEditableStatic } from '..'
 import { CompositionText } from '../interfaces/composition-text'
+import {
+  DATA_EDITABLE_COMPOSITION,
+  DATA_EDITABLE_LENGTH,
+  DATA_EDITABLE_STRING,
+  DATA_EDITABLE_ZERO_WIDTH,
+} from '../utils/constants'
 
 /**
  * Leaf content strings.
@@ -73,12 +79,12 @@ const TextString = (props: { text: string; isTrailing?: boolean }) => {
     return `${text ?? ''}${isTrailing ? '\n' : ''}`
   }
 
-  return <span data-slate-string>{getTextContent()}</span>
+  return <span {...{ [DATA_EDITABLE_STRING]: true }}>{getTextContent()}</span>
 }
 
 const CompositionString = (props: { text: string }) => {
   const { text } = props
-  return <u data-slate-composition>{text}</u>
+  return <u {...{ [DATA_EDITABLE_COMPOSITION]: true }}>{text}</u>
 }
 
 /**
@@ -88,7 +94,9 @@ const CompositionString = (props: { text: string }) => {
 const ZeroWidthString = (props: { length?: number; isLineBreak?: boolean }) => {
   const { length = 0, isLineBreak = false } = props
   return (
-    <span data-slate-zero-width={isLineBreak ? 'n' : 'z'} data-slate-length={length}>
+    <span
+      {...{ [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z', [DATA_EDITABLE_LENGTH]: length }}
+    >
       {'\uFEFF'}
       {isLineBreak ? <br /> : null}
     </span>

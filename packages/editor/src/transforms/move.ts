@@ -7,7 +7,7 @@ const getVoidPoint = (editor: Editable, point: Point, reverse: boolean) => {
     at: point,
     match: n => Editor.isVoid(editor, n),
   })
-  if (voidElement && !editor.canFocusVoid(voidElement[0])) {
+  if (voidElement && !editor.isSolidVoid(voidElement[0])) {
     const path = voidElement[1]
     const p = reverse ? Path.previous(path) : Path.next(path)
     return Editor.point(editor, p, {

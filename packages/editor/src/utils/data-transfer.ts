@@ -1,7 +1,7 @@
 import { Descendant } from 'slate'
 import {
   APPLICATION_FRAGMENT_TYPE,
-  DATA_EDITABLEJS_FRAGMENT,
+  DATA_EDITABLE_FRAGMENT,
   TEXT_HTML,
   TEXT_PLAIN,
 } from './constants'
@@ -43,7 +43,7 @@ export const parseFragmentFromString = (fragment: string): Descendant[] => {
  * @returns
  */
 export const matchFragmentStringFromHTML = (html: string) => {
-  const reg = new RegExp(`${DATA_EDITABLEJS_FRAGMENT}="(.+?)"`)
+  const reg = new RegExp(`${DATA_EDITABLE_FRAGMENT}="(.+?)"`)
   return html.match(reg)?.[1] ?? ''
 }
 

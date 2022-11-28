@@ -435,7 +435,7 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
     return renderIndent(newEditor, props, renderElement)
   }
 
-  const { onKeydown, isInline, isVoid, canFocusVoid } = newEditor
+  const { onKeydown, isInline, isVoid, isSolidVoid } = newEditor
 
   newEditor.isInline = (el: Element) => {
     return IndentEditor.isIndent(newEditor, el) || isInline(el)
@@ -445,9 +445,9 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
     return IndentEditor.isIndent(newEditor, el) || isVoid(el)
   }
 
-  newEditor.canFocusVoid = (el: Element) => {
+  newEditor.isSolidVoid = (el: Element) => {
     if (IndentEditor.isIndent(newEditor, el)) return false
-    return canFocusVoid(el)
+    return isSolidVoid(el)
   }
 
   const hotkeys: Hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)

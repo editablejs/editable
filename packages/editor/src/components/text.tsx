@@ -6,6 +6,7 @@ import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect
 import { NODE_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_KEY_TO_ELEMENT } from '../utils/weak-maps'
 import { useEditableStatic } from '../hooks/use-editable-static'
 import { Editable } from '../plugin/editable'
+import { DATA_EDITABLE_NODE } from '../utils/constants'
 
 /**
  * Text.
@@ -30,7 +31,7 @@ const Text = (props: { isLast: boolean; parent: Element; text: SlateText }) => {
   })
 
   return (
-    <span data-slate-node="text" ref={ref}>
+    <span {...{ [DATA_EDITABLE_NODE]: 'text' }} ref={ref}>
       <Leaf isLast={isLast} key={`${key.id}`} text={text} parent={parent} />
     </span>
   )

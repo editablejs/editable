@@ -13,6 +13,7 @@ import {
   NODE_TO_INDEX,
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
+import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from '../utils/constants'
 
 /**
  * Element.
@@ -32,12 +33,12 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
   // Attributes that the developer must mix into the element in their
   // custom node renderer component.
   const attributes: ElementAttributes = {
-    'data-slate-node': 'element',
+    [DATA_EDITABLE_NODE]: 'element',
     ref,
   }
 
   if (isInline) {
-    attributes['data-slate-inline'] = true
+    attributes[DATA_EDITABLE_INLINE] = true
   }
 
   // If it's a block node with inline children, add the proper `dir` attribute
@@ -53,14 +54,13 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
 
   // If it's a void node, wrap the children in extra void-specific elements.
   if (Editor.isVoid(editor, element)) {
-    attributes['data-slate-void'] = true
+    attributes[DATA_EDITABLE_VOID] = true
 
     const Tag = isInline ? 'span' : 'div'
     const [[text]] = Node.texts(element)
 
     children = (
       <Tag
-        data-slate-spacer
         style={{
           height: '0',
           color: 'transparent',

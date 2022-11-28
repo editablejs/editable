@@ -113,7 +113,9 @@ export const withContextMenu = <T extends Editable>(
   CONTEXT_MENU_OPTIONS.set(newEditor, options)
 
   Slot.mount(editor, ContextMenuPortal)
-
+  newEditor.on('destory', () => {
+    Slot.unmount(editor, ContextMenuPortal)
+  })
   return newEditor
 }
 

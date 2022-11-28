@@ -70,11 +70,7 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
   useImperativeHandle(ref, () => root!, [root])
 
   return (
-    <div
-      data-slate-shadow="true"
-      ref={containerRef}
-      style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}
-    >
+    <div ref={containerRef} style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
       {root && ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{children}</div>, root)}
     </div>
   )

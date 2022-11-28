@@ -1,5 +1,11 @@
 import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
 import { Editable } from '../plugin/editable'
+import {
+  DATA_EDITABLE_COMPOSITION,
+  DATA_EDITABLE_NODE,
+  DATA_EDITABLE_STRING,
+  DATA_EDITABLE_ZERO_WIDTH,
+} from './constants'
 import { DOMElement, DOMRange, isDOMElement } from './dom'
 
 interface LineRect {
@@ -86,7 +92,7 @@ const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom
   const match = (element: DOMElement) => {
     for (const child of element.childNodes) {
       if (isDOMElement(child)) {
-        const hasNode = child.hasAttribute('data-slate-node')
+        const hasNode = child.hasAttribute(DATA_EDITABLE_NODE)
         const node = hasNode ? Editable.toSlateNode(editor, child) : null
         if (node) {
           if (Element.isElement(node)) {
@@ -104,7 +110,7 @@ const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom
             }
           } else {
             const nodes = child.querySelectorAll(
-              '[data-slate-string], [data-slate-composition], [data-slate-zero-width]',
+              `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
             )
             nodes.forEach(node => {
               const rects = node.getClientRects()
