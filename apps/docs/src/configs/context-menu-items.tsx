@@ -15,7 +15,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+x'),
       disabled: isDisabled,
       onSelect() {
-        editor.dispatchEvent('cut')
+        editor.cut()
       },
     },
     {
@@ -25,7 +25,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+c'),
       disabled: isDisabled,
       onSelect() {
-        editor.dispatchEvent('copy')
+        editor.copy()
       },
     },
     {
@@ -35,7 +35,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+v'),
       disabled: !selection,
       onSelect() {
-        editor.dispatchEvent('paste')
+        editor.paste()
       },
     },
     {
@@ -45,7 +45,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+shift+v'),
       disabled: !selection,
       onSelect() {
-        editor.dispatchEvent('paste-text')
+        editor.pasteText()
       },
     },
   ]

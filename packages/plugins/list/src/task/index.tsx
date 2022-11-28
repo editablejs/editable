@@ -43,8 +43,8 @@ export const TaskListEditor = {
     return elements.length > 0 ? elements : null
   },
 
-  toggle: (editor: TaskListEditor, options?: ToggleTaskListOptions) => {
-    editor.toggleTaskList(options)
+  toggle: (editor: Editable, options?: ToggleTaskListOptions) => {
+    if (TaskListEditor.isTaskListEditor(editor)) editor.toggleTaskList(options)
   },
 }
 

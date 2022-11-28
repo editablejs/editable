@@ -13,21 +13,25 @@ interface TooltipProps {
   content: ReactNode
   side?: Side
   align?: Align
+  arrow?: boolean
   mouseEnterDelay?: number
   mouseLeaveDelay?: number
   mouseEnterStay?: boolean
+  defaultOpen?: boolean
 }
 
 export const Tooltip: FC<TooltipProps> = ({
   children,
   side = 'bottom',
   align = 'center',
+  arrow = true,
   content,
   mouseEnterDelay = 0,
   mouseLeaveDelay = 0.1,
   mouseEnterStay = false,
+  defaultOpen = false,
 }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen)
   const delayTimer = useRef<number | null>(null)
 
   const clearDelayTimer = () => {
@@ -55,8 +59,7 @@ export const Tooltip: FC<TooltipProps> = ({
       <PopperAnchor
         onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
         onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
-        onMouseDown={event => {
-          event.preventDefault()
+        onMouseDown={() => {
           delaySetOpen(true, 0)
         }}
       >
@@ -77,7 +80,7 @@ export const Tooltip: FC<TooltipProps> = ({
               tw="text-white bg-black bg-opacity-80 text-center text-sm rounded px-3 py-2 z-50"
             >
               {content}
-              <PopperArrow />
+              {arrow && <PopperArrow />}
             </PopperContent>
           </Portal>
         </DismissableLayer>

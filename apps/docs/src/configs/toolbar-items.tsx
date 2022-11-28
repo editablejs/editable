@@ -12,7 +12,6 @@ import {
   TaskListEditor,
   TableEditor,
   UI,
-  ToolbarStore,
 } from '@editablejs/plugins'
 
 const { Icon } = UI
@@ -25,7 +24,7 @@ export const createToolbarItems = (editor: Editable) => {
     active: MarkEditor.isActive(editor, mark),
     children: <Icon name={mark} />,
     onToggle: editor => {
-      if (MarkEditor.isMarkEditor(editor)) MarkEditor.toggle(editor, mark)
+      MarkEditor.toggle(editor, mark)
     },
   }))
   items.push(
@@ -54,7 +53,7 @@ export const createToolbarItems = (editor: Editable) => {
       ],
       value: FontSizeEditor.queryActive(editor) ?? '12px',
       onToggle: (editor, value) => {
-        if (FontSizeEditor.isFontSizeEditor(editor)) FontSizeEditor.toggle(editor, value)
+        FontSizeEditor.toggle(editor, value)
       },
     },
     {
@@ -90,8 +89,7 @@ export const createToolbarItems = (editor: Editable) => {
       ],
       value: HeadingEditor.queryActive(editor) ?? 'paragraph',
       onToggle: (editor, value) => {
-        if (HeadingEditor.isHeadingEditor(editor))
-          HeadingEditor.toggle(editor, value as HeadingType)
+        HeadingEditor.toggle(editor, value as HeadingType)
       },
     },
   )
@@ -101,7 +99,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       active: BlockquoteEditor.isActive(editor),
       onToggle: editor => {
-        if (BlockquoteEditor.isBlockquoteEditor(editor)) BlockquoteEditor.toggle(editor)
+        BlockquoteEditor.toggle(editor)
       },
       children: <Icon name="blockquote" />,
     },
@@ -109,7 +107,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       active: !!UnOrderedListEditor.queryActive(editor),
       onToggle: editor => {
-        if (UnOrderedListEditor.isUnOrderedListEditor(editor)) UnOrderedListEditor.toggle(editor)
+        UnOrderedListEditor.toggle(editor)
       },
       children: <Icon name="unorderedList" />,
     },
@@ -117,7 +115,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       active: !!OrderedListEditor.queryActive(editor),
       onToggle: editor => {
-        if (OrderedListEditor.isOrderedListEditor(editor)) OrderedListEditor.toggle(editor)
+        OrderedListEditor.toggle(editor)
       },
       children: <Icon name="orderedList" />,
     },
@@ -125,7 +123,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       active: !!TaskListEditor.queryActive(editor),
       onToggle: editor => {
-        if (TaskListEditor.isTaskListEditor(editor)) TaskListEditor.toggle(editor)
+        TaskListEditor.toggle(editor)
       },
       children: <Icon name="taskList" />,
     },
@@ -133,7 +131,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       disabled: !!TableEditor.isActive(editor),
       onToggle: editor => {
-        if (TableEditor.isTableEditor(editor)) TableEditor.toggle(editor)
+        TableEditor.toggle(editor)
       },
       children: <Icon name="table" />,
     },

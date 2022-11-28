@@ -26,7 +26,7 @@ import {
 import type { Placement, Middleware } from '@floating-ui/react-dom'
 import { useSize } from './hooks/use-size'
 import { useComposedRefs } from './compose-refs'
-import { Measurable } from './observeElementRect'
+import { Measurable } from './observe-element-rect'
 import { useIsomorphicLayoutEffect } from './utils'
 import { Arrow } from './arrow'
 import { Slot } from './slot'

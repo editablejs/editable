@@ -28,7 +28,7 @@ const itemCls = (disabled?: boolean) => [
 ]
 
 const iconCls = (disabled?: boolean) => [
-  tw`absolute left-3 top-0 my-2`,
+  tw`absolute left-3 top-0 flex items-center h-full`,
   !disabled && tw`text-gray-500`,
   ...disabledCls(disabled),
 ]
@@ -117,11 +117,19 @@ export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({
 
 export type Point = { x: number; y: number }
 
+const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
+const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
+
+type Side = typeof SIDE_OPTIONS[number]
+type Align = typeof ALIGN_OPTIONS[number]
 export interface ContextMenu {
   container?: HTMLElement | Point
   className?: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  side?: Side
+  align?: Align
+  minWidth?: number
 }
 
 export const ContextMenu: FC<ContextMenu> = ({
@@ -130,6 +138,9 @@ export const ContextMenu: FC<ContextMenu> = ({
   open: openProps,
   onOpenChange,
   children,
+  side = 'right',
+  align = 'start',
+  minWidth = 200,
 }) => {
   const [open, setOpen] = useState(openProps)
   const pointRef = React.useRef<Point>(
@@ -172,13 +183,16 @@ export const ContextMenu: FC<ContextMenu> = ({
     <Menu open={open} onOpenChange={handleOpenChange}>
       <MenuAnchor virtualRef={virtualRef} />
       <MenuContent
-        side="right"
+        side={side}
         sideOffset={2}
-        align="start"
+        align={align}
         onEscapeKeyDown={() => handleOpenChange(false)}
         onPointerDownOutside={() => handleOpenChange(false)}
         css={[
           tw`z-50 overflow-hidden rounded border border-solid border-gray-300 bg-white py-2 shadow-outer`,
+          css`
+            min-width: ${minWidth}px;
+          `,
           className,
         ]}
       >

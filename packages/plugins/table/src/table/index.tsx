@@ -41,10 +41,6 @@ export interface TableEditor extends Editable {
   toggleTable: (options?: CreateTableOptions) => void
 }
 
-export interface TableEditor extends Editable {
-  toggleTable: (options?: CreateTableOptions) => void
-}
-
 export const TableEditor = {
   isTableEditor: (editor: Editable): editor is TableEditor => {
     return !!(editor as TableEditor).toggleTable
@@ -90,8 +86,8 @@ export const TableEditor = {
     )
   },
 
-  toggle: (editor: TableEditor, options?: CreateTableOptions) => {
-    editor.toggleTable(options)
+  toggle: (editor: Editable, options?: CreateTableOptions) => {
+    if (TableEditor.isTableEditor(editor)) editor.toggleTable(options)
   },
 }
 

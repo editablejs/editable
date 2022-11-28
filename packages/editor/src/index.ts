@@ -45,6 +45,7 @@ export * from './plugin/serializer'
 export * from './plugin/event'
 export * from './plugin/drag'
 export * from './plugin/solt'
+export * from './plugin/locale'
 
 // Environment
 export * from './utils/environment'

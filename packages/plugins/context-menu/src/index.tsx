@@ -1,6 +1,5 @@
 import { Editable, Slot, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { FC, useEffect, useRef, useState } from 'react'
-import { styled } from 'twin.macro'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
@@ -26,10 +25,6 @@ interface ContextMenu extends UIContextMenu {
   items: ContextMenuItem[]
 }
 
-const StyledContextMenu = styled(UIContextMenu)`
-  min-width: 200px;
-`
-
 const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
   const renderItems = (items: ContextMenuItem[]) => {
     return items.map((item, index) => {
@@ -54,9 +49,9 @@ const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
   }
 
   return (
-    <StyledContextMenu container={container} {...props}>
+    <UIContextMenu container={container} {...props}>
       {renderItems(items)}
-    </StyledContextMenu>
+    </UIContextMenu>
   )
 }
 

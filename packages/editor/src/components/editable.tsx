@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Editor, Node, Descendant, Scrubber } from 'slate'
 import { Editable } from '../plugin/editable'
 import { EditorContext } from '../hooks/use-editable-static'
 import { EditableContext } from '../hooks/use-editable'
-import { LocaleStore } from '../hooks/use-locale'
 import { ReadOnlyContext } from '../hooks/use-read-only'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { Locale } from '../plugin/locale'
 
 const initEditorDefaultProperties = (editor: Editable, value: Descendant[], ...rest: any[]) => {
   if (!Node.isNodeList(value)) {
@@ -38,7 +38,7 @@ export const EditableProvider = (props: {
   })
 
   useIsomorphicLayoutEffect(() => {
-    LocaleStore.setLang(editor, lang)
+    Locale.setLang(editor, lang)
   }, [editor, lang])
 
   useIsomorphicLayoutEffect(() => {

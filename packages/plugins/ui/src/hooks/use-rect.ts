@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Measurable, observeElementRect } from '../observeElementRect'
+import { Measurable, observeElementRect } from '../observe-element-rect'
 
 /**
  * Use this custom hook to get access to an element's rect (getBoundingClientRect)

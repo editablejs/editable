@@ -35,8 +35,8 @@ export const UnOrderedListEditor = {
     return elements.length > 0 ? elements : null
   },
 
-  toggle: (editor: UnOrderedListEditor, options?: ToggleUnOrderedListOptions) => {
-    editor.toggleUnOrderedList(options)
+  toggle: (editor: Editable, options?: ToggleUnOrderedListOptions) => {
+    if (UnOrderedListEditor.isUnOrderedListEditor(editor)) editor.toggleUnOrderedList(options)
   },
 }
 

@@ -274,7 +274,7 @@ export const TableMergeIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = pro
   )
 }
 
-export const PlusIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+export const PlusCircleIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   return (
     <svg
       {...props}
@@ -291,6 +291,24 @@ export const PlusIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => 
       <path
         d="M512 725.333333a42.666667 42.666667 0 0 0 42.666667-42.666666v-128h128a42.666667 42.666667 0 1 0 0-85.333334h-128V341.333333a42.666667 42.666667 0 1 0-85.333334 0v128H341.333333a42.666667 42.666667 0 1 0 0 85.333334h128v128a42.666667 42.666667 0 0 0 42.666667 42.666666z"
         fill="#ffffff"
+      ></path>
+    </svg>
+  )
+}
+
+export const PlusIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+    >
+      <path
+        fill="currentColor"
+        d="M112 464c-26.51 0-48 21.49-48 48s21.49 48 48 48h352v352c0 26.51 21.49 48 48 48s48-21.49 48-48V560h352c26.51 0 48-21.49 48-48s-21.49-48-48-48H560V112c0-26.51-21.49-48-48-48s-48 21.49-48 48v352H112z"
       ></path>
     </svg>
   )
@@ -492,6 +510,7 @@ const ICON_LIST = {
   tableMerge: TableMergeIcon,
   tableSplit: TableSplitIcon,
   plus: PlusIcon,
+  plusCircle: PlusCircleIcon,
   arrowDown: ArrowDownIcon,
   arrowUp: ArrowUpIcon,
   arrowLeft: ArrowLeftIcon,

@@ -7,7 +7,6 @@ import { ContextMenuItem as UIContextMenuItem } from '@editablejs/plugin-ui'
 interface BaseContextMenuItem extends UIContextMenuItem {
   key: string
   title: JSX.Element | string
-  href?: string
   children?: ContextMenuItem[]
 }
 

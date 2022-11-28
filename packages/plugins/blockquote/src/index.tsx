@@ -36,8 +36,8 @@ export const BlockquoteEditor = {
     return BLOCKQUOTE_OPTIONS.get(editor) ?? {}
   },
 
-  toggle: (editor: BlockquoteEditor) => {
-    editor.toggleBlockquote()
+  toggle: (editor: Editable) => {
+    if (BlockquoteEditor.isBlockquoteEditor(editor)) editor.toggleBlockquote()
   },
 }
 

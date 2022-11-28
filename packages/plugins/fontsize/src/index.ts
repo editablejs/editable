@@ -30,8 +30,8 @@ export const FontSizeEditor = {
     return marks.fontSize ?? null
   },
 
-  toggle: (editor: FontSizeEditor, size: string) => {
-    editor.toggleFontSize(size)
+  toggle: (editor: Editable, size: string) => {
+    if (FontSizeEditor.isFontSizeEditor(editor)) editor.toggleFontSize(size)
   },
 
   getOptions: (editor: Editable): FontSizeOptions => {

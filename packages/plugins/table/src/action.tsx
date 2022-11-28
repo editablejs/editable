@@ -117,7 +117,7 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
       </InsertIconStyles>
       {!draggingActive && (
         <InsertPlusStyles>
-          <Icon name="plus" />
+          <Icon name="plusCircle" />
         </InsertPlusStyles>
       )}
       <InsertLineStyles isActive={draggingActive} style={{ height, width }}></InsertLineStyles>

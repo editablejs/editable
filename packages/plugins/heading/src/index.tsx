@@ -66,8 +66,8 @@ export const HeadingEditor = {
     return getOptions(editor)
   },
 
-  toggle: (editor: HeadingEditor, type?: HeadingType | typeof PARAGRAPH_KEY) => {
-    editor.toggleHeading(type)
+  toggle: (editor: Editable, type?: HeadingType | typeof PARAGRAPH_KEY) => {
+    if (HeadingEditor.isHeadingEditor(editor)) editor.toggleHeading(type)
   },
 }
 

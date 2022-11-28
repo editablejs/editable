@@ -83,12 +83,12 @@ export const IndentEditor = {
     return null
   },
 
-  toggle: (editor: IndentEditor, mode?: IndentMode) => {
-    editor.toggleIndent(mode)
+  toggle: (editor: Editable, mode?: IndentMode) => {
+    if (IndentEditor.isIndentEditor(editor)) editor.toggleIndent(mode)
   },
 
-  toggleOut: (editor: IndentEditor) => {
-    editor.toggleOutdent()
+  toggleOut: (editor: Editable) => {
+    if (IndentEditor.isIndentEditor(editor)) editor.toggleOutdent()
   },
 
   getOptions: (editor: Editable): IndentOptions => {

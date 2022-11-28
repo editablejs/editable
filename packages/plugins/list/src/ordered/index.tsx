@@ -38,8 +38,8 @@ export const OrderedListEditor = {
     return elements.length > 0 ? elements : null
   },
 
-  toggle: (editor: OrderedListEditor, options?: ToggleOrderedListOptions) => {
-    editor.toggleOrderedList(options)
+  toggle: (editor: Editable, options?: ToggleOrderedListOptions) => {
+    if (OrderedListEditor.isOrderedListEditor(editor)) editor.toggleOrderedList(options)
   },
 }
 

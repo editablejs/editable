@@ -13,6 +13,7 @@ import {
   useInlineToolbarEffect,
   ContextMenuStore,
   ToolbarStore,
+  useSideToolbarMenuEffect,
 } from '@editablejs/plugins'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
@@ -21,6 +22,7 @@ import tw, { styled } from 'twin.macro'
 import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import { createToolbarItems } from '../configs/toolbar-items'
+import { createSideToolbarItems } from '../configs/side-toolbar-items'
 
 const initialValue = [
   {
@@ -81,6 +83,10 @@ export default function Docs() {
 
   useInlineToolbarEffect(() => {
     ToolbarStore.setInlineItems(editor, createToolbarItems(editor))
+  }, editor)
+
+  useSideToolbarMenuEffect((...a) => {
+    ToolbarStore.setSideMenuItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
 
   return (

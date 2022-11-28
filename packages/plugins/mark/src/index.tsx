@@ -50,8 +50,8 @@ export const MarkEditor = {
     return true
   },
 
-  toggle: (editor: MarkEditor, format: MarkFormat) => {
-    editor.toggleMark(format)
+  toggle: (editor: Editable, format: MarkFormat) => {
+    if (MarkEditor.isMarkEditor(editor)) editor.toggleMark(format)
   },
 
   getOptions: (editor: Editable): MarkOptions => {

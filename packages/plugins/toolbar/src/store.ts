@@ -1,10 +1,11 @@
 import { useMemo, useRef } from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
-import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { Editable, useIsomorphicLayoutEffect, Range, Element } from '@editablejs/editor'
 import {
   ToolbarButton as UIToolbarButton,
   ToolbarDropdown as UIToolbarDropdown,
+  ContextMenuItem as UIContextMenuItem,
 } from '@editablejs/plugin-ui'
 
 export interface ToolbarButtonItem extends Omit<UIToolbarButton, 'onToggle'> {
@@ -27,7 +28,24 @@ interface ToolbarState {
     items: ToolbarItem[]
     open: boolean
   }
+  sideMenu: {
+    items: SideToolbarItem[]
+    open: boolean
+    range?: Range
+    element?: Element
+  }
 }
+interface BaseSideToolbarItem extends UIContextMenuItem {
+  key: string
+  title: JSX.Element | string
+  children?: SideToolbarItem[]
+}
+
+export type SideToolbarItem =
+  | BaseSideToolbarItem
+  | {
+      type: 'separator'
+    }
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<ToolbarState>>>()
 
@@ -39,6 +57,10 @@ const getStore = (editor: Editable) => {
         items: [],
       },
       inline: {
+        items: [],
+        open: false,
+      },
+      sideMenu: {
         items: [],
         open: false,
       },
@@ -76,9 +98,30 @@ export const useInlineToolbarOpen = (editor: Editable): [boolean, (open: boolean
   )
 }
 
-type ToolbarStoreAction = () => (() => void) | void
+export const useSideToolbarItems = (editor: Editable) => {
+  const store = useToolbarStore(editor)
+  return useStore(store, state => state.sideMenu.items, shallow)
+}
 
-export const useToolbarEffect = (aciton: ToolbarStoreAction, editor: Editable) => {
+export const useSideToolbarMenuOpen = (
+  editor: Editable,
+): [boolean, (open: boolean, data?: { range?: Range; element?: Element }) => void] => {
+  const store = useToolbarStore(editor)
+  const open = useStore(store, state => state.sideMenu.open)
+  return useMemo(
+    () => [
+      open,
+      (open: boolean, data?: { range?: Range; element?: Element }) => {
+        ToolbarStore.setSideMenuOpen(editor, open, data)
+      },
+    ],
+    [editor, open],
+  )
+}
+
+type ToolbarEffectCallback = () => (() => void) | void
+
+export const useToolbarEffect = (aciton: ToolbarEffectCallback, editor: Editable) => {
   const editorRef = useRef<Editable | null>(null)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
@@ -99,7 +142,7 @@ export const useToolbarEffect = (aciton: ToolbarStoreAction, editor: Editable) =
   }, [editor, aciton])
 }
 
-export const useInlineToolbarEffect = (aciton: ToolbarStoreAction, editor: Editable) => {
+export const useInlineToolbarEffect = (aciton: ToolbarEffectCallback, editor: Editable) => {
   const [open] = useInlineToolbarOpen(editor)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
@@ -114,6 +157,22 @@ export const useInlineToolbarEffect = (aciton: ToolbarStoreAction, editor: Edita
     }
     return () => {
       editor.off('selectionchange', handleSelectionChange)
+      if (destroy) destroy()
+    }
+  }, [open, editor, aciton])
+}
+
+type SideToolbarEffectCallback = (range: Range, element: Element) => (() => void) | void
+export const useSideToolbarMenuEffect = (aciton: SideToolbarEffectCallback, editor: Editable) => {
+  const [open] = useSideToolbarMenuOpen(editor)
+  useIsomorphicLayoutEffect(() => {
+    let destroy: (() => void) | void
+
+    const { range, element } = getStore(editor).getState().sideMenu
+    if (open && range && element) {
+      destroy = aciton(range, element)
+    }
+    return () => {
       if (destroy) destroy()
     }
   }, [open, editor, aciton])
@@ -142,6 +201,23 @@ export const ToolbarStore = {
       return {
         inline: {
           ...inline,
+          items,
+        },
+      }
+    })
+  },
+
+  setSideMenuOpen(editor: Editable, open: boolean, data?: { range?: Range; element?: Element }) {
+    const store = getStore(editor)
+    store.setState(({ sideMenu }) => ({ sideMenu: { ...sideMenu, open, ...data } }))
+  },
+
+  setSideMenuItems(editor: Editable, items: SideToolbarItem[]) {
+    const store = getStore(editor)
+    store.setState(({ sideMenu }) => {
+      return {
+        sideMenu: {
+          ...sideMenu,
           items,
         },
       }

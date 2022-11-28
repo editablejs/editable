@@ -135,8 +135,6 @@ export interface DeserializeHtmlOptions {
   stripBreak?: true | ((text: string) => boolean)
 }
 
-export type DispatchEventType = 'cut' | 'copy' | 'paste' | 'paste-text'
-
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -150,6 +148,10 @@ export interface Editable extends BaseEditor {
   getFragment: (range?: Range) => Descendant[]
   blur(): void
   focus(): void
+  copy(range?: Range): void
+  cut(range?: Range): void
+  paste(range?: Range): void
+  pasteText(range?: Range): void
   queryActiveMarks: <T extends Text>() => Omit<T, 'text'>
   queryActiveElements: () => EditorElements
   on: <T extends EventType>(type: T, handler: EventHandler<T>) => void
@@ -184,7 +186,6 @@ export interface Editable extends BaseEditor {
     ) => void,
   ) => void
   getDataTransfer: (range?: Range) => DataTransfer | null
-  dispatchEvent: (type: DispatchEventType) => void
 }
 
 export const Editable = {

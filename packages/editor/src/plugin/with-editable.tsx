@@ -297,6 +297,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   let isPasteText = false
   e.onKeydown = (event: KeyboardEvent) => {
+    e.emit('keydown', event)
     if (event.defaultPrevented) return
     const { selection } = editor
     const element = editor.children[selection !== null ? selection.focus.path[0] : 0]
@@ -308,13 +309,13 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
     if (Hotkeys.isCut(event)) {
       event.preventDefault()
-      e.dispatchEvent('cut')
+      e.cut()
       return
     }
 
     if (Hotkeys.isCopy(event)) {
       event.preventDefault()
-      e.dispatchEvent('copy')
+      e.copy()
       return
     }
 
@@ -546,7 +547,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
       return
     }
-    e.emit('keydown', event)
   }
 
   e.onKeyup = (event: KeyboardEvent) => {
@@ -557,7 +557,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.onFocus = () => {
-    Editable.focus(e)
+    e.focus()
     e.emit('focus')
   }
 
@@ -610,7 +610,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
     } else {
       editor.insertText(value)
     }
-
     e.emit('input', value)
   }
 
@@ -810,7 +809,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.getFragment = (range?: Range) => {
-    const { selection = range } = e
+    const selection = range ?? e.selection
     if (!selection) return []
     const grid = Grid.find(e)
     if (grid) {
@@ -877,27 +876,40 @@ export const withEditable = <T extends Editor>(editor: T) => {
     return dataTransfer
   }
 
-  e.dispatchEvent = type => {
-    if (~['paste', 'paste-text'].indexOf(type)) {
-      readClipboardData().then(data => {
-        if (type === 'paste-text') {
-          isPasteText = true
-        }
-        const event = new ClipboardEvent(type, { clipboardData: data })
-        e.onPaste(event)
-      })
-    } else {
-      const data = e.getDataTransfer()
-      const event = new ClipboardEvent(type, { clipboardData: data })
-      switch (type) {
-        case 'cut':
-          e.onCut(event)
-          break
-        case 'copy':
-          e.onCopy(event)
-          break
-      }
+  e.copy = range => {
+    const data = e.getDataTransfer(range)
+    const event = new ClipboardEvent('copy', { clipboardData: data })
+    e.onCopy(event)
+  }
+
+  e.cut = range => {
+    const data = e.getDataTransfer(range)
+    const event = new ClipboardEvent('copy', { clipboardData: data })
+    if (range) {
+      Transforms.select(e, range)
     }
+    e.onCut(event)
+  }
+
+  e.paste = range => {
+    if (range) {
+      Transforms.select(e, range)
+    }
+    readClipboardData().then(data => {
+      const event = new ClipboardEvent('paste', { clipboardData: data })
+      e.onPaste(event)
+    })
+  }
+
+  e.pasteText = range => {
+    if (range) {
+      Transforms.select(e, range)
+    }
+    readClipboardData().then(data => {
+      isPasteText = true
+      const event = new ClipboardEvent('paste-text', { clipboardData: data })
+      e.onPaste(event)
+    })
   }
 
   return e

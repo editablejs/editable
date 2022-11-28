@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
-import tw, { styled } from 'twin.macro'
+import tw from 'twin.macro'
 import { Icon } from './icon'
 import {
   MenuAnchor,
@@ -128,7 +128,7 @@ export const Dropdown: FC<Dropdown> = ({
           {children ?? activeItem?.children ?? value}
           <Icon
             name="arrowCaretDown"
-            css={[tw`text-xxs text-gray-400`, open && tw`rotate-180 mt-1`]}
+            css={[tw`text-xs text-gray-400`, open && tw`rotate-180 mt-1`]}
           />
         </button>
       </MenuAnchor>
