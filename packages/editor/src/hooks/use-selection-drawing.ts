@@ -3,7 +3,7 @@ import { Selection } from 'slate'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_SELECTION_RECTS } from '../utils/weak-maps'
-import { useEditableStatic } from './use-editable-static'
+import { useEditableStatic } from './use-editable'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 
 export interface SelectionDrawingStyle {

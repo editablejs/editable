@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Editor, Element, Path } from 'slate'
 import { useDragPosition, useDragTo, useDragType } from '../hooks/use-drag'
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import { useSelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { GridCell } from '../interfaces/cell'
 import { Editable } from '../plugin/editable'

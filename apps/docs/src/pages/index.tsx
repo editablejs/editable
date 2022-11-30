@@ -17,7 +17,7 @@ import {
 } from '@editablejs/plugins'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import tw, { styled } from 'twin.macro'
 import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
@@ -91,7 +91,7 @@ export default function Docs() {
 
   return (
     <StyledWrapper>
-      <EditableProvider editor={editor} value={initialValue}>
+      <EditableProvider editor={editor} defaultValue={initialValue}>
         <Toolbar />
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />

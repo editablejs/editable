@@ -1,4 +1,4 @@
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import { useSlotComponents } from '../hooks/use-slots'
 
 export const Slots = () => {

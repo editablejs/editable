@@ -5,7 +5,7 @@ import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import {
   useSelectionDrawingSelection,
   useSelectionDrawingRects,

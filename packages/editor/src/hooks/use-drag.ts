@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useEditableStatic } from './use-editable-static'
+import { useEditableStatic } from './use-editable'
 import { Drag, DragStore } from '../plugin/drag'
 import { useStore } from 'zustand'
 

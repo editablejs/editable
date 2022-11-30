@@ -1,25 +1,113 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useMemo } from 'react'
+import { Descendant, Node, Editor, Scrubber } from 'slate'
+import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
+import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 
-/**
- * A React context for sharing the editor object, in a way that re-renders the
- * context whenever changes occur.
- */
+interface EditableStore {
+  editor: [Editable]
+  readOnly: boolean
+}
 
-export const EditableContext = createContext<[Editable] | null>(null)
+const EDITABLE_TO_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<EditableStore>>>()
 
-/**
- * Get the current editor object from the React context.
- */
-export const useEditable = (): Editable => {
-  const context = useContext(EditableContext)
-
-  if (!context) {
+const initialEditorDefaultProperties = (editor: Editable, value: Descendant[], ...rest: any[]) => {
+  if (!Node.isNodeList(value)) {
     throw new Error(
-      `The \`useEditable\` hook must be used inside the <EditableProvider> component's context.`,
+      `[Editable] value is invalid! Expected a list of elements` +
+        `but got: ${Scrubber.stringify(value)}`,
+    )
+  }
+  if (!Editor.isEditor(editor)) {
+    throw new Error(`[Editable] editor is invalid! you passed:` + `${Scrubber.stringify(editor)}`)
+  }
+  editor.children = value
+  Object.assign(editor, rest)
+}
+
+export const useEditableStoreProvider = (
+  editor: Editable,
+  initial?: {
+    storeValue?: Partial<Omit<EditableStore, 'editor'>>
+    defaultValue?: Descendant[]
+    onChange?: (value: Descendant[]) => void
+  } & Record<string, any>,
+) => {
+  const { onChange } = initial ?? {}
+  const store = useMemo(() => {
+    const store = EDITABLE_TO_STORE.get(editor)
+    if (store) {
+      return store
+    }
+    const { store: storeValue, defaultValue = [], onChange, ...rest } = initial ?? {}
+    initialEditorDefaultProperties(editor, defaultValue, rest)
+    const newStore = create<EditableStore>(() => ({
+      editor: [editor],
+      readOnly: false,
+      ...initial?.store,
+    }))
+    EDITABLE_TO_STORE.set(editor, newStore)
+    return newStore
+  }, [editor, initial])
+
+  useIsomorphicLayoutEffect(() => {
+    const handleChange = () => {
+      if (onChange) {
+        onChange(editor.children)
+      }
+      store.setState({
+        editor: [editor],
+      })
+    }
+    editor.on('change', handleChange)
+    return () => {
+      editor.off('change', handleChange)
+    }
+  }, [editor, onChange])
+
+  return store
+}
+
+export const useEditableStore = () => {
+  const contenxt = useContext(EditableStoreContext)
+  if (!contenxt) {
+    throw new Error(
+      `The \`useEditableStore\` hook must be used inside the <EditableProvider> component's context.`,
     )
   }
 
-  const [editor] = context
-  return editor
+  return contenxt.store
+}
+
+export interface EditableStoreContext {
+  store: UseBoundStore<StoreApi<EditableStore>>
+  editor: Editable
+}
+
+export const EditableStoreContext = createContext<EditableStoreContext | null>(null)
+
+/**
+ * 静态的编辑器对象
+ * @returns
+ */
+export const useEditableStatic = (): Editable => {
+  const contenxt = useContext(EditableStoreContext)
+
+  if (!contenxt) {
+    throw new Error(
+      `The \`useEditableStatic\` hook must be used inside the <EditableProvider> component's context.`,
+    )
+  }
+
+  return contenxt.editor
+}
+
+/**
+ * 实时变化的编辑器对象
+ * @returns
+ */
+export const useEditable = (): Editable => {
+  const store = useEditableStore()
+
+  return useStore(store, state => state.editor[0])
 }

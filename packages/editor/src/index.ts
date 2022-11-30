@@ -22,12 +22,11 @@ export { EditableProvider } from './components/editable'
 
 // Hooks
 export { useIsomorphicLayoutEffect } from './hooks/use-isomorphic-layout-effect'
-export { useEditableStatic } from './hooks/use-editable-static'
+export { useEditableStatic, useEditable, useEditableStore } from './hooks/use-editable'
 export { useFocused } from './hooks/use-focused'
 export { useReadOnly } from './hooks/use-read-only'
 export { useNodeSelected } from './hooks/use-node-selected'
 export { useNodeFocused } from './hooks/use-node-focused'
-export { useEditable } from './hooks/use-editable'
 export * from './hooks/use-drag'
 export * from './hooks/use-selection-drawing'
 

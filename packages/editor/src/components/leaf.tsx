@@ -1,7 +1,7 @@
 import React from 'react'
 import { Element, Text } from 'slate'
 import String from './string'
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
 import { TextAttributes } from '../plugin/editable'
 import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from '../utils/constants'

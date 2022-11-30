@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useRef } from 'react'
 import { Range } from 'slate'
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { IS_MOUSEDOWN } from '../utils/weak-maps'

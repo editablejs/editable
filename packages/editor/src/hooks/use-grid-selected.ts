@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { GridSelected, Grid } from '../interfaces/grid'
 import { Editable } from '../plugin/editable'
-import { useEditableStatic } from './use-editable-static'
+import { useEditableStatic } from './use-editable'
 import { useGrid } from './use-grid'
 import { useGridSelection } from './use-grid-selection'
 

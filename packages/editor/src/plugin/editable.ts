@@ -51,7 +51,7 @@ import { GridCell } from '../interfaces/cell'
 import { GridRow } from '../interfaces/row'
 import { Grid } from '../interfaces/grid'
 import { List } from '../interfaces/list'
-import { FocusedStore } from '../hooks/use-focused'
+import { Focused } from '../hooks/use-focused'
 import { EventHandler, EventType } from './event'
 import {
   DATA_EDITABLE_COMPOSITION,
@@ -385,7 +385,7 @@ export const Editable = {
    * Check if the editor is focused.
    */
   isFocused(editor: Editable): boolean {
-    return FocusedStore.is(editor)
+    return Focused.is(editor)
   },
 
   /**

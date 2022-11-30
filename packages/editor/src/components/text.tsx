@@ -4,7 +4,7 @@ import { Element, Text as SlateText } from 'slate'
 import Leaf from './leaf'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { NODE_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_KEY_TO_ELEMENT } from '../utils/weak-maps'
-import { useEditableStatic } from '../hooks/use-editable-static'
+import { useEditableStatic } from '../hooks/use-editable'
 import { Editable } from '../plugin/editable'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 

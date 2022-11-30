@@ -1,5 +1,5 @@
 import { EventEmitter, EventHandler, EventType } from '../plugin/event'
-import { useEditableStatic } from './use-editable-static'
+import { useEditableStatic } from './use-editable'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 
 export const useEvent = <T extends EventType>(type: T, handler: EventHandler<T>) => {

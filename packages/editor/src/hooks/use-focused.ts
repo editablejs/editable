@@ -1,6 +1,6 @@
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
-import { useEditableStatic } from './use-editable-static'
+import { useEditableStatic } from './use-editable'
 
 interface FocusedStore {
   isFocused: boolean
@@ -39,7 +39,7 @@ export const useFocused = (): [boolean, (isFocused: boolean) => void] => {
   ]
 }
 
-export const FocusedStore = {
+export const Focused = {
   is: (editor: Editable) => {
     const store = getStore(editor)
     return store.getState().isFocused
