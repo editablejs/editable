@@ -15,14 +15,15 @@ const getStore = (editor: Editable) => {
       isFocused: false,
     }))
     EDITABLE_TO_FOCUSED_STORE.set(editor, store)
+    store.subscribe(({ isFocused }) => {
+      if (isFocused) {
+        editor.onFocus()
+      } else {
+        editor.onBlur()
+      }
+    })
   }
-  store.subscribe(({ isFocused }) => {
-    if (isFocused) {
-      editor.onFocus()
-    } else {
-      editor.onBlur()
-    }
-  })
+
   return store
 }
 
