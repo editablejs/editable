@@ -14,6 +14,7 @@ import {
   SlotComponentProps,
   Locale,
   useLocale,
+  Decorate,
 } from '@editablejs/editor'
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -56,6 +57,8 @@ interface CurrentCapturedData {
 const StyledTooltipContent = tw.div`text-gray-400 text-xs text-left`
 
 const StyledTooltipContentAction = tw.span`text-white mr-1`
+
+const StyledElementDecorator = tw.div`rounded-md bg-blue-50`
 
 interface ContextMenu extends UIContextMenu {
   onSelect?: (event: React.MouseEvent) => void
@@ -375,14 +378,35 @@ const SideToolbar: FC<SideToolbar> = ({
     setTooltipDefaultOpen(true)
   }
 
+  const getDecorate = useCallback((): Decorate | null => {
+    if (!capturedDataRef.current) return null
+    const { selection, element } = capturedDataRef.current
+    return {
+      key: 'sideToolbarDecorate',
+      type: 'element',
+      decorate: entry => {
+        if (element !== entry[0]) return []
+        return [selection]
+      },
+      render: ({ children }) => {
+        return <StyledElementDecorator>{children}</StyledElementDecorator>
+      },
+    }
+  }, [])
+
   const handleMouseEnter = () => {
     clearDelay()
     showingRef.current = true
+    const decorate = getDecorate()
+    if (decorate) {
+      Decorate.add(editor, decorate)
+    }
   }
 
   const handleMouseLeave = () => {
     delayHide()
     showingRef.current = false
+    Decorate.remove(editor, 'sideToolbarDecorate')
   }
 
   const local = useLocale<SideToolbarLocale>('sideToolbar')

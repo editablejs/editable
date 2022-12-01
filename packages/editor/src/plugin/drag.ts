@@ -1,7 +1,6 @@
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editor, Range, Element, Path } from 'slate'
 import { Editable } from './editable'
-import { GridCell } from '../interfaces/cell'
 
 export interface DragStore {
   drag: {

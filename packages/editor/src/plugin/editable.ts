@@ -94,6 +94,7 @@ export interface RenderLeafAttributes<T extends Text = Text> {
   text: T
   attributes: TextAttributes
 }
+
 /**
  * `RenderElementProps` are passed to the `renderElement` handler.
  */

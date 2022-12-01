@@ -45,6 +45,7 @@ export * from './plugin/event'
 export * from './plugin/drag'
 export * from './plugin/solt'
 export * from './plugin/locale'
+export * from './plugin/decorate'
 
 // Environment
 export * from './utils/environment'

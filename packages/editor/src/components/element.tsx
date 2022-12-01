@@ -4,7 +4,7 @@ import { Editor, Node, Range, Element as SlateElement } from 'slate'
 
 import Text from './text'
 import useChildren from '../hooks/use-children'
-import { Editable, useEditableStatic, useReadOnly, ElementAttributes } from '..'
+import { Editable, useEditableStatic, ElementAttributes } from '..'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import {
   NODE_TO_ELEMENT,
@@ -14,11 +14,11 @@ import {
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from '../utils/constants'
+import { useDecorates } from '../hooks/use-decorate'
 
 /**
  * Element.
  */
-
 const Element = (props: { element: SlateElement; selection: Range | null }) => {
   const { element, selection } = props
   const ref = useRef<HTMLElement>(null)
@@ -87,8 +87,23 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
       NODE_TO_ELEMENT.delete(element)
     }
   })
+  const path = Editable.findPath(editor, element)
+
   const newAttributes = editor.renderElementAttributes({ attributes, element })
-  const content = editor.renderElement({ attributes: newAttributes, children, element })
+
+  let content = editor.renderElement({ attributes: newAttributes, children, element })
+
+  const decorates = useDecorates([element, path])
+
+  if (decorates.length > 0) {
+    content = decorates.reduceRight((children, { decorate, ranges }) => {
+      return decorate.render({
+        entry: [element, path],
+        ranges,
+        children,
+      })
+    }, content)
+  }
 
   return content
 }
