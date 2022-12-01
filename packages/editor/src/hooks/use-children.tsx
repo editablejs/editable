@@ -8,12 +8,17 @@ import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
 import { NodeSelectedContext } from './use-node-selected'
 import { NodeFocusedContext } from './use-node-focused'
 import { GridContext } from './use-grid'
+import { PlaceholderRender } from '../plugin/placeholder'
 
 /**
  * Children.
  */
-const useChildren = (props: { node: Ancestor; selection: Range | null }) => {
-  const { node, selection } = props
+const useChildren = (props: {
+  node: Ancestor
+  selection: Range | null
+  renderPlaceholder?: PlaceholderRender
+}) => {
+  const { node, selection, renderPlaceholder } = props
   const editor = useEditableStatic()
   const path = Editable.findPath(editor, node)
   const children = []
@@ -33,7 +38,12 @@ const useChildren = (props: { node: Ancestor; selection: Range | null }) => {
       const element = (
         <NodeSelectedContext.Provider key={`selected-provider-${key.id}`} value={!!sel}>
           <NodeFocusedContext.Provider key={`focused-provider-${key.id}`} value={focused ?? false}>
-            <ElementComponent element={n} key={key.id} selection={sel} />
+            <ElementComponent
+              element={n}
+              key={key.id}
+              selection={sel}
+              renderPlaceholder={renderPlaceholder}
+            />
           </NodeFocusedContext.Provider>
         </NodeSelectedContext.Provider>
       )
@@ -49,6 +59,7 @@ const useChildren = (props: { node: Ancestor; selection: Range | null }) => {
     } else {
       children.push(
         <TextComponent
+          renderPlaceholder={renderPlaceholder}
           key={key.id}
           isLast={isLeafBlock && i === node.children.length - 1}
           parent={node}

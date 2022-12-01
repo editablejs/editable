@@ -1,15 +1,7 @@
-import { createContext, useContext } from 'react'
-
-/**
- * A React context for sharing the `readOnly` state of the editor.
- */
-
-export const ReadOnlyContext = createContext(false)
-
-/**
- * Get the current `readOnly` state of the editor.
- */
+import { useStore } from 'zustand'
+import { useEditableStore } from './use-editable'
 
 export const useReadOnly = (): boolean => {
-  return useContext(ReadOnlyContext)
+  const store = useEditableStore()
+  return useStore(store, state => state.readOnly)
 }

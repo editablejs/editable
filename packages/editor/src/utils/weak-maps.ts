@@ -15,7 +15,6 @@ export const NODE_TO_PARENT: WeakMap<Node, Ancestor> = new WeakMap()
  */
 export const EDITOR_TO_WINDOW: WeakMap<Editor, Window> = new WeakMap()
 export const EDITOR_TO_ELEMENT: WeakMap<Editor, HTMLElement> = new WeakMap()
-export const EDITOR_TO_PLACEHOLDER: WeakMap<Editor, string> = new WeakMap()
 export const EDITOR_TO_INPUT: WeakMap<Editor, HTMLTextAreaElement> = new WeakMap()
 export const EDITOR_TO_SHADOW: WeakMap<Editor, ShadowRoot | null> = new WeakMap()
 export const ELEMENT_TO_NODE: WeakMap<HTMLElement, Node> = new WeakMap()

@@ -9,6 +9,8 @@ import { Editable } from '../plugin/editable'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { useDecorates } from '../hooks/use-decorate'
 import { Decorate } from '../plugin/decorate'
+import { PlaceholderRender } from '../plugin/placeholder'
+import { usePlaceholder } from '../hooks/use-placeholder'
 
 interface Decoration {
   text: SlateText
@@ -17,8 +19,13 @@ interface Decoration {
 /**
  * Text.
  */
-const Text = (props: { isLast: boolean; parent: Element; text: SlateText }) => {
-  const { isLast, parent, text } = props
+const Text = (props: {
+  isLast: boolean
+  parent: Element
+  text: SlateText
+  renderPlaceholder?: PlaceholderRender
+}) => {
+  const { isLast, parent, text, renderPlaceholder } = props
   const editor = useEditableStatic()
   const ref = useRef<HTMLSpanElement>(null)
   const key = Editable.findKey(editor, text)
@@ -82,13 +89,31 @@ const Text = (props: { isLast: boolean; parent: Element; text: SlateText }) => {
       }
     }
   }
+  const currentRenderPlaceholder = usePlaceholder(text)
+
   const children =
     decorations.length === 0
-      ? [<Leaf isLast={isLast} key={`${key.id}`} text={text} parent={parent} />]
+      ? [
+          <Leaf
+            renderPlaceholder={renderPlaceholder ?? currentRenderPlaceholder}
+            isLast={isLast}
+            key={`${key.id}`}
+            text={text}
+            parent={parent}
+          />,
+        ]
       : []
   for (let i = 0; i < decorations.length; i++) {
     const { text, renders } = decorations[i]
-    let content = <Leaf isLast={isLast} key={`${key.id}-${i}`} text={text} parent={parent} />
+    let content = (
+      <Leaf
+        renderPlaceholder={renderPlaceholder ?? currentRenderPlaceholder}
+        isLast={isLast && i === decorations.length - 1}
+        key={`${key.id}-${i}`}
+        text={text}
+        parent={parent}
+      />
+    )
     if (renders.length > 0) {
       content = decorates.reduceRight((children, { decorate, ranges }) => {
         return decorate.render({
@@ -121,7 +146,12 @@ const Text = (props: { isLast: boolean; parent: Element; text: SlateText }) => {
 }
 
 const MemoizedText = React.memo(Text, (prev, next) => {
-  return next.parent === prev.parent && next.isLast === prev.isLast && next.text === prev.text
+  return (
+    next.parent === prev.parent &&
+    next.isLast === prev.isLast &&
+    next.text === prev.text &&
+    prev.renderPlaceholder === next.renderPlaceholder
+  )
 })
 
 export default MemoizedText

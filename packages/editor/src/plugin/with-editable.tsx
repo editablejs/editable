@@ -41,6 +41,8 @@ import { HTMLSerializer, TextSerializer } from './serializer'
 import { HTMLDeserializer } from './deserializer'
 import { CompositionText } from '../interfaces/composition-text'
 import { EventEmitter } from './event'
+import { Placeholder } from './placeholder'
+import { Focused } from '../hooks/use-focused'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -237,9 +239,23 @@ export const withEditable = <T extends Editor>(editor: T) => {
     // have to use this unstable API to ensure it batches them. (2019/12/03)
     // https://github.com/facebook/react/issues/14259#issuecomment-439702367
     ReactDOM.unstable_batchedUpdates(() => {
-      if (!prevSelection || !e.selection || Range.equals(prevSelection, e.selection)) {
+      if (!prevSelection || !e.selection || !Range.equals(prevSelection, e.selection)) {
         e.onSelectionChange()
         prevSelection = e.selection ? Object.assign({}, e.selection) : null
+      }
+      Placeholder.clearCurrent(e)
+      if (e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {
+        const nodes = Editor.nodes(e, {
+          at: e.selection,
+        })
+        for (const entry of nodes) {
+          if (Editable.isEmpty(e, entry[0])) {
+            Placeholder.setCurrent(e, entry)
+            break
+          }
+        }
+      } else if (Editable.isEmpty(e, e)) {
+        Placeholder.setCurrent(e, [e, []])
       }
 
       onChange()
@@ -748,7 +764,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.renderPlaceholder = ({ attributes, children }) => {
-    if (!Editable.isEmpty(e, editor)) return
     return (
       <span style={{ pointerEvents: 'none', userSelect: 'none', position: 'relative' }}>
         <span

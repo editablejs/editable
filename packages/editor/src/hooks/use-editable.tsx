@@ -33,7 +33,7 @@ export const useEditableStoreProvider = (
     onChange?: (value: Descendant[]) => void
   } & Record<string, any>,
 ) => {
-  const { onChange } = initial ?? {}
+  const { onChange, storeValue } = initial ?? {}
   const store = useMemo(() => {
     const store = EDITABLE_TO_STORE.get(editor)
     if (store) {
@@ -64,6 +64,12 @@ export const useEditableStoreProvider = (
       editor.off('change', handleChange)
     }
   }, [editor, onChange])
+
+  useIsomorphicLayoutEffect(() => {
+    store.setState({
+      readOnly: storeValue?.readOnly ?? false,
+    })
+  }, [store, storeValue?.readOnly])
 
   return store
 }

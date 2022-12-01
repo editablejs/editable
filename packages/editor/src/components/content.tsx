@@ -14,7 +14,6 @@ import {
   NODE_TO_ELEMENT,
   EDITOR_TO_WINDOW,
   IS_SHIFT_PRESSED,
-  EDITOR_TO_PLACEHOLDER,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
   IS_MOUSEDOWN,
@@ -33,6 +32,8 @@ import { DragSelectionComponent } from './drag-selection'
 import { parseFragmentFromString, setDataTransfer } from '../utils/data-transfer'
 import { Slots } from './slot'
 import { Drag } from '../plugin/drag'
+import { Placeholder } from '../plugin/placeholder'
+import { usePlaceholder } from '../hooks/use-placeholder'
 
 const Children = (props: Parameters<typeof useChildren>[0]) => (
   <React.Fragment>{useChildren(props)}</React.Fragment>
@@ -74,9 +75,6 @@ export const ContentEditable = (props: EditableProps) => {
   const dragging = useDragging()
   const { getDrag, setDrag } = useDragMethods()
 
-  // Update internal state on each render.
-  EDITOR_TO_PLACEHOLDER.set(editor, placeholder ?? '')
-
   const [rendered, setRendered] = useState(false)
 
   useEffect(() => {
@@ -84,6 +82,24 @@ export const ContentEditable = (props: EditableProps) => {
       editor.focus()
     }
   }, [editor, autoFocus])
+
+  useEffect(() => {
+    if (placeholder) {
+      Placeholder.add(editor, {
+        key: 'editorRootPlaceholder',
+        check: entry => {
+          return Editable.isEditor(entry[0])
+        },
+        render: () => placeholder,
+      })
+      if (Editable.isEmpty(editor, editor)) {
+        Placeholder.setCurrent(editor, [editor, []])
+      }
+    }
+    return () => {
+      Placeholder.remove(editor, 'editorRootPlaceholder')
+    }
+  }, [editor, placeholder])
 
   useIsomorphicLayoutEffect(() => {
     IS_READ_ONLY.set(editor, readOnly)
@@ -410,6 +426,8 @@ export const ContentEditable = (props: EditableProps) => {
     return 'text'
   }, [dragTo, dragging])
 
+  const renderPlaceholder = usePlaceholder(editor)
+
   return (
     <div
       style={{
@@ -443,7 +461,11 @@ export const ContentEditable = (props: EditableProps) => {
         onDrop={handleDrop}
         onContextMenu={handleContextMenu}
       >
-        <Children node={editor} selection={editor.selection} />
+        <Children
+          renderPlaceholder={renderPlaceholder}
+          node={editor}
+          selection={editor.selection}
+        />
       </Component>
       <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         <CaretComponent />

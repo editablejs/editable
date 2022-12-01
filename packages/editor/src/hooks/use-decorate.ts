@@ -13,18 +13,14 @@ export const useDecorateStore = () => {
 
 export const useDecorates = (entry: NodeEntry) => {
   const store = useDecorateStore()
-  const decorates = useStore(store, state => state.decorates)
+  const isElement = Element.isElement(entry[0])
+  const decorates = useStore(store, state =>
+    state.decorates.filter(d => d.type === (isElement ? 'element' : 'text')),
+  )
   return useMemo(() => {
     const nodeDecorates: { decorate: Decorate; ranges: Range[] }[] = []
-    const isElement = Element.isElement(entry[0])
-    const isText = Text.isText(entry[0])
     decorates.forEach(decorate => {
-      let ranges: Range[] = []
-      if (isElement && decorate.type === 'element') {
-        ranges = decorate.decorate(entry)
-      } else if (isText && decorate.type === 'text') {
-        ranges = decorate.decorate(entry)
-      }
+      const ranges = decorate.decorate(entry)
       if (ranges.length > 0) {
         nodeDecorates.push({ decorate, ranges })
       }

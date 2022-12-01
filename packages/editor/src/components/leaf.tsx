@@ -2,25 +2,29 @@ import React from 'react'
 import { Element, Text } from 'slate'
 import String from './string'
 import { useEditableStatic } from '../hooks/use-editable'
-import { EDITOR_TO_PLACEHOLDER } from '../utils/weak-maps'
 import { TextAttributes } from '../plugin/editable'
 import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from '../utils/constants'
+import { PlaceholderRender } from '../plugin/placeholder'
 
 /**
  * Individual leaves in a text node with unique formatting.
  */
-const Leaf = (props: { isLast: boolean; parent: Element; text: Text }) => {
-  const { isLast, text, parent } = props
+const Leaf = (props: {
+  isLast: boolean
+  parent: Element
+  text: Text
+  renderPlaceholder?: PlaceholderRender
+}) => {
+  const { isLast, text, parent, renderPlaceholder } = props
 
   let children = <String isLast={isLast} parent={parent} text={text} />
 
   const editor = useEditableStatic()
-  const placeholder = EDITOR_TO_PLACEHOLDER.get(editor)
-  if (placeholder) {
+  if (renderPlaceholder) {
     const placeholderComponent = editor.renderPlaceholder({
       attributes: { [DATA_EDITABLE_PLACEHOLDER]: true },
       node: text,
-      children: placeholder,
+      children: renderPlaceholder({ node: text }),
     })
     if (placeholderComponent)
       children = (
@@ -42,7 +46,12 @@ const Leaf = (props: { isLast: boolean; parent: Element; text: Text }) => {
 }
 
 const MemoizedLeaf = React.memo(Leaf, (prev, next) => {
-  return next.parent === prev.parent && next.isLast === prev.isLast && next.text === prev.text
+  return (
+    next.parent === prev.parent &&
+    prev.renderPlaceholder === next.renderPlaceholder &&
+    next.isLast === prev.isLast &&
+    next.text === prev.text
+  )
 })
 
 export default MemoizedLeaf

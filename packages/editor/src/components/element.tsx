@@ -15,19 +15,27 @@ import {
 } from '../utils/weak-maps'
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from '../utils/constants'
 import { useDecorates } from '../hooks/use-decorate'
+import { PlaceholderRender } from '../plugin/placeholder'
+import { usePlaceholder } from '../hooks/use-placeholder'
 
 /**
  * Element.
  */
-const Element = (props: { element: SlateElement; selection: Range | null }) => {
-  const { element, selection } = props
+const Element = (props: {
+  element: SlateElement
+  selection: Range | null
+  renderPlaceholder?: PlaceholderRender
+}) => {
+  const { element, selection, renderPlaceholder } = props
   const ref = useRef<HTMLElement>(null)
   const editor = useEditableStatic()
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)
+  const currentRenderPlaceholder = usePlaceholder(element)
   let children: React.ReactNode = useChildren({
     node: element,
     selection,
+    renderPlaceholder: renderPlaceholder ?? currentRenderPlaceholder,
   })
 
   // Attributes that the developer must mix into the element in their
@@ -67,7 +75,12 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
           outline: 'none',
         }}
       >
-        <Text isLast={false} parent={element} text={text} />
+        <Text
+          renderPlaceholder={renderPlaceholder ?? currentRenderPlaceholder}
+          isLast={false}
+          parent={element}
+          text={text}
+        />
       </Tag>
     )
 
@@ -111,6 +124,7 @@ const Element = (props: { element: SlateElement; selection: Range | null }) => {
 const MemoizedElement = React.memo(Element, (prev, next) => {
   return (
     prev.element === next.element &&
+    prev.renderPlaceholder === next.renderPlaceholder &&
     (prev.selection === next.selection ||
       (!!prev.selection && !!next.selection && Range.equals(prev.selection, next.selection)))
   )

@@ -3,6 +3,8 @@ import {
   ContentEditable,
   createEditor,
   useIsomorphicLayoutEffect,
+  Placeholder,
+  Editor,
 } from '@editablejs/editor'
 import {
   withPlugins,
@@ -60,7 +62,7 @@ const StyledContainer = tw.div`mt-5`
 
 export default function Docs() {
   const editor = useMemo(() => {
-    return withSideToolbar(
+    const editor = withSideToolbar(
       withInlineToolbar(
         withToolbar(
           withPlugins(createEditor(), {
@@ -69,6 +71,15 @@ export default function Docs() {
         ),
       ),
     )
+    Placeholder.add(editor, {
+      check: entry => {
+        return Editor.isBlock(editor, entry[0])
+      },
+      render: () => {
+        return 'Enter some text...'
+      },
+    })
+    return editor
   }, [])
 
   useIsomorphicLayoutEffect(() => {
