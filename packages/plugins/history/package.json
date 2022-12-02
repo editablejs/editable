@@ -1,24 +1,9 @@
 {
-  "name": "@editablejs/plugins",
+  "name": "@editablejs/plugin-history",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js",
-    "./serializer": "./dist/serializer.js",
-    "./deserializer": "./dist/deserializer.js"
-  },
-  "typesVersions": {
-    "*": {
-      "serializer": [
-        "dist/serializer.d.ts"
-      ],
-      "deserializer": [
-        "dist/deserializer.d.ts"
-      ]
-    }
-  },
   "sideEffects": false,
   "private": true,
   "license": "MIT",
@@ -52,17 +37,7 @@
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-blockquote": "workspace:*",
-    "@editablejs/plugin-context-menu": "workspace:*",
-    "@editablejs/plugin-fontsize": "workspace:*",
-    "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-history": "workspace:*",
-    "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*",
-    "@editablejs/plugin-toolbar": "workspace:*",
-    "@editablejs/plugin-ui": "workspace:*"
+    "is-plain-object": "^5.0.0"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [

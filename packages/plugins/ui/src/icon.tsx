@@ -493,6 +493,38 @@ export const MenuIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => 
   )
 }
 
+export const RedoIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M744 321v103.124c0 9.04 10.517 14.168 17.528 8.501l191.326-151.124c5.528-4.318 5.528-12.684 0-17.002L761.528 113.375c-7.146-5.667-17.528-0.54-17.528 8.5V225H411C221.014 225 67 379.014 67 569s154.014 344 344 344h154.272a8 8 0 0 1 8-8v-80a8 8 0 0 1-8-8H411c-136.967 0-248-111.033-248-248 0-136.967 111.033-248 248-248h333z"></path>
+    </svg>
+  )
+}
+
+export const UndoIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M280 321v103.124c0 9.04-10.517 14.168-17.528 8.501L71.146 281.501c-5.528-4.318-5.528-12.684 0-17.002l191.326-151.124c7.146-5.667 17.528-0.54 17.528 8.5V225h333c189.986 0 344 154.014 344 344S802.986 913 613 913H458.728a8 8 0 0 0-8-8v-80a8 8 0 0 0 8-8H613c136.967 0 248-111.033 248-248 0-136.967-111.033-248-248-248H280z"></path>
+    </svg>
+  )
+}
+
 const ICON_LIST = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -522,6 +554,8 @@ const ICON_LIST = {
   pasteText: PasteTextIcon,
   drag: DragIcon,
   menu: MenuIcon,
+  redo: RedoIcon,
+  undo: UndoIcon,
 }
 
 const IconStyles = tw.span`overflow-hidden inline-flex

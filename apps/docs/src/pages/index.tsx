@@ -66,7 +66,7 @@ export default function Docs() {
       withInlineToolbar(
         withToolbar(
           withPlugins(createEditor(), {
-            'font-size': { defaultSize: '14px' },
+            fontSize: { defaultSize: '14px' },
           }),
         ),
       ),

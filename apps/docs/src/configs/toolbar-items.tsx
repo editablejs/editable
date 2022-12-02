@@ -12,6 +12,8 @@ import {
   TaskListEditor,
   TableEditor,
   UI,
+  History,
+  HistoryEditor,
 } from '@editablejs/plugins'
 
 const { Icon } = UI
@@ -19,7 +21,25 @@ const { Icon } = UI
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup']
 
 export const createToolbarItems = (editor: Editable) => {
-  const items: ToolbarItem[] = marks.map(mark => ({
+  const items: ToolbarItem[] = [
+    {
+      type: 'button',
+      disabled: !HistoryEditor.hasUndos(editor),
+      children: <Icon name="undo" />,
+      onToggle: editor => {
+        HistoryEditor.undo(editor)
+      },
+    },
+    {
+      type: 'button',
+      disabled: !HistoryEditor.hasRedos(editor),
+      children: <Icon name="redo" />,
+      onToggle: editor => {
+        HistoryEditor.redo(editor)
+      },
+    },
+  ]
+  const markItems: ToolbarItem[] = marks.map(mark => ({
     type: 'button',
     active: MarkEditor.isActive(editor, mark),
     children: <Icon name={mark} />,
@@ -27,6 +47,7 @@ export const createToolbarItems = (editor: Editable) => {
       MarkEditor.toggle(editor, mark)
     },
   }))
+  items.push('separator', ...markItems)
   items.push(
     'separator',
     {

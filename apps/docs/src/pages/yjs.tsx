@@ -1,4 +1,4 @@
-import { EditableComposer, ContentEditable, createEditor, Descendant } from '@editablejs/editor'
+import { EditableProvider, ContentEditable, createEditor, Descendant } from '@editablejs/editor'
 import {
   withInlineToolbar,
   withPlugins,
@@ -97,7 +97,7 @@ export default function Docs() {
     return withInlineToolbar(
       withToolbar(
         withPlugins(withYHistory(editor), {
-          'font-size': { defaultSize: '14px' },
+          fontSize: { defaultSize: '14px' },
         }),
       ),
     )
@@ -125,12 +125,12 @@ export default function Docs() {
 
   return (
     <StyledWrapper>
-      <EditableComposer editor={editor} value={initialValue}>
+      <EditableProvider editor={editor} defaultValue={initialValue}>
         <Toolbar />
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />
         </StyledContainer>
-      </EditableComposer>
+      </EditableProvider>
     </StyledWrapper>
   )
 }

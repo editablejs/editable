@@ -171,7 +171,7 @@ importers:
       eslint: 7.32.0
       eslint-config-next: 12.2.2_dyxdave6dwjbccc5dgiifcmuza
       eslint-config-prettier: 8.5.0_eslint@7.32.0
-      eslint-config-turbo: 0.0.4_eslint@7.32.0
+      eslint-config-turbo: 0.0.7_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
 
   packages/config/jest-presets:
@@ -421,6 +421,39 @@ importers:
       twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
 
+  packages/plugins/history:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@types/react': ^17.x
+      '@types/react-dom': ^17.x
+      eslint-config-editable: workspace:*
+      is-plain-object: ^5.0.0
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      react: ^17.x
+      react-dom: ^17.x
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      typescript: ^4.5.3
+    dependencies:
+      is-plain-object: 5.0.0
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/react': 17.0.47
+      '@types/react-dom': 17.0.17
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_typescript@4.8.3
+      tsup-config: link:../../config/tsup-config
+      typescript: 4.8.3
+
   packages/plugins/indent:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -557,6 +590,7 @@ importers:
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-fontsize': workspace:*
       '@editablejs/plugin-heading': workspace:*
+      '@editablejs/plugin-history': workspace:0.0.0
       '@editablejs/plugin-indent': workspace:*
       '@editablejs/plugin-list': workspace:*
       '@editablejs/plugin-mark': workspace:*
@@ -580,6 +614,7 @@ importers:
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-fontsize': link:../fontsize
       '@editablejs/plugin-heading': link:../heading
+      '@editablejs/plugin-history': link:../history
       '@editablejs/plugin-indent': link:../indent
       '@editablejs/plugin-list': link:../list
       '@editablejs/plugin-mark': link:../mark
@@ -3731,13 +3766,13 @@ packages:
       eslint: 7.32.0
     dev: true
 
-  /eslint-config-turbo/0.0.4_eslint@7.32.0:
-    resolution: {integrity: sha512-HErPS/wfWkSdV9Yd2dDkhZt3W2B78Ih/aWPFfaHmCMjzPalh+5KxRRGTf8MOBQLCebcWJX0lP1Zvc1rZIHlXGg==}
+  /eslint-config-turbo/0.0.7_eslint@7.32.0:
+    resolution: {integrity: sha512-WbrGlyfs94rOXrhombi1wjIAYGdV2iosgJRndOZtmDQeq5GLTzYmBUCJQZWtLBEBUPCj96RxZ2OL7Cn+xv/Azg==}
     peerDependencies:
-      eslint: ^7.23.0 || ^8.0.0
+      eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 0.0.4_eslint@7.32.0
+      eslint-plugin-turbo: 0.0.7_eslint@7.32.0
     dev: true
 
   /eslint-import-resolver-node/0.3.6:
@@ -3876,10 +3911,10 @@ packages:
       string.prototype.matchall: 4.0.7
     dev: true
 
-  /eslint-plugin-turbo/0.0.4_eslint@7.32.0:
-    resolution: {integrity: sha512-dfmYE/iPvoJInQq+5E/0mj140y/rYwKtzZkn3uVK8+nvwC5zmWKQ6ehMWrL4bYBkGzSgpOndZM+jOXhPQ2m8Cg==}
+  /eslint-plugin-turbo/0.0.7_eslint@7.32.0:
+    resolution: {integrity: sha512-iajOH8eD4jha3duztGVBD1BEmvNrQBaA/y3HFHf91vMDRYRwH7BpHSDFtxydDpk5ghlhRxG299SFxz7D6z4MBQ==}
     peerDependencies:
-      eslint: ^7.23.0 || ^8.0.0
+      eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
     dev: true
@@ -4342,7 +4377,7 @@ packages:
     dependencies:
       array-union: 2.1.0
       dir-glob: 3.0.1
-      fast-glob: 3.2.11
+      fast-glob: 3.2.12
       ignore: 5.2.0
       merge2: 1.4.1
       slash: 3.0.0
