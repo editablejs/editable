@@ -6,7 +6,6 @@ An experimental rich text editor framework which aims to replace the native `con
 
 ## Development
 
-
 ```bash
 # Install
 pnpm install
@@ -75,8 +74,8 @@ plugin directory
 - [x] Indent
 - [ ] Fontcolor
 - [ ] BackgroundColor
-- [ ] Redo
-- [ ] Undo
+- [x] Redo
+- [x] Undo
 - [ ] Link
 - [ ] Image
 - [ ] Codeblock

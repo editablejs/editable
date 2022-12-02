@@ -72,8 +72,8 @@ pnpm dev
 - [x] Indent
 - [ ] Fontcolor
 - [ ] BackgroundColor
-- [ ] Redo
-- [ ] Undo
+- [x] Redo
+- [x] Undo
 - [ ] Link
 - [ ] Image
 - [ ] Codeblock
