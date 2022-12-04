@@ -14,19 +14,6 @@ pnpm install
 pnpm dev
 
 ```
-
-### Yjs
-
-After `pnpm dev` starts, visit `/yjs`
-
-## Directory Structure
-
-All source codes are in packages, and the apps directory is mainly used for documentation and test cases. Now, in the initial development phase, a React rendering editor model and the logic of model update are written for visual testing.
-
-### packages/breaker
-
-Mainly index some `unicode` characters. Because the number of bytes occupied by some characters is uncertain, resulting in inaccurate indexes after some characters are split, so this toolkit is needed to solve this problem.
-
 ### packages/editor
 
 Use the slatejs data model, and use react to render in the self-drawn cursor mode, no longer relying on the contenteditable attribute
