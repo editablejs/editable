@@ -38,7 +38,7 @@ export interface PluginOptions {
   table?: TableOptions
 }
 
-export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
+export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
   let newEditor = withContextMenu(editor)
   newEditor = withHistory(newEditor, options.history)
   newEditor = withIndent(newEditor, options.indent)
@@ -50,7 +50,7 @@ export const withPlugins = (editor: Editable, options: PluginOptions = {}) => {
   newEditor = withUnOrderedList(newEditor, options.unorderedList)
   newEditor = withTaskList(newEditor, options.taskList)
   newEditor = withTable(newEditor, options.table)
-  return newEditor as Editable &
+  return newEditor as T &
     HistoryEditor &
     ContextMenuEditor &
     MarkEditor &

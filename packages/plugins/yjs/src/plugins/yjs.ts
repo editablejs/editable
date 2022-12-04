@@ -1,4 +1,4 @@
-import { BaseEditor, Descendant, Editor, Operation, Point } from '@editablejs/editor'
+import { BaseEditor, Descendant, Editable, Editor, Operation, Point } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-slate'
 import { applySlateOp } from '../apply-to-yjs'
@@ -26,7 +26,7 @@ const ORIGIN: WeakMap<Editor, unknown> = new WeakMap()
 const LOCAL_CHANGES: WeakMap<Editor, LocalChange[]> = new WeakMap()
 const CONNECTED: WeakSet<Editor> = new WeakSet()
 
-export type YjsEditor = BaseEditor & {
+export type YjsEditor = Editable & {
   sharedRoot: Y.XmlText
 
   localOrigin: unknown

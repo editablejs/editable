@@ -1,23 +1,37 @@
-import { EditableProvider, ContentEditable, createEditor, Descendant } from '@editablejs/editor'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import tw, { styled } from 'twin.macro'
 import {
-  withInlineToolbar,
+  EditableProvider,
+  ContentEditable,
+  createEditor,
+  useIsomorphicLayoutEffect,
+  Placeholder,
+  Editor,
+  Descendant,
+  Editable,
+} from '@editablejs/editor'
+import {
   withPlugins,
+  withSideToolbar,
+  withInlineToolbar,
   withToolbar,
   useContextMenuEffect,
   useInlineToolbarEffect,
   ContextMenuStore,
   ToolbarStore,
+  useSideToolbarMenuEffect,
 } from '@editablejs/plugins'
 import { withYHistory, withYjs, withCursors, YjsEditor, CursorData } from '@editablejs/plugin-yjs'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import randomColor from 'randomcolor'
 import { faker } from '@faker-js/faker'
-import tw, { styled } from 'twin.macro'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
+import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
+import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
+import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import { createToolbarItems } from '../configs/toolbar-items'
-import { Toolbar } from '../components/toolbar'
+import { createSideToolbarItems } from '../configs/side-toolbar-items'
 
 const initialValue = [
   {
@@ -53,7 +67,7 @@ const StyledWrapper = styled.div`
 
 const StyledContainer = tw.div`mt-5`
 
-export default function Docs() {
+export default function Playground() {
   const [value, setValue] = useState<Descendant[]>([])
   const [connected, setConnected] = useState(false)
   const document = useMemo(() => new Y.Doc(), [])
@@ -93,14 +107,26 @@ export default function Docs() {
         data: cursorData,
       })
     }
-
-    return withInlineToolbar(
-      withToolbar(
-        withPlugins(withYHistory(editor), {
-          fontSize: { defaultSize: '14px' },
-        }),
+    editor = withYHistory(
+      withSideToolbar(
+        withInlineToolbar(
+          withToolbar(
+            withPlugins(editor, {
+              fontSize: { defaultSize: '14px' },
+            }),
+          ),
+        ),
       ),
     )
+    Placeholder.add(editor, {
+      check: entry => {
+        return Editor.isBlock(editor, entry[0])
+      },
+      render: () => {
+        return 'Enter some text...'
+      },
+    })
+    return editor
   }, [document, provider])
 
   // Connect editor and provider in useEffect to comply with concurrent mode
@@ -115,12 +141,22 @@ export default function Docs() {
     return () => YjsEditor.disconnect(editor as any)
   }, [editor])
 
+  useIsomorphicLayoutEffect(() => {
+    withHTMLSerializer(editor)
+    withHTMLDeserializer(editor)
+    withTextSerializer(editor)
+  }, [editor])
+
   useContextMenuEffect(() => {
     ContextMenuStore.setItems(editor, createContextMenuItems(editor))
   }, editor)
 
   useInlineToolbarEffect(() => {
     ToolbarStore.setInlineItems(editor, createToolbarItems(editor))
+  }, editor)
+
+  useSideToolbarMenuEffect((...a) => {
+    ToolbarStore.setSideMenuItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
 
   return (

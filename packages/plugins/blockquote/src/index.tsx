@@ -1,12 +1,12 @@
 import { Editable, Hotkey, Transforms, Editor, Range, Element, Path } from '@editablejs/editor'
 import { BLOCKQUOTE_KEY } from './constants'
 
-type Hotkey = string | ((e: KeyboardEvent) => boolean)
+type BlockquoteHotkey = string | ((e: KeyboardEvent) => boolean)
 
-const defaultHotkey: Hotkey = 'mod+shift+e'
+const defaultHotkey: BlockquoteHotkey = 'mod+shift+e'
 
 export interface BlockquoteOptions {
-  hotkey?: Hotkey
+  hotkey?: BlockquoteHotkey
 }
 
 export const BLOCKQUOTE_OPTIONS = new WeakMap<Editable, BlockquoteOptions>()

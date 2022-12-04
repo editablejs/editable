@@ -1,11 +1,21 @@
 import { createGlobalStyle } from 'styled-components'
-import tw, { theme, GlobalStyles as BaseStyles } from 'twin.macro'
+import tw, { GlobalStyles as BaseStyles } from 'twin.macro'
+import { AlgoliaStyle } from './algolia'
 
 const CustomStyles = createGlobalStyle({
+  html: {
+    colorScheme: 'light',
+    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+  },
   body: {
     WebkitTapHighlightColor: 'transparent',
-    ...tw`antialiased`,
-    lineHeight: 'normal',
+    ...tw`bg-wash dark:bg-wash-dark text-secondary dark:text-secondary-dark leading-base font-sans text-lg antialiased`,
+    '@media screen and (max-width: 1023px)': {
+      ...tw`overflow-x-hidden`,
+    },
+  },
+  a: {
+    cursor: 'pointer',
   },
 })
 
@@ -13,6 +23,7 @@ const GlobalStyles = () => (
   <>
     <BaseStyles />
     <CustomStyles />
+    <AlgoliaStyle />
   </>
 )
 

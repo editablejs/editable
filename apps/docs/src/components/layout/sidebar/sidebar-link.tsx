@@ -1,0 +1,83 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useRef, useEffect } from 'react'
+import * as React from 'react'
+import { IconNavArrow } from 'components/icon/nav-arrow'
+import Link from 'next/link'
+import tw from 'twin.macro'
+
+interface SidebarLinkProps {
+  href: string
+  selected?: boolean
+  title: string
+  level: number
+  wip: boolean | undefined
+  icon?: React.ReactNode
+  heading?: boolean
+  isExpanded?: boolean
+  isBreadcrumb?: boolean
+  hideArrow?: boolean
+  isPending: boolean
+}
+
+export function SidebarLink({
+  href,
+  selected = false,
+  title,
+  wip,
+  level,
+  heading = false,
+  isExpanded,
+  isBreadcrumb,
+  hideArrow,
+  isPending,
+}: SidebarLinkProps) {
+  const ref = useRef<HTMLAnchorElement>(null)
+
+  useEffect(() => {
+    if (selected && ref && ref.current) {
+      // @ts-ignore
+      if (typeof ref.current.scrollIntoViewIfNeeded === 'function') {
+        // @ts-ignore
+        ref.current.scrollIntoViewIfNeeded()
+      }
+    }
+  }, [ref, selected])
+
+  let target = ''
+  if (href.startsWith('https://')) {
+    target = '_blank'
+  }
+  return (
+    <Link href={href}>
+      <a
+        ref={ref}
+        title={title}
+        target={target}
+        aria-current={selected ? 'page' : undefined}
+        css={[
+          tw`p-2 pr-2 w-full cursor-pointer rounded-none lg:rounded-r-lg text-left hover:bg-gray-5 dark:hover:bg-gray-80 relative flex items-center justify-between`,
+          heading && tw`my-6`,
+          level > 0 && tw`pl-6 text-sm`,
+          level < 2 && tw`pl-5`,
+          level === 0 && tw`text-base font-bold`,
+          level === 0 && !selected && tw`dark:text-primary-dark text-primary `,
+          level === 1 && selected && tw`text-link dark:text-link-dark text-base`,
+          heading && tw`dark:text-primary-dark text-primary`,
+          !selected && !heading && tw`text-secondary dark:text-secondary-dark text-base`,
+          selected &&
+            tw`text-link dark:text-link-dark bg-highlight dark:bg-highlight-dark border-blue-40 hover:bg-highlight hover:text-link dark:hover:bg-highlight-dark dark:hover:text-link-dark text-base`,
+          isPending && tw`dark:bg-gray-70 bg-gray-300 dark:hover:bg-gray-70 hover:bg-gray-300`,
+        ]}
+      >
+        {/* This here needs to be refactored ofc */}
+        <span css={[wip && tw`text-gray-400 dark:text-gray-500`]}>{title}</span>
+        {isExpanded != null && !heading && !hideArrow && (
+          <span css={[tw`pr-1`, isExpanded && tw`text-link`, !isExpanded && tw`text-gray-30`]}>
+            <IconNavArrow displayDirection={isExpanded ? 'down' : 'right'} />
+          </span>
+        )}
+      </a>
+    </Link>
+  )
+}
