@@ -39,7 +39,12 @@ export const useEditableStoreProvider = (
     if (store) {
       return store
     }
-    const { store: storeValue, defaultValue = [], onChange, ...rest } = initial ?? {}
+    const {
+      store: storeValue,
+      defaultValue = [{ type: 'paragraph', children: [{ text: '' }] }],
+      onChange,
+      ...rest
+    } = initial ?? {}
     initialEditorDefaultProperties(editor, defaultValue, rest)
     const newStore = create<EditableStore>(() => ({
       editor: [editor],

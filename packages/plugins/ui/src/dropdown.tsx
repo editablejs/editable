@@ -106,7 +106,7 @@ export const Dropdown: FC<Dropdown> = ({
         <button
           disabled={disabled}
           css={[
-            tw`inline-flex cursor-pointer content-center items-center gap-2 rounded border-none bg-white px-1 py-1 outline-none hover:bg-gray-100`,
+            tw`inline-flex cursor-pointer content-center items-center gap-2 rounded border-none bg-white px-1 outline-none hover:bg-gray-100`,
             className,
           ]}
           {...triggerProps}

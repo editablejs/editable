@@ -1,4 +1,4 @@
-import { Editor, Transforms } from '@editablejs/editor'
+import { Descendant, Editor, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
@@ -69,8 +69,8 @@ export function withYHistory<T extends YjsEditor>(
   const { onChange, isLocalOrigin } = e
   e.onChange = () => {
     onChange()
-
-    LAST_SELECTION.set(e, e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection))
+    if (YjsEditor.connected(e))
+      LAST_SELECTION.set(e, e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection))
   }
 
   e.isLocalOrigin = origin => origin === e.withoutSavingOrigin || isLocalOrigin(origin)
@@ -131,8 +131,8 @@ export function withYHistory<T extends YjsEditor>(
   }
 
   const { connect, disconnect } = e
-  e.connect = () => {
-    connect()
+  e.connect = (initialValue: Descendant[] = []) => {
+    connect(initialValue)
 
     e.undoManager.on('stack-item-added', handleStackItemAdded)
     e.undoManager.on('stack-item-popped', handleStackItemPopped)
@@ -147,10 +147,14 @@ export function withYHistory<T extends YjsEditor>(
     disconnect()
   }
 
+  const { undo, redo } = e
+
   e.undo = () => {
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
       e.undoManager.undo()
+    } else if (undo) {
+      undo()
     }
   }
 
@@ -158,6 +162,8 @@ export function withYHistory<T extends YjsEditor>(
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
       e.undoManager.redo()
+    } else if (redo) {
+      redo()
     }
   }
 

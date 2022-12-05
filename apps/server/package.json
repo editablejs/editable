@@ -36,7 +36,7 @@
     "y-protocols": "^1.0.5"
   },
   "peerDependencies": {
-    "yjs": "^13.5.41"
+    "yjs": "^13.5.43"
   },
   "optionalDependencies": {
     "ws": "^6.2.1",

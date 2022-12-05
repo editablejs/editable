@@ -54,7 +54,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'dropdown',
       items: [
         {
-          value: '12px',
+          value: '14px',
         },
         {
           value: '16px',
@@ -72,7 +72,7 @@ export const createToolbarItems = (editor: Editable) => {
           value: '28px',
         },
       ],
-      value: FontSizeEditor.queryActive(editor) ?? '12px',
+      value: FontSizeEditor.queryActive(editor) ?? '14px',
       onToggle: (editor, value) => {
         FontSizeEditor.toggle(editor, value)
       },

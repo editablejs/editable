@@ -62,7 +62,7 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
   const containerRef = useRef<HTMLDivElement>(null)
 
   useIsomorphicLayoutEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current || containerRef.current.shadowRoot) return
     const root = containerRef.current.attachShadow({ mode: 'open' })
     setRoot(root)
   }, [])

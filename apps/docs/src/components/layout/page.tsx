@@ -22,7 +22,7 @@ export function Page({ children, toc }: PageProps) {
   let routeTree = sidebarLearn as RouteItem
   switch (section) {
     case 'apis':
-      routeTree = sidebarAPIs as RouteItem
+      routeTree = sidebarAPIs as unknown as RouteItem
       break
   }
   return (

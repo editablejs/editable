@@ -14,8 +14,9 @@ import {
   SelectionRect,
 } from '../utils/selection'
 import { RelativeRange } from '../types'
-import { CursorState, YjsEditor, CursorEditor, CursorStateChangeEvent } from '../plugins'
+import { CursorState, YjsEditor, CursorEditor } from '../plugins'
 import { relativeRangeToSlateRange } from '../utils/position'
+import { useRemoteClientIds } from './useRemoteClientIds'
 
 const RANGE_CACHE: WeakMap<Descendant[], WeakMap<RelativeRange, BaseRange | null>> = new WeakMap()
 
@@ -90,16 +91,13 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
     [editor],
   )
 
+  const clientIds = useRemoteClientIds(editor)
+
   // Update cursors on remote change
   useEffect(() => {
-    const handleChange = ({ added, removed, updated }: CursorStateChangeEvent) => {
-      updateCursors([...added, ...removed, ...updated])
-      requestReRender()
-    }
-
-    CursorEditor.on(editor, 'change', handleChange)
-    return () => CursorEditor.off(editor, 'change', handleChange)
-  }, [editor, requestReRender, updateCursors])
+    updateCursors(clientIds)
+    requestReRender()
+  }, [requestReRender, updateCursors, clientIds])
 
   // Update selection rects after paint
   // eslint-disable-next-line react-hooks/exhaustive-deps

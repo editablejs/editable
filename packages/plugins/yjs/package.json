@@ -37,11 +37,11 @@
     "tsup-config": "workspace:*",
     "twin.macro": "3.0.1",
     "typescript": "^4.5.3",
-    "yjs": "^13.5.41"
+    "yjs": "^13.5.43"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*",
-    "yjs": "^13.5.41"
+    "yjs": "^13.5.43"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "styled-components": "5.3.5",
-    "y-protocols": "1.0.5"
+    "y-protocols": "1.0.5",
+    "zustand": "4.1.4"
   }
 }
