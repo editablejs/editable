@@ -30,6 +30,13 @@ const nextConfig = withPlugins(plugins, {
   async redirects() {
     return redirects.redirects
   },
+  output: 'standalone',
+  // eslint-disable-next-line no-undef
+  experimental: { outputFileTracingRoot: path.join(__dirname, '../../') },
+  [PHASE_DEVELOPMENT_SERVER]: {
+    output: '',
+    experimental: {},
+  },
 })
 
 export default nextConfig

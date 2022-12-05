@@ -38,3 +38,5 @@ dist
 dist-ssr
 *.local
 .cache
+
+.pnpm-store
