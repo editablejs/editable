@@ -12,7 +12,11 @@
     "format": "turbo run format",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=./packages/* && pnpm release:only",
+    "release:only": "changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
