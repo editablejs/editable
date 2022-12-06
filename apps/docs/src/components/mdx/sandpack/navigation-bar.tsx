@@ -76,7 +76,7 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
     } else {
       return
     }
-  }, [isMultiFile])
+  }, [isMultiFile, onContainerResize])
 
   const handleReset = () => {
     /**

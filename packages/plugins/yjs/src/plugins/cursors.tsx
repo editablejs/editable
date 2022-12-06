@@ -12,10 +12,13 @@ import { slateRangeToRelativeRange } from '../utils/position'
 import { CaretPosition } from '../utils/selection'
 import { YjsEditor } from './yjs'
 
-export interface CursorStore {
+export interface RemoteCursorChangeState {
   added: number[]
   removed: number[]
   updated: number[]
+}
+export interface CursorStore {
+  clientIds: RemoteCursorChangeState
 }
 
 const CURSORS_TO_EDITABLE = new WeakMap<Editable, UseBoundStore<StoreApi<CursorStore>>>()
@@ -24,9 +27,12 @@ const getStore = (editor: Editable) => {
   let store = CURSORS_TO_EDITABLE.get(editor)
   if (!store) {
     store = create(() => ({
-      added: [],
-      removed: [],
-      updated: [],
+      clientIds: {
+        added: [],
+        removed: [],
+        updated: [],
+      },
+      states: {},
     }))
     CURSORS_TO_EDITABLE.set(editor, store)
   }
@@ -36,6 +42,7 @@ const getStore = (editor: Editable) => {
 export type CursorData = {
   name: string
   color: string
+  avatar: string
 }
 
 type CaretProps = {
@@ -82,9 +89,9 @@ const RemoteSelection = ({
 
   return (
     <React.Fragment>
-      {selectionRects.map((position, i) => (
+      {selectionRects.map(({ left, top, height, width }, i) => (
         <div
-          style={{ ...selectionStyle, ...position }}
+          style={{ ...selectionStyle, left, top, width, height }}
           tw="pointer-events-none absolute z-10"
           // eslint-disable-next-line react/no-array-index-key
           key={i}
@@ -115,7 +122,7 @@ const RemoteCursors = () => {
   )
 }
 
-export type RemoteCursorChangeEventListener = (event: CursorStore) => void
+export type RemoteCursorChangeEventListener = (event: RemoteCursorChangeState) => void
 
 export type CursorState<TCursorData extends Record<string, unknown> = Record<string, unknown>> = {
   relativeSelection: RelativeRange | null
@@ -268,23 +275,27 @@ export function withCursors<TCursorData extends Record<string, unknown>, TEditor
 
   const awarenessChangeListener: RemoteCursorChangeEventListener = yEvent => {
     const localId = e.awareness.clientID
-    const ids = {
+    const clientIds = {
       added: yEvent.added.filter(id => id !== localId),
       removed: yEvent.removed.filter(id => id !== localId),
       updated: yEvent.updated.filter(id => id !== localId),
     }
 
-    if (ids.added.length > 0 || ids.removed.length > 0 || ids.updated.length > 0) {
+    if (
+      clientIds.added.length > 0 ||
+      clientIds.removed.length > 0 ||
+      clientIds.updated.length > 0
+    ) {
       const store = CursorEditor.getStore(e)
       store.setState({
-        ...ids,
+        clientIds,
       })
     }
   }
 
   const { connect, disconnect } = e
-  e.connect = (initialValue: Descendant[] = []) => {
-    connect(initialValue)
+  e.connect = () => {
+    connect()
 
     e.awareness.on('change', awarenessChangeListener)
 

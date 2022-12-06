@@ -1,18 +1,17 @@
 import { Editable } from '@editablejs/editor'
-import { useMemo } from 'react'
 import { useStore } from 'zustand'
-import { CursorEditor } from '../plugins'
+import shallow from 'zustand/shallow'
+import { useCursorStore } from './useCursorStore'
 
-export const useCursorStore = (editor: Editable) => {
-  return useMemo(() => {
-    return CursorEditor.getStore(editor)
-  }, [editor])
-}
-
-export const useRemoteClientIds = (editor: Editable, changed = true) => {
+export const useRemoteClientIds = (editor: Editable, isShallow = true) => {
   const store = useCursorStore(editor)
-  return useStore(store, ({ added, removed, updated }) => {
-    const ids = added.concat(removed, updated)
-    return changed ? [...ids] : ids
-  })
+  return useStore(
+    store,
+    ({ clientIds }) => {
+      const { added, removed, updated } = clientIds
+      const ids = added.concat(removed, updated)
+      return ids
+    },
+    isShallow ? shallow : undefined,
+  )
 }

@@ -1,4 +1,5 @@
 import { Children, useContext, useMemo } from 'react'
+import Image from 'next/image'
 import * as React from 'react'
 
 import CodeBlock from './code-block'
@@ -145,7 +146,7 @@ function AuthorCredit({
 }) {
   return (
     <div tw="sr-only hover:sr-only group-focus-within:not-sr-only group-hover:not-sr-only">
-      <p tw="bg-card dark:bg-card-dark text-secondary dark:text-secondary-dark dark:text-secondary-dark after:border-t-card after:dark:border-t-card-dark absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full rounded-lg p-2 text-center text-sm leading-tight opacity-0 transition-opacity duration-300 after:absolute after:left-1/2 after:top-[95%] after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-b-transparent after:content-[''] group-hover:flex group-hover:opacity-100">
+      <p tw="bg-card dark:bg-card-dark text-secondary dark:text-secondary-dark after:border-t-card after:dark:border-t-card-dark absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full rounded-lg p-2 text-center text-sm leading-tight opacity-0 transition-opacity duration-300 after:absolute after:left-1/2 after:top-[95%] after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-b-transparent after:content-[''] group-hover:flex group-hover:opacity-100">
         <cite>
           Illustrated by{' '}
           {authorLink ? (
@@ -193,7 +194,7 @@ function Illustration({
       className="group"
     >
       <figure tw="my-8 flex justify-center">
-        <img src={src} alt={alt} style={{ maxHeight: 300 }} tw="rounded-lg bg-white" />
+        <Image src={src} alt={alt} style={{ maxHeight: 300 }} tw="rounded-lg bg-white" />
         {caption ? <figcaption tw="mt-4 text-center leading-tight">{caption}</figcaption> : null}
       </figure>
       {!isInBlock && <AuthorCredit author={author} authorLink={authorLink} />}
@@ -218,7 +219,7 @@ function IllustrationBlock({
   const images = imageInfos.map((info, index) => (
     <figure key={index}>
       <div tw="my-4 flex flex-1 items-center justify-center rounded-lg bg-white p-4 xl:p-6">
-        <img src={info.src} alt={info.alt} height={info.height} />
+        <Image src={info.src} alt={info.alt} height={info.height} />
       </div>
       {info.caption ? (
         <figcaption tw="text-secondary dark:text-secondary-dark mt-4 text-center leading-tight">

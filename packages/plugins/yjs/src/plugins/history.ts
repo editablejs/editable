@@ -131,8 +131,8 @@ export function withYHistory<T extends YjsEditor>(
   }
 
   const { connect, disconnect } = e
-  e.connect = (initialValue: Descendant[] = []) => {
-    connect(initialValue)
+  e.connect = () => {
+    connect()
 
     e.undoManager.on('stack-item-added', handleStackItemAdded)
     e.undoManager.on('stack-item-popped', handleStackItemPopped)

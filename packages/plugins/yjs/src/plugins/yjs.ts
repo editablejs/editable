@@ -39,7 +39,7 @@ export type YjsEditor = Editable & {
 
   isLocalOrigin: (origin: unknown) => boolean
 
-  connect: (initialValue?: Descendant[]) => void
+  connect: () => void
   disconnect: () => void
 }
 
@@ -79,8 +79,8 @@ export const YjsEditor = {
     return CONNECTED.has(editor)
   },
 
-  connect(editor: YjsEditor, initialValue: Descendant[] = []): void {
-    editor.connect(initialValue)
+  connect(editor: YjsEditor): void {
+    editor.connect()
   },
 
   disconnect(editor: YjsEditor): void {
@@ -187,29 +187,19 @@ export function withYjs<T extends Editor>(
     })
   }
 
-  e.connect = (initialValue: Descendant[] = []) => {
+  e.connect = () => {
     if (YjsEditor.connected(e)) {
       throw new Error('already connected')
     }
 
     e.sharedRoot.observeDeep(handleYEvents)
     const content = yTextToSlateElement(e.sharedRoot)
+
+    e.selection = null
+    e.children = [...content.children]
+    e.onChange()
+
     CONNECTED.add(e)
-    if (content.children.length === 0) {
-      assertDocumentAttachment(e.sharedRoot)
-      applySlateOp(
-        e.sharedRoot,
-        { children: initialValue },
-        {
-          type: 'insert_node',
-          path: [0],
-          node: { children: initialValue },
-        },
-      )
-    } else {
-      e.children = content.children
-      e.onChange()
-    }
   }
 
   e.disconnect = () => {

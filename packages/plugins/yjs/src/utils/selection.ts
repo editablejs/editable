@@ -13,54 +13,6 @@ export type CaretPosition = {
   left: number
 }
 
-export function getSelectionRects(editor: Editable, range: BaseRange): SelectionRect[] {
-  const [start, end] = Range.edges(range)
-  const domRange = Editable.toDOMRange(editor, range)
-
-  const selectionRects: SelectionRect[] = []
-  const nodeIterator = Editor.nodes(editor, { at: range, match: Text.isText })
-
-  for (const [node, path] of nodeIterator) {
-    const domNode = Editable.toDOMNode(editor, node)
-
-    const isStartNode = Path.equals(path, start.path)
-    const isEndNode = Path.equals(path, end.path)
-
-    let clientRects: DOMRectList | null = null
-    if (isStartNode || isEndNode) {
-      const nodeRange = document.createRange()
-      nodeRange.selectNode(domNode)
-
-      if (isStartNode) {
-        nodeRange.setStart(domRange.startContainer, domRange.startOffset)
-      }
-      if (isEndNode) {
-        nodeRange.setEnd(domRange.endContainer, domRange.endOffset)
-      }
-
-      clientRects = nodeRange.getClientRects()
-    } else {
-      clientRects = domNode.getClientRects()
-    }
-
-    for (let i = 0; i < clientRects.length; i++) {
-      const clientRect = clientRects.item(i)
-      if (!clientRect) {
-        continue
-      }
-      const [left, top] = Editable.toRelativePosition(editor, clientRect.left, clientRect.top)
-      selectionRects.push({
-        width: clientRect.width,
-        height: clientRect.height,
-        top,
-        left,
-      })
-    }
-  }
-
-  return selectionRects
-}
-
 export function getCaretPosition(
   selectionRects: SelectionRect[],
   range: BaseRange,

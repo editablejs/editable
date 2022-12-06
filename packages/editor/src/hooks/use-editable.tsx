@@ -120,5 +120,7 @@ export const useEditableStatic = (): Editable => {
 export const useEditable = (): Editable => {
   const store = useEditableStore()
 
-  return useStore(store, state => state.editor[0])
+  return useStore(store, state => {
+    return state.editor
+  })[0]
 }

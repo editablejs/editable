@@ -3,20 +3,16 @@ import {
   BaseRange,
   Descendant,
   Editable,
-  useEditable,
+  SelectionDrawing,
+  useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
 import { useRequestReRender } from './useRequestReRender'
-import {
-  CaretPosition,
-  getCaretPosition,
-  getSelectionRects,
-  SelectionRect,
-} from '../utils/selection'
+import { CaretPosition, getCaretPosition, SelectionRect } from '../utils/selection'
 import { RelativeRange } from '../types'
 import { CursorState, YjsEditor, CursorEditor } from '../plugins'
 import { relativeRangeToSlateRange } from '../utils/position'
-import { useRemoteClientIds } from './useRemoteClientIds'
+import { useRemoteStates } from './useRemoteStates'
 
 const RANGE_CACHE: WeakMap<Descendant[], WeakMap<RelativeRange, BaseRange | null>> = new WeakMap()
 
@@ -61,43 +57,19 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   containerRef,
   refreshOnResize = true,
 }: UseRemoteCursorOverlayPositionsOptions = {}) {
-  const editor = useEditable() as CursorEditor<TCursorData> & Editable
+  const editor = useEditableStatic() as CursorEditor<TCursorData> & Editable
 
   const requestReRender = useRequestReRender()
   const selectionRectCache = useRef<WeakMap<BaseRange, SelectionRect[]>>(new WeakMap())
 
-  const [cursorStates, setCursorStates] = useState<Record<string, CursorState<TCursorData>>>({})
   const [selectionRects, setSelectionRects] = useState<Record<string, SelectionRect[]>>({})
 
-  const updateCursors = useCallback(
-    (clientIds?: number[]) => {
-      setCursorStates(current => {
-        if (!clientIds) {
-          return CursorEditor.cursorStates(editor)
-        }
-
-        const updatedStates = Object.fromEntries(
-          clientIds.map(id => [id, CursorEditor.cursorState(editor, id)]),
-        )
-
-        return Object.fromEntries(
-          Object.entries({
-            ...current,
-            ...updatedStates,
-          }).filter(([, value]) => value !== null),
-        ) as Record<string, CursorState<TCursorData>>
-      })
-    },
-    [editor],
-  )
-
-  const clientIds = useRemoteClientIds(editor)
+  const cursorStates = useRemoteStates<TCursorData>(editor)
 
   // Update cursors on remote change
   useEffect(() => {
-    updateCursors(clientIds)
     requestReRender()
-  }, [requestReRender, updateCursors, clientIds])
+  }, [requestReRender])
 
   // Update selection rects after paint
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +90,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
           return [key, cached]
         }
 
-        const rects = getSelectionRects(editor, range)
+        const rects = SelectionDrawing.getRects(editor, range)
         selectionRectsChanged = true
         selectionRectCache.current.set(range, rects)
         return [key, rects]

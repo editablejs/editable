@@ -1,4 +1,5 @@
 {
+  "globalDependencies": ["$NODE_ENV"],
   "pipeline": {
     "build": {
       "outputs": ["dist/**", ".next/**", "public/dist/**"],

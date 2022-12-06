@@ -47,6 +47,7 @@ export * from './plugin/solt'
 export * from './plugin/locale'
 export * from './plugin/decorate'
 export * from './plugin/placeholder'
+export * from './plugin/selection-drawing'
 
 // Environment
 export * from './utils/environment'

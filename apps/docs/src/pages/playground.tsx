@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import tw, { css, styled } from 'twin.macro'
 import {
   EditableProvider,
@@ -7,7 +7,6 @@ import {
   useIsomorphicLayoutEffect,
   Placeholder,
   Editor,
-  Descendant,
 } from '@editablejs/editor'
 import {
   withPlugins,
@@ -27,7 +26,7 @@ import {
   withCursors,
   YjsEditor,
   CursorData,
-  useRemoteClientIds,
+  useRemoteStates,
   CursorEditor,
 } from '@editablejs/plugin-yjs'
 import randomColor from 'randomcolor'
@@ -44,8 +43,9 @@ import { Seo } from 'components/seo'
 import { createGlobalStyle } from 'styled-components'
 import { ExternalLink } from 'components/external-link'
 import { IconGitHub } from 'components/icon/github'
+import Image from 'next/image'
 
-const { Switch, SwitchThumb, Icon } = UI
+const { Switch, SwitchThumb, Icon, Tooltip } = UI
 
 const initialValue = [
   {
@@ -111,13 +111,29 @@ export default function Playground() {
   const [connecting, setConnection] = useState(false)
   const [enableCollaborative, setEnableCollaborative] = useState(false)
   const document = useMemo(() => new Y.Doc(), [])
-  const provider = useMemo(
-    () =>
+  const provider = useMemo(() => {
+    const provider =
       typeof window === 'undefined'
         ? null
-        : new WebsocketProvider('ws://localhost:1234', 'editable', document),
-    [document],
-  )
+        : new WebsocketProvider('ws://localhost:1234', 'editable', document, {
+            connect: false,
+          })
+
+    const handleStatus = (event: Record<'status', 'connecting' | 'connected' | 'disconnected'>) => {
+      const { status } = event
+      if (status === 'connected') {
+        setConnected(true)
+        setConnection(false)
+      } else if (status === 'connecting') {
+        setConnection(true)
+      } else if (status === 'disconnected') {
+        setConnected(false)
+        setConnection(false)
+      }
+    }
+    if (provider) provider.on('status', handleStatus)
+    return provider
+  }, [document])
 
   const editor = useMemo(() => {
     const { name } = faker
@@ -128,6 +144,7 @@ export default function Playground() {
         format: 'hex',
       }),
       name: `${name.firstName()} ${name.lastName()}`,
+      avatar: faker.image.avatar(),
     }
 
     const sharedType = document.get('content', Y.XmlText) as Y.XmlText
@@ -164,32 +181,17 @@ export default function Playground() {
   // requirements.
   useEffect(() => {
     if (!provider) return
-    const handleStatus = (event: Record<'status', 'connecting' | 'connected' | 'disconnected'>) => {
-      const { status } = event
-      if (status === 'connected') {
-        setConnected(true)
-        setConnection(false)
-      } else if (status === 'connecting') {
-        setConnection(true)
-      } else if (status === 'disconnected') {
-        setConnected(false)
-        setConnection(false)
-      }
-    }
     if (enableCollaborative) {
-      setConnection(true)
       provider.connect()
-      provider.on('status', handleStatus)
     }
     return () => {
-      provider.off('status', handleStatus)
       provider.disconnect()
     }
   }, [provider, enableCollaborative])
 
   useEffect(() => {
     if (connected) {
-      YjsEditor.connect(editor, initialValue)
+      YjsEditor.connect(editor)
     }
     return () => YjsEditor.disconnect(editor)
   }, [editor, connected])
@@ -212,13 +214,13 @@ export default function Playground() {
     ToolbarStore.setSideMenuItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
 
-  const remoteClientIds = useRemoteClientIds(editor)
+  const remoteClients = useRemoteStates<CursorData>(editor as CursorEditor)
 
   return (
     <>
       <CustomStyles />
       <Seo title="Editable Playground" />
-      <EditableProvider editor={editor}>
+      <EditableProvider editor={editor} initialValue={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
             <ExternalLink
@@ -228,13 +230,20 @@ export default function Playground() {
             >
               <IconGitHub />
             </ExternalLink>
-            <div tw="flex gap-1">
-              {remoteClientIds.map(id => {
-                const state = CursorEditor.cursorState<CursorData>(editor as CursorEditor, id)
-                const { name } = state?.data ?? { name: 'unknown' }
-                return <div key={id}>{name}</div>
+            <div tw="flex gap-1 items-center">
+              {Object.keys(remoteClients).map(id => {
+                const state = remoteClients[id]
+                if (!state.data) return
+                const { name, avatar } = state.data
+                return (
+                  <Tooltip key={id} content={name}>
+                    <div tw="rounded-full w-7 h-7 overflow-hidden">
+                      <Image alt={name} src={avatar} width={28} height={28} />
+                    </div>
+                  </Tooltip>
+                )
               })}
-              <div tw="flex items-center">
+              <div tw="flex items-center text-xs ml-3">
                 <label htmlFor="collaboration-mode" tw="mr-2">
                   {connecting ? 'Connecting...' : connected ? 'Collaboration mode' : 'Local mode'}
                 </label>

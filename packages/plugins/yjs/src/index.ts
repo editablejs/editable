@@ -23,6 +23,7 @@ import {
 
 export * from './hooks/useRemoteCursorOverlayPositions'
 export * from './hooks/useRemoteClientIds'
+export * from './hooks/useRemoteStates'
 
 export {
   withYjs,

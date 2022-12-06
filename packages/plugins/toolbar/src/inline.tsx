@@ -1,10 +1,4 @@
-import {
-  Editable,
-  useEditableStatic,
-  useIsomorphicLayoutEffect,
-  Range,
-  Slot,
-} from '@editablejs/editor'
+import { Editable, useEditableStatic, Range, Slot, SelectionDrawing } from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from './store'
@@ -45,7 +39,7 @@ const InlineToolbar = () => {
       let x = 0,
         y = 0
 
-      const rects = Editable.getSelectionRects(editor, selection, false)
+      const rects = SelectionDrawing.getRects(editor, selection, false)
       const isBackward = Range.isBackward(selection)
       if (rects) {
         const rect = isBackward ? rects[0] : rects[rects.length - 1]

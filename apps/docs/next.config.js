@@ -17,6 +17,9 @@ const baseConfig = {
   env: {
     SANDPACK_BARE_COMPONENTS: process.env.SANDPACK_BARE_COMPONENTS,
   },
+  images: {
+    domains: ['cloudflare-ipfs.com'],
+  },
   async redirects() {
     return redirects
   },
