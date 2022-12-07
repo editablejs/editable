@@ -1,4 +1,4 @@
-import { BaseEditor, Descendant, Editable, Editor, Operation, Point } from '@editablejs/editor'
+import { Descendant, Editable, Editor, Operation, Point, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-slate'
 import { applySlateOp } from '../apply-to-yjs'
@@ -194,9 +194,12 @@ export function withYjs<T extends Editor>(
 
     e.sharedRoot.observeDeep(handleYEvents)
     const content = yTextToSlateElement(e.sharedRoot)
-    e.children = content.children
-    CONNECTED.add(e)
+
+    e.selection = null
+    e.children = [...content.children]
     e.onChange()
+
+    CONNECTED.add(e)
   }
 
   e.disconnect = () => {
@@ -205,7 +208,7 @@ export function withYjs<T extends Editor>(
     }
 
     YjsEditor.flushLocalChanges(e)
-    e.sharedRoot.unobserveDeep(handleYEvents)
+    if (YjsEditor.connected(e)) e.sharedRoot.unobserveDeep(handleYEvents)
     CONNECTED.delete(e)
   }
 

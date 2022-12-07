@@ -5,6 +5,7 @@ import { useEditableStatic } from '../hooks/use-editable'
 import { useSelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { GridCell } from '../interfaces/cell'
 import { Editable } from '../plugin/editable'
+import { SelectionDrawing } from '../plugin/selection-drawing'
 import { ShadowRect } from './shadow'
 
 export const DragSelectionComponent = () => {
@@ -57,7 +58,7 @@ export const DragSelectionComponent = () => {
       const [rx, ry] = Editable.toRelativePosition(editor, x, y)
       return [new DOMRect(rx, ry, width, 2)]
     }
-    return Editable.getSelectionRects(editor, dragTo)
+    return SelectionDrawing.getRects(editor, dragTo)
   }, [dragPosition, dragTo, dragType, editor])
 
   const { dragColor, caretWidth } = useSelectionDrawingStyle()

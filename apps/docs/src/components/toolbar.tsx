@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import { useEditableStatic } from '@editablejs/editor'
 import {
   Toolbar as ToolbarComponent,
@@ -7,12 +8,12 @@ import {
 } from '@editablejs/plugins'
 import { createToolbarItems } from '../configs/toolbar-items'
 
-export const Toolbar = () => {
+export const Toolbar: FC = props => {
   const editor = useEditableStatic()
   useToolbarEffect(() => {
     ToolbarStore.setToolbarItems(editor, createToolbarItems(editor))
   }, editor)
 
   const items = useToolbarItems(editor)
-  return <ToolbarComponent items={items} />
+  return <ToolbarComponent {...props} items={items} />
 }

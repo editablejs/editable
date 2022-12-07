@@ -17,8 +17,8 @@ export interface HistoryEditor extends BaseEditor {
   history: History
   undo: () => void
   redo: () => void
-  hasUndos: () => boolean
-  hasRedos: () => boolean
+  canUndo: () => boolean
+  canRedo: () => boolean
 }
 
 // eslint-disable-next-line no-redeclare
@@ -63,13 +63,13 @@ export const HistoryEditor = {
     if (HistoryEditor.isHistoryEditor(editor)) editor.undo()
   },
 
-  hasRedos(editor: Editable): boolean {
-    if (HistoryEditor.isHistoryEditor(editor)) return editor.hasRedos()
+  canRedo(editor: Editable): boolean {
+    if (HistoryEditor.isHistoryEditor(editor)) return editor.canRedo()
     return false
   },
 
-  hasUndos(editor: Editable): boolean {
-    if (HistoryEditor.isHistoryEditor(editor)) return editor.hasUndos()
+  canUndo(editor: Editable): boolean {
+    if (HistoryEditor.isHistoryEditor(editor)) return editor.canUndo()
     return false
   },
 

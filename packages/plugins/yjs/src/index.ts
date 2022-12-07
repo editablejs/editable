@@ -3,7 +3,6 @@ import {
   CursorData,
   CursorEditor,
   CursorState,
-  CursorStateChangeEvent,
   RemoteCursorChangeEventListener,
   withCursors,
   WithCursorsOptions,
@@ -23,6 +22,8 @@ import {
 } from './utils/position'
 
 export * from './hooks/useRemoteCursorOverlayPositions'
+export * from './hooks/useRemoteClientIds'
+export * from './hooks/useRemoteStates'
 
 export {
   withYjs,
@@ -50,6 +51,5 @@ export type {
   CursorData,
   CursorState,
   RemoteCursorChangeEventListener,
-  CursorStateChangeEvent,
   RelativeRange,
 }

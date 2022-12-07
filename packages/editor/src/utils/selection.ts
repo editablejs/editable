@@ -57,7 +57,72 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
       lineKeys.push(lineRect)
     }
   }
+  for (const [line, rects] of lines) {
+    let minTop = line.top,
+      maxBottom = line.bottom,
+      maxRight = line.right
+    for (const rect of rects) {
+      const { top, bottom, right } = rect
+      if (top < minTop) minTop = top
+      if (bottom > maxBottom) maxBottom = bottom
+      if (right > maxRight && rect.width > 0) maxRight = right
+    }
+    line.top = minTop
+    line.bottom = maxBottom
+    line.right = maxRight
+  }
   return lines
+}
+
+/**
+ * 计算节点的高度，lineHeight * fontSize
+ * @param el
+ * @returns
+ */
+const calcElementHeight = (el: DOMElement) => {
+  const { lineHeight, fontSize } = getComputedStyle(el)
+
+  // TODO: pt em rem
+
+  let height = 0
+  // endsWith px
+  if (lineHeight.endsWith('px')) {
+    height = parseFloat(lineHeight)
+    return height
+  }
+  // endsWith %
+  else if (lineHeight.endsWith('%')) {
+    height = parseInt(lineHeight, 10) / 100
+  }
+  // number
+  else if (/^\d+(\.\d+)?$/.test(lineHeight)) {
+    height = parseFloat(lineHeight)
+  } else {
+    return el.getBoundingClientRect().height
+  }
+
+  let size = 0
+  if (fontSize.endsWith('px')) {
+    size = parseInt(fontSize, 10)
+  }
+
+  return height * size
+}
+
+const resetElementRect = (rect: DOMRect, height: number) => {
+  const oldHeight = rect.height
+  if (oldHeight >= height) return rect
+  const top = rect.top + (oldHeight - height) / 2
+  return new DOMRect(rect.left, top, rect.width, height)
+}
+
+const inLine = (rect: DOMRect, line: Record<'top' | 'bottom', number>) => {
+  return (
+    (rect.top >= line.top &&
+      (rect.bottom <= line.bottom || rect.top + rect.height / 3 < line.bottom)) ||
+    (rect.top <= line.top &&
+      (rect.bottom >= line.bottom || rect.bottom - rect.height / 3 > line.top))
+  )
 }
 
 /**
@@ -69,23 +134,19 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
  * @returns
  */
 const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom: number) => {
-  let height = bottom - top
   const lineRect = {
     top: top,
-    height: height,
+    height: bottom - top,
     bottom: bottom,
   }
 
   const compareHeight = (rect: DOMRect) => {
-    if (
-      (rect.top >= top && rect.bottom <= bottom) ||
-      (rect.top <= top && rect.bottom >= bottom && rect.height > height)
-    ) {
-      if (rect.height > height) {
-        lineRect.height = rect.height
-        lineRect.top = rect.top
-        lineRect.bottom = rect.bottom
-      }
+    if (inLine(rect, lineRect)) {
+      const top = lineRect.top < rect.top ? lineRect.top : rect.top
+      const bottom = lineRect.bottom > rect.bottom ? lineRect.bottom : rect.bottom
+      lineRect.height = bottom - top
+      lineRect.top = top
+      lineRect.bottom = bottom
     }
   }
 
@@ -97,12 +158,13 @@ const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom
         if (node) {
           if (Element.isElement(node)) {
             if (editor.isVoid(node)) {
-              const rect = child.getBoundingClientRect()
+              const rect = resetElementRect(child.getBoundingClientRect(), calcElementHeight(child))
               compareHeight(rect)
             } else if (editor.isInline(node)) {
+              const height = calcElementHeight(child)
               const rects = child.getClientRects()
               for (let r = 0; r < rects.length; r++) {
-                const rect = rects[r]
+                const rect = resetElementRect(rects[r], height)
                 compareHeight(rect)
               }
             } else {
@@ -113,9 +175,10 @@ const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom
               `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
             )
             nodes.forEach(node => {
+              const height = calcElementHeight(node)
               const rects = node.getClientRects()
               for (let r = 0; r < rects.length; r++) {
-                const rect = rects[r]
+                const rect = resetElementRect(rects[r], height)
                 compareHeight(rect)
               }
             })
@@ -161,13 +224,7 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
   const lines = splitLines(range.getClientRects())
   const lineRects: DOMRect[] = []
   for (const [line, rects] of lines) {
-    // 一行的最后rect的right 减去第一个rect的left 行得到宽度
-    const last =
-      rects
-        .concat()
-        .reverse()
-        .find(r => r.width > 0) ?? rects[rects.length - 1]
-    let width = last.right - rects[0].left
+    let width = line.right - line.left
     const lineRect = matchHighest(editor, domEl, line.top, line.bottom)
     line.top = lineRect.top
     line.height = lineRect.height
@@ -266,34 +323,33 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   }
   const lines = splitLines(rects)
   const lineRects: DOMRect[] = []
+  let prevLineRect: DOMRect | null = null
   for (const [line, rects] of lines) {
     // 找到对应行所在的 element
     const blockRect = blockRects.find(
-      r =>
-        ((r.top >= line.top && r.bottom <= line.bottom) ||
-          (r.top <= line.top && r.bottom >= line.bottom)) &&
-        line.left >= r.left &&
-        line.right <= r.right,
+      r => inLine(r, line) && line.left >= r.left && line.right <= r.right,
     )
     const el = blockRect ? rectMap.get(blockRect) : null
-    // 一行的最后rect的right 减去第一个rect的left 行得到宽度
-    const last =
-      rects
-        .concat()
-        .reverse()
-        .find(r => r.width > 0) ?? rects[rects.length - 1]
-    let width = last.right - rects[0].left
+
+    let width = line.right - line.left
     if (el) {
       const lineRect = matchHighest(editor, el, line.top, line.bottom)
       line.top = lineRect.top
       line.height = lineRect.height
-      line.bottom = lineRect.bottom
       // 空节点的宽度给个最小值
-      if (width < 1 && el.getBoundingClientRect().left === rects[0].left) {
+      if (el && width < 1 && el.getBoundingClientRect().left === line.left) {
         width = minWidth
       }
     }
+    // 去除行与行直接多余覆盖部分
+    if (prevLineRect && prevLineRect.bottom > line.top) {
+      const diffVal = prevLineRect.bottom - line.top
+      line.top += diffVal
+      line.height -= diffVal
+    }
     const lineRect = new DOMRect(rects[0].left, line.top, width, line.height)
+
+    prevLineRect = lineRect
     lineRects.push(lineRect)
   }
   return lineRects

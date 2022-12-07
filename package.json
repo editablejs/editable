@@ -2,8 +2,8 @@
   "name": "edtiablejs-packages",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/plugins/*"
   ],
   "scripts": {
     "build": "turbo run build",

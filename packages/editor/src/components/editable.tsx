@@ -7,19 +7,19 @@ import { Locale } from '../plugin/locale'
 
 export const EditableProvider = (props: {
   editor: Editable
-  defaultValue: Descendant[]
+  initialValue?: Descendant[]
   children: React.ReactNode
   lang?: string
   readOnly?: boolean
   onChange?: (value: Descendant[]) => void
 }) => {
-  const { editor, children, defaultValue, lang = 'en-US', readOnly = false, ...rest } = props
+  const { editor, children, initialValue, lang = 'en-US', readOnly = false, ...rest } = props
 
   const store = useEditableStoreProvider(editor, {
     storeValue: {
       readOnly,
     },
-    defaultValue,
+    initialValue,
     ...rest,
   })
 

@@ -40,7 +40,7 @@
     "remark-gfm": "3.0.1",
     "styled-components": "5.3.5",
     "y-websocket": "1.4.5",
-    "yjs": "^13.5.41"
+    "yjs": "^13.5.43"
   },
   "devDependencies": {
     "@babel/core": "7.19.1",

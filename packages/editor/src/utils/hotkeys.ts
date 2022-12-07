@@ -1,4 +1,4 @@
-import isHotkey, { isCodeHotkey, isKeyHotkey } from 'is-hotkey'
+import { isHotkey, isCodeHotkey, isKeyHotkey } from 'is-hotkey'
 import { IS_APPLE } from './environment'
 
 /**

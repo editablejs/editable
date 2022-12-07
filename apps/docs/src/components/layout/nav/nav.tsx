@@ -17,6 +17,7 @@ import type { RouteItem } from '../use-route-meta'
 import sidebarLearn from 'sidebarLearn.json'
 import sidebarAPIs from 'sidebarAPIs.json'
 import tw from 'twin.macro'
+import { ExternalLink } from 'components/external-link'
 
 declare global {
   interface Window {
@@ -101,7 +102,7 @@ export default function Nav() {
         routeTree = sidebarLearn as RouteItem
         break
       case 'apis':
-        routeTree = sidebarAPIs as RouteItem
+        routeTree = sidebarAPIs as unknown as RouteItem
         break
     }
   }
@@ -225,9 +226,9 @@ export default function Nav() {
           </div>
         </div>
         <div tw="border-border dark:border-border-dark hidden w-full items-center self-center border-b-0 px-0 pt-2 lg:flex lg:border-b 2xl:max-w-xs">
-          <NavLink href="/playground" target="_blank" isActive={false}>
+          <ExternalLink href="/playground" target="_blank">
             Playground
-          </NavLink>
+          </ExternalLink>
           <NavLink href="/learn" isActive={section === 'learn' || section === 'home'}>
             Learn
           </NavLink>

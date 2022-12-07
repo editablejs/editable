@@ -239,7 +239,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
     // have to use this unstable API to ensure it batches them. (2019/12/03)
     // https://github.com/facebook/react/issues/14259#issuecomment-439702367
     ReactDOM.unstable_batchedUpdates(() => {
-      if (!prevSelection || !e.selection || !Range.equals(prevSelection, e.selection)) {
+      if (
+        ((!prevSelection || !e.selection) && prevSelection !== e.selection) ||
+        (prevSelection && e.selection && !Range.equals(prevSelection, e.selection))
+      ) {
         e.onSelectionChange()
         prevSelection = e.selection ? Object.assign({}, e.selection) : null
       }

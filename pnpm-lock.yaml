@@ -88,7 +88,7 @@ importers:
       typescript: ^4.5.3
       unist-util-visit: ^2.0.3
       y-websocket: 1.4.5
-      yjs: ^13.5.41
+      yjs: ^13.5.43
     dependencies:
       '@codesandbox/sandpack-client': 1.17.1
       '@codesandbox/sandpack-react': 1.17.1_biqbaboplfbrettd7655fr4n2y
@@ -113,8 +113,8 @@ importers:
       remark-frontmatter: 4.0.1
       remark-gfm: 3.0.1
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
-      y-websocket: 1.4.5_yjs@13.5.41
-      yjs: 13.5.41
+      y-websocket: 1.4.5_yjs@13.5.43
+      yjs: 13.5.43
     devDependencies:
       '@babel/core': 7.19.1
       '@babel/plugin-transform-modules-commonjs': 7.19.6_@babel+core@7.19.1
@@ -169,15 +169,15 @@ importers:
       ws: ^6.2.1
       y-leveldb: ^0.1.0
       y-protocols: ^1.0.5
-      yjs: ^13.5.41
+      yjs: ^13.5.43
     dependencies:
       lib0: 0.2.52
       lodash.debounce: 4.0.8
       y-protocols: 1.0.5
-      yjs: 13.5.41
+      yjs: 13.5.43
     optionalDependencies:
       ws: 6.2.2
-      y-leveldb: 0.1.1_yjs@13.5.41
+      y-leveldb: 0.1.1_yjs@13.5.43
     devDependencies:
       '@types/lodash.debounce': 4.0.7
       '@types/node': 17.0.23
@@ -864,10 +864,12 @@ importers:
       twin.macro: 3.0.1
       typescript: ^4.5.3
       y-protocols: 1.0.5
-      yjs: ^13.5.41
+      yjs: ^13.5.43
+      zustand: 4.1.4
     dependencies:
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       y-protocols: 1.0.5
+      zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/is-hotkey': 0.1.7
@@ -888,7 +890,7 @@ importers:
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.0.1_tailwindcss@3.2.4
       typescript: 4.8.3
-      yjs: 13.5.41
+      yjs: 13.5.43
 
 packages:
 
@@ -10653,7 +10655,7 @@ packages:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
 
-  /y-leveldb/0.1.1_yjs@13.5.41:
+  /y-leveldb/0.1.1_yjs@13.5.43:
     resolution: {integrity: sha512-L8Q0MQmxCQ0qWIOuPzLbWn95TNhrCI7M6LaHnilU4I2IX08e4Dmfg5Tgy4JZ3tnl2aiuZyDOJplHl/msIB/IsA==}
     requiresBuild: true
     peerDependencies:
@@ -10661,7 +10663,7 @@ packages:
     dependencies:
       level: 6.0.1
       lib0: 0.2.52
-      yjs: 13.5.41
+      yjs: 13.5.43
     dev: false
     optional: true
 
@@ -10671,7 +10673,7 @@ packages:
       lib0: 0.2.52
     dev: false
 
-  /y-websocket/1.4.5_yjs@13.5.41:
+  /y-websocket/1.4.5_yjs@13.5.43:
     resolution: {integrity: sha512-5d9LTSy0GQKqSd/FKRo5DMBlsiTlCipbKcIgPLlno+5xHtfT8bm3uQdcbY9JvLfckojilLZWauXJu0vzDZX05w==}
     hasBin: true
     peerDependencies:
@@ -10680,10 +10682,10 @@ packages:
       lib0: 0.2.52
       lodash.debounce: 4.0.8
       y-protocols: 1.0.5
-      yjs: 13.5.41
+      yjs: 13.5.43
     optionalDependencies:
       ws: 6.2.2
-      y-leveldb: 0.1.1_yjs@13.5.41
+      y-leveldb: 0.1.1_yjs@13.5.43
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -10772,8 +10774,8 @@ packages:
       yargs-parser: 21.1.1
     dev: true
 
-  /yjs/13.5.41:
-    resolution: {integrity: sha512-4eSTrrs8OeI0heXKKioRY4ag7V5Bk85Z4MeniUyown3o3y0G7G4JpAZWrZWfTp7pzw2b53GkAQWKqHsHi9j9JA==}
+  /yjs/13.5.43:
+    resolution: {integrity: sha512-NJqWuiDOseYjkhnSVo55z+FZD6TsOJBZfMbH2I4OCm5vsgY7TESUjUGb7Pt1lljvvdSfBVj8CxQqZAnVxe5Iyg==}
     dependencies:
       lib0: 0.2.52
 

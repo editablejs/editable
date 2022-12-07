@@ -72,11 +72,11 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     }
   }
 
-  e.hasRedos = () => {
+  e.canRedo = () => {
     return e.history.redos.length > 0
   }
 
-  e.hasUndos = () => {
+  e.canUndo = () => {
     return e.history.undos.length > 0
   }
 

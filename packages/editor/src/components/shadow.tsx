@@ -21,15 +21,15 @@ export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<H
       ref={ref}
       style={{
         position: 'absolute',
-        top: 0,
-        left: 0,
+        top: rect.top,
+        left: rect.left,
         width: rect.width,
         height: rect.height,
-        transform: `translateX(${rect.left || 0}px) translateY(${rect.top || 0}px)`,
+        // 数值为单数的情况下，两组重合位置会有阴影
+        // transform: `translateX(${rect.left || 0}px) translateY(${rect.top || 0}px)`,
         opacity: 1,
         backgroundColor: `${rect.color || 'transparent'}`,
         zIndex: 1,
-        willChange: 'transform',
         ...style,
       }}
       {...props}
@@ -62,7 +62,7 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
   const containerRef = useRef<HTMLDivElement>(null)
 
   useIsomorphicLayoutEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current || containerRef.current.shadowRoot) return
     const root = containerRef.current.attachShadow({ mode: 'open' })
     setRoot(root)
   }, [])

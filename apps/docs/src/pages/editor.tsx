@@ -102,7 +102,7 @@ export default function Docs() {
 
   return (
     <StyledWrapper>
-      <EditableProvider editor={editor} defaultValue={initialValue}>
+      <EditableProvider editor={editor} initialValue={initialValue}>
         <Toolbar />
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />

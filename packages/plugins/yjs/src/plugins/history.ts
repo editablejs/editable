@@ -1,4 +1,4 @@
-import { Editor, Transforms } from '@editablejs/editor'
+import { Descendant, Editor, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
@@ -14,6 +14,9 @@ export type YHistoryEditor = YjsEditor & {
 
   undo: () => void
   redo: () => void
+
+  canUndo: () => boolean
+  canRedo: () => boolean
 }
 
 export const YHistoryEditor = {
@@ -28,11 +31,11 @@ export const YHistoryEditor = {
   },
 
   canUndo(editor: YHistoryEditor) {
-    return editor.undoManager.undoStack.length > 0
+    return editor.canUndo()
   },
 
   canRedo(editor: YHistoryEditor) {
-    return editor.undoManager.redoStack.length > 0
+    return editor.canRedo()
   },
 
   isSaving(editor: YHistoryEditor): boolean {
@@ -69,8 +72,8 @@ export function withYHistory<T extends YjsEditor>(
   const { onChange, isLocalOrigin } = e
   e.onChange = () => {
     onChange()
-
-    LAST_SELECTION.set(e, e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection))
+    if (YjsEditor.connected(e))
+      LAST_SELECTION.set(e, e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection))
   }
 
   e.isLocalOrigin = origin => origin === e.withoutSavingOrigin || isLocalOrigin(origin)
@@ -147,10 +150,14 @@ export function withYHistory<T extends YjsEditor>(
     disconnect()
   }
 
+  const { undo, redo, canRedo, canUndo } = e
+
   e.undo = () => {
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
       e.undoManager.undo()
+    } else if (undo) {
+      undo()
     }
   }
 
@@ -158,7 +165,23 @@ export function withYHistory<T extends YjsEditor>(
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
       e.undoManager.redo()
+    } else if (redo) {
+      redo()
     }
+  }
+
+  e.canRedo = () => {
+    if (YjsEditor.connected(e)) {
+      return e.undoManager.redoStack.length > 0
+    } else if (canRedo) return canRedo()
+    return false
+  }
+
+  e.canUndo = () => {
+    if (YjsEditor.connected(e)) {
+      return e.undoManager.undoStack.length > 0
+    } else if (canUndo) return canUndo()
+    return false
   }
 
   return e
