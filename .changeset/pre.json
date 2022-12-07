@@ -18,5 +18,8 @@
     "@editablejs/plugin-ui": "0.0.0",
     "@editablejs/plugin-yjs": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "clever-drinks-burn",
+    "happy-starfishes-vanish"
+  ]
 }
