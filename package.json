@@ -14,7 +14,6 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "prepare": "husky install",
     "changeset": "changeset",
-    "changeset-beta": "changeset pre enter beta",
     "version-packages": "changeset version",
     "release": "turbo run build --filter=./packages/* && pnpm release:only",
     "release:only": "changeset publish"
