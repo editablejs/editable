@@ -29,7 +29,7 @@ export const useEditableStoreProvider = (
   editor: Editable,
   initial?: {
     storeValue?: Partial<Omit<EditableStore, 'editor'>>
-    defaultValue?: Descendant[]
+    initialValue?: Descendant[]
     onChange?: (value: Descendant[]) => void
   } & Record<string, any>,
 ) => {
@@ -41,11 +41,11 @@ export const useEditableStoreProvider = (
     }
     const {
       store: storeValue,
-      defaultValue = [{ type: 'paragraph', children: [{ text: '' }] }],
+      initialValue = [{ type: 'paragraph', children: [{ text: '' }] }],
       onChange,
       ...rest
     } = initial ?? {}
-    initialEditorDefaultProperties(editor, defaultValue, rest)
+    initialEditorDefaultProperties(editor, initialValue, rest)
     const newStore = create<EditableStore>(() => ({
       editor: [editor],
       readOnly: false,

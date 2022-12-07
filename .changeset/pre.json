@@ -12,11 +12,11 @@
     "@editablejs/plugin-indent": "0.0.0",
     "@editablejs/plugin-list": "0.0.0",
     "@editablejs/plugin-mark": "0.0.0",
+    "@editablejs/plugins": "0.0.0",
     "@editablejs/plugin-table": "0.0.0",
     "@editablejs/plugin-toolbar": "0.0.0",
-    "@editablejs/plugin-yjs": "0.0.0",
     "@editablejs/plugin-ui": "0.0.0",
-    "@editablejs/plugins": "0.0.0"
+    "@editablejs/plugin-yjs": "0.0.0"
   },
   "changesets": []
 }
