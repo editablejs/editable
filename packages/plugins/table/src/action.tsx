@@ -4,8 +4,9 @@ import {
   useCancellablePromises,
   Transforms,
   Grid,
+  Slot,
 } from '@editablejs/editor'
-import React, { useRef, useState, useCallback, useMemo } from 'react'
+import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react'
 import { Icon } from '@editablejs/plugin-ui'
 import {
   ColsInsertIconStyles,
@@ -253,6 +254,14 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
   }
 
   const draging = useTableDragging()
+
+  useEffect(() => {
+    if (draging) {
+      Slot.disable(editor, () => true)
+    } else {
+      Slot.enable(editor, () => true)
+    }
+  }, [draging])
   const handleMouseOver = useCallback(() => {
     if (draging) return
     cancellablePromisesApi.clearPendingPromises()
