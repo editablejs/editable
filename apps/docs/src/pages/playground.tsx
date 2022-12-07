@@ -85,7 +85,10 @@ const StyledToolbar = styled(Toolbar)`
   ${tw`flex justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-6 `}
 `
 
-const StyledContainer = tw.div`mt-5 min-h-[80vh] bg-white shadow w-[800px] m-auto px-10 py-16 text-sm leading-7`
+const StyledContainer = styled.div`
+  ${tw`mt-5 min-h-[80vh] bg-white shadow w-[800px] m-auto px-10 py-16 text-sm`}
+  line-height: 1.7;
+`
 
 const StyledSwitch = styled(Switch)(({ checked }) => {
   return [
