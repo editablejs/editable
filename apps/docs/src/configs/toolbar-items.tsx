@@ -24,7 +24,7 @@ export const createToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = [
     {
       type: 'button',
-      disabled: !HistoryEditor.hasUndos(editor),
+      disabled: !HistoryEditor.canUndo(editor),
       children: <Icon name="undo" />,
       onToggle: editor => {
         HistoryEditor.undo(editor)
@@ -32,7 +32,7 @@ export const createToolbarItems = (editor: Editable) => {
     },
     {
       type: 'button',
-      disabled: !HistoryEditor.hasRedos(editor),
+      disabled: !HistoryEditor.canRedo(editor),
       children: <Icon name="redo" />,
       onToggle: editor => {
         HistoryEditor.redo(editor)

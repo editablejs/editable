@@ -14,6 +14,9 @@ export type YHistoryEditor = YjsEditor & {
 
   undo: () => void
   redo: () => void
+
+  canUndo: () => boolean
+  canRedo: () => boolean
 }
 
 export const YHistoryEditor = {
@@ -28,11 +31,11 @@ export const YHistoryEditor = {
   },
 
   canUndo(editor: YHistoryEditor) {
-    return editor.undoManager.undoStack.length > 0
+    return editor.canUndo()
   },
 
   canRedo(editor: YHistoryEditor) {
-    return editor.undoManager.redoStack.length > 0
+    return editor.canRedo()
   },
 
   isSaving(editor: YHistoryEditor): boolean {
@@ -147,7 +150,7 @@ export function withYHistory<T extends YjsEditor>(
     disconnect()
   }
 
-  const { undo, redo } = e
+  const { undo, redo, canRedo, canUndo } = e
 
   e.undo = () => {
     if (YjsEditor.connected(e)) {
@@ -165,6 +168,20 @@ export function withYHistory<T extends YjsEditor>(
     } else if (redo) {
       redo()
     }
+  }
+
+  e.canRedo = () => {
+    if (YjsEditor.connected(e)) {
+      return e.undoManager.redoStack.length > 0
+    } else if (canRedo) return canRedo()
+    return false
+  }
+
+  e.canUndo = () => {
+    if (YjsEditor.connected(e)) {
+      return e.undoManager.undoStack.length > 0
+    } else if (canUndo) return canUndo()
+    return false
   }
 
   return e
