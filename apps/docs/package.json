@@ -21,7 +21,7 @@
     "@docsearch/css": "3.3.0",
     "@docsearch/react": "3.3.0",
     "@editablejs/editor": "workspace:*",
-    "@editablejs/plugin-yjs": "workspace:0.0.0",
+    "@editablejs/plugin-yjs": "workspace",
     "@editablejs/plugins": "workspace:*",
     "@faker-js/faker": "7.5.0",
     "@headlessui/react": "1.7.4",
