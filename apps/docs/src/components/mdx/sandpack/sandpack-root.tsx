@@ -82,8 +82,14 @@ function SandpackRoot(props: SandpackProps) {
           autorun,
           initMode: 'user-visible',
           initModeObserverOptions: { rootMargin: '1400px 0px' },
-          bundlerURL: 'https://94be751e.sandpack-bundler.pages.dev',
           logLevel: SandpackLogLevel.None,
+        }}
+        customSetup={{
+          dependencies: {
+            '@editablejs/editor': 'latest',
+            react: 'latest',
+            'react-dom': 'latest',
+          },
         }}
       >
         <CustomPreset

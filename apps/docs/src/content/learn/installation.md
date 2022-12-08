@@ -15,12 +15,13 @@ You don't need to install anything to play with Editable. Try editing this sandb
 <Sandpack>
 
 ```js
+import * as React from 'react'
 import {
   EditableProvider,
   ContentEditable,
   createEditor,
 } from '@editablejs/editor'
-import * as React from 'react'
+
 
 export default function Docs() {
   const editor = React.useMemo(() => {
@@ -29,14 +30,7 @@ export default function Docs() {
 
   return (
     <div>
-      <EditableProvider editor={editor} defaultValue={[{
-        type: 'paragraph',
-        children: [
-          {
-            text: 'Hello, Editable'
-          }
-        ]
-    }]}>
+      <EditableProvider editor={editor}>
         <ContentEditable placeholder="Please enter content..." />
       </EditableProvider>
     </div>
