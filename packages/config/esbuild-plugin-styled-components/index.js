@@ -36,7 +36,14 @@ module.exports = config => {
           sourceMaps: true,
           inputSourceMap: false,
         })
-        return { contents: code, loader: 'jsx' }
+        return {
+          contents: code.replace(
+            /import\s+([0-9a-zA-Z_]+)\s+from\s+('|")styled-components('|")/gi,
+            `import $1styled_components from 'styled-components';
+            const $1 = typeof $1styled_components.default === 'undefined' ? $1styled_components : $1styled_components.default;`,
+          ),
+          loader: 'jsx',
+        }
       })
     },
   }
