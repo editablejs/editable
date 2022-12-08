@@ -16,6 +16,10 @@
     }
   },
   "dependencies": {
+    "@codemirror/highlight": "0.19.8",
+    "@codemirror/lang-css": "0.19.3",
+    "@codemirror/lang-html": "0.19.4",
+    "@codemirror/lang-javascript": "0.19.7",
     "@codesandbox/sandpack-client": "1.17.1",
     "@codesandbox/sandpack-react": "1.17.1",
     "@docsearch/css": "3.3.0",

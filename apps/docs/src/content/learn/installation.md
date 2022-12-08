@@ -22,7 +22,6 @@ import {
   createEditor,
 } from '@editablejs/editor'
 
-
 export default function Docs() {
   const editor = React.useMemo(() => {
     return createEditor()

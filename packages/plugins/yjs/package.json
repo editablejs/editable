@@ -19,6 +19,11 @@
   "files": [
     "dist/**"
   ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "scripts": {
     "test": "jest",
     "build": "tsup",
@@ -40,7 +45,7 @@
     "prettier-config": "workspace:*",
     "react": "^17.x",
     "react-dom": "^17.x",
-    "tailwind-config": "0.1.2",
+    "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",

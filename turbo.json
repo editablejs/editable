@@ -1,5 +1,5 @@
 {
-  "globalDependencies": ["$NODE_ENV"],
+  "globalDependencies": ["$NODE_ENV", "$YJS_SERVER"],
   "pipeline": {
     "build": {
       "outputs": ["dist/**", ".next/**", "public/dist/**"],

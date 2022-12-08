@@ -16,6 +16,7 @@ const baseConfig = {
   },
   env: {
     SANDPACK_BARE_COMPONENTS: process.env.SANDPACK_BARE_COMPONENTS,
+    YJS_SERVER: process.env.YJS_SERVER,
   },
   images: {
     domains: ['cloudflare-ipfs.com'],

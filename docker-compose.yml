@@ -1,14 +1,24 @@
 version: "3"
 
 services:
-  docs:
-    container_name: docs
+  # docs:
+  #   container_name: docs
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/docs/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - app_network
+  server:
+    container_name: server
     build:
       context: .
-      dockerfile: ./apps/docs/Dockerfile
+      dockerfile: ./apps/server/Dockerfile
     restart: always
     ports:
-      - 3000:3000
+      - 1234:1234
     networks:
       - app_network
 

@@ -39,6 +39,11 @@
   "files": [
     "dist/**"
   ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "scripts": {
     "test": "jest",
     "build": "tsup",

@@ -108,6 +108,13 @@ const StyledSwitchThumb = styled(SwitchThumb)`
     transform: translateX(20px);
   }
 `
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      YJS_SERVER: string
+    }
+  }
+}
 
 export default function Playground() {
   const [connected, setConnected] = React.useState(false)
@@ -118,7 +125,7 @@ export default function Playground() {
     const provider =
       typeof window === 'undefined'
         ? null
-        : new WebsocketProvider('ws://localhost:1234', 'editable', document, {
+        : new WebsocketProvider(process.env.YJS_SERVER, 'editable', document, {
             connect: false,
           })
 

@@ -24,6 +24,11 @@
       }
     }
   },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "typesVersions": {
     "*": {
       "serializer": [

@@ -5,7 +5,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN yarn global add turbo
 COPY . .
-RUN turbo prune --scope=@editablejs/docs --docker
+RUN turbo prune --scope=@editablejs/yjs-server --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM node:16-alpine AS installer
@@ -26,25 +26,8 @@ RUN pnpm install
 # Build the project
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
-RUN pnpm turbo run build
+RUN pnpm turbo run build --filter=yjs-server...
 
-FROM node:16-alpine AS runner
-WORKDIR /app
+EXPOSE 1234
 
-ENV NODE_ENV production
-# Don't run production as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
-
-COPY --from=installer /app/apps/docs/next.config.js .
-COPY --from=installer /app/apps/docs/package.json .
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=installer --chown=nextjs:nodejs /app/apps/docs/.next/standalone .
-COPY --from=installer --chown=nextjs:nodejs /app/apps/docs/.next/static ./apps/docs/.next/static
-
-EXPOSE 3000
-
-CMD node apps/docs/server.js
+CMD node apps/server/dist/index.js
