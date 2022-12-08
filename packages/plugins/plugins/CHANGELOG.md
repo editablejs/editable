@@ -1,5 +1,25 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [`0a02885`](https://github.com/editablejs/editable/commit/0a028851cee60fe7ff97a9b109138b3f5fba2db7) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - exports esm cjs
+
+- Updated dependencies [[`0a02885`](https://github.com/editablejs/editable/commit/0a028851cee60fe7ff97a9b109138b3f5fba2db7)]:
+  - @editablejs/editor@1.0.0-beta.2
+  - @editablejs/plugin-blockquote@1.0.0-beta.2
+  - @editablejs/plugin-context-menu@1.0.0-beta.2
+  - @editablejs/plugin-fontsize@1.0.0-beta.2
+  - @editablejs/plugin-heading@1.0.0-beta.2
+  - @editablejs/plugin-history@1.0.0-beta.2
+  - @editablejs/plugin-indent@1.0.0-beta.2
+  - @editablejs/plugin-list@1.0.0-beta.2
+  - @editablejs/plugin-mark@1.0.0-beta.2
+  - @editablejs/plugin-table@1.0.0-beta.2
+  - @editablejs/plugin-toolbar@1.0.0-beta.2
+  - @editablejs/plugin-ui@1.0.0-beta.2
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
