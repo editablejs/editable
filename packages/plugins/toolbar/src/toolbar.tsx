@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react'
+import * as React from 'react'
 import { Editable, useEditableStatic } from '@editablejs/editor'
 import {
   Toolbar as UIToolbar,
@@ -8,7 +8,7 @@ import {
 } from '@editablejs/plugin-ui'
 import { ToolbarButtonItem, ToolbarDropdownItem, ToolbarItem } from './store'
 
-export const ToolbarButtonDefault: FC<ToolbarButtonItem> = ({ type, onToggle, ...props }) => {
+export const ToolbarButtonDefault: React.FC<ToolbarButtonItem> = ({ type, onToggle, ...props }) => {
   const editor = useEditableStatic()
 
   const handleToogle = () => {
@@ -18,7 +18,7 @@ export const ToolbarButtonDefault: FC<ToolbarButtonItem> = ({ type, onToggle, ..
   return <UIToolbarButton {...props} onToggle={handleToogle} />
 }
 
-export const ToolbarButton = memo(ToolbarButtonDefault, (prev, next) => {
+export const ToolbarButton = React.memo(ToolbarButtonDefault, (prev, next) => {
   return (
     prev.active === next.active &&
     prev.disabled === next.disabled &&
@@ -28,7 +28,11 @@ export const ToolbarButton = memo(ToolbarButtonDefault, (prev, next) => {
   )
 })
 
-export const ToolbarDropdownDefault: FC<ToolbarDropdownItem> = ({ type, onToggle, ...props }) => {
+export const ToolbarDropdownDefault: React.FC<ToolbarDropdownItem> = ({
+  type,
+  onToggle,
+  ...props
+}) => {
   const editor = useEditableStatic()
 
   const handleToogle = (value: string) => {
@@ -38,7 +42,7 @@ export const ToolbarDropdownDefault: FC<ToolbarDropdownItem> = ({ type, onToggle
   return <UIToolbarDropdown {...props} onToggle={handleToogle} />
 }
 
-export const ToolbarDropdown = memo(ToolbarDropdownDefault, (prev, next) => {
+export const ToolbarDropdown = React.memo(ToolbarDropdownDefault, (prev, next) => {
   return (
     prev.disabled === next.disabled &&
     prev.value === next.value &&

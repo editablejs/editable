@@ -1,6 +1,6 @@
-import { memo } from 'react'
+import * as React from 'react'
 
-export const IconHint = memo<JSX.IntrinsicElements['svg']>(function IconHint({ className }) {
+export const IconHint = React.memo<JSX.IntrinsicElements['svg']>(function IconHint({ className }) {
   return (
     <svg
       className={className}

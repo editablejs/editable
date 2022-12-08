@@ -1,5 +1,5 @@
-import { Descendant, Editable, Range, Slot, useEditableStatic } from '@editablejs/editor'
-import React, { CSSProperties, useEffect, useRef } from 'react'
+import { Editable, Range, Slot, useEditableStatic } from '@editablejs/editor'
+import * as React from 'react'
 import { Awareness } from 'y-protocols/awareness'
 import * as Y from 'yjs'
 import create, { StoreApi, UseBoundStore } from 'zustand'
@@ -51,12 +51,12 @@ type CaretProps = {
 }
 
 function Caret({ position, data }: CaretProps) {
-  const caretStyle: CSSProperties = {
+  const caretStyle: React.CSSProperties = {
     ...position,
     background: data.color,
   }
 
-  const labelStyle: CSSProperties = {
+  const labelStyle: React.CSSProperties = {
     transform: 'translateY(-100%)',
     background: data.color,
   }
@@ -82,7 +82,7 @@ const RemoteSelection = ({
     return null
   }
 
-  const selectionStyle: CSSProperties = {
+  const selectionStyle: React.CSSProperties = {
     // Add a opacity to the background color
     backgroundColor: `${data.color}66`,
   }
@@ -103,9 +103,9 @@ const RemoteSelection = ({
 }
 
 const RemoteCursors = () => {
-  const containerRef = useRef<HTMLElement | null>(null)
+  const containerRef = React.useRef<HTMLElement | null>(null)
   const editor = useEditableStatic()
-  useEffect(() => {
+  React.useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
   }, [editor])
 

@@ -1,5 +1,5 @@
 import NextLink from 'next/link'
-import { memo } from 'react'
+import * as React from 'react'
 import { removeFromLast } from 'utils/remove-from-last'
 import { IconNavArrow } from './icon/nav-arrow'
 import { RouteMeta } from './layout/use-route-meta'
@@ -11,7 +11,7 @@ function areEqual(prevProps: DocsPageFooterProps, props: DocsPageFooterProps) {
   return prevProps.route?.path === props.route?.path
 }
 
-export const DocsPageFooter = memo<DocsPageFooterProps>(function DocsPageFooter({
+export const DocsPageFooter = React.memo<DocsPageFooterProps>(function DocsPageFooter({
   nextRoute,
   prevRoute,
   route,

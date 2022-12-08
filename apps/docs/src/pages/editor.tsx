@@ -19,7 +19,7 @@ import {
 } from '@editablejs/plugins'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
-import React, { useMemo } from 'react'
+import * as React from 'react'
 import tw, { styled } from 'twin.macro'
 import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
@@ -61,7 +61,7 @@ const StyledWrapper = styled.div`
 const StyledContainer = tw.div`mt-5`
 
 export default function Docs() {
-  const editor = useMemo(() => {
+  const editor = React.useMemo(() => {
     const editor = withSideToolbar(
       withInlineToolbar(
         withToolbar(

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { Measurable, observeElementRect } from '../observe-element-rect'
 
 /**
@@ -6,8 +6,8 @@ import { Measurable, observeElementRect } from '../observe-element-rect'
  * and observe it along time.
  */
 function useRect(measurable: Measurable | null) {
-  const [rect, setRect] = useState<ClientRect>()
-  useEffect(() => {
+  const [rect, setRect] = React.useState<ClientRect>()
+  React.useEffect(() => {
     if (measurable) {
       const unobserve = observeElementRect(measurable, setRect)
       return () => {

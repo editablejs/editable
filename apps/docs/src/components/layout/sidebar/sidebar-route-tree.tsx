@@ -1,6 +1,5 @@
-import { useRef, useLayoutEffect, Fragment } from 'react'
+import * as React from 'react'
 
-import cn from 'classnames'
 import { RouteItem } from 'components/layout/use-route-meta'
 import { useRouter } from 'next/router'
 import { removeFromLast } from 'utils/remove-from-last'
@@ -25,18 +24,18 @@ function CollapseWrapper({
   duration: number
   children: any
 }) {
-  const ref = useRef<HTMLDivElement | null>(null)
-  const timeoutRef = useRef<number | null>(null)
+  const ref = React.useRef<HTMLDivElement | null>(null)
+  const timeoutRef = React.useRef<number | null>(null)
   const { getCollapseProps } = useCollapse({
     isExpanded,
     duration,
   })
 
   // Disable pointer events while animating.
-  const isExpandedRef = useRef(isExpanded)
+  const isExpandedRef = React.useRef(isExpanded)
   if (typeof window !== 'undefined') {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    useLayoutEffect(() => {
+    React.useLayoutEffect(() => {
       const wasExpanded = isExpandedRef.current
       if (wasExpanded === isExpanded) {
         return
@@ -148,10 +147,10 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
 
         if (hasSeparator) {
           return (
-            <Fragment key={`${title}-${path}-${level}-separator`}>
+            <React.Fragment key={`${title}-${path}-${level}-separator`}>
               <li role="separator" tw="border-border dark:border-border-dark my-2 ml-5 border-b" />
               {listItem}
-            </Fragment>
+            </React.Fragment>
           )
         } else {
           return listItem

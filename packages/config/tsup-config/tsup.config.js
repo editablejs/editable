@@ -3,6 +3,8 @@ const styled = require('esbuild-plugin-styled-components')
 module.exports = options => {
   const isDev = !!options.watch
   return {
+    bundle: true,
+    target: ['es2015'],
     entry: ['src/index.ts'],
     format: ['cjs', 'esm', 'iife'],
     dts: true,

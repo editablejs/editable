@@ -1,5 +1,5 @@
 import { Editable, Slot, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { FC, useEffect, useRef, useState } from 'react'
+import * as React from 'react'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
@@ -25,7 +25,7 @@ interface ContextMenu extends UIContextMenu {
   items: ContextMenuItem[]
 }
 
-const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
+const ContextMenu: React.FC<ContextMenu> = ({ container, items, ...props }) => {
   const renderItems = (items: ContextMenuItem[]) => {
     return items.map((item, index) => {
       if ('type' in item) {
@@ -56,15 +56,15 @@ const ContextMenu: FC<ContextMenu> = ({ container, items, ...props }) => {
 }
 
 const ContextMenuPortal = () => {
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const containerRef = useRef<HTMLElement | null>(null)
+  const rootRef = React.useRef<HTMLDivElement | null>(null)
+  const containerRef = React.useRef<HTMLElement | null>(null)
 
   const editor = useEditableStatic()
   const [open, setOpen] = useContextMenuOpen(editor)
   const items = useContextMenuItems(editor)
-  const [point, setPoint] = useState<Point>({ x: 0, y: 0 })
+  const [point, setPoint] = React.useState<Point>({ x: 0, y: 0 })
 
-  useEffect(() => {
+  React.useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root

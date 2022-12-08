@@ -1,4 +1,3 @@
-import { Children } from 'react'
 import * as React from 'react'
 import CodeBlock from './code-block'
 
@@ -8,10 +7,10 @@ interface CodeDiagramProps {
 }
 
 export function CodeDiagram({ children, flip = false }: CodeDiagramProps) {
-  const illustration = Children.toArray(children).filter((child: any) => {
+  const illustration = React.Children.toArray(children).filter((child: any) => {
     return child.type === 'img'
   })
-  const content = Children.toArray(children).map((child: any) => {
+  const content = React.Children.toArray(children).map((child: any) => {
     if (child.type?.mdxName === 'pre') {
       return <CodeBlock {...child.props} noMargin={true} noMarkers={true} />
     } else if (child.type === 'img') {

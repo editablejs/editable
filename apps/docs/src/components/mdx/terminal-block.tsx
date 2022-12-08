@@ -1,4 +1,3 @@
-import { isValidElement, useState, useEffect } from 'react'
 import * as React from 'react'
 import { IconTerminal } from '../icon/terminal'
 import { IconCopy } from 'components/icon/copy'
@@ -25,14 +24,14 @@ function TerminalBlock({ level = 'info', children }: TerminalBlockProps) {
   let message: string | undefined
   if (typeof children === 'string') {
     message = children
-  } else if (isValidElement(children) && typeof children.props.children === 'string') {
+  } else if (React.isValidElement(children) && typeof children.props.children === 'string') {
     message = children.props.children
   } else {
     throw Error('Expected TerminalBlock children to be a plain string.')
   }
 
-  const [copied, setCopied] = useState(false)
-  useEffect(() => {
+  const [copied, setCopied] = React.useState(false)
+  React.useEffect(() => {
     if (!copied) {
       return
     } else {

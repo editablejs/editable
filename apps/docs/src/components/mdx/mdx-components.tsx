@@ -1,4 +1,3 @@
-import { Children, useContext, useMemo } from 'react'
 import Image from 'next/image'
 import * as React from 'react'
 
@@ -215,7 +214,7 @@ function IllustrationBlock({
   sequential: boolean
   children: any
 }) {
-  const imageInfos = Children.toArray(children).map((child: any) => child.props)
+  const imageInfos = React.Children.toArray(children).map((child: any) => child.props)
   const images = imageInfos.map((info, index) => (
     <figure key={index}>
       <div tw="my-4 flex flex-1 items-center justify-center rounded-lg bg-white p-4 xl:p-6">
@@ -283,8 +282,8 @@ function calculateNestedToc(toc: Toc): NestedTocRoot {
 }
 
 function InlineToc() {
-  const toc = useContext(TocContext)
-  const root = useMemo(() => calculateNestedToc(toc), [toc])
+  const toc = React.useContext(TocContext)
+  const root = React.useMemo(() => calculateNestedToc(toc), [toc])
   return <InlineTocItem items={root.children} />
 }
 

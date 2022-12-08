@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import * as React from 'react'
 import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import GlobalStyles from '../styles/global'
@@ -8,7 +8,7 @@ import '../styles/sandpack.css'
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Taken from StackOverflow. Trying to detect both Safari desktop and mobile.
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     if (isSafari) {
@@ -23,7 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }, [])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleRouteChange = (url: string) => {
       // ga('set', 'page', url)
       // ga('send', 'pageview')

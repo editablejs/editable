@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
+import * as React from 'react'
 
 interface DiagramGroupProps {
-  children: ReactNode
+  children: React.ReactNode
 }
 
 export function DiagramGroup({ children }: DiagramGroupProps) {

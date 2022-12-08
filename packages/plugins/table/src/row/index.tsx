@@ -6,7 +6,7 @@ import {
   GridRow,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import React from 'react'
+import * as React from 'react'
 import { TableCellEditor } from '../cell'
 import { TABLE_ROW_KEY } from '../constants'
 import { useTableSize } from '../context'

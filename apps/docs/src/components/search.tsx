@@ -3,7 +3,6 @@ import { IconSearch } from 'components/icon/search'
 import Head from 'next/head'
 import Link from 'next/link'
 import Router from 'next/router'
-import { useState, useCallback, useEffect } from 'react'
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { siteConfig } from 'siteConfig'
@@ -55,7 +54,7 @@ function useDocSearchKeyboardEvents({
   onOpen: () => void
   onClose: () => void
 }) {
-  useEffect(() => {
+  React.useEffect(() => {
     function onKeyDown(event: any) {
       function open() {
         // We check that no other DocSearch modal is showing before opening
@@ -96,9 +95,9 @@ export function Search({
     hitsPerPage: 5,
   },
 }: SearchProps) {
-  const [isShowing, setIsShowing] = useState(false)
+  const [isShowing, setIsShowing] = React.useState(false)
 
-  const importDocSearchModalIfNeeded = useCallback(function importDocSearchModalIfNeeded() {
+  const importDocSearchModalIfNeeded = React.useCallback(function importDocSearchModalIfNeeded() {
     if (DocSearchModal) {
       return Promise.resolve()
     }
@@ -109,7 +108,7 @@ export function Search({
     })
   }, [])
 
-  const onOpen = useCallback(
+  const onOpen = React.useCallback(
     function onOpen() {
       importDocSearchModalIfNeeded().then(() => {
         setIsShowing(true)
@@ -118,7 +117,7 @@ export function Search({
     [importDocSearchModalIfNeeded, setIsShowing],
   )
 
-  const onClose = useCallback(
+  const onClose = React.useCallback(
     function onClose() {
       setIsShowing(false)
     },

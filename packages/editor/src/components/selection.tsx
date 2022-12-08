@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import * as React from 'react'
 import { Range } from 'slate'
 import { useFocused } from '../hooks/use-focused'
 import {
@@ -11,7 +11,7 @@ import { ShadowRect } from './shadow'
 
 interface SelectionProps {}
 
-const SelectionComponent: FC<SelectionProps> = () => {
+const SelectionComponent: React.FC<SelectionProps> = () => {
   const selection = useSelectionDrawingSelection()
   const rects = useSelectionDrawingRects()
   const enabled = useSelectionDrawingEnabled()

@@ -1,6 +1,6 @@
 import escapeHtml from 'escape-html'
 import merge from 'lodash.merge'
-import React, { DOMAttributes } from 'react'
+import * as React from 'react'
 import { cssStyleToString, htmlAttributesToString } from '../utils/dom'
 import { Editable } from './editable'
 import { Editor, Text, Node } from './expand'
@@ -68,7 +68,7 @@ export const TextSerializer = {
 export type HTMLSerializerAttributes =
   | Omit<
       Omit<React.AllHTMLAttributes<HTMLElement>, 'value'>,
-      keyof DOMAttributes<HTMLElement> | 'style'
+      keyof React.DOMAttributes<HTMLElement> | 'style'
     >
   | Record<string, string | boolean | number | undefined>
 

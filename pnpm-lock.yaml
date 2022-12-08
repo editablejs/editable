@@ -275,8 +275,10 @@ importers:
 
   packages/config/tsup-config:
     specifiers:
+      esbuild-plugin-alias: 0.2.1
       esbuild-plugin-styled-components: workspace:*
     devDependencies:
+      esbuild-plugin-alias: 0.2.1
       esbuild-plugin-styled-components: link:../esbuild-plugin-styled-components
 
   packages/editor:
@@ -4703,6 +4705,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /esbuild-plugin-alias/0.2.1:
+    resolution: {integrity: sha512-jyfL/pwPqaFXyKnj8lP8iLk6Z0m099uXR45aSN8Av1XD4vhvQutxxPzgA2bTcAwQpa1zCXDcWOlhFgyP3GKqhQ==}
+    dev: true
 
   /esbuild-sunos-64/0.14.49:
     resolution: {integrity: sha512-4c8Zowp+V3zIWje329BeLbGh6XI9c/rqARNaj5yPHdC61pHI9UNdDxT3rePPJeWcEZVKjkiAS6AP6kiITp7FSw==}

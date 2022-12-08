@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import {
   BaseEditor,
   Editor,

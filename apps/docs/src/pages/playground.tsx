@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import * as React from 'react'
 import tw, { css, styled } from 'twin.macro'
 import {
   EditableProvider,
@@ -110,11 +110,11 @@ const StyledSwitchThumb = styled(SwitchThumb)`
 `
 
 export default function Playground() {
-  const [connected, setConnected] = useState(false)
-  const [connecting, setConnection] = useState(false)
-  const [enableCollaborative, setEnableCollaborative] = useState(false)
-  const document = useMemo(() => new Y.Doc(), [])
-  const provider = useMemo(() => {
+  const [connected, setConnected] = React.useState(false)
+  const [connecting, setConnection] = React.useState(false)
+  const [enableCollaborative, setEnableCollaborative] = React.useState(false)
+  const document = React.useMemo(() => new Y.Doc(), [])
+  const provider = React.useMemo(() => {
     const provider =
       typeof window === 'undefined'
         ? null
@@ -138,7 +138,7 @@ export default function Playground() {
     return provider
   }, [document])
 
-  const editor = useMemo(() => {
+  const editor = React.useMemo(() => {
     const { name } = faker
     const cursorData: CursorData = {
       color: randomColor({
@@ -182,7 +182,7 @@ export default function Playground() {
 
   // Connect editor and provider in useEffect to comply with concurrent mode
   // requirements.
-  useEffect(() => {
+  React.useEffect(() => {
     if (!provider) return
     if (enableCollaborative) {
       provider.connect()
@@ -192,7 +192,7 @@ export default function Playground() {
     }
   }, [provider, enableCollaborative])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (connected) {
       YjsEditor.connect(editor)
     }

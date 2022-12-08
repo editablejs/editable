@@ -1,16 +1,4 @@
-import {
-  ComponentPropsWithoutRef,
-  createContext,
-  ElementRef,
-  FC,
-  forwardRef,
-  ReactNode,
-  RefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import * as React from 'react'
 import {
   useFloating,
   autoUpdate,
@@ -47,10 +35,10 @@ type PopperContextValue = {
   anchor: Measurable | null
   onAnchorChange(anchor: Measurable | null): void
 }
-const PopperContenxt = createContext<PopperContextValue>({} as any)
+const PopperContenxt = React.createContext<PopperContextValue>({} as any)
 
 const usePopperContext = () => {
-  const context = useContext(PopperContenxt)
+  const context = React.useContext(PopperContenxt)
   if (!context)
     throw new Error(`[usePopperContext] must be used within a ${POPPER_NAME} component.`)
 
@@ -58,11 +46,11 @@ const usePopperContext = () => {
 }
 
 interface PopperProps {
-  children?: ReactNode
+  children?: React.ReactNode
 }
-const Popper: FC<PopperProps> = (props: PopperProps) => {
+const Popper: React.FC<PopperProps> = (props: PopperProps) => {
   const { children } = props
-  const [anchor, setAnchor] = useState<Measurable | null>(null)
+  const [anchor, setAnchor] = React.useState<Measurable | null>(null)
   return (
     <PopperContenxt.Provider
       value={{
@@ -87,17 +75,17 @@ type PopperAnchorElement = React.ElementRef<'div'>
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
 
 interface PopperAnchorProps extends PrimitiveDivProps {
-  virtualRef?: RefObject<Measurable>
+  virtualRef?: React.RefObject<Measurable>
 }
 
-const PopperAnchor = forwardRef<PopperAnchorElement, PopperAnchorProps>(
+const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
   (props: PopperAnchorProps, forwardedRef) => {
     const { virtualRef, ...anchorProps } = props
     const context = usePopperContext()
-    const ref = useRef<PopperAnchorElement>(null)
+    const ref = React.useRef<PopperAnchorElement>(null)
     const composedRefs = useComposedRefs(forwardedRef, ref)
 
-    useEffect(() => {
+    React.useEffect(() => {
       // Consumer can anchor the popper to something that isn't
       // a DOM node e.g. pointer position, so we override the
       // `anchorRef` with their virtual ref in this case.
@@ -124,10 +112,10 @@ type PopperContentContextValue = {
   shouldHideArrow: boolean
 }
 
-const PopperContentContext = createContext<PopperContentContextValue>({} as any)
+const PopperContentContext = React.createContext<PopperContentContextValue>({} as any)
 
 const useContentContext = () => {
-  const context = useContext(PopperContentContext)
+  const context = React.useContext(PopperContentContext)
   if (!context)
     throw new Error(`[usePopperContentContext] must be used within a ${CONTENT_NAME} component.`)
 
@@ -139,13 +127,13 @@ type PositionContextValue = {
   positionUpdateFns: Set<() => void>
 }
 
-const PositionContext = createContext<PositionContextValue>({
+const PositionContext = React.createContext<PositionContextValue>({
   hasParent: false,
   positionUpdateFns: new Set<() => void>(),
 })
 
 const usePositionContext = () => {
-  const context = useContext(PositionContext)
+  const context = React.useContext(PositionContext)
   if (!context)
     throw new Error(`[usePositionContext] must be used within a ${CONTENT_NAME} component.`)
   return context
@@ -153,7 +141,7 @@ const usePositionContext = () => {
 
 type Boundary = Element | null
 
-type PopperContentElement = ElementRef<'div'>
+type PopperContentElement = React.ElementRef<'div'>
 interface PopperContentProps extends PrimitiveDivProps {
   strategy?: Strategy
   side?: Side
@@ -169,7 +157,7 @@ interface PopperContentProps extends PrimitiveDivProps {
   autoUpdate?: boolean
 }
 
-const PopperContent = forwardRef<PopperContentElement, PopperContentProps>(
+const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>(
   (props: PopperContentProps, forwardedRef) => {
     const {
       strategy: strategyProp = 'absolute',
@@ -189,10 +177,10 @@ const PopperContent = forwardRef<PopperContentElement, PopperContentProps>(
 
     const context = usePopperContext()
 
-    const [content, setContent] = useState<HTMLDivElement | null>(null)
+    const [content, setContent] = React.useState<HTMLDivElement | null>(null)
     const composedRefs = useComposedRefs(forwardedRef, node => setContent(node))
 
-    const [arrow, setArrow] = useState<HTMLSpanElement | null>(null)
+    const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null)
     const arrowSize = useSize(arrow)
     const arrowWidth = arrowSize?.width ?? 0
     const arrowHeight = arrowSize?.height ?? 0
@@ -248,7 +236,7 @@ const PopperContent = forwardRef<PopperContentElement, PopperContentProps>(
     const arrowY = middlewareData.arrow?.y
     const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0
 
-    const [contentZIndex, setContentZIndex] = useState<string>()
+    const [contentZIndex, setContentZIndex] = React.useState<string>()
     useIsomorphicLayoutEffect(() => {
       if (content) setContentZIndex(window.getComputedStyle(content).zIndex)
     }, [content])
@@ -352,11 +340,11 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
   left: 'right',
 }
 
-type PopperArrowElement = ElementRef<typeof Arrow>
-type ArrowProps = ComponentPropsWithoutRef<typeof Arrow>
+type PopperArrowElement = React.ElementRef<typeof Arrow>
+type ArrowProps = React.ComponentPropsWithoutRef<typeof Arrow>
 interface PopperArrowProps extends ArrowProps {}
 
-const PopperArrow = forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
+const PopperArrow = React.forwardRef<PopperArrowElement, PopperArrowProps>(function PopperArrow(
   props: PopperArrowProps,
   forwardedRef,
 ) {

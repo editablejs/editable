@@ -1,4 +1,4 @@
-import { FC, ReactNode, useRef, useState } from 'react'
+import * as React from 'react'
 import { DismissableLayer } from './dismissable-layer'
 import { PopperAnchor, PopperArrow, PopperContent, Popper } from './popper'
 import { Portal } from './portal'
@@ -10,7 +10,7 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
 type Side = typeof SIDE_OPTIONS[number]
 type Align = typeof ALIGN_OPTIONS[number]
 interface TooltipProps {
-  content: ReactNode
+  content: React.ReactNode
   side?: Side
   align?: Align
   arrow?: boolean
@@ -20,7 +20,7 @@ interface TooltipProps {
   defaultOpen?: boolean
 }
 
-export const Tooltip: FC<TooltipProps> = ({
+export const Tooltip: React.FC<TooltipProps> = ({
   children,
   side = 'bottom',
   align = 'center',
@@ -31,8 +31,8 @@ export const Tooltip: FC<TooltipProps> = ({
   mouseEnterStay = false,
   defaultOpen = false,
 }) => {
-  const [open, setOpen] = useState(defaultOpen)
-  const delayTimer = useRef<number | null>(null)
+  const [open, setOpen] = React.useState(defaultOpen)
+  const delayTimer = React.useRef<number | null>(null)
 
   const clearDelayTimer = () => {
     if (delayTimer.current) {

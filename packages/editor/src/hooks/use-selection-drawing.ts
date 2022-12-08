@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import * as React from 'react'
 import { useStore } from 'zustand'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { EDITOR_TO_SELECTION_RECTS } from '../utils/weak-maps'
@@ -7,7 +7,7 @@ import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 
 export const useSelectionDrawingStore = () => {
   const editor = useEditableStatic()
-  return useMemo(() => {
+  return React.useMemo(() => {
     return SelectionDrawing.getStore(editor)
   }, [editor])
 }
@@ -25,7 +25,7 @@ export const useSelectionDrawingSelection = () => {
 export const useSelectionDrawingRects = () => {
   const editor = useEditableStatic()
   const selection = useSelectionDrawingSelection()
-  const [rects, setRects] = useState<DOMRect[]>([])
+  const [rects, setRects] = React.useState<DOMRect[]>([])
   useIsomorphicLayoutEffect(() => {
     const rects = selection ? SelectionDrawing.getRects(editor, selection) : []
     EDITOR_TO_SELECTION_RECTS.set(editor, rects)

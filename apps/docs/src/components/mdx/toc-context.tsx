@@ -1,11 +1,10 @@
-import { createContext } from 'react'
-import type { ReactNode } from 'react'
+import * as React from 'react'
 
 export type TocItem = {
   url: string
-  text: ReactNode
+  text: React.ReactNode
   depth: number
 }
 export type Toc = Array<TocItem>
 
-export const TocContext = createContext<Toc>([])
+export const TocContext = React.createContext<Toc>([])

@@ -1,4 +1,3 @@
-import { Children } from 'react'
 import * as React from 'react'
 import CodeBlock from './code-block'
 
@@ -7,10 +6,10 @@ interface PackageImportProps {
 }
 
 export function PackageImport({ children }: PackageImportProps) {
-  const terminal = Children.toArray(children).filter((child: any) => {
+  const terminal = React.Children.toArray(children).filter((child: any) => {
     return child.type?.mdxName !== 'pre'
   })
-  const code = Children.toArray(children).map((child: any, i: number) => {
+  const code = React.Children.toArray(children).map((child: any, i: number) => {
     if (child.type?.mdxName === 'pre') {
       return (
         <CodeBlock {...child.props} isFromPackageImport key={i} noMargin={true} noMarkers={true} />

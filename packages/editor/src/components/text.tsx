@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import * as React from 'react'
 import { Element, Text as SlateText } from 'slate'
 
 import Leaf from './leaf'
@@ -27,7 +27,7 @@ const Text = (props: {
 }) => {
   const { isLast, parent, text, renderPlaceholder } = props
   const editor = useEditableStatic()
-  const ref = useRef<HTMLSpanElement>(null)
+  const ref = React.useRef<HTMLSpanElement>(null)
   const key = Editable.findKey(editor, text)
   const path = Editable.findPath(editor, text)
   const decorates = useDecorates([text, path])

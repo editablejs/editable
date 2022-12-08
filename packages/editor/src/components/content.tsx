@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import * as React from 'react'
 import { Editor, Node, Range, Transforms, Point } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
@@ -73,23 +73,23 @@ export const ContentEditable = (props: EditableProps) => {
   } = props
   const editor = useEditableStatic()
 
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = React.useRef<HTMLDivElement>(null)
   const readOnly = useReadOnly()
   // 标记是否是刚拖拽完毕
-  const isDragEnded = useRef(false)
+  const isDragEnded = React.useRef(false)
   const dragTo = useDragTo()
   const dragging = useDragging()
   const { getDrag, setDrag } = useDragMethods()
 
-  const [rendered, setRendered] = useState(false)
+  const [rendered, setRendered] = React.useState(false)
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (autoFocus) {
       editor.focus()
     }
   }, [editor, autoFocus])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (placeholder) {
       Placeholder.add(editor, {
         key: 'editorRootPlaceholder',
@@ -117,8 +117,8 @@ export const ContentEditable = (props: EditableProps) => {
 
   const [focused, setFocused] = useFocused()
 
-  const startPointRef = useRef<Point | null>(null)
-  const isContextMenu = useRef(false)
+  const startPointRef = React.useRef<Point | null>(null)
+  const isContextMenu = React.useRef(false)
 
   const handleDocumentMouseDown = (event: MouseEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
@@ -281,7 +281,7 @@ export const ContentEditable = (props: EditableProps) => {
     } else startPointRef.current = null
   }
 
-  const isDoubleClickRef = useRef(false)
+  const isDoubleClickRef = React.useRef(false)
 
   const { handleMultipleClick, isSamePoint } = useMultipleClick({
     onClick: () => {
@@ -330,7 +330,9 @@ export const ContentEditable = (props: EditableProps) => {
     },
   })
 
-  const [awaitUpdateDrawingSelection, setAwaitUpdateDrawingSelection] = useState(editor.selection)
+  const [awaitUpdateDrawingSelection, setAwaitUpdateDrawingSelection] = React.useState(
+    editor.selection,
+  )
 
   useIsomorphicLayoutEffect(() => {
     const handleChange = () => {
@@ -370,7 +372,7 @@ export const ContentEditable = (props: EditableProps) => {
     }
   })
 
-  useEffect(() => {
+  React.useEffect(() => {
     // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
     if (isDragEnded.current) {
       editor.onSelectEnd()
@@ -425,7 +427,7 @@ export const ContentEditable = (props: EditableProps) => {
     editor.onContextMenu(event.nativeEvent)
   }
 
-  const cursor = useMemo(() => {
+  const cursor = React.useMemo(() => {
     if (dragging && dragTo) {
       return 'default'
     }

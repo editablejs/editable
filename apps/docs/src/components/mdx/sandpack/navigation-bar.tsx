@@ -1,5 +1,4 @@
-import { useRef, useInsertionEffect, useCallback, useState, useEffect, Fragment } from 'react'
-import cn from 'classnames'
+import * as React from 'react'
 import { FileTabs, useSandpack, useSandpackNavigation } from '@codesandbox/sandpack-react'
 import { OpenInCodeSandboxButton } from './open-in-code-sandbox-button'
 import { ResetButton } from './reset-button'
@@ -9,11 +8,11 @@ import { Listbox } from '@headlessui/react'
 import tw from 'twin.macro'
 
 export function useEvent(fn: any): any {
-  const ref = useRef(null)
-  useInsertionEffect(() => {
+  const ref = React.useRef(null)
+  React.useInsertionEffect(() => {
     ref.current = fn
   }, [fn])
-  return useCallback((...args: any) => {
+  return React.useCallback((...args: any) => {
     const f = ref.current!
     // @ts-ignore
     return f(...args)
@@ -27,16 +26,16 @@ const getFileName = (filePath: string): string => {
 
 export function NavigationBar({ providedFiles }: { providedFiles: Array<string> }) {
   const { sandpack } = useSandpack()
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const tabsRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const tabsRef = React.useRef<HTMLDivElement | null>(null)
   // By default, show the dropdown because all tabs may not fit.
   // We don't know whether they'll fit or not until after hydration:
-  const [showDropdown, setShowDropdown] = useState(true)
+  const [showDropdown, setShowDropdown] = React.useState(true)
   const { activeFile, setActiveFile, visibleFiles, clients } = sandpack
   const clientId = Object.keys(clients)[0]
   const { refresh } = useSandpackNavigation(clientId)
   const isMultiFile = visibleFiles.length > 1
-  const hasJustToggledDropdown = useRef(false)
+  const hasJustToggledDropdown = React.useRef(false)
 
   // Keep track of whether we can show all tabs or just the dropdown.
   const onContainerResize = useEvent((containerWidth: number) => {
@@ -57,7 +56,7 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
     }
   })
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isMultiFile) {
       const resizeObserver = new ResizeObserver(entries => {
         for (const entry of entries) {
@@ -111,7 +110,7 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
               >
                 <FileTabs />
               </div>
-              <Listbox.Button as={Fragment as any}>
+              <Listbox.Button as={React.Fragment as any}>
                 {({ open }) => (
                   // If tabs don't fit, display the dropdown instead.
                   // The dropdown is absolutely positioned inside the
@@ -136,7 +135,7 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
           {isMultiFile && showDropdown && (
             <Listbox.Options tw="bg-card dark:bg-card-dark border border-border dark:border-border-dark absolute left-0 right-0 mx-0 mt-0.5 rounded-sm rounded-b-lg px-2 shadow-md">
               {visibleFiles.map((filePath: string) => (
-                <Listbox.Option key={filePath} value={filePath} as={Fragment as any}>
+                <Listbox.Option key={filePath} value={filePath} as={React.Fragment as any}>
                   {({ active }) => (
                     <li
                       css={[

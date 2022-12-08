@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react'
+import * as React from 'react'
 import tw, { css } from 'twin.macro'
 import { Icon } from './icon'
 import {
@@ -39,7 +39,7 @@ const rightCls = (disabled?: boolean) => [
   ...disabledCls(disabled),
 ]
 
-export const ContextMenuItem: FC<ContextMenuItem> = ({
+export const ContextMenuItem: React.FC<ContextMenuItem> = ({
   icon,
   rightText,
   children,
@@ -80,7 +80,7 @@ export interface ContextMenuSub extends Omit<ContextMenuItem, 'rightText' | 'hre
   title?: JSX.Element | string
 }
 
-export const ContextMenuSub: FC<ContextMenuSub> = ({ title, icon, children, disabled }) => {
+export const ContextMenuSub: React.FC<ContextMenuSub> = ({ title, icon, children, disabled }) => {
   return (
     <MenuSub>
       <MenuSubTrigger disabled={disabled} css={itemCls(disabled)}>
@@ -101,7 +101,9 @@ export interface ContextMenuSeparatorProps {
   className?: string
 }
 
-export const ContextMenuSeparator: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
+export const ContextMenuSeparator: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+}) => {
   return (
     <MenuSeparator
       css={[
@@ -132,7 +134,7 @@ export interface ContextMenu {
   minWidth?: number
 }
 
-export const ContextMenu: FC<ContextMenu> = ({
+export const ContextMenu: React.FC<ContextMenu> = ({
   container = document.body,
   className,
   open: openProps,
@@ -142,7 +144,7 @@ export const ContextMenu: FC<ContextMenu> = ({
   align = 'start',
   minWidth = 200,
 }) => {
-  const [open, setOpen] = useState(openProps)
+  const [open, setOpen] = React.useState(openProps)
   const pointRef = React.useRef<Point>(
     container instanceof HTMLElement ? { x: 0, y: 0 } : container,
   )
@@ -150,7 +152,7 @@ export const ContextMenu: FC<ContextMenu> = ({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
-  const handleOpenChange = useCallback(
+  const handleOpenChange = React.useCallback(
     (open: boolean) => {
       if (onOpenChange) onOpenChange(open)
       setOpen(open)
@@ -162,7 +164,7 @@ export const ContextMenu: FC<ContextMenu> = ({
     setOpen(openProps)
   }, [openProps])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!(container instanceof HTMLElement)) {
       pointRef.current = container
       return

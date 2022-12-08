@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import * as React from 'react'
 import { useRouter } from 'next/router'
 
 export function Feedback({ onSubmit = () => {} }: { onSubmit?: () => void }) {
@@ -36,7 +36,7 @@ function sendGAEvent(isPositive: boolean) {
 }
 
 function SendFeedback({ onSubmit }: { onSubmit: () => void }) {
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitted, setIsSubmitted] = React.useState(false)
   return (
     <div tw="bg-wash dark:bg-gray-95 m-4 flex w-80 max-w-xs rounded-lg py-3 px-4 shadow-lg lg:w-auto">
       <p tw="dark:text-primary-dark mr-4 w-full text-lg font-bold text-primary">

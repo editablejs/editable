@@ -1,5 +1,5 @@
 import { Editable, RenderLeafProps, Hotkey, Editor } from '@editablejs/editor'
-import { CSSProperties } from 'react'
+import * as React from 'react'
 import tw, { css, styled } from 'twin.macro'
 import { MarkFormat, Mark } from './types'
 import { isMark } from './utils'
@@ -107,7 +107,7 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
   }
 
   newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<Mark>) => {
-    const style: CSSProperties = attributes.style ?? {}
+    const style: React.CSSProperties = attributes.style ?? {}
     if (text.bold && MarkEditor.isEnabled(editor, 'bold')) {
       style.fontWeight = typeof text.bold === 'string' ? text.bold : 'bold'
     } else {

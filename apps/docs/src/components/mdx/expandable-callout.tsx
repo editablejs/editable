@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import * as React from 'react'
 import { IconNote } from '../icon/note'
 import { IconWarning } from '../icon/warning'
@@ -42,7 +41,7 @@ const variantMap = {
 }
 
 function ExpandableCallout({ children, type }: ExpandableCalloutProps) {
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
   const variant = variantMap[type]
   const { Icon } = variant
   return (

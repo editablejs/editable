@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import * as React from 'react'
 import create, { useStore } from 'zustand'
 
 export interface TableDragStore {
@@ -36,7 +36,7 @@ const store = create<TableDragStore>(() => ({
 export const useTableDragging = () => {
   const drag = useStore(store, state => state.drag !== null)
 
-  return useMemo(() => drag, [drag])
+  return React.useMemo(() => drag, [drag])
 }
 
 /**
@@ -46,7 +46,7 @@ export const useTableDragging = () => {
 export const useTableDragTo = () => {
   const drag = useStore(store, state => state.drag)
 
-  return useMemo(() => drag?.to ?? -1, [drag])
+  return React.useMemo(() => drag?.to ?? -1, [drag])
 }
 
 /**
@@ -56,7 +56,7 @@ export const useTableDragTo = () => {
 export const useTableDragPoint = () => {
   const drag = useStore(store, state => state.drag)
 
-  return useMemo(() => drag?.point ?? null, [drag])
+  return React.useMemo(() => drag?.point ?? null, [drag])
 }
 
 /**
@@ -66,7 +66,7 @@ export const useTableDragPoint = () => {
 export const useTableDragCount = () => {
   const drag = useStore(store, state => state.drag)
 
-  return useMemo(() => drag?.from.length ?? 0, [drag])
+  return React.useMemo(() => drag?.from.length ?? 0, [drag])
 }
 
 /**

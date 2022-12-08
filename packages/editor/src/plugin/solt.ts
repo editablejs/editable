@@ -1,5 +1,5 @@
 import merge from 'lodash.merge'
-import { FC } from 'react'
+import * as React from 'react'
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 
@@ -8,7 +8,7 @@ export interface SlotComponentProps {
 }
 
 export interface SlotState<T extends SlotComponentProps> {
-  component: FC
+  component: React.FC
   props: T
 }
 
@@ -37,7 +37,7 @@ export const Slot = {
 
   mount<T extends SlotComponentProps>(
     editor: Editable,
-    component: FC<T>,
+    component: React.FC<T>,
     props: T = { active: true } as T,
   ) {
     const store = getStore(editor)
@@ -50,7 +50,7 @@ export const Slot = {
     })
   },
 
-  unmount(editor: Editable, component: FC) {
+  unmount(editor: Editable, component: React.FC) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -61,7 +61,11 @@ export const Slot = {
     })
   },
 
-  update: <T extends SlotComponentProps>(editor: Editable, component: FC<T>, props: Partial<T>) => {
+  update: <T extends SlotComponentProps>(
+    editor: Editable,
+    component: React.FC<T>,
+    props: Partial<T>,
+  ) => {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -75,7 +79,7 @@ export const Slot = {
     })
   },
 
-  disable: (editor: Editable, filter: (component: FC) => boolean) => {
+  disable: (editor: Editable, filter: (component: React.FC) => boolean) => {
     const store = getStore(editor)
     const { components } = store.getState()
     components.forEach(({ component, props }) => {
@@ -85,7 +89,7 @@ export const Slot = {
     })
   },
 
-  enable: (editor: Editable, filter: (component: FC) => boolean) => {
+  enable: (editor: Editable, filter: (component: React.FC) => boolean) => {
     const store = getStore(editor)
     const { components } = store.getState()
     components.forEach(({ component, props }) => {

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react'
+import * as React from 'react'
 import ReactDOM from 'react-dom'
 
 export const composeEventHandlers = <E>(
@@ -59,5 +59,5 @@ export const dispatchDiscreteCustomEvent = <E extends CustomEvent>(
 
 export const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' && typeof window.document !== 'undefined'
-    ? useLayoutEffect
-    : useEffect
+    ? React.useLayoutEffect
+    : React.useEffect

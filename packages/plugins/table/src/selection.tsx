@@ -6,7 +6,7 @@ import {
   useIsomorphicLayoutEffect,
   SelectionDrawing,
 } from '@editablejs/editor'
-import React from 'react'
+import * as React from 'react'
 import { SelectionStyles } from './styles'
 
 export interface TableSelectionProps {

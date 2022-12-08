@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import * as React from 'react'
 import { Node as SlateNode } from 'slate'
 import { NODE_TO_RESTORE_DOM } from '../utils/weak-maps'
 
 export function useContentKey(node: SlateNode) {
-  const contentKeyRef = useRef<number>(0)
-  const updateAnimationFrameRef = useRef<number | null>(null)
+  const contentKeyRef = React.useRef<number>(0)
+  const updateAnimationFrameRef = React.useRef<number | null>(null)
 
-  const [, setForceRerenderCounter] = useState(0)
+  const [, setForceRerenderCounter] = React.useState(0)
 
-  useEffect(() => {
+  React.useEffect(() => {
     NODE_TO_RESTORE_DOM.set(node, () => {
       // Update is already queued and node hasn't re-render yet
       if (updateAnimationFrameRef.current) {

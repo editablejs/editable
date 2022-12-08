@@ -13,7 +13,7 @@ import {
   Range,
   List,
 } from '@editablejs/editor'
-import { CSSProperties } from 'react'
+import * as React from 'react'
 import tw from 'twin.macro'
 import { INDENT_KEY, OUTDENT_KEY, DEFAULT_SIZE } from './constants'
 import { Indent, IndentPluginType, IndentType } from './types'
@@ -219,7 +219,7 @@ const renderIndent = (
   { attributes, element, children }: RenderElementProps<Indent>,
   next: (props: RenderElementProps) => JSX.Element,
 ) => {
-  const style: CSSProperties = attributes.style ?? {}
+  const style: React.CSSProperties = attributes.style ?? {}
 
   const { textIndent, type } = element
 
@@ -239,7 +239,7 @@ export const renderIndentAttributes = (
   next: (props: RenderElementAttributes) => ElementAttributes,
 ) => {
   const { textIndent, lineIndent, type } = element
-  const style: CSSProperties = attributes.style ?? {}
+  const style: React.CSSProperties = attributes.style ?? {}
   if (textIndent && type !== INDENT_KEY) {
     style.textIndent = getIndentSize(editor, 'text', textIndent)
   } else {

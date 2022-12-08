@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import * as React from 'react'
 import { Editor, Element, Path } from 'slate'
 import { useDragPosition, useDragTo, useDragType } from '../hooks/use-drag'
 import { useEditableStatic } from '../hooks/use-editable'
@@ -13,7 +13,7 @@ export const DragSelectionComponent = () => {
   const dragTo = useDragTo()
   const dragType = useDragType()
   const dragPosition = useDragPosition()
-  const rects = useMemo(() => {
+  const rects = React.useMemo(() => {
     if (!dragTo || !dragPosition) return null
     if (dragType === 'block') {
       const entry = Editor.above(editor, {

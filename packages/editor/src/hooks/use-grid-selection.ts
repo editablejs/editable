@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import * as React from 'react'
 import { Path } from 'slate'
 import { Grid, GridSelection } from '../interfaces/grid'
 import { Editable } from '../plugin/editable'
@@ -11,7 +11,7 @@ const useGridSelection = () => {
   const editor = useEditableStatic()
   const grid = useGrid()
   // selection
-  const [selection, setSelection] = useState<GridSelection | null>(null)
+  const [selection, setSelection] = React.useState<GridSelection | null>(null)
   const nodeFocused = useNodeFocused()
 
   useIsomorphicLayoutEffect(() => {

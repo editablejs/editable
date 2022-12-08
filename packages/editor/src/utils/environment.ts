@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 
 export const IS_REACT_VERSION_17_OR_ABOVE = parseInt(React.version.split('.')[0], 10) >= 17
 

@@ -1,5 +1,5 @@
 import { GridSelected, GridSelection } from '@editablejs/editor'
-import { createContext, useContext } from 'react'
+import * as React from 'react'
 import { StoreApi, useStore } from 'zustand'
 
 export interface TableContextInterface {
@@ -11,17 +11,17 @@ export interface TableContextInterface {
   selected: GridSelected
 }
 
-const TableContext = createContext<StoreApi<TableContextInterface>>({} as any)
+const TableContext = React.createContext<StoreApi<TableContextInterface>>({} as any)
 
 export { TableContext }
 
 export const useTableStore = () => {
-  const context = useContext(TableContext)
+  const context = React.useContext(TableContext)
   if (!context) throw new Error('TableContext not found')
   return useStore(context)
 }
 
 export const useTableSize = () => {
-  const context = useContext(TableContext)
+  const context = React.useContext(TableContext)
   return useStore(context, state => ({ height: state.height, width: state.width }))
 }

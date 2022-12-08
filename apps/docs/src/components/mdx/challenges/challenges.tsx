@@ -1,4 +1,3 @@
-import { Children, useRef, useEffect, useState } from 'react'
 import * as React from 'react'
 import { H2 } from 'components/mdx/heading'
 import { H4 } from 'components/mdx/heading'
@@ -31,7 +30,7 @@ const parseChallengeContents = (children: React.ReactElement[]): ChallengeConten
 
   let challenge: Partial<ChallengeContents> = {}
   let content: React.ReactElement[] = []
-  Children.forEach(children, child => {
+  React.Children.forEach(children, child => {
     const { props, type } = child
     switch ((type as any).mdxName) {
       case 'Solution': {
@@ -83,12 +82,12 @@ export function Challenges({
 }: ChallengesProps) {
   const challenges = parseChallengeContents(children)
   const totalChallenges = challenges.length
-  const scrollAnchorRef = useRef<HTMLDivElement>(null)
-  const queuedScrollRef = useRef<boolean>(false)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const scrollAnchorRef = React.useRef<HTMLDivElement>(null)
+  const queuedScrollRef = React.useRef<boolean>(false)
+  const [activeIndex, setActiveIndex] = React.useState(0)
   const currentChallenge = challenges[activeIndex]
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (queuedScrollRef.current === true) {
       queuedScrollRef.current = false
       scrollAnchorRef.current!.scrollIntoView({

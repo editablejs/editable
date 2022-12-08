@@ -20,10 +20,10 @@ import {
   ContentEditable,
   createEditor,
 } from '@editablejs/editor'
-import React, { useMemo } from 'react'
+import * as React from 'react'
 
 export default function Docs() {
-  const editor = useMemo(() => {
+  const editor = React.useMemo(() => {
     return createEditor()
   }, [])
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { NodeEntry, Range, Element, Text } from 'slate'
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from './editable'

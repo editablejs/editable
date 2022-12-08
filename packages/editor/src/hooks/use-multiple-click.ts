@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import * as React from 'react'
 
 import { cancellablePromise, useCancellablePromises } from './use-cancellable-promises'
 
@@ -8,8 +8,8 @@ const useMultipleClick = (options: {
 }) => {
   const { onClick, onMultipleClick } = options
   const api = useCancellablePromises()
-  const pointRef = useRef<{ x: number; y: number }>()
-  const countRef = useRef(0)
+  const pointRef = React.useRef<{ x: number; y: number }>()
+  const countRef = React.useRef(0)
 
   const isSamePoint = (event: React.MouseEvent | MouseEvent) => {
     const point = pointRef.current

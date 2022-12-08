@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import * as React from 'react'
 import { useRouter } from 'next/router'
 import { Nav } from './nav'
@@ -34,7 +33,7 @@ export function Page({ children, toc }: PageProps) {
             <Nav />
           </div>
           {/* No fallback UI so need to be careful not to suspend directly inside. */}
-          <Suspense fallback={null}>
+          <React.Suspense fallback={null}>
             <main tw="min-w-0">
               <div tw="mb-2 h-16 lg:hidden" />
               <article tw="break-words" key={asPath}>
@@ -42,7 +41,7 @@ export function Page({ children, toc }: PageProps) {
               </article>
               <Footer />
             </main>
-          </Suspense>
+          </React.Suspense>
           <div tw="hidden lg:max-w-xs 2xl:block">
             {toc.length > 0 && <Toc headings={toc} key={asPath} />}
           </div>

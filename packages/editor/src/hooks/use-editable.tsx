@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react'
+import * as React from 'react'
 import { Descendant, Node, Editor, Scrubber } from 'slate'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
@@ -34,7 +34,7 @@ export const useEditableStoreProvider = (
   } & Record<string, any>,
 ) => {
   const { onChange, storeValue } = initial ?? {}
-  const store = useMemo(() => {
+  const store = React.useMemo(() => {
     const store = EDITABLE_TO_STORE.get(editor)
     if (store) {
       return store
@@ -80,7 +80,7 @@ export const useEditableStoreProvider = (
 }
 
 export const useEditableStore = () => {
-  const contenxt = useContext(EditableStoreContext)
+  const contenxt = React.useContext(EditableStoreContext)
   if (!contenxt) {
     throw new Error(
       `The \`useEditableStore\` hook must be used inside the <EditableProvider> component's context.`,
@@ -95,14 +95,14 @@ export interface EditableStoreContext {
   editor: Editable
 }
 
-export const EditableStoreContext = createContext<EditableStoreContext | null>(null)
+export const EditableStoreContext = React.createContext<EditableStoreContext | null>(null)
 
 /**
  * 静态的编辑器对象
  * @returns
  */
 export const useEditableStatic = (): Editable => {
-  const contenxt = useContext(EditableStoreContext)
+  const contenxt = React.useContext(EditableStoreContext)
 
   if (!contenxt) {
     throw new Error(

@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { lazy, memo, Suspense } from 'react'
 import tw from 'twin.macro'
-const CodeBlock = lazy(() => import('./code-block'))
+const CodeBlock = React.lazy(() => import('./code-block'))
 
-export default memo(function CodeBlockWrapper(props: {
+export default React.memo(function CodeBlockWrapper(props: {
   children: React.ReactNode & {
     props: {
       className: string
@@ -17,7 +16,7 @@ export default memo(function CodeBlockWrapper(props: {
 }): any {
   const { children, isFromPackageImport } = props
   return (
-    <Suspense
+    <React.Suspense
       fallback={
         <pre
           css={[
@@ -34,6 +33,6 @@ export default memo(function CodeBlockWrapper(props: {
       }
     >
       <CodeBlock {...props} />
-    </Suspense>
+    </React.Suspense>
   )
 })

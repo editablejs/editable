@@ -1,4 +1,3 @@
-import { Children, useState } from 'react'
 import * as React from 'react'
 import { SandpackProvider } from '@codesandbox/sandpack-react'
 import { SandpackLogLevel } from '@codesandbox/sandpack-client'
@@ -64,8 +63,8 @@ ul {
 
 function SandpackRoot(props: SandpackProps) {
   let { children, autorun = true, showDevTools = false } = props
-  const [devToolsLoaded, setDevToolsLoaded] = useState(false)
-  const codeSnippets = Children.toArray(children) as React.ReactElement[]
+  const [devToolsLoaded, setDevToolsLoaded] = React.useState(false)
+  const codeSnippets = React.Children.toArray(children) as React.ReactElement[]
   const files = createFileMap(codeSnippets)
 
   files['/styles.css'] = {

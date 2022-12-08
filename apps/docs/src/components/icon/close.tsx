@@ -1,6 +1,6 @@
-import { memo } from 'react'
+import * as React from 'react'
 
-export const IconClose = memo<JSX.IntrinsicElements['svg']>(function IconClose(props) {
+export const IconClose = React.memo<JSX.IntrinsicElements['svg']>(function IconClose(props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

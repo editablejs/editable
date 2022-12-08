@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import * as React from 'react'
 import { useSandpack } from '@codesandbox/sandpack-react'
 import { IconDownload } from '../../icon/download'
 export interface DownloadButtonProps {}
@@ -21,7 +21,7 @@ function useSupportsImportMap() {
     return false
   }
 
-  return useSyncExternalStore(subscribe, getCurrentValue, getServerSnapshot)
+  return React.useSyncExternalStore(subscribe, getCurrentValue, getServerSnapshot)
 }
 
 const SUPPORTED_FILES = ['/App.js', '/styles.css']

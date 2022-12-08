@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import tw from 'twin.macro'
 
 export const BoldIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {

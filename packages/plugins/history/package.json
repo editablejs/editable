@@ -4,6 +4,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "sideEffects": false,
   "license": "MIT",
   "files": [
@@ -39,7 +42,7 @@
     "is-plain-object": "^5.0.0"
   },
   "lint-staged": {
-    "src/**/*.{json,ts,tsx,md,mdx,js,jsx}": [
+    "src/**/*.{json,ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write"
     ]

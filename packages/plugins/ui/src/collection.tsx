@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import * as React from 'react'
 import { useComposedRefs } from './compose-refs'
 import { Slot } from './slot'
 
@@ -28,7 +28,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     itemMap: new Map(),
   })
 
-  const useCollectionContext = () => useContext(CollectionContext)
+  const useCollectionContext = () => React.useContext(CollectionContext)
 
   const CollectionProvider: React.FC<{ children?: React.ReactNode }> = props => {
     const { children } = props

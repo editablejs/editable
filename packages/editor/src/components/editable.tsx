@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { Descendant } from 'slate'
 import { Editable } from '../plugin/editable'
 import { useEditableStoreProvider, EditableStoreContext } from '../hooks/use-editable'

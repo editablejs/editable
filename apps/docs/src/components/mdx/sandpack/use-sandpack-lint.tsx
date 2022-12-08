@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react'
+import * as React from 'react'
 import type { EditorView } from '@codemirror/view'
 
 export type LintDiagnostic = {
@@ -11,9 +11,9 @@ export type LintDiagnostic = {
 }[]
 
 export const useSandpackLint = () => {
-  const [lintErrors, setLintErrors] = useState<LintDiagnostic>([])
-  const [lintExtensions, setLintExtensions] = useState<any>([])
-  useEffect(() => {
+  const [lintErrors, setLintErrors] = React.useState<LintDiagnostic>([])
+  const [lintExtensions, setLintExtensions] = React.useState<any>([])
+  React.useEffect(() => {
     const loadLinter = async () => {
       const { linter } = await import('@codemirror/lint')
       const onLint = linter(async (props: EditorView) => {

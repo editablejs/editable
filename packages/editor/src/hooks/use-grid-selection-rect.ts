@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import * as React from 'react'
 import { GridCell } from '../interfaces/cell'
 import { Grid } from '../interfaces/grid'
 import { Editable } from '../plugin/editable'
@@ -14,7 +14,7 @@ const useGridSelectionRect = () => {
 
   const selection = useGridSelection()
 
-  const [rect, setRect] = useState<DOMRect | null>(null)
+  const [rect, setRect] = React.useState<DOMRect | null>(null)
 
   useIsomorphicLayoutEffect(() => {
     if (!selection || !grid) return setRect(null)

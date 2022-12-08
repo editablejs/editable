@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRef, useState, useEffect, useMemo, useId } from 'react'
+import * as React from 'react'
 import { useSandpack, SandpackStack } from '@codesandbox/sandpack-react'
-import cn from 'classnames'
+
 import { ErrorMessage } from './error-message'
 import { SandpackConsole } from './console'
 import type { LintDiagnostic } from './use-sandpack-lint'
-import { CSSProperties } from 'react'
 import { LoadingOverlay } from './loading-overlay'
 import tw from 'twin.macro'
 
@@ -16,9 +15,9 @@ type CustomPreviewProps = {
 }
 
 function useDebounced(value: any): any {
-  const ref = useRef<any>(null)
-  const [saved, setSaved] = useState(value)
-  useEffect(() => {
+  const ref = React.useRef<any>(null)
+  const [saved, setSaved] = React.useState(value)
+  React.useEffect(() => {
     clearTimeout(ref.current)
     ref.current = setTimeout(() => {
       setSaved(value)
@@ -29,9 +28,9 @@ function useDebounced(value: any): any {
 
 export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProps) {
   const { sandpack, listen } = useSandpack()
-  const [bundlerIsReady, setBundlerIsReady] = useState(false)
-  const [showLoading, setShowLoading] = useState(false)
-  const [iframeComputedHeight, setComputedAutoHeight] = useState<number | null>(null)
+  const [bundlerIsReady, setBundlerIsReady] = React.useState(false)
+  const [showLoading, setShowLoading] = React.useState(false)
+  const [iframeComputedHeight, setComputedAutoHeight] = React.useState<number | null>(null)
 
   let {
     error: rawError,
@@ -49,7 +48,7 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
   }
 
   // Memoized because it's fed to debouncing.
-  const firstLintError = useMemo(() => {
+  const firstLintError = React.useMemo(() => {
     if (lintErrors.length === 0) {
       return null
     } else {
@@ -74,8 +73,8 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
   // It changes too fast, causing flicker.
   const error = useDebounced(rawError)
 
-  const clientId = useId()
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const clientId = React.useId()
+  const iframeRef = React.useRef<HTMLIFrameElement | null>(null)
 
   // SandpackPreview immediately registers the custom screens/components so the bundler does not render any of them
   // TODO: why are we doing this during render?
@@ -85,7 +84,7 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
 
   const sandpackIdle = sandpack.status === 'idle'
 
-  useEffect(function createBundler() {
+  React.useEffect(function createBundler() {
     const iframeElement = iframeRef.current!
     registerBundler(iframeElement, clientId)
 
@@ -94,7 +93,7 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
     }
   }, [])
 
-  useEffect(
+  React.useEffect(
     function bundlerListener() {
       let timeout: ReturnType<typeof setTimeout>
 
@@ -148,7 +147,7 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
 
   const hideContent = error || !iframeComputedHeight || !bundlerIsReady
 
-  const iframeWrapperPosition = (): CSSProperties => {
+  const iframeWrapperPosition = (): React.CSSProperties => {
     if (hideContent) {
       return { position: 'relative' }
     }

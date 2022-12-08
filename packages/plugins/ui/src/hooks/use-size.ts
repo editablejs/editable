@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import * as React from 'react'
 import { useIsomorphicLayoutEffect } from '../utils'
 
 export const useSize = (element: HTMLElement | null) => {
-  const [size, setSize] = useState<{ width: number; height: number } | undefined>(undefined)
+  const [size, setSize] = React.useState<{ width: number; height: number } | undefined>(undefined)
 
   useIsomorphicLayoutEffect(() => {
     if (element) {

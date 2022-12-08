@@ -1,4 +1,4 @@
-import { useContext, createContext } from 'react'
+import * as React from 'react'
 import { useRouter } from 'next/router'
 
 /**
@@ -47,7 +47,7 @@ export interface RouteMeta {
 }
 
 export function useRouteMeta(rootRoute?: RouteItem) {
-  const sidebarContext = useContext(SidebarContext)
+  const sidebarContext = React.useContext(SidebarContext)
   const routeTree = rootRoute || sidebarContext
   const router = useRouter()
   if (router.pathname === '/404') {
@@ -63,7 +63,7 @@ export function useRouteMeta(rootRoute?: RouteItem) {
   }
 }
 
-export const SidebarContext = createContext<RouteItem>({ title: 'root' })
+export const SidebarContext = React.createContext<RouteItem>({ title: 'root' })
 
 // Performs a depth-first search to find the current route and its previous/next route
 function getRouteMeta(searchPath: string, currentRoute: RouteItem, ctx: RouteMeta = {}): RouteMeta {

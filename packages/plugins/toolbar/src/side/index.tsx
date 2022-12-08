@@ -16,7 +16,7 @@ import {
   useLocale,
   Decorate,
 } from '@editablejs/editor'
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import * as React from 'react'
 import {
   ContextMenu as UIContextMenu,
   ContextMenuItem as UIContextMenuItem,
@@ -65,7 +65,7 @@ interface ContextMenu extends UIContextMenu {
   editor: Editable
 }
 
-const ContextMenu: FC<ContextMenu> = ({
+const ContextMenu: React.FC<ContextMenu> = ({
   editor,
   container,
   onSelect: onContextSelect,
@@ -109,27 +109,27 @@ const ContextMenu: FC<ContextMenu> = ({
   )
 }
 
-const SideToolbar: FC<SideToolbar> = ({
+const SideToolbar: React.FC<SideToolbar> = ({
   mouseEnterDelay = 0,
   mouseLeaveDelay = 0.2,
   mouseDragDelay = 0.2,
 }) => {
   const editor = useEditableStatic()
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState<Point | null>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [position, setPosition] = React.useState<Point | null>(null)
 
   const [menuOpen, setMenuOpen] = useSideToolbarMenuOpen(editor)
-  const prevVisibleRef = useRef(false)
-  const prevEventPositionRef = useRef<Point | null>(null)
-  const capturedDataRef = useRef<CurrentCapturedData | null>(null)
-  const showingRef = useRef(false)
-  const delayHideTimer = useRef<number | null>(null)
+  const prevVisibleRef = React.useRef(false)
+  const prevEventPositionRef = React.useRef<Point | null>(null)
+  const capturedDataRef = React.useRef<CurrentCapturedData | null>(null)
+  const showingRef = React.useRef(false)
+  const delayHideTimer = React.useRef<number | null>(null)
 
-  const delayUpdateTimer = useRef<number | null>(null)
+  const delayUpdateTimer = React.useRef<number | null>(null)
 
   const dragging = useDragging()
 
-  const hide = useCallback(() => {
+  const hide = React.useCallback(() => {
     if (dragging) return
     setPosition(null)
     setMenuOpen(false)
@@ -138,7 +138,7 @@ const SideToolbar: FC<SideToolbar> = ({
     showingRef.current = false
   }, [dragging, setMenuOpen])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleSelectionChange = () => {
       if (menuOpen) {
         hide()
@@ -156,7 +156,7 @@ const SideToolbar: FC<SideToolbar> = ({
     }
   }, [editor, hide, menuOpen, setMenuOpen])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeydown = () => {
       hide()
     }
@@ -166,14 +166,14 @@ const SideToolbar: FC<SideToolbar> = ({
     }
   }, [editor, hide])
 
-  const clearDelayHideTimer = useCallback(() => {
+  const clearDelayHideTimer = React.useCallback(() => {
     if (delayHideTimer.current) {
       clearTimeout(delayHideTimer.current)
       delayHideTimer.current = null
     }
   }, [])
 
-  const delayHide = useCallback(
+  const delayHide = React.useCallback(
     (delayS: number = mouseLeaveDelay) => {
       const delay = delayS * 1000
       clearDelayHideTimer()
@@ -189,7 +189,7 @@ const SideToolbar: FC<SideToolbar> = ({
     [clearDelayHideTimer, hide, mouseLeaveDelay],
   )
 
-  const update = useCallback(
+  const update = React.useCallback(
     (event: MouseEvent) => {
       if (dragging || menuOpen) return
 
@@ -248,19 +248,19 @@ const SideToolbar: FC<SideToolbar> = ({
     [clearDelayHideTimer, delayHide, dragging, editor, menuOpen],
   )
 
-  const clearDelayUpdateTimer = useCallback(() => {
+  const clearDelayUpdateTimer = React.useCallback(() => {
     if (delayUpdateTimer.current) {
       clearTimeout(delayUpdateTimer.current)
       delayUpdateTimer.current = null
     }
   }, [])
 
-  const clearDelay = useCallback(() => {
+  const clearDelay = React.useCallback(() => {
     clearDelayHideTimer()
     clearDelayUpdateTimer()
   }, [clearDelayHideTimer, clearDelayUpdateTimer])
 
-  const delayUpdate = useCallback(
+  const delayUpdate = React.useCallback(
     (event: MouseEvent, delayS: number = mouseEnterDelay) => {
       const delay = delayS * 1000
 
@@ -277,19 +277,19 @@ const SideToolbar: FC<SideToolbar> = ({
     [clearDelay, clearDelayUpdateTimer, mouseEnterDelay, update],
   )
 
-  const handleMouseMove = useCallback(
+  const handleMouseMove = React.useCallback(
     (event: MouseEvent) => {
       delayUpdate(event)
     },
     [delayUpdate],
   )
 
-  const handleMoseLeave = useCallback(() => {
+  const handleMoseLeave = React.useCallback(() => {
     clearDelay()
     if (!showingRef.current) delayHide()
   }, [clearDelay, delayHide])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const container = Editable.toDOMNode(editor, editor)
     container.addEventListener('mousemove', handleMouseMove)
     container.addEventListener('mouseleave', handleMoseLeave)
@@ -299,20 +299,20 @@ const SideToolbar: FC<SideToolbar> = ({
     }
   }, [editor, handleMoseLeave, handleMouseMove])
 
-  const visible = useMemo(() => {
+  const visible = React.useMemo(() => {
     return !!position
   }, [position])
 
   const actionType = !capturedDataRef.current?.isEmpty ? 'drag' : 'add'
 
-  const transform = useMemo(() => {
+  const transform = React.useMemo(() => {
     if (!position || !containerRef.current) return
     const { x, y } = position
     const { offsetWidth } = containerRef.current
     return `translate3d(${x - offsetWidth - 4}px, ${y}px, 0)`
   }, [position])
 
-  const isTransformAmimation = useMemo(() => {
+  const isTransformAmimation = React.useMemo(() => {
     const visible = !!position
     const isAmimation = visible === prevVisibleRef.current
     prevVisibleRef.current = visible
@@ -321,7 +321,7 @@ const SideToolbar: FC<SideToolbar> = ({
 
   const { setDrag } = useDragMethods()
 
-  const drag = useCallback(() => {
+  const drag = React.useCallback(() => {
     if (!capturedDataRef.current || !position) {
       return
     }
@@ -338,17 +338,17 @@ const SideToolbar: FC<SideToolbar> = ({
     })
   }, [position, setDrag])
 
-  const [tooltipDefaultOpen, setTooltipDefaultOpen] = useState(false)
-  const delayDragTimer = useRef<number | null>(null)
+  const [tooltipDefaultOpen, setTooltipDefaultOpen] = React.useState(false)
+  const delayDragTimer = React.useRef<number | null>(null)
 
-  const clearDelayDragTimer = useCallback(() => {
+  const clearDelayDragTimer = React.useCallback(() => {
     if (delayDragTimer.current) {
       clearTimeout(delayDragTimer.current)
       delayDragTimer.current = null
     }
   }, [])
 
-  const delayDrag = useCallback(
+  const delayDrag = React.useCallback(
     (delayS: number = mouseDragDelay) => {
       const delay = delayS * 1000
       clearDelayDragTimer()
@@ -378,7 +378,7 @@ const SideToolbar: FC<SideToolbar> = ({
     setTooltipDefaultOpen(true)
   }
 
-  const getDecorate = useCallback((): Decorate | null => {
+  const getDecorate = React.useCallback((): Decorate | null => {
     if (!capturedDataRef.current) return null
     const { selection, element } = capturedDataRef.current
     return {

@@ -6,7 +6,7 @@ import {
   Grid,
   Slot,
 } from '@editablejs/editor'
-import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react'
+import * as React from 'react'
 import { Icon } from '@editablejs/plugin-ui'
 import {
   ColsInsertIconStyles,
@@ -101,7 +101,7 @@ const InsertActionDefault: React.FC<TableActionProps> = ({
     }
   }
 
-  const draggingActive = useMemo(() => {
+  const draggingActive = React.useMemo(() => {
     return draggingTo > -1 && draggingTo === index && TableDrag.getDrag().type === type
   }, [draggingTo, index, type])
 
@@ -172,12 +172,12 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
   }
   const type = left !== undefined ? TYPE_COL : TYPE_ROW
 
-  const dragRef = useRef<TableDragSplitOptions | null>(null)
+  const dragRef = React.useRef<TableDragSplitOptions | null>(null)
   const { minColWidth, minRowHeight } = useOptions(editor)
-  const [isHover, setHover] = useState(false)
-  const isDrag = useRef(false)
+  const [isHover, setHover] = React.useState(false)
+  const isDrag = React.useRef(false)
 
-  const handleDragSplitMove = useCallback(
+  const handleDragSplitMove = React.useCallback(
     (e: MouseEvent) => {
       if (!dragRef.current) return
       const { type, x, y, start } = dragRef.current
@@ -229,7 +229,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
 
   const cancellablePromisesApi = useCancellablePromises()
 
-  const handleDragSplitUp = useCallback(() => {
+  const handleDragSplitUp = React.useCallback(() => {
     dragRef.current = null
     isDrag.current = false
     setHover(false)
@@ -255,14 +255,14 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
 
   const draging = useTableDragging()
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (draging) {
       Slot.disable(editor, () => true)
     } else {
       Slot.enable(editor, () => true)
     }
   }, [draging])
-  const handleMouseOver = useCallback(() => {
+  const handleMouseOver = React.useCallback(() => {
     if (draging) return
     cancellablePromisesApi.clearPendingPromises()
     const wait = cancellablePromise(cancellablePromisesApi.delay(200))
@@ -274,7 +274,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
       .catch(err => {})
   }, [cancellablePromisesApi, draging])
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = React.useCallback(() => {
     if (isDrag.current) return
     cancellablePromisesApi.clearPendingPromises()
     setHover(false)

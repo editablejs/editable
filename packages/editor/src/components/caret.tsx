@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useRef } from 'react'
+import * as React from 'react'
 import { Range } from 'slate'
 import { useEditableStatic } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
@@ -16,26 +16,26 @@ interface CaretProps {
   timeout?: number | false
 }
 
-const CaretComponent: FC<CaretProps> = ({ timeout = 530 }) => {
+const CaretComponent: React.FC<CaretProps> = ({ timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()
 
-  const timer = useRef<number>()
+  const timer = React.useRef<number>()
 
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = React.useRef<HTMLDivElement>(null)
 
   const enabled = useSelectionDrawingEnabled()
   const selection = useSelectionDrawingSelection()
   const rects = useSelectionDrawingRects()
   const style = useSelectionDrawingStyle()
 
-  const rect = useMemo(() => {
+  const rect = React.useMemo(() => {
     if (!selection || rects.length === 0 || !focused || !Range.isCollapsed(selection)) return null
     return rects[0].toJSON()
   }, [focused, rects, selection])
 
-  const clearActive = useCallback(() => {
+  const clearActive = React.useCallback(() => {
     clearTimeout(timer.current)
   }, [])
 
@@ -47,7 +47,7 @@ const CaretComponent: FC<CaretProps> = ({ timeout = 530 }) => {
     }
   }
 
-  const active = useCallback(
+  const active = React.useCallback(
     (opacity?: number) => {
       clearActive()
       if (!rect || timeout === false) return

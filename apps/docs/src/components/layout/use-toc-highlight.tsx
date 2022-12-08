@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import * as React from 'react'
 
 const TOP_OFFSET = 75
 
@@ -19,10 +19,10 @@ export function getHeaderAnchors(): HTMLAnchorElement[] {
  * Sets up Table of Contents highlighting.
  */
 export function useTocHighlight() {
-  const [currentIndex, setCurrentIndex] = useState<number>(0)
-  const timeoutRef = useRef<number | null>(null)
+  const [currentIndex, setCurrentIndex] = React.useState<number>(0)
+  const timeoutRef = React.useRef<number | null>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     function updateActiveLink() {
       const pageHeight = document.body.scrollHeight
       const scrollPosition = window.scrollY + window.innerHeight

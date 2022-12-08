@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { Element, Text } from 'slate'
 import String from './string'
 import { useEditableStatic } from '../hooks/use-editable'

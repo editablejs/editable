@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from 'react'
+import * as React from 'react'
 import { flushSync } from 'react-dom'
 import {
   useSandpack,
@@ -16,7 +16,7 @@ import { Preview } from './preview'
 import { useSandpackLint } from './use-sandpack-lint'
 import tw from 'twin.macro'
 
-export const CustomPreset = memo(function CustomPreset({
+export const CustomPreset = React.memo(function CustomPreset({
   showDevTools,
   onDevToolsLoad,
   devToolsLoaded,
@@ -31,7 +31,7 @@ export const CustomPreset = memo(function CustomPreset({
   const { sandpack } = useSandpack()
   const { code } = useActiveCode()
   const { activeFile } = sandpack
-  const lineCountRef = useRef<{ [key: string]: number }>({})
+  const lineCountRef = React.useRef<{ [key: string]: number }>({})
   if (!lineCountRef.current[activeFile]) {
     lineCountRef.current[activeFile] = code.split('\n').length
   }
@@ -50,7 +50,7 @@ export const CustomPreset = memo(function CustomPreset({
   )
 })
 
-const SandboxShell = memo(function SandboxShell({
+const SandboxShell = React.memo(function SandboxShell({
   showDevTools,
   onDevToolsLoad,
   devToolsLoaded,
@@ -67,8 +67,8 @@ const SandboxShell = memo(function SandboxShell({
   lintExtensions: Array<any>
   isExpandable: boolean
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [isExpanded, setIsExpanded] = useState(false)
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [isExpanded, setIsExpanded] = React.useState(false)
   return (
     <>
       <div tw="rounded-lg shadow-lg dark:shadow-lg-dark" ref={containerRef}>
@@ -126,7 +126,7 @@ const SandboxShell = memo(function SandboxShell({
   )
 })
 
-const Editor = memo(function Editor({ lintExtensions }: { lintExtensions: Array<any> }) {
+const Editor = React.memo(function Editor({ lintExtensions }: { lintExtensions: Array<any> }) {
   return (
     <SandpackCodeEditor
       showLineNumbers

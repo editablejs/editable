@@ -1,4 +1,4 @@
-import React, { AnchorHTMLAttributes, forwardRef } from 'react'
+import * as React from 'react'
 import tw, { css, styled } from 'twin.macro'
 
 export interface Button {
@@ -22,9 +22,9 @@ const ButtonStyles = styled.button(({ active, disabled }: Button) => [
   `,
 ])
 
-export const Button = forwardRef<
+export const Button = React.forwardRef<
   HTMLButtonElement,
-  Button & AnchorHTMLAttributes<HTMLButtonElement>
+  Button & React.AnchorHTMLAttributes<HTMLButtonElement>
 >(({ type, ...props }, ref) => {
   return (
     <ButtonStyles

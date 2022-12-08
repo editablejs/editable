@@ -1,5 +1,5 @@
 import { Editable, RenderLeafProps, Editor, Text } from '@editablejs/editor'
-import { CSSProperties } from 'react'
+import * as React from 'react'
 import { FONTSIZE_KEY } from './constants'
 import { isFontSize } from './utils'
 export interface FontSizeOptions {
@@ -59,7 +59,7 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
   const { renderLeaf } = newEditor
 
   newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<FontSize>) => {
-    const style: CSSProperties = attributes.style ?? {}
+    const style: React.CSSProperties = attributes.style ?? {}
     if (text.fontSize) {
       style.fontSize = text.fontSize
     }

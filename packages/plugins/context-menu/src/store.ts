@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import * as React from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
@@ -39,7 +39,7 @@ const getStore = (editor: Editable) => {
 }
 
 export const useContextMenuStore = (editor: Editable) => {
-  return useMemo(() => getStore(editor), [editor])
+  return React.useMemo(() => getStore(editor), [editor])
 }
 
 export const useContextMenuItems = (editor: Editable) => {
@@ -50,7 +50,7 @@ export const useContextMenuItems = (editor: Editable) => {
 export const useContextMenuOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useContextMenuStore(editor)
   const open = useStore(store, state => state.open)
-  return useMemo(() => {
+  return React.useMemo(() => {
     return [
       open,
       (open: boolean) => {

@@ -1,43 +1,38 @@
-import {useState} from 'react';
+import * as React from 'react'
 
 import {
   LoadingOverlayState,
   OpenInCodeSandboxButton,
   useSandpack,
-} from '@codesandbox/sandpack-react';
-import {useEffect} from 'react';
+} from '@codesandbox/sandpack-react'
 
-const FADE_ANIMATION_DURATION = 200;
+const FADE_ANIMATION_DURATION = 200
 
 export const LoadingOverlay = ({
   clientId,
   dependenciesLoading,
   forceLoading,
 }: {
-  clientId: string;
-  dependenciesLoading: boolean;
-  forceLoading: boolean;
+  clientId: string
+  dependenciesLoading: boolean
+  forceLoading: boolean
 } & React.HTMLAttributes<HTMLDivElement>): JSX.Element | null => {
-  const loadingOverlayState = useLoadingOverlayState(
-    clientId,
-    dependenciesLoading,
-    forceLoading
-  );
+  const loadingOverlayState = useLoadingOverlayState(clientId, dependenciesLoading, forceLoading)
 
   if (loadingOverlayState === 'HIDDEN') {
-    return null;
+    return null
   }
 
   if (loadingOverlayState === 'TIMEOUT') {
     return (
       <div className="sp-overlay sp-error">
         <div className="sp-error-message">
-          Unable to establish connection with the sandpack bundler. Make sure
-          you are online or try again later. If the problem persists, please
-          report it via{' '}
+          Unable to establish connection with the sandpack bundler. Make sure you are online or try
+          again later. If the problem persists, please report it via{' '}
           <a
             className="sp-error-message"
-            href="mailto:hello@codesandbox.io?subject=Sandpack Timeout Error">
+            href="mailto:hello@codesandbox.io?subject=Sandpack Timeout Error"
+          >
             email
           </a>{' '}
           or submit an issue on{' '}
@@ -45,16 +40,16 @@ export const LoadingOverlay = ({
             className="sp-error-message"
             href="https://github.com/codesandbox/sandpack/issues"
             rel="noreferrer noopener"
-            target="_blank">
+            target="_blank"
+          >
             GitHub.
           </a>
         </div>
       </div>
-    );
+    )
   }
 
-  const stillLoading =
-    loadingOverlayState === 'LOADING' || loadingOverlayState === 'PRE_FADING';
+  const stillLoading = loadingOverlayState === 'LOADING' || loadingOverlayState === 'PRE_FADING'
 
   return (
     <div
@@ -62,7 +57,8 @@ export const LoadingOverlay = ({
       style={{
         opacity: stillLoading ? 1 : 0,
         transition: `opacity ${FADE_ANIMATION_DURATION}ms ease-out`,
-      }}>
+      }}
+    >
       <div className="sp-cube-wrapper" title="Open in CodeSandbox">
         <OpenInCodeSandboxButton />
         <div className="sp-cube">
@@ -77,66 +73,63 @@ export const LoadingOverlay = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const useLoadingOverlayState = (
   clientId: string,
   dependenciesLoading: boolean,
-  forceLoading: boolean
+  forceLoading: boolean,
 ): LoadingOverlayState => {
-  const {sandpack, listen} = useSandpack();
-  const [state, setState] = useState<LoadingOverlayState>('HIDDEN');
+  const { sandpack, listen } = useSandpack()
+  const [state, setState] = React.useState<LoadingOverlayState>('HIDDEN')
 
   if (state !== 'LOADING' && forceLoading) {
-    setState('LOADING');
+    setState('LOADING')
   }
 
   /**
    * Sandpack listener
    */
-  const sandpackIdle = sandpack.status === 'idle';
-  useEffect(() => {
-    const unsubscribe = listen((message) => {
+  const sandpackIdle = sandpack.status === 'idle'
+  React.useEffect(() => {
+    const unsubscribe = listen(message => {
       if (message.type === 'done') {
-        setState((prev) => {
-          return prev === 'LOADING' ? 'PRE_FADING' : 'HIDDEN';
-        });
+        setState(prev => {
+          return prev === 'LOADING' ? 'PRE_FADING' : 'HIDDEN'
+        })
       }
-    }, clientId);
+    }, clientId)
 
     return () => {
-      unsubscribe();
-    };
-  }, [listen, clientId, sandpackIdle]);
+      unsubscribe()
+    }
+  }, [listen, clientId, sandpackIdle])
 
   /**
    * Fading transient state
    */
-  useEffect(() => {
-    let fadeTimeout: ReturnType<typeof setTimeout>;
+  React.useEffect(() => {
+    let fadeTimeout: ReturnType<typeof setTimeout>
 
     if (state === 'PRE_FADING' && !dependenciesLoading) {
-      setState('FADING');
+      setState('FADING')
     } else if (state === 'FADING') {
-      fadeTimeout = setTimeout(
-        () => setState('HIDDEN'),
-        FADE_ANIMATION_DURATION
-      );
+      fadeTimeout = setTimeout(() => setState('HIDDEN'), FADE_ANIMATION_DURATION)
     }
 
     return () => {
-      clearTimeout(fadeTimeout);
-    };
-  }, [state, dependenciesLoading]);
+      clearTimeout(fadeTimeout)
+    }
+  }, [state, dependenciesLoading])
 
   if (sandpack.status === 'timeout') {
-    return 'TIMEOUT';
+    return 'TIMEOUT'
   }
 
   if (sandpack.status !== 'running') {
-    return 'HIDDEN';
+    return 'HIDDEN'
   }
 
-  return state;
-};
+  return state
+}

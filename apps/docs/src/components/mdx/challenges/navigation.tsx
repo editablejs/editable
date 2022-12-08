@@ -1,5 +1,4 @@
-import { useRef, useCallback, useEffect, createRef } from 'react'
-import cn from 'classnames'
+import * as React from 'react'
 import { IconChevron } from 'components/icon/chevron'
 import { ChallengeContents } from './challenges'
 import { debounce } from 'debounce'
@@ -16,8 +15,8 @@ export function Navigation({
   currentChallenge: ChallengeContents
   isRecipes?: boolean
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const challengesNavRef = useRef(challenges.map(() => createRef<HTMLButtonElement>()))
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const challengesNavRef = React.useRef(challenges.map(() => React.createRef<HTMLButtonElement>()))
   const scrollPos = currentChallenge.order - 1
   const canScrollLeft = scrollPos > 0
   const canScrollRight = scrollPos < challenges.length - 1
@@ -56,14 +55,14 @@ export function Navigation({
     handleChange(index)
   }
 
-  const handleResize = useCallback(() => {
+  const handleResize = React.useCallback(() => {
     if (containerRef.current) {
       const el = containerRef.current
       el.scrollLeft = challengesNavRef.current[scrollPos].current?.offsetLeft || 0
     }
   }, [containerRef, challengesNavRef, scrollPos])
 
-  useEffect(() => {
+  React.useEffect(() => {
     handleResize()
     const debouncedHandleResize = debounce(handleResize, 200)
     window.addEventListener('resize', debouncedHandleResize)

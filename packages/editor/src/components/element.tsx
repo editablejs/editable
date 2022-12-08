@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import * as React from 'react'
 import getDirection from 'direction'
 import { Editor, Node, Range, Element as SlateElement } from 'slate'
 
@@ -27,7 +27,7 @@ const Element = (props: {
   renderPlaceholder?: PlaceholderRender
 }) => {
   const { element, selection, renderPlaceholder } = props
-  const ref = useRef<HTMLElement>(null)
+  const ref = React.useRef<HTMLElement>(null)
   const editor = useEditableStatic()
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)

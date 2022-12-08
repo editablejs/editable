@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import * as React from 'react'
 import {
   BaseRange,
   Descendant,
@@ -21,7 +21,7 @@ const FROZEN_EMPTY_ARRAY = Object.freeze([])
 export type UseRemoteCursorOverlayPositionsOptions = {
   // Container the overlay will be rendered in. If set, all returned overlay positions
   // will be relative to this container.
-  containerRef?: RefObject<HTMLElement>
+  containerRef?: React.RefObject<HTMLElement>
 
   // Whether to refresh the cursor overlay positions on container resize. Defaults
   // to true.
@@ -60,14 +60,14 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   const editor = useEditableStatic() as CursorEditor<TCursorData> & Editable
 
   const requestReRender = useRequestReRender()
-  const selectionRectCache = useRef<WeakMap<BaseRange, SelectionRect[]>>(new WeakMap())
+  const selectionRectCache = React.useRef<WeakMap<BaseRange, SelectionRect[]>>(new WeakMap())
 
-  const [selectionRects, setSelectionRects] = useState<Record<string, SelectionRect[]>>({})
+  const [selectionRects, setSelectionRects] = React.useState<Record<string, SelectionRect[]>>({})
 
   const cursorStates = useRemoteStates<TCursorData>(editor)
 
   // Update cursors on remote change
-  useEffect(() => {
+  React.useEffect(() => {
     requestReRender()
   }, [requestReRender])
 
@@ -102,7 +102,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
     }
   })
 
-  const cursors = useMemo<CursorOverlayState<TCursorData>[]>(
+  const cursors = React.useMemo<CursorOverlayState<TCursorData>[]>(
     () =>
       Object.entries(cursorStates).map(([clientId, state]) => {
         const selection = state.relativeSelection && getRange(editor, state.relativeSelection)
@@ -119,7 +119,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
     [cursorStates, editor, selectionRects],
   )
 
-  const refresh = useCallback(
+  const refresh = React.useCallback(
     (sync = false) => {
       selectionRectCache.current = new WeakMap()
       requestReRender(sync)
@@ -128,7 +128,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   )
 
   // Refresh on container resize
-  useEffect(() => {
+  React.useEffect(() => {
     if (!refreshOnResize || !containerRef?.current) {
       return
     }

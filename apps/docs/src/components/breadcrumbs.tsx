@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import * as React from 'react'
 import { useRouteMeta } from 'components/layout/use-route-meta'
 import Link from 'next/link'
 
@@ -11,7 +11,7 @@ function Breadcrumbs() {
         (crumb, i) =>
           crumb.path && (
             <div tw="mb-3 mt-0.5 flex items-center" key={i}>
-              <Fragment key={crumb.path}>
+              <React.Fragment key={crumb.path}>
                 <Link href={crumb.path}>
                   <a tw="text-link dark:text-link-dark mr-1 text-sm font-bold uppercase tracking-wide hover:underline">
                     {crumb.title}
@@ -31,7 +31,7 @@ function Breadcrumbs() {
                     />
                   </svg>
                 </span>
-              </Fragment>
+              </React.Fragment>
             </div>
           ),
       )}

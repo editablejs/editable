@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
+import * as React from 'react'
 import { useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 import { Locale, LocaleComponentName } from '../plugin/locale'
 import { useEditableStatic } from './use-editable'
 
 export const useLocaleStore = (editor: Editable) => {
-  return useMemo(() => {
+  return React.useMemo(() => {
     return Locale.getStore(editor)
   }, [editor])
 }
@@ -27,7 +27,7 @@ export const useLocale = <
   const localeContext = useLocales<L>(editor, lang)
   const componentLocaleContext = localeContext[componentName]
 
-  const componentLocale = useMemo(() => {
+  const componentLocale = React.useMemo(() => {
     const locale = componentLocaleContext || defaultLocale
     return {
       ...(locale instanceof Function ? locale() : locale),

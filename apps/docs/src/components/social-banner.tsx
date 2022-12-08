@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import * as React from 'react'
 import { ExternalLink } from './external-link'
 
 const bannerText = 'Support Ukraine 🇺🇦'
@@ -6,8 +6,8 @@ const bannerLink = 'https://opensource.fb.com/support-ukraine'
 const bannerLinkText = 'Help Provide Humanitarian Aid to Ukraine'
 
 export default function SocialBanner() {
-  const ref = useRef<HTMLDivElement | null>(null)
-  useEffect(() => {
+  const ref = React.useRef<HTMLDivElement | null>(null)
+  React.useEffect(() => {
     function patchedScrollTo(x: number, y: number) {
       if (y === 0) {
         // We're trying to reset scroll.

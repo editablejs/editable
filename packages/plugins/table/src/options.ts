@@ -1,5 +1,5 @@
 import { Editable } from '@editablejs/editor'
-import { useRef } from 'react'
+import * as React from 'react'
 
 export const defaultTableMinRowHeight = 35
 export const defaultTableMinColWidth = 35
@@ -23,5 +23,5 @@ export const setOptions = (editor: Editable, options: TableOptions) => {
 }
 
 export const useOptions = (editor: Editable) => {
-  return useRef(getOptions(editor)).current
+  return React.useRef(getOptions(editor)).current
 }

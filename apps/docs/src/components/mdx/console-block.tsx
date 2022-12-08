@@ -1,4 +1,3 @@
-import { isValidElement } from 'react'
 import * as React from 'react'
 import { IconWarning } from '../icon/warning'
 import { IconError } from '../icon/error'
@@ -27,7 +26,7 @@ function ConsoleBlock({ level = 'error', children }: ConsoleBlockProps) {
   let message: React.ReactNode | null
   if (typeof children === 'string') {
     message = children
-  } else if (isValidElement(children)) {
+  } else if (React.isValidElement(children)) {
     message = children.props.children
   }
 

@@ -1,5 +1,5 @@
 import { Range } from 'slate'
-import { FC, useState } from 'react'
+import * as React from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
@@ -13,12 +13,12 @@ import {
 
 interface InputProps {}
 
-const InputComponent: FC<InputProps> = () => {
+const InputComponent: React.FC<InputProps> = () => {
   const editor = useEditableStatic()
 
   const [focused, setFocused] = useFocused()
 
-  const [rect, setRect] = useState<ShadowRect | null>(null)
+  const [rect, setRect] = React.useState<ShadowRect | null>(null)
 
   const handleKeydown = (event: React.KeyboardEvent) => {
     const { nativeEvent } = event

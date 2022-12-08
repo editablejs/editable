@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import * as React from 'react'
 import tw from 'twin.macro'
 import { Icon } from './icon'
 import {
@@ -15,7 +15,7 @@ import { Portal } from './portal'
 
 export interface DropdownItemProps extends Omit<MenuItem, 'onSelect' | 'textValue'> {
   value: string
-  content?: ReactNode
+  content?: React.ReactNode
   disabled?: boolean
 }
 
@@ -31,7 +31,7 @@ export interface Dropdown extends Menu {
 
 type DropdownItem = DropdownItemProps | 'separator'
 
-export const Dropdown: FC<Dropdown> = ({
+export const Dropdown: React.FC<Dropdown> = ({
   children,
   disabled,
   items,
@@ -42,13 +42,13 @@ export const Dropdown: FC<Dropdown> = ({
   value: valueProps,
   ...props
 }) => {
-  const defaultValue = useMemo(() => {
+  const defaultValue = React.useMemo(() => {
     if (defaultValueProps) return defaultValueProps
     const firstItem = items.find(item => item !== 'separator')
     return defaultActiveFirstItem && typeof firstItem === 'object' ? firstItem.value : ''
   }, [defaultActiveFirstItem, items, defaultValueProps])
 
-  const [value, setValue] = useState(defaultValue)
+  const [value, setValue] = React.useState(defaultValue)
 
   const handleSelect = (e: Event, v: string) => {
     setValue(v)
@@ -56,7 +56,7 @@ export const Dropdown: FC<Dropdown> = ({
     setOpen(false)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     setValue(valueProps ?? defaultValue)
   }, [defaultValue, valueProps])
 
@@ -88,9 +88,9 @@ export const Dropdown: FC<Dropdown> = ({
 
   const { open: openProp, onOpenChange, dir, ...triggerProps } = props
 
-  const [open, setOpen] = useState(openProp)
+  const [open, setOpen] = React.useState(openProp)
 
-  const activeItem = useMemo(() => {
+  const activeItem = React.useMemo(() => {
     const findItem = (items: DropdownItem[]): DropdownItemProps | null => {
       for (const item of items) {
         if (item !== 'separator' && item.value === value) return item

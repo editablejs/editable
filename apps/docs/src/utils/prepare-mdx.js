@@ -1,4 +1,4 @@
-import { Children } from 'react'
+import * as React from 'react'
 
 // TODO: This logic could be in MDX plugins instead.
 
@@ -50,13 +50,13 @@ function wrapChildrenInMaxWidthContainers(children) {
       wrapQueue.push(child)
     }
   }
-  Children.forEach(children, handleChild)
+  React.Children.forEach(children, handleChild)
   flushWrapper('last')
   return finalChildren
 }
 
 function getTableOfContents(children) {
-  const anchors = Children.toArray(children)
+  const anchors = React.Children.toArray(children)
     .filter(child => {
       if (child.type) {
         return ['h1', 'h2', 'h3', 'Challenges', 'Recap'].includes(child.type)

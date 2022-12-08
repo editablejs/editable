@@ -18,7 +18,7 @@ import {
   isDOMHTMLElement,
 } from '@editablejs/editor'
 import { useComposedRefs } from '@editablejs/plugin-ui'
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
+import * as React from 'react'
 import { createStore } from 'zustand'
 import { TableCellEditor } from '../cell'
 import { TABLE_KEY } from '../constants'
@@ -104,7 +104,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
 
   const selected = useGridSelected()
 
-  const tableRef = useRef<HTMLTableElement>(null)
+  const tableRef = React.useRef<HTMLTableElement>(null)
 
   const dragging = useTableDragging()
 
@@ -179,7 +179,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     return colgroup.length > 0 ? <colgroup>{colgroup}</colgroup> : null
   }
   // table width
-  const tableWidth = useMemo(() => {
+  const tableWidth = React.useMemo(() => {
     let width = 0
     for (let i = 0; i < colsWidth.length; i++) {
       width += colsWidth[i]
@@ -187,7 +187,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     return width
   }, [colsWidth])
   // table height
-  const tableHeight = useMemo(() => {
+  const tableHeight = React.useMemo(() => {
     const { children } = element
     let height = 0
     for (let i = 0; i < children.length; i++) {
@@ -196,9 +196,9 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     return height
   }, [element])
 
-  const [isHover, setHover] = useState(false)
+  const [isHover, setHover] = React.useState(false)
 
-  const store = useMemo(
+  const store = React.useMemo(
     () =>
       createStore(() => ({
         selection,
@@ -228,7 +228,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
 
   const cancellablePromisesApi = useCancellablePromises()
 
-  const handleMouseOver = useCallback(() => {
+  const handleMouseOver = React.useCallback(() => {
     cancellablePromisesApi.clearPendingPromises()
     if (~~selected.count) return
     const wait = cancellablePromise(cancellablePromisesApi.delay(200))
@@ -240,12 +240,12 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
       .catch(err => {})
   }, [selected, cancellablePromisesApi])
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = React.useCallback(() => {
     cancellablePromisesApi.clearPendingPromises()
     setHover(false)
   }, [cancellablePromisesApi])
 
-  const getMoveColToIndex = useCallback(
+  const getMoveColToIndex = React.useCallback(
     (col: number, offsetX: number) => {
       const cells = Grid.cells(editor, Editable.findPath(editor, element), {
         startCol: col,
@@ -274,7 +274,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     [colsWidth, element, editor],
   )
 
-  const getMoveRowToIndex = useCallback(
+  const getMoveRowToIndex = React.useCallback(
     (row: number, offsetY: number) => {
       const cells = Grid.cells(editor, Editable.findPath(editor, element), {
         startRow: row,
@@ -305,7 +305,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     [element, editor],
   )
 
-  const handleMouseMove = useCallback(
+  const handleMouseMove = React.useCallback(
     (event: MouseEvent) => {
       const tableEl = tableRef.current
       const { target, offsetX, offsetY } = event
@@ -351,7 +351,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     [editor, getMoveRowToIndex, getMoveColToIndex],
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (dragging) {
       window.addEventListener('mousemove', handleMouseMove)
     }

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import * as React from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect, Range, Element } from '@editablejs/editor'
@@ -71,7 +71,7 @@ const getStore = (editor: Editable) => {
 }
 
 export const useToolbarStore = (editor: Editable) => {
-  return useMemo(() => getStore(editor), [editor])
+  return React.useMemo(() => getStore(editor), [editor])
 }
 
 export const useToolbarItems = (editor: Editable) => {
@@ -87,7 +87,7 @@ export const useInlineToolbarItems = (editor: Editable) => {
 export const useInlineToolbarOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useToolbarStore(editor)
   const open = useStore(store, state => state.inline.open)
-  return useMemo(
+  return React.useMemo(
     () => [
       open,
       (open: boolean) => {
@@ -108,7 +108,7 @@ export const useSideToolbarMenuOpen = (
 ): [boolean, (open: boolean, data?: { range?: Range; element?: Element }) => void] => {
   const store = useToolbarStore(editor)
   const open = useStore(store, state => state.sideMenu.open)
-  return useMemo(
+  return React.useMemo(
     () => [
       open,
       (open: boolean, data?: { range?: Range; element?: Element }) => {
@@ -122,7 +122,7 @@ export const useSideToolbarMenuOpen = (
 type ToolbarEffectCallback = () => (() => void) | void
 
 export const useToolbarEffect = (aciton: ToolbarEffectCallback, editor: Editable) => {
-  const editorRef = useRef<Editable | null>(null)
+  const editorRef = React.useRef<Editable | null>(null)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
 

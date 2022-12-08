@@ -1,10 +1,10 @@
-import { createContext, useContext } from 'react'
+import * as React from 'react'
 
-export const NodeFocusedContext = createContext<boolean>(false)
+export const NodeFocusedContext = React.createContext<boolean>(false)
 
 /**
  * Get the current `focused` state of an element.
  */
 export const useNodeFocused = (): boolean => {
-  return useContext(NodeFocusedContext)
+  return React.useContext(NodeFocusedContext)
 }

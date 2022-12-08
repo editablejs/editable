@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import * as React from 'react'
 import { Node, NodeEntry } from 'slate'
 import create, { UseBoundStore, StoreApi } from 'zustand'
 import { Editable } from './editable'
@@ -6,7 +6,7 @@ import { Editable } from './editable'
 export interface RenderPlaceholderProps {
   node: Node
 }
-export type PlaceholderRender = (props: RenderPlaceholderProps) => ReactNode
+export type PlaceholderRender = (props: RenderPlaceholderProps) => React.ReactNode
 
 export interface PlaceholderState {
   key?: string

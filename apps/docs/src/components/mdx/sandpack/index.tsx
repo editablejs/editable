@@ -1,7 +1,7 @@
-import { lazy, memo, Children, Suspense } from 'react'
+import * as React from 'react'
 import { createFileMap } from './create-file-map'
 
-const SandpackRoot = lazy(() => import('./sandpack-root'))
+const SandpackRoot = React.lazy(() => import('./sandpack-root'))
 
 const SandpackGlimmer = ({ code }: { code: string }) => (
   <div tw=" my-8" className="sandpack sandpack--playground">
@@ -44,8 +44,8 @@ const SandpackGlimmer = ({ code }: { code: string }) => (
   </div>
 )
 
-export default memo(function SandpackWrapper(props: any): any {
-  const codeSnippet = createFileMap(Children.toArray(props.children))
+export default React.memo(function SandpackWrapper(props: any): any {
+  const codeSnippet = createFileMap(React.Children.toArray(props.children))
 
   // To set the active file in the fallback we have to find the active file first.
   // If there are no active files we fallback to App.js as default.
@@ -60,8 +60,8 @@ export default memo(function SandpackWrapper(props: any): any {
   }
 
   return (
-    <Suspense fallback={<SandpackGlimmer code={activeCode} />}>
+    <React.Suspense fallback={<SandpackGlimmer code={activeCode} />}>
       <SandpackRoot {...props} />
-    </Suspense>
+    </React.Suspense>
   )
 })

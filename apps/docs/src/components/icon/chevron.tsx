@@ -1,7 +1,7 @@
-import { memo } from 'react'
+import * as React from 'react'
 import cn from 'classnames'
 
-export const IconChevron = memo<
+export const IconChevron = React.memo<
   JSX.IntrinsicElements['svg'] & {
     displayDirection: 'up' | 'down' | 'left' | 'right'
   }

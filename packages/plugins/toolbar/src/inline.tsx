@@ -1,6 +1,6 @@
 import { Editable, useEditableStatic, Range, Slot, SelectionDrawing } from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import * as React from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from './store'
 import { Toolbar } from './toolbar'
 
@@ -17,8 +17,8 @@ const InlineToolbarEditor = {
 }
 
 const InlineToolbar = () => {
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const containerRef = useRef<HTMLElement | null>(null)
+  const rootRef = React.useRef<HTMLDivElement | null>(null)
+  const containerRef = React.useRef<HTMLElement | null>(null)
 
   const editor = useEditableStatic()
 
@@ -26,14 +26,14 @@ const InlineToolbar = () => {
 
   const [open, setOpen] = useInlineToolbarOpen(editor)
 
-  const [side, setSide] = useState<'bottom' | 'top'>('bottom')
+  const [side, setSide] = React.useState<'bottom' | 'top'>('bottom')
 
-  const pointRef = useRef({ x: 0, y: 0 })
-  const virtualRef = useRef({
+  const pointRef = React.useRef({ x: 0, y: 0 })
+  const virtualRef = React.useRef({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
-  const handleSelectEnd = useCallback(() => {
+  const handleSelectEnd = React.useCallback(() => {
     const { selection } = editor
     if (selection && Range.isExpanded(selection)) {
       let x = 0,
@@ -64,18 +64,18 @@ const InlineToolbar = () => {
     }
   }, [editor, setOpen])
 
-  const handleSelectStart = useCallback(() => {
+  const handleSelectStart = React.useCallback(() => {
     setOpen(false)
   }, [setOpen])
 
-  const handleSelectionChange = useCallback(() => {
+  const handleSelectionChange = React.useCallback(() => {
     const { selection } = editor
     if (!selection || Range.isCollapsed(selection)) {
       setOpen(false)
     }
   }, [editor, setOpen])
 
-  useEffect(() => {
+  React.useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
     rootRef.current = root

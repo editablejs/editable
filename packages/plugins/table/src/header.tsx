@@ -1,5 +1,5 @@
 import { Editable } from '@editablejs/editor'
-import React, { useCallback, useMemo } from 'react'
+import * as React from 'react'
 import { InsertAction, SplitAction } from './action'
 import { useTableStore } from './context'
 import { Grid } from '@editablejs/editor'
@@ -19,7 +19,7 @@ export interface TableHeaderProps {
 const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
   const { width, selected, cols } = useTableStore()
 
-  const selectRow = useCallback(
+  const selectRow = React.useCallback(
     (row: number) => {
       Grid.select(editor, Editable.findPath(editor, table), {
         start: [row, 0],
@@ -29,7 +29,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     [editor, table, cols],
   )
 
-  const handleWindowMouseUp = useCallback(() => {
+  const handleWindowMouseUp = React.useCallback(() => {
     if (TableDrag.isDragging()) {
       const dragging = TableDrag.getDrag()
 
@@ -48,7 +48,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     window.removeEventListener('mouseup', handleWindowMouseUp)
   }, [editor])
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = React.useCallback(
     (e: React.MouseEvent, row: number) => {
       e.preventDefault()
 
@@ -64,7 +64,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     [selected.rowFull, selected.allFull, selected.rows, handleWindowMouseUp],
   )
 
-  const handleMouseUp = useCallback(
+  const handleMouseUp = React.useCallback(
     (e: React.MouseEvent, row: number) => {
       e.preventDefault()
       selectRow(row)
@@ -72,7 +72,7 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     [selectRow],
   )
 
-  const headers = useMemo(() => {
+  const headers = React.useMemo(() => {
     const headers = []
     headers.push(
       <InsertAction
@@ -154,7 +154,7 @@ const TableRowHeader = React.memo(TableRowHeaderDefault, (prev, next) => {
 const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
   const { height, selected, rows } = useTableStore()
 
-  const selectColumn = useCallback(
+  const selectColumn = React.useCallback(
     (col: number) => {
       Grid.select(editor, Editable.findPath(editor, table), {
         start: [0, col],
@@ -164,7 +164,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     [editor, table, rows],
   )
 
-  const handleWindowMouseUp = useCallback(() => {
+  const handleWindowMouseUp = React.useCallback(() => {
     if (TableDrag.isDragging()) {
       const dragging = TableDrag.getDrag()
 
@@ -183,7 +183,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     window.removeEventListener('mouseup', handleWindowMouseUp)
   }, [editor])
 
-  const handleMouseDown = useCallback(
+  const handleMouseDown = React.useCallback(
     (e: React.MouseEvent, col: number) => {
       e.preventDefault()
       if (selected.colFull && !selected.allFull && ~selected.cols.indexOf(col)) {
@@ -198,7 +198,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     [handleWindowMouseUp, selected.allFull, selected.colFull, selected.cols],
   )
 
-  const handleMouseUp = useCallback(
+  const handleMouseUp = React.useCallback(
     (e: React.MouseEvent, col: number) => {
       e.preventDefault()
       selectColumn(col)
@@ -208,7 +208,7 @@ const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
 
   const { colsWidth = [] } = table
 
-  const headers = useMemo(() => {
+  const headers = React.useMemo(() => {
     const headers = []
     let width = 0
     headers.push(

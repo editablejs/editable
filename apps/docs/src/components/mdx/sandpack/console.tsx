@@ -1,10 +1,9 @@
 import cn from 'classnames'
-import { useState, useRef, useEffect } from 'react'
+import * as React from 'react'
 import { IconChevron } from 'components/icon/chevron'
 
 import { SandpackCodeViewer, useSandpack } from '@codesandbox/sandpack-react'
 import type { SandpackMessageConsoleMethods } from '@codesandbox/sandpack-client'
-import tw from 'twin.macro'
 
 const getType = (message: SandpackMessageConsoleMethods): 'info' | 'warning' | 'error' => {
   if (message === 'log' || message === 'info') {
@@ -85,10 +84,10 @@ const MAX_MESSAGE_COUNT = 100
 
 export const SandpackConsole = ({ visible }: { visible: boolean }) => {
   const { listen } = useSandpack()
-  const [logs, setLogs] = useState<ConsoleData>([])
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [logs, setLogs] = React.useState<ConsoleData>([])
+  const wrapperRef = React.useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     let isActive = true
     const unsubscribe = listen(message => {
       if (!isActive) {
@@ -133,9 +132,9 @@ export const SandpackConsole = ({ visible }: { visible: boolean }) => {
     }
   }, [listen])
 
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = React.useState(true)
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (wrapperRef.current) {
       wrapperRef.current.scrollTop = wrapperRef.current.scrollHeight
     }

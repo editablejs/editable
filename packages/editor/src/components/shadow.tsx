@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
+import * as React from 'react'
 import ReactDOM from 'react-dom'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 
@@ -16,7 +16,7 @@ type ShadowRectProps = {
 } & React.HTMLAttributes<HTMLDivElement>
 
 export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<HTMLDivElement>> =
-  forwardRef<HTMLDivElement, ShadowRectProps>(({ children, rect, style, ...props }, ref) => (
+  React.forwardRef<HTMLDivElement, ShadowRectProps>(({ children, rect, style, ...props }, ref) => (
     <div
       ref={ref}
       style={{
@@ -54,12 +54,12 @@ interface ShadowProps {
   children?: React.ReactNode
 }
 
-const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardRef<
+const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = React.forwardRef<
   ShadowRoot,
   ShadowProps
 >(({ children }, ref) => {
-  const [root, setRoot] = useState<ShadowRoot>()
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [root, setRoot] = React.useState<ShadowRoot>()
+  const containerRef = React.useRef<HTMLDivElement>(null)
 
   useIsomorphicLayoutEffect(() => {
     if (!containerRef.current || containerRef.current.shadowRoot) return
@@ -67,7 +67,7 @@ const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = forwardR
     setRoot(root)
   }, [])
 
-  useImperativeHandle(ref, () => root!, [root])
+  React.useImperativeHandle(ref, () => root!, [root])
 
   return (
     <div ref={containerRef} style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>

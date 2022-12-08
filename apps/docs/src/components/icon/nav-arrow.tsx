@@ -1,7 +1,7 @@
-import { memo } from 'react'
+import * as React from 'react'
 import tw from 'twin.macro'
 
-export const IconNavArrow = memo<
+export const IconNavArrow = React.memo<
   JSX.IntrinsicElements['svg'] & {
     displayDirection: 'right' | 'down' | 'left'
   }
