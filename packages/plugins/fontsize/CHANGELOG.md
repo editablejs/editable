@@ -1,5 +1,14 @@
 # @editablejs/plugin-fontsize
 
+## 1.0.0-beta.1
+
+### Patch Changes
+
+- [`fdafeac`](https://github.com/editablejs/editable/commit/fdafeacb8da94a19fd5b74dab621add727b8d1fd) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - add exports to package.json
+
+- Updated dependencies [[`fdafeac`](https://github.com/editablejs/editable/commit/fdafeacb8da94a19fd5b74dab621add727b8d1fd)]:
+  - @editablejs/editor@1.0.0-beta.1
+
 ## 1.0.0-beta.0
 
 ### Major Changes
