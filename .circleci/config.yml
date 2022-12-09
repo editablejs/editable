@@ -1,0 +1,118 @@
+# circleCIのバージョン指定
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@7.0.0
+
+jobs:
+  build-and-push:
+    machine:
+      image: ubuntu-2004:202010-01
+    resource_class: medium
+    parameters:
+      docker-tag:
+        type: string
+      path:
+        type: string
+      repo:
+        type: string
+      dockerfile:
+        type: string
+    working_directory: /tmp/workspace
+    steps:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: false
+          dockerfile: <<parameters.dockerfile>>
+          path: <<parameters.path>>
+          region: AWS_REGION
+          repo: <<parameters.repo>>
+          tag: "<<parameters.docker-tag>>${CIRCLE_SHA1}"
+  deploy:
+    machine:
+       image: ubuntu-2004:202111-02
+    resource_class: medium
+    parameters:
+      docker-tag:
+        type: string
+      path:
+        type: string
+      deploy-name:
+        type: string
+      deploy-namespace:
+        type: string
+    steps:
+      # - add_ssh_keys:
+      - run: 
+          name: kubectl apply
+          command: |
+            CMD='/home/ubuntu/cluster/deploy.sh <<parameters.path>> <<parameters.docker-tag>>'${CIRCLE_SHA1}' <<parameters.deploy-name>> <<parameters.deploy-namespace>>'
+            echo $CMD
+            ssh ${USER_NAME}@${HOST_NAME} ${CMD}
+
+
+workflows:
+  version: 2
+  editor-backend-build_and_push:
+    jobs:
+      # 正式环境执行docker打包，并将包推送至aws ecr镜像仓库中，仅对release分支触发，示例：2021.wk.34     
+      - build-and-push:
+          name: editor-backend-build
+          context:
+            - ecr-new
+          path: .
+          dockerfile: ./apps/server/Dockerfile
+          repo: editablejs-backend
+          docker-tag: ""
+          filters:
+            branches:
+              only: 
+                - circleci
+                - main
+      - deploy:
+          name: editor-backend-deploy
+          docker-tag: ""
+          path: "/home/ubuntu/cluster/web-app/editablejs/editor-backend-deploy.yaml"
+          deploy-name: editablejs-backend
+          deploy-namespace: web-app
+          context:
+            - ecr-new
+          filters:
+            branches:
+              only:
+                - circleci
+                - main
+          requires:
+            - editor-backend-build
+  editor-frontend-build_and_push:
+    jobs:
+      # 正式环境执行docker打包，并将包推送至aws ecr镜像仓库中，仅对release分支触发，示例：2021.wk.34     
+      - build-and-push:
+          name: editor-frontend-build
+          context:
+            - ecr-new
+          path: .
+          dockerfile: ./apps/docs/Dockerfile
+          repo: editablejs-frontend
+          docker-tag: ""
+          filters:
+            branches:
+              only: 
+                - circleci
+                - main
+      - deploy:
+          name: editor-frontend-deploy
+          docker-tag: ""
+          path: "/home/ubuntu/cluster/web-app/editablejs/editor-frontend-deploy.yaml"
+          deploy-name: editablejs-frontend
+          deploy-namespace: web-app
+          context:
+            - ecr-new
+          filters:
+            branches:
+              only:
+                - circleci
+                - main
+          requires:
+            - editor-frontend-build
