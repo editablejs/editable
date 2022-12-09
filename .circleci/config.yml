@@ -69,6 +69,7 @@ workflows:
             branches:
               only: 
                 - circleci
+                - main
       - deploy:
           name: editor-backend-deploy
           docker-tag: ""
@@ -81,6 +82,7 @@ workflows:
             branches:
               only:
                 - circleci
+                - main
           requires:
             - editor-backend-build
   editor-frontend-build_and_push:
@@ -98,6 +100,7 @@ workflows:
             branches:
               only: 
                 - circleci
+                - main
       - deploy:
           name: editor-frontend-deploy
           docker-tag: ""
@@ -110,5 +113,6 @@ workflows:
             branches:
               only:
                 - circleci
+                - main
           requires:
             - editor-frontend-build
