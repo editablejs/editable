@@ -24,7 +24,6 @@ jobs:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
-          context: .
           dockerfile: <<parameters.dockerfile>>
           path: <<parameters.path>>
           region: AWS_REGION
@@ -62,8 +61,8 @@ workflows:
           name: editor-backend-build
           context:
             - ecr-new
-          path: apps/server
-          dockerfile: Dockerfile
+          path: .
+          dockerfile: ./apps/server/Dockerfile
           repo: editablejs-backend
           docker-tag: ""
           filters:
@@ -91,8 +90,8 @@ workflows:
           name: editor-frontend-build
           context:
             - ecr-new
-          path: apps/docs
-          dockerfile: Dockerfile
+          path: .
+          dockerfile: ./apps/docs/Dockerfile
           repo: editablejs-frontend
           docker-tag: ""
           filters:
