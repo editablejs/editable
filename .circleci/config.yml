@@ -61,7 +61,7 @@ workflows:
           name: editor-backend-build
           context:
             - ecr-new
-          path: server
+          path: apps/server
           dockerfile: Dockerfile
           repo: editablejs-backend
           docker-tag: ""
@@ -90,7 +90,7 @@ workflows:
           name: editor-frontend-build
           context:
             - ecr-new
-          path: docs
+          path: apps/docs
           dockerfile: Dockerfile
           repo: editablejs-frontend
           docker-tag: ""
