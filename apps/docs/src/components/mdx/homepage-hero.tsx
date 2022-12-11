@@ -1,13 +1,13 @@
-import { Logo } from 'components/logo'
+import { IconLogo } from 'components/icon/logo'
 import YouWillLearnCard from 'components/mdx/you-will-learn-card'
 
 function HomepageHero() {
   return (
     <>
       <div tw="mx-auto mt-8 mb-0 flex max-w-4xl grow flex-col items-start justify-start sm:mt-8 sm:mb-8 sm:flex-row sm:items-center lg:mt-10 lg:mb-6">
-        <Logo tw="text-link dark:text-link-dark mr-4 mb-4 h-auto w-20 sm:mb-0 sm:w-28" />
+        <IconLogo tw="text-link dark:text-link-dark mr-4 mb-4 sm:mb-0 text-5xl" />
         <div tw="flex flex-wrap">
-          <h1 tw="dark:text-primary-dark mr-4 -mt-1 flex text-5xl font-bold leading-tight text-primary">
+          <h1 tw="dark:text-primary-dark mr-4 mt-1 flex text-5xl font-bold leading-tight text-primary">
             Editable Docs
           </h1>
           <div tw="bg-highlight dark:bg-highlight-dark text-link dark:text-link-dark mt-1 inline-flex w-auto self-center whitespace-nowrap rounded px-2 text-base font-bold uppercase tracking-wide">

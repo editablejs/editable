@@ -7,7 +7,6 @@ import { IconClose } from 'components/icon/close'
 import { IconHamburger } from 'components/icon/hamburger'
 import { Search } from 'components/search'
 import { useActiveSection } from 'hooks/useActiveSection'
-import { Logo } from 'components/logo'
 import { Feedback } from '../feedback'
 import NavLink from './nav-link'
 import { SidebarContext } from 'components/layout/use-route-meta'
@@ -17,6 +16,7 @@ import sidebarLearn from 'sidebarLearn.json'
 import sidebarAPIs from 'sidebarAPIs.json'
 import tw from 'twin.macro'
 import { ExternalLink } from 'components/external-link'
+import { IconLogo } from 'components/icon/logo'
 
 declare global {
   interface Window {
@@ -190,7 +190,7 @@ export default function Nav() {
           </button>
           <NextLink href="/">
             <a tw="text-lg dark:text-primary-dark mr-0 inline-flex items-center whitespace-nowrap py-1 font-normal text-primary sm:mr-3">
-              <Logo tw="text-link dark:text-link-dark mr-2 h-8 w-8 text-sm" />
+              <IconLogo tw="text-link dark:text-link-dark mr-2 text-sm" />
               Editable Docs
             </a>
           </NextLink>

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import NextLink from 'next/link'
 import tw, { css, styled } from 'twin.macro'
 import {
   EditableProvider,
@@ -45,6 +46,7 @@ import { createGlobalStyle } from 'styled-components'
 import { ExternalLink } from 'components/external-link'
 import { IconGitHub } from 'components/icon/github'
 import Image from 'next/image'
+import { IconLogo } from 'components/icon/logo'
 
 const { Switch, SwitchThumb, Icon, Tooltip } = UI
 
@@ -237,13 +239,19 @@ export default function Playground() {
       <EditableProvider editor={editor} initialValue={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
-            <ExternalLink
-              aria-label="Editable on Github"
-              href="https://github.com/editablejs/editable/blob/main/apps/docs/src/pages/playground.tsx"
-              tw="text-2xl text-link flex-1"
-            >
-              <IconGitHub />
-            </ExternalLink>
+            <div tw="flex text-2xl text-link flex-1 gap-3">
+              <NextLink href="/">
+                <a>
+                  <IconLogo />
+                </a>
+              </NextLink>
+              <ExternalLink
+                aria-label="Editable on Github"
+                href="https://github.com/editablejs/editable/blob/main/apps/docs/src/pages/playground.tsx"
+              >
+                <IconGitHub />
+              </ExternalLink>
+            </div>
             <div tw="flex gap-1 items-center">
               {Object.keys(remoteClients).map(id => {
                 const state = remoteClients[id]
