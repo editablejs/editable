@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [`4898015`](https://github.com/editablejs/editable/commit/489801580e1679b098f898625a9b28e7ec112332) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - add touch select
+
 ## 1.0.0-beta.2
 
 ### Patch Changes

@@ -19,6 +19,7 @@
     "@editablejs/plugin-yjs": "0.0.0"
   },
   "changesets": [
+    "beige-needles-decide",
     "clever-drinks-burn",
     "gentle-sloths-marry",
     "happy-starfishes-vanish",
