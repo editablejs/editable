@@ -1,5 +1,11 @@
 # @editablejs/plugin-yjs
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- [`c12edb9`](https://github.com/editablejs/editable/commit/c12edb9cd97d1958b1d5930fda5d1be4511d8da4) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - init value in yjs server connected
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
