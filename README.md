@@ -37,7 +37,7 @@ plugin directory
 - [x] Switch cursor and selection by keyboard Ctrl+up and down keys
 - [x] Switch cursor and selection by keyboard up and down keys
 - [x] Double-click and triple-click to select text after word segmentation
-- [ ] touch to select selection and cursor
+- [x] touch to select selection and cursor
 - [ ] Full coverage of unit tests
 
 ### Input
