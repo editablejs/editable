@@ -280,7 +280,7 @@ export const ContentEditable = (props: EditableProps) => {
     clearTouchHoldTimer()
     touchHoldTimer.current = setTimeout(() => {
       handleRootMouseDown(e)
-    }, 100)
+    }, 300)
   }
 
   const handleRootMouseDown = (e: React.MouseEvent | React.TouchEvent) => {

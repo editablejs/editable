@@ -250,7 +250,7 @@ export function withYjs<T extends Editor>(
 
   const { apply, onChange } = e
   e.apply = op => {
-    if (YjsEditor.connected(e) && YjsEditor.isLocal(e)) {
+    if (YjsEditor.connected(e) && YjsEditor.isLocal(e) && !Editable.isComposing(e)) {
       YjsEditor.storeLocalChange(e, op)
     }
 
@@ -258,7 +258,7 @@ export function withYjs<T extends Editor>(
   }
 
   e.onChange = () => {
-    if (YjsEditor.connected(e)) {
+    if (YjsEditor.connected(e) && !Editable.isComposing(e)) {
       YjsEditor.flushLocalChanges(e)
     }
 

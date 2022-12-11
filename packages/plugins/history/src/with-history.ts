@@ -91,8 +91,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     if (save == null) {
       save = shouldSave(op, lastOp)
     }
-
-    if (save) {
+    if (save && !Editable.isComposing(e)) {
       if (merge == null) {
         if (lastBatch == null) {
           merge = false

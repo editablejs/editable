@@ -313,8 +313,7 @@ export function withCursors<TCursorData extends Record<string, unknown>, TEditor
       const { onChange } = e
       e.onChange = () => {
         onChange()
-
-        if (YjsEditor.connected(e)) {
+        if (YjsEditor.connected(e) && !Editable.isComposing(e)) {
           CursorEditor.sendCursorPosition(e)
         }
       }

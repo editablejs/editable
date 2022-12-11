@@ -1,11 +1,11 @@
-import { Descendant, Editor, Transforms } from '@editablejs/editor'
+import { Editor, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
 import { YjsEditor } from './yjs'
 
 const LAST_SELECTION: WeakMap<Editor, RelativeRange | null> = new WeakMap()
-const DEFAULT_WITHOUT_SAVING_ORIGIN = Symbol('slate-yjs-history-without-saving')
+const DEFAULT_WITHOUT_SAVING_ORIGIN = Symbol('editable-yjs-history-without-saving')
 
 export type YHistoryEditor = YjsEditor & {
   undoManager: Y.UndoManager

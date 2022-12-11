@@ -642,7 +642,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
   }
 
   e.onCompositionEnd = (value: string) => {
-    IS_COMPOSING.set(editor, false)
     const { selection } = editor
     if (!selection) return
     const [node, path] = Editor.node(editor, selection)
@@ -662,6 +661,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
             focus: { path, offset: 1 },
           }
         : point
+
+      IS_COMPOSING.set(editor, false)
       Transforms.select(editor, range)
       Transforms.insertText(editor, value)
     }

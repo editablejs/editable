@@ -4,6 +4,7 @@ import {
   Descendant,
   Editable,
   SelectionDrawing,
+  useEditable,
   useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
@@ -57,7 +58,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   containerRef,
   refreshOnResize = true,
 }: UseRemoteCursorOverlayPositionsOptions = {}) {
-  const editor = useEditableStatic() as CursorEditor<TCursorData> & Editable
+  const editor = useEditable() as CursorEditor<TCursorData> & Editable
 
   const requestReRender = useRequestReRender()
   const selectionRectCache = React.useRef<WeakMap<BaseRange, SelectionRect[]>>(new WeakMap())
