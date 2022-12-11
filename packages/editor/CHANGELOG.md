@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [`d9250e0`](https://github.com/editablejs/editable/commit/d9250e0ec00951cd2246813ac13c5e1fa2a7faeb) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Fix undo/redo error
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
