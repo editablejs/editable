@@ -1,5 +1,25 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [`4898015`](https://github.com/editablejs/editable/commit/489801580e1679b098f898625a9b28e7ec112332) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - add touch select
+
+- Updated dependencies [[`4898015`](https://github.com/editablejs/editable/commit/489801580e1679b098f898625a9b28e7ec112332)]:
+  - @editablejs/editor@1.0.0-beta.3
+  - @editablejs/plugin-blockquote@1.0.0-beta.3
+  - @editablejs/plugin-context-menu@1.0.0-beta.3
+  - @editablejs/plugin-fontsize@1.0.0-beta.3
+  - @editablejs/plugin-heading@1.0.0-beta.3
+  - @editablejs/plugin-history@1.0.0-beta.3
+  - @editablejs/plugin-indent@1.0.0-beta.3
+  - @editablejs/plugin-list@1.0.0-beta.3
+  - @editablejs/plugin-mark@1.0.0-beta.3
+  - @editablejs/plugin-table@1.0.0-beta.3
+  - @editablejs/plugin-toolbar@1.0.0-beta.3
+  - @editablejs/plugin-ui@1.0.0-beta.3
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
