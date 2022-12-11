@@ -15,7 +15,7 @@
     "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo run build --filter=./packages/* && pnpm release:only",
+    "release": "turbo run build --filter=./packages/* --filter=./packages/plugins/* && pnpm release:only",
     "release:only": "changeset publish"
   },
   "devDependencies": {

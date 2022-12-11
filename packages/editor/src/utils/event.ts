@@ -2,6 +2,8 @@
  * Check if an event is overrided by a handler.
  */
 
+import * as React from 'react'
+
 export const isEventHandled = <EventType extends React.SyntheticEvent<unknown, unknown>>(
   event: EventType,
   handler?: (event: EventType) => void | boolean,
@@ -41,4 +43,25 @@ export const isDOMEventHandled = <E extends Event>(
   }
 
   return event.defaultPrevented
+}
+
+export const isTouchEvent = (event: any): event is TouchEvent => {
+  return event instanceof TouchEvent
+}
+
+export const isTouch = (event: any): event is Touch => {
+  return event instanceof Touch
+}
+
+export const isMouseEvent = (event: any): event is MouseEvent => {
+  return event instanceof MouseEvent
+}
+
+export const getNativeEvent = (event: any) => {
+  const { nativeEvent } = event
+  event = nativeEvent ?? event
+  if (isTouchEvent(event)) {
+    return event.touches[0] || event.changedTouches[0]
+  }
+  return event
 }

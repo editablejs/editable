@@ -17,21 +17,20 @@ const SelectionComponent: React.FC<SelectionProps> = () => {
   const enabled = useSelectionDrawingEnabled()
   const style = useSelectionDrawingStyle()
   const [focused] = useFocused()
-  if (!enabled) return null
+  if (!enabled || !selection || Range.isCollapsed(selection)) return null
+
   return (
     <>
-      {selection &&
-        Range.isExpanded(selection) &&
-        rects.map((rect, index) => {
-          return (
-            <ShadowRect
-              key={`sel-${index}`}
-              rect={Object.assign({}, rect.toJSON(), {
-                color: focused ? style.focusColor : style.blurColor,
-              })}
-            />
-          )
-        })}
+      {rects.map((rect, index) => {
+        return (
+          <ShadowRect
+            key={`sel-${index}`}
+            rect={Object.assign({}, rect.toJSON(), {
+              color: focused ? style.focusColor : style.blurColor,
+            })}
+          />
+        )
+      })}
     </>
   )
 }

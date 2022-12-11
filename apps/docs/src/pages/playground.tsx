@@ -7,6 +7,7 @@ import {
   useIsomorphicLayoutEffect,
   Placeholder,
   Editor,
+  isTouchDevice,
 } from '@editablejs/editor'
 import {
   withPlugins,
@@ -82,11 +83,11 @@ const CustomStyles = createGlobalStyle({
 const StyledHeader = tw.div`bg-white text-base`
 
 const StyledToolbar = styled(Toolbar)`
-  ${tw`flex justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-6 `}
+  ${tw`flex justify-start overscroll-contain md:justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-2 md:px-6 overflow-auto`}
 `
 
 const StyledContainer = styled.div`
-  ${tw`mt-5 min-h-[80vh] bg-white shadow w-[800px] m-auto px-10 py-16 text-sm`}
+  ${tw`mt-2 md:mt-5 min-h-[80vh] bg-white shadow w-full md:w-[800px] m-auto px-4 py-4 md:px-10 md:py-16 text-sm`}
   line-height: 1.7;
 `
 
@@ -165,17 +166,20 @@ export default function Playground() {
         data: cursorData,
       })
     }
-    editor = withYHistory(
-      withSideToolbar(
-        withInlineToolbar(
-          withToolbar(
-            withPlugins(editor, {
-              fontSize: { defaultSize: '14px' },
-            }),
-          ),
-        ),
+
+    editor = withInlineToolbar(
+      withToolbar(
+        withPlugins(editor, {
+          fontSize: { defaultSize: '14px' },
+        }),
       ),
     )
+
+    if (!isTouchDevice) {
+      editor = withSideToolbar(editor)
+    }
+
+    editor = withYHistory(editor)
     Placeholder.add(editor, {
       check: entry => {
         return Editor.isBlock(editor, entry[0])

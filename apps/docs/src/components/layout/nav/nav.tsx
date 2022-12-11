@@ -1,6 +1,6 @@
 import * as React from 'react'
 import NextLink from 'next/link'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 
 import { IconClose } from 'components/icon/close'
@@ -231,7 +231,7 @@ export default function Nav() {
           <NavLink href="/learn" isActive={section === 'learn' || section === 'home'}>
             Learn
           </NavLink>
-          <NavLink href="/apis/react" isActive={section === 'apis'}>
+          <NavLink href="/apis/editor" isActive={section === 'apis'}>
             API
           </NavLink>
         </div>
@@ -290,6 +290,9 @@ export default function Nav() {
 
       {isOpen && (
         <div tw="bg-wash dark:bg-wash-dark border-border dark:border-border-dark z-10 flex w-full items-center justify-end self-center border-b px-5">
+          <TabButton isActive={false} onClick={() => Router.push('/playground')}>
+            Playground
+          </TabButton>
           <TabButton
             isActive={tab === 'learn' || tab === 'home'}
             onClick={() => selectTab('learn')}

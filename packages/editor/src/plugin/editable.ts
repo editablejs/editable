@@ -63,6 +63,7 @@ import {
   DATA_EDITABLE_VOID,
   DATA_EDITABLE_ZERO_WIDTH,
 } from '../utils/constants'
+import { getNativeEvent, isTouch, isTouchEvent } from '../utils/event'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -735,14 +736,15 @@ export const Editable = {
    * Get the target point from a DOM `event`.
    */
   findEventPoint(editor: Editable, event: any): Point | null {
-    if ('nativeEvent' in event) {
-      event = event.nativeEvent
-    }
-
-    const { clientX: x, clientY: y, target } = event
+    event = getNativeEvent(event)
+    const { clientX: x, clientY: y } = event
 
     if (x == null || y == null) {
       throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
+    }
+    let target = event.target
+    if (isTouch(event)) {
+      target = document.elementFromPoint(event.clientX, event.clientY)
     }
     return Editable.findClosestPoint(editor, target, x, y)
   },

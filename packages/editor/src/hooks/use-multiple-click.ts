@@ -11,7 +11,7 @@ const useMultipleClick = (options: {
   const pointRef = React.useRef<{ x: number; y: number }>()
   const countRef = React.useRef(0)
 
-  const isSamePoint = (event: React.MouseEvent | MouseEvent) => {
+  const isSamePoint = (event: React.MouseEvent | MouseEvent | Touch) => {
     const point = pointRef.current
     return point
       ? Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10

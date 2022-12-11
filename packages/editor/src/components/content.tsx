@@ -18,6 +18,8 @@ import {
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
   IS_MOUSEDOWN,
+  IS_TOUCHMOVING,
+  IS_TOUCHING,
 } from '../utils/weak-maps'
 import { getWordRange } from '../utils/text'
 import { useMultipleClick } from '../hooks/use-multiple-click'
@@ -29,12 +31,15 @@ import { InputComponent } from './input'
 import { useDragging, useDragMethods, useDragTo } from '../hooks/use-drag'
 import { SelectionDrawing, SelectionDrawingStyle } from '../plugin/selection-drawing'
 import { APPLICATION_FRAGMENT_TYPE, DATA_EDITABLE_NODE } from '../utils/constants'
-import { DragSelectionComponent } from './drag-selection'
+import { DragCaretComponent } from './drag-caret'
 import { parseFragmentFromString, setDataTransfer } from '../utils/data-transfer'
 import { Slots } from './slot'
 import { Drag } from '../plugin/drag'
 import { Placeholder } from '../plugin/placeholder'
 import { usePlaceholder } from '../hooks/use-placeholder'
+import { isTouchDevice } from '../utils/environment'
+import { TouchPointComponent } from './touch-point'
+import { getNativeEvent, isMouseEvent, isTouchEvent } from '../utils/event'
 
 const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>) => {
   const editor = useEditable()
@@ -83,6 +88,9 @@ export const ContentEditable = (props: EditableProps) => {
 
   const [rendered, setRendered] = React.useState(false)
 
+  // Touch hold timer
+  const touchHoldTimer = React.useRef<number | null>(null)
+
   React.useEffect(() => {
     if (autoFocus) {
       editor.focus()
@@ -120,7 +128,11 @@ export const ContentEditable = (props: EditableProps) => {
   const startPointRef = React.useRef<Point | null>(null)
   const isContextMenu = React.useRef(false)
 
-  const handleDocumentMouseDown = (event: MouseEvent) => {
+  const clearTouchHoldTimer = () => {
+    if (touchHoldTimer.current) clearTimeout(touchHoldTimer.current)
+  }
+
+  const handleDocumentMouseDown = (event: MouseEvent | TouchEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
     if (!isMouseDown && !event.defaultPrevented) setFocused(false)
   }
@@ -131,8 +143,13 @@ export const ContentEditable = (props: EditableProps) => {
     if (!rest && selection && Range.includes(selection, point)) {
       return
     }
-    const anchor =
-      IS_SHIFT_PRESSED.get(editor) && selection ? selection.anchor : startPointRef.current
+    let anchor: Point | null = null
+
+    if (IS_TOUCHING.get(editor)) {
+      anchor = point
+    } else {
+      anchor = IS_SHIFT_PRESSED.get(editor) && selection ? selection.anchor : startPointRef.current
+    }
     if (!anchor) return
     const range: Range = { anchor, focus: point }
     if (selection && Range.equals(range, selection)) {
@@ -144,10 +161,23 @@ export const ContentEditable = (props: EditableProps) => {
     return range
   }
 
-  const handleDocumentMouseUp = (event: MouseEvent) => {
+  const handleDocumentTouchEnd = (event: TouchEvent) => {
+    clearTouchHoldTimer()
+    // touch move 之后不会触发 mouse up 事件，所以需要在 touch end 时触发
+    if (IS_TOUCHMOVING.get(editor)) {
+      handleDocumentMouseUp(event)
+      IS_TOUCHING.set(editor, false)
+    }
+  }
+
+  const handleDocumentMouseUp = (event: MouseEvent | TouchEvent) => {
     const drag = getDrag()
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (drag || (isMouseDown && (!event.defaultPrevented || event.button === 2))) {
+    if (
+      drag ||
+      (isMouseDown &&
+        (!event.defaultPrevented || (event instanceof MouseEvent && event.button === 2)))
+    ) {
       if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
         editor.focus()
       }
@@ -204,19 +234,28 @@ export const ContentEditable = (props: EditableProps) => {
       if (!isDragEnded.current) editor.onSelectEnd()
     }
     isContextMenu.current = false
+    startPointRef.current = null
+    IS_TOUCHMOVING.set(editor, false)
+    IS_TOUCHING.set(editor, false)
     IS_MOUSEDOWN.set(editor, false)
   }
 
-  const handleDocumentMouseMove = (event: MouseEvent) => {
+  const handleDocumentMouseMove = (event: MouseEvent | TouchEvent) => {
     const darg = getDrag()
     const isMouseDown = IS_MOUSEDOWN.get(editor)
+
+    IS_TOUCHMOVING.set(editor, isTouchEvent(event))
+
     if (
       !darg &&
-      (event.button !== 0 || !isMouseDown || event.defaultPrevented || isContextMenu.current)
+      ((isMouseEvent(event) && event.button !== 0) ||
+        !isMouseDown ||
+        event.defaultPrevented ||
+        isContextMenu.current)
     )
       return
     const point = Editable.findEventPoint(editor, event)
-    if (point && dragging) {
+    if (point && dragging && isMouseEvent(event)) {
       setDrag({
         to: {
           anchor: point,
@@ -229,12 +268,24 @@ export const ContentEditable = (props: EditableProps) => {
       })
       return
     }
+    // 阻止 touchmove 时页面滚动
+    if (isTouchEvent(event)) event.preventDefault()
     const range = handleSelecting(point)
     if (range) editor.onSelecting()
   }
 
-  const handleRootMouseDown = (event: React.MouseEvent) => {
-    if (event.defaultPrevented && event.button !== 2) return
+  const handleRootTouchStart = (e: React.TouchEvent) => {
+    IS_TOUCHING.set(editor, true)
+    IS_MOUSEDOWN.set(editor, true)
+    clearTouchHoldTimer()
+    touchHoldTimer.current = setTimeout(() => {
+      handleRootMouseDown(e)
+    }, 100)
+  }
+
+  const handleRootMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    const event = getNativeEvent(e)
+    if (e.defaultPrevented && isMouseEvent(event) && event.button !== 2) return
     IS_MOUSEDOWN.set(editor, true)
     if (isDoubleClickRef.current) {
       if (isSamePoint(event)) {
@@ -249,7 +300,7 @@ export const ContentEditable = (props: EditableProps) => {
       const isShift = IS_SHIFT_PRESSED.get(editor)
       if (!isShift) {
         const { selection } = editor
-        if (event.button === 2) {
+        if (event instanceof MouseEvent && event.button === 2) {
           isContextMenu.current = true
         } else if (
           selection &&
@@ -279,6 +330,10 @@ export const ContentEditable = (props: EditableProps) => {
       const range = handleSelecting(point, !isContextMenu.current)
       if (range) editor.onSelectStart()
     } else startPointRef.current = null
+  }
+
+  const handleRootMouseUp = () => {
+    startPointRef.current = null
   }
 
   const isDoubleClickRef = React.useRef(false)
@@ -358,7 +413,12 @@ export const ContentEditable = (props: EditableProps) => {
       window.addEventListener('keyup', handleShift)
       window.addEventListener('mousedown', handleDocumentMouseDown)
       window.addEventListener('mouseup', handleDocumentMouseUp)
-      window.addEventListener('mousemove', handleDocumentMouseMove)
+      if (isTouchDevice) {
+        window.addEventListener('touchend', handleDocumentTouchEnd)
+        window.addEventListener('touchmove', handleDocumentMouseMove, { passive: false })
+      } else {
+        window.addEventListener('mousemove', handleDocumentMouseMove)
+      }
     } else {
       NODE_TO_ELEMENT.delete(editor)
     }
@@ -368,7 +428,12 @@ export const ContentEditable = (props: EditableProps) => {
       window?.removeEventListener('keyup', handleShift)
       window?.removeEventListener('mousedown', handleDocumentMouseDown)
       window?.removeEventListener('mouseup', handleDocumentMouseUp)
-      window?.removeEventListener('mousemove', handleDocumentMouseMove)
+      if (isTouchDevice) {
+        window?.removeEventListener('touchend', handleDocumentTouchEnd)
+        window?.removeEventListener('touchmove', handleDocumentMouseMove)
+      } else {
+        window?.removeEventListener('mousemove', handleDocumentMouseMove)
+      }
     }
   })
 
@@ -436,6 +501,29 @@ export const ContentEditable = (props: EditableProps) => {
 
   const renderPlaceholder = usePlaceholder(editor)
 
+  const handleAnchorTouchPointStart = React.useCallback(
+    (event: React.TouchEvent) => {
+      const { selection } = editor
+      if (!selection) return
+      startPointRef.current = Range.isBackward(selection) ? selection.anchor : selection.focus
+      IS_MOUSEDOWN.set(editor, true)
+      editor.onSelectStart()
+    },
+    [editor],
+  )
+
+  const handleFocusTouchPointStart = React.useCallback(
+    (event: React.TouchEvent) => {
+      event.stopPropagation()
+      const { selection } = editor
+      if (!selection) return
+      startPointRef.current = Range.isBackward(selection) ? selection.focus : selection.anchor
+      IS_MOUSEDOWN.set(editor, true)
+      editor.onSelectStart()
+    },
+    [editor],
+  )
+
   return (
     <div
       style={{
@@ -463,7 +551,9 @@ export const ContentEditable = (props: EditableProps) => {
           //
           overflowWrap: 'break-word',
         }}
-        onMouseDown={handleRootMouseDown}
+        onTouchStart={isTouchDevice ? handleRootTouchStart : undefined}
+        onMouseDown={isTouchDevice ? undefined : handleRootMouseDown}
+        onMouseUp={handleRootMouseUp}
         onClick={handleMultipleClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -473,10 +563,14 @@ export const ContentEditable = (props: EditableProps) => {
       </Component>
       <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         <CaretComponent />
-        <DragSelectionComponent />
+        <DragCaretComponent />
         <SelectionComponent />
         <InputComponent />
       </Shadow>
+      <TouchPointComponent
+        onAnchorTouchStart={handleAnchorTouchPointStart}
+        onFocusTouchStart={handleFocusTouchPointStart}
+      />
       {rendered && <Slots />}
     </div>
   )

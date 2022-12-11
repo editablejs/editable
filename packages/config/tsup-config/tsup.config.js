@@ -6,7 +6,7 @@ module.exports = options => {
     bundle: true,
     target: ['es2015'],
     entry: ['src/index.ts'],
-    format: ['cjs', 'esm', 'iife'],
+    format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
     minify: !isDev,

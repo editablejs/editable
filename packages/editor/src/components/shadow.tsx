@@ -46,7 +46,8 @@ export const ShadowRect = React.memo(ShadowRectDefault, (prev, next) => {
     prev.rect.top === next.rect.top &&
     prev.rect.width === next.rect.width &&
     prev.rect.height === next.rect.height &&
-    prev.rect.color === next.rect.color
+    prev.rect.color === next.rect.color &&
+    prev.children === next.children
   )
 })
 

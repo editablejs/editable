@@ -8,7 +8,7 @@ import { Editable } from '../plugin/editable'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { ShadowRect } from './shadow'
 
-export const DragSelectionComponent = () => {
+export const DragCaretComponent = () => {
   const editor = useEditableStatic()
   const dragTo = useDragTo()
   const dragType = useDragType()
