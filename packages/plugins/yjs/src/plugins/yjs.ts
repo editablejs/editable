@@ -196,10 +196,17 @@ export function withYjs<T extends Editor>(
     const content = yTextToSlateElement(e.sharedRoot)
 
     e.selection = null
-    e.children = [...content.children]
-    e.onChange()
-
-    CONNECTED.add(e)
+    if (content.children.length === 0) {
+      e.children = []
+      CONNECTED.add(e)
+      Transforms.insertNodes(e, [{ type: 'paragraph', children: [{ text: '' }] }], {
+        at: [0],
+      })
+    } else {
+      e.children = content.children
+      e.onChange()
+      CONNECTED.add(e)
+    }
   }
 
   e.disconnect = () => {
