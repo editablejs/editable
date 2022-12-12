@@ -16,11 +16,13 @@
     "@editablejs/plugin-table": "0.0.0",
     "@editablejs/plugin-toolbar": "0.0.0",
     "@editablejs/plugin-ui": "0.0.0",
-    "@editablejs/plugin-yjs": "0.0.0"
+    "@editablejs/plugin-yjs": "0.0.0",
+    "@editablejs/plugin-yjs-transform": "0.0.0"
   },
   "changesets": [
     "beige-needles-decide",
     "clever-drinks-burn",
+    "flat-jobs-yell",
     "funny-candles-kneel",
     "gentle-sloths-marry",
     "happy-starfishes-vanish",
