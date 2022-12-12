@@ -1,5 +1,12 @@
 # @editablejs/plugin-yjs
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [[`a13a6e2`](https://github.com/editablejs/editable/commit/a13a6e2ed8796ed5076e921358d2ce6505cce392)]:
+  - @editablejs/plugin-yjs-transform@1.0.0-beta.1
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
