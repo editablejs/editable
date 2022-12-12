@@ -13,7 +13,6 @@ import {
   YHistoryEditor,
   YjsEditor,
 } from './plugins'
-import { slateNodesToInsertDelta, yTextToSlateElement } from './utils/convert'
 import {
   relativePositionToSlatePoint,
   relativeRangeToSlateRange,
@@ -36,8 +35,6 @@ export {
   withCursors,
 
   // Utils
-  yTextToSlateElement,
-  slateNodesToInsertDelta,
   slateRangeToRelativeRange,
   relativeRangeToSlateRange,
   slatePointToRelativePosition,

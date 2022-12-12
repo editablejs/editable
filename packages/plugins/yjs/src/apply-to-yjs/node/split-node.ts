@@ -1,7 +1,10 @@
 import { Node, SplitNodeOperation, Text } from '@editablejs/editor'
+import {
+  cloneInsertDeltaDeep,
+  sliceInsertDelta,
+  yTextToInsertDelta,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
-import { cloneInsertDeltaDeep } from '../../utils/clone'
-import { sliceInsertDelta, yTextToInsertDelta } from '../../utils/delta'
 import { getSlateNodeYLength, getYTarget } from '../../utils/location'
 import {
   getStoredPositionsInDeltaAbsolute,

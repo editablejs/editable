@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { InsertDelta } from '../types'
+import { InsertDelta } from './types'
 import { yTextToInsertDelta } from './delta'
 
 export function cloneInsertDeltaDeep(delta: InsertDelta): InsertDelta {

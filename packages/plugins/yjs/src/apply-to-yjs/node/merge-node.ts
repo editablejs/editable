@@ -1,14 +1,16 @@
 import { MergeNodeOperation, Node, Path, Text } from '@editablejs/editor'
+import {
+  getProperties,
+  yTextToInsertDelta,
+  cloneInsertDeltaDeep,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../../types'
-import { cloneInsertDeltaDeep } from '../../utils/clone'
-import { yTextToInsertDelta } from '../../utils/delta'
 import { getYTarget } from '../../utils/location'
 import {
   getStoredPositionsInDeltaAbsolute,
   restoreStoredPositionsWithDeltaAbsolute,
 } from '../../utils/position'
-import { getProperties } from '../../utils/slate'
 
 export function mergeNode(sharedRoot: Y.XmlText, slateRoot: Node, op: MergeNodeOperation): void {
   const target = getYTarget(sharedRoot, slateRoot, op.path)

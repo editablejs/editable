@@ -1,7 +1,7 @@
 import { InsertTextOperation, Node, Text } from '@editablejs/editor'
+import { getProperties } from '@editablejs/plugin-yjs-transform'
 import type Y from 'yjs'
 import { getYTarget } from '../../utils/location'
-import { getProperties } from '../../utils/slate'
 
 export function insertText(sharedRoot: Y.XmlText, slateRoot: Node, op: InsertTextOperation): void {
   const { yParent: target, textRange } = getYTarget(sharedRoot, slateRoot, op.path)

@@ -1,4 +1,4 @@
-import { BaseRange, Editable, Editor, Path, Range, Text } from '@editablejs/editor'
+import { BaseRange, Range } from '@editablejs/editor'
 
 export type SelectionRect = {
   width: number

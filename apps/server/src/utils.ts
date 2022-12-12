@@ -14,9 +14,11 @@ import debounce from 'lodash.debounce'
 import { WSSharedDoc as WSSharedDocInterface } from './types'
 
 import { callbackHandler, isCallbackSet } from './callback'
+import { Element, slateElementToYText } from '@editablejs/plugin-yjs-transform'
 
 const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT || '0') || 2000
 const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT || '0') || 10000
+const YXMLTEXT_CONTENT_FIELD = 'content'
 
 const wsReadyStateConnecting = 0
 const wsReadyStateOpen = 1
@@ -28,8 +30,8 @@ const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0'
 const persistenceDir = process.env.YPERSISTENCE || './db'
 
 interface Persistence {
-  bindState: (docname: string, doc: WSSharedDocInterface) => void
-  writeState: (docname: string, doc: WSSharedDocInterface) => Promise<void>
+  bindState: (docname: string, doc: WSSharedDocInterface, initialValue?: Element) => void
+  writeState: (docname: string, doc: WSSharedDocInterface, element?: Element) => Promise<void>
   provider: LeveldbPersistence
 }
 
@@ -39,14 +41,31 @@ if (typeof persistenceDir === 'string') {
   const ldb = new LeveldbPersistence(persistenceDir)
   persistence = {
     provider: ldb,
-    bindState: async (docName, ydoc) => {
+    bindState: async (
+      docName,
+      ydoc,
+      initialValue = {
+        children: [{ text: '' }],
+      },
+    ) => {
       const persistedYdoc = await ldb.getYDoc(docName)
       const newUpdates = Y.encodeStateAsUpdate(ydoc)
       ldb.storeUpdate(docName, newUpdates)
+
+      const content = persistedYdoc.get(YXMLTEXT_CONTENT_FIELD, Y.XmlText) as Y.XmlText
+      const updateContent = ydoc.get(YXMLTEXT_CONTENT_FIELD, Y.XmlText) as Y.XmlText
+
       Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
       ydoc.on('update', update => {
         ldb.storeUpdate(docName, update)
       })
+
+      // init empty content
+      if (content._length === 0 && updateContent._length === 0) {
+        ydoc.transact(() => {
+          updateContent.insertEmbed(0, slateElementToYText(initialValue))
+        })
+      }
     },
     writeState: async (docName, ydoc) => {},
   }
@@ -130,10 +149,6 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
         debounce(callbackHandler, CALLBACK_DEBOUNCE_WAIT, { maxWait: CALLBACK_DEBOUNCE_MAXWAIT }),
       )
     }
-  }
-
-  isEmpty(fieldName = 'content') {
-    return !this.get(fieldName)._start
   }
 }
 

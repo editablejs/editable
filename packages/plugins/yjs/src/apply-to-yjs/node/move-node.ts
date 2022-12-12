@@ -1,8 +1,11 @@
 import { MoveNodeOperation, Node, Path, Text } from '@editablejs/editor'
+import {
+  cloneInsertDeltaDeep,
+  getInsertDeltaLength,
+  yTextToInsertDelta,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../../types'
-import { cloneInsertDeltaDeep } from '../../utils/clone'
-import { getInsertDeltaLength, yTextToInsertDelta } from '../../utils/delta'
 import { getYTarget } from '../../utils/location'
 import {
   getStoredPositionsInDeltaAbsolute,

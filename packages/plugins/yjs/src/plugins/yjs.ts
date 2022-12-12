@@ -1,8 +1,8 @@
-import { Descendant, Editable, Editor, Operation, Point, Transforms } from '@editablejs/editor'
+import { Descendant, Editable, Editor, Operation, Point } from '@editablejs/editor'
+import { assertDocumentAttachment, yTextToSlateElement } from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-slate'
 import { applySlateOp } from '../apply-to-yjs'
-import { yTextToSlateElement } from '../utils/convert'
 import {
   getStoredPosition,
   getStoredPositions,
@@ -11,7 +11,6 @@ import {
   setStoredPosition,
   slatePointToRelativePosition,
 } from '../utils/position'
-import { assertDocumentAttachment } from '../utils/yjs'
 
 type LocalChange = {
   op: Operation
@@ -196,17 +195,9 @@ export function withYjs<T extends Editor>(
     const content = yTextToSlateElement(e.sharedRoot)
 
     e.selection = null
-    if (content.children.length === 0) {
-      e.children = []
-      CONNECTED.add(e)
-      Transforms.insertNodes(e, [{ type: 'paragraph', children: [{ text: '' }] }], {
-        at: [0],
-      })
-    } else {
-      e.children = content.children
-      e.onChange()
-      CONNECTED.add(e)
-    }
+    e.children = content.children
+    e.onChange()
+    CONNECTED.add(e)
   }
 
   e.disconnect = () => {

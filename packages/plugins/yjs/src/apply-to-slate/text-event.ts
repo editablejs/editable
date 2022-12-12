@@ -1,10 +1,14 @@
 import { Editor, Element, Node, Operation, Path, Text } from '@editablejs/editor'
+import {
+  deepEquals,
+  deltaInsertToSlateNode,
+  getProperties,
+  omitNullEntries,
+  pick,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../types'
-import { deltaInsertToSlateNode } from '../utils/convert'
 import { getSlateNodeYLength, getSlatePath, yOffsetToSlateOffsets } from '../utils/location'
-import { deepEquals, omitNullEntries, pick } from '../utils/object'
-import { getProperties } from '../utils/slate'
 
 function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
   const ops: Operation[] = []

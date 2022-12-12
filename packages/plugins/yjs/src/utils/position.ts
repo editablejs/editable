@@ -1,9 +1,12 @@
 import { BasePoint, BaseRange, Node, Text } from '@editablejs/editor'
+import {
+  assertDocumentAttachment,
+  getInsertDeltaLength,
+  yTextToInsertDelta,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { InsertDelta, RelativeRange, TextRange } from '../types'
-import { getInsertDeltaLength, yTextToInsertDelta } from './delta'
 import { getSlatePath, getYTarget, yOffsetToSlateOffsets } from './location'
-import { assertDocumentAttachment } from './yjs'
 
 export const STORED_POSITION_PREFIX = '__slateYjsStoredPosition_'
 

@@ -159,6 +159,7 @@ importers:
 
   apps/server:
     specifiers:
+      '@editablejs/plugin-yjs-transform': workspace:0.0.0
       '@types/lodash.debounce': 4.0.7
       '@types/node': ^17.0.15
       '@types/ws': 8.5.3
@@ -175,6 +176,7 @@ importers:
       y-protocols: ^1.0.5
       yjs: ^13.5.43
     dependencies:
+      '@editablejs/plugin-yjs-transform': link:../../packages/plugins/yjs-transform
       lib0: 0.2.52
       lodash.debounce: 4.0.8
       y-protocols: 1.0.5
@@ -848,6 +850,7 @@ importers:
   packages/plugins/yjs:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-yjs-transform': workspace:0.0.0
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/react': ^17.x
@@ -871,6 +874,7 @@ importers:
       yjs: ^13.5.43
       zustand: 4.1.4
     dependencies:
+      '@editablejs/plugin-yjs-transform': link:../yjs-transform
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       y-protocols: 1.0.5
       zustand: 4.1.4_react@17.0.2
@@ -893,6 +897,30 @@ importers:
       tsup: 6.1.2_oq3ba2gaicocxn4pugg3oxoeb4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.0.1_tailwindcss@3.2.4
+      typescript: 4.8.3
+      yjs: 13.5.43
+
+  packages/plugins/yjs-transform:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      typescript: ^4.5.3
+      yjs: ^13.5.43
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_typescript@4.8.3
+      tsup-config: link:../../config/tsup-config
       typescript: 4.8.3
       yjs: 13.5.43
 
@@ -1580,7 +1608,6 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@babel/traverse/7.20.5:
     resolution: {integrity: sha512-WM5ZNN3JITQIq9tFZaw1ojLU3WgWdtkxnhM1AegMS+PvHjkM5IXjmYEGY7yukz5XS4sJyEf2VzWjI8uAavhxBQ==}
@@ -1615,6 +1642,7 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /@babel/types/7.19.0:
     resolution: {integrity: sha512-YuGopBq3ke25BVSiS6fgF49Ul9gH1x70Bcr6bqRLjWCkcX8Hre1/5+z+IiWOIerRMSSEfGZVB9z9kyq7wVs9YA==}
@@ -3579,7 +3607,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
 
   /babel-plugin-syntax-jsx/6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -8661,6 +8689,7 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
 
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -8680,6 +8709,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /read-cache/1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -9055,6 +9085,7 @@ packages:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /scroll-into-view-if-needed/2.2.29:
     resolution: {integrity: sha512-hxpAR6AN+Gh53AdAimHM6C8oTN1ppwVZITihix+WqalywBeFcQ6LdQP5ABNl26nX8GTEL7VT+b8lKpdqq65wXg==}
@@ -9482,7 +9513,6 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
-    dev: false
 
   /styled-components/5.3.5_pumtretovylab5lwhztzjp2kuy:
     resolution: {integrity: sha512-ndETJ9RKaaL6q41B69WudeqLzOpY1A/ET/glXkNZ2T7dPjPqpPCXXQjDFYZWwNnE5co0wX+gTCqx9mfxTmSIPg==}
@@ -9506,6 +9536,7 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
+    dev: false
 
   /styled-jsx/5.0.7_stn7tt2qafd37bpotzscxfaffy:
     resolution: {integrity: sha512-b3sUzamS086YLRuvnaDigdAewz1/EFYlHpYBP5mZovKEdQQOIIYq8lApylub3HHZ6xFjV051kkGU7cudJmrXEA==}

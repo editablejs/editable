@@ -1,7 +1,7 @@
 import { Element, Node, Path, Text } from '@editablejs/editor'
+import { sliceInsertDelta, yTextToInsertDelta } from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { YTarget } from '../types'
-import { sliceInsertDelta, yTextToInsertDelta } from './delta'
 
 export function getSlateNodeYLength(node: Node | undefined): number {
   if (!node) {
