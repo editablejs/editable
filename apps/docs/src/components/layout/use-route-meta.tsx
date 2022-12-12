@@ -27,6 +27,8 @@ export interface RouteItem {
   routes?: RouteItem[]
   /** Adds a separator above the route item */
   hasSeparator?: boolean
+
+  target?: string
 }
 
 export interface Routes {

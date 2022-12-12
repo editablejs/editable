@@ -8,18 +8,23 @@
       "path": "",
       "routes": [
         {
-          "title": "Installation",
-          "path": "/learn/installation",
-          "routes": []
-        },
-        {
           "title": "Quick Start",
           "path": "/learn",
-          "routes": []
+          "routes": [
+            {
+              "title": "Installation",
+              "path": "/learn/installation"
+            }
+          ]
+        },
+        {
+          "title": "Playground",
+          "hasSeparator": true,
+          "target": "_blank",
+          "path": "/playground"
         },
         {
           "title": "Community",
-          "hasSeparator": true,
           "path": "/learn/community",
           "routes": [
             {

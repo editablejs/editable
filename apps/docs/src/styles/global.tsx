@@ -9,7 +9,7 @@ const CustomStyles = createGlobalStyle({
   },
   body: {
     WebkitTapHighlightColor: 'transparent',
-    ...tw`bg-wash dark:bg-wash-dark text-secondary dark:text-secondary-dark leading-base font-sans antialiased text-sm`,
+    ...tw`bg-wash dark:bg-wash-dark text-secondary dark:text-secondary-dark leading-base font-sans antialiased text-lg`,
     '@media screen and (max-width: 1023px)': {
       ...tw`overflow-x-hidden`,
     },

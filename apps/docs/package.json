@@ -83,7 +83,7 @@
     "unist-util-visit": "^2.0.3"
   },
   "lint-staged": {
-    "src/**/*.{json,ts,tsx,js,jsx}": [
+    "src/**/*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write"
     ]

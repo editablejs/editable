@@ -89,7 +89,7 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
   const expanded = expandedPath
   return (
     <ul>
-      {currentRoutes.map(({ path, title, routes, wip, heading, hasSeparator }) => {
+      {currentRoutes.map(({ path, title, routes, wip, heading, hasSeparator, target }) => {
         const pagePath = path && removeFromLast(path, '.')
         const selected = slug === pagePath
 
@@ -119,6 +119,7 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
                 isExpanded={isExpanded}
                 isBreadcrumb={expandedPath === path}
                 hideArrow={isForceExpanded}
+                target={target}
               />
               <CollapseWrapper duration={250} isExpanded={isExpanded}>
                 <SidebarRouteTree
@@ -140,6 +141,7 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
                 level={level}
                 title={title}
                 wip={wip}
+                target={target}
               />
             </li>
           )

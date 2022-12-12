@@ -1,6 +1,6 @@
 import * as React from 'react'
 import NextLink from 'next/link'
-import Router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 
 import { IconClose } from 'components/icon/close'
@@ -15,7 +15,6 @@ import type { RouteItem } from '../use-route-meta'
 import sidebarLearn from 'sidebarLearn.json'
 import sidebarAPIs from 'sidebarAPIs.json'
 import tw from 'twin.macro'
-import { ExternalLink } from 'components/external-link'
 import { IconLogo } from 'components/icon/logo'
 
 declare global {
@@ -225,9 +224,6 @@ export default function Nav() {
           </div>
         </div>
         <div tw="border-border dark:border-border-dark hidden w-full items-center self-center border-b-0 px-0 pt-2 lg:flex lg:border-b 2xl:max-w-xs">
-          <ExternalLink href="/playground" target="_blank">
-            Playground
-          </ExternalLink>
           <NavLink href="/learn" isActive={section === 'learn' || section === 'home'}>
             Learn
           </NavLink>
@@ -290,9 +286,6 @@ export default function Nav() {
 
       {isOpen && (
         <div tw="bg-wash dark:bg-wash-dark border-border dark:border-border-dark z-10 flex w-full items-center justify-end self-center border-b px-5">
-          <TabButton isActive={false} onClick={() => Router.push('/playground')}>
-            Playground
-          </TabButton>
           <TabButton
             isActive={tab === 'learn' || tab === 'home'}
             onClick={() => selectTab('learn')}
