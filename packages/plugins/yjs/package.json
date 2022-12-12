@@ -68,7 +68,7 @@
     "preset": "jest-presets/jest/node"
   },
   "dependencies": {
-    "@editablejs/plugin-yjs-transform": "workspace:0.0.1-beta.0",
+    "@editablejs/plugin-yjs-transform": "workspace:*",
     "styled-components": "5.3.5",
     "y-protocols": "1.0.5",
     "zustand": "4.1.4"
