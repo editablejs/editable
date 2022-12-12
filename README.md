@@ -75,3 +75,5 @@ plugin directory
 - [x] ContextMenu
 - [x] Clipboard
 - [x] Drag
+
+### [More](https://github.com/orgs/editablejs/projects/1/views/1)
