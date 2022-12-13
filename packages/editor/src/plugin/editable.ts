@@ -26,7 +26,6 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
-  EDITOR_TO_SELECTION_RECTS,
 } from '../utils/weak-maps'
 import {
   DOMElement,
@@ -155,7 +154,8 @@ export interface Editable extends BaseEditor {
   pasteText(range?: Range): void
   queryActiveMarks: <T extends Text>() => Omit<T, 'text'>
   queryActiveElements: () => EditorElements
-  on: <T extends EventType>(type: T, handler: EventHandler<T>) => void
+  on: <T extends EventType>(type: T, handler: EventHandler<T>, prepend?: boolean) => void
+  once: <T extends EventType>(type: T, handler: EventHandler<T>, prepend?: boolean) => void
   off: <T extends EventType>(type: T, handler: EventHandler<T>) => void
   emit: <T extends EventType>(type: T, ...args: Parameters<EventHandler<T>>) => void
   onKeydown: (event: KeyboardEvent) => void

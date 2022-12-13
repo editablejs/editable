@@ -218,12 +218,16 @@ export const withEditable = <T extends Editor>(editor: T) => {
     normalizeNode(entry)
   }
 
-  e.on = (type, handler) => {
-    EventEmitter.on(e, type, handler)
+  e.on = (type, handler, prepend) => {
+    EventEmitter.on(e, type, handler, prepend)
   }
 
   e.off = (type, handler) => {
     EventEmitter.off(e, type, handler)
+  }
+
+  e.once = (type, handler, prepend) => {
+    EventEmitter.on(e, type, handler, prepend)
   }
 
   e.emit = (type, ...args) => {
