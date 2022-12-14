@@ -1,5 +1,11 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- [`3707987`](https://github.com/editablejs/editable/commit/3707987a1def303b92a323f02dcfac930bec1285) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - render side to body
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
