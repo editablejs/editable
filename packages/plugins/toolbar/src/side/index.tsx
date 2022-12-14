@@ -25,6 +25,7 @@ import {
   Point,
   Icon,
   Tooltip,
+  Portal,
 } from '@editablejs/plugin-ui'
 import { SideToolbarItem, useSideToolbarItems, useSideToolbarMenuOpen } from '../store'
 import locales, { SideToolbarLocale } from './locale'
@@ -71,6 +72,17 @@ const ContextMenu: React.FC<ContextMenu> = ({
   onSelect: onContextSelect,
   ...props
 }) => {
+  const rootRef = React.useRef<HTMLDivElement | null>(null)
+  React.useEffect(() => {
+    const root = document.createElement('div')
+    rootRef.current = root
+    document.body.appendChild(root)
+    return () => {
+      document.body.removeChild(root)
+      rootRef.current = null
+    }
+  }, [])
+
   const renderItems = (items: SideToolbarItem[]) => {
     return items.map((item, index) => {
       if ('type' in item) {
@@ -103,9 +115,11 @@ const ContextMenu: React.FC<ContextMenu> = ({
   const items = useSideToolbarItems(editor)
 
   return (
-    <UIContextMenu container={container} {...props}>
-      {renderItems(items)}
-    </UIContextMenu>
+    <Portal container={rootRef.current}>
+      <UIContextMenu container={container} {...props}>
+        {renderItems(items)}
+      </UIContextMenu>
+    </Portal>
   )
 }
 

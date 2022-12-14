@@ -79,6 +79,7 @@ const ContextMenuPortal = () => {
     return () => {
       editor.off('contextmenu', handleContextMenu)
       document.body.removeChild(root)
+      rootRef.current = null
     }
   }, [editor, setOpen])
 
