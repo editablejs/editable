@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- [`f4251d5`](https://github.com/editablejs/editable/commit/f4251d513e682fd72e84926bdf63902e5f78fb76) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Add content type item to menu
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
