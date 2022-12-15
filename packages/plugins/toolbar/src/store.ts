@@ -37,7 +37,7 @@ interface ToolbarState {
 }
 interface BaseSideToolbarItem extends UIContextMenuItem {
   key: string
-  title: JSX.Element | string
+  title: React.ReactElement | string
   children?: SideToolbarItem[]
 }
 
@@ -45,6 +45,9 @@ export type SideToolbarItem =
   | BaseSideToolbarItem
   | {
       type: 'separator'
+    }
+  | {
+      content: React.ReactElement | string
     }
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<ToolbarState>>>()

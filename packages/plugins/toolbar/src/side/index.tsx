@@ -22,6 +22,7 @@ import {
   ContextMenuItem as UIContextMenuItem,
   ContextMenuSeparator,
   ContextMenuSub,
+  ContextMenuLabel,
   Point,
   Icon,
   Tooltip,
@@ -31,7 +32,9 @@ import { SideToolbarItem, useSideToolbarItems, useSideToolbarMenuOpen } from '..
 import locales, { SideToolbarLocale } from './locale'
 import tw from 'twin.macro'
 
-export interface SideToolbarOptions {}
+export interface SideToolbarOptions {
+  locales?: Record<string, SideToolbarLocale>
+}
 
 export const SIDE_TOOLBAR_OPTIONS = new WeakMap<Editable, SideToolbarOptions>()
 
@@ -83,32 +86,39 @@ const ContextMenu: React.FC<ContextMenu> = ({
     }
   }, [])
 
+  const renderItem = (item: SideToolbarItem, index: number) => {
+    if ('type' in item) {
+      if (index === 0) return null
+      return <ContextMenuSeparator key={`${item}-${index}`} />
+    }
+    if ('content' in item) {
+      return <ContextMenuLabel>{item.content}</ContextMenuLabel>
+    }
+    const { children, title, onSelect, href, ...rest } = item
+    if (children && children.length > 0) {
+      return (
+        <ContextMenuSub title={title} {...rest}>
+          {renderItems(children)}
+        </ContextMenuSub>
+      )
+    }
+    return (
+      <UIContextMenuItem
+        onSelect={event => {
+          if (onSelect) onSelect(event)
+          if (onContextSelect) onContextSelect(event)
+        }}
+        href={href}
+        {...rest}
+      >
+        {title}
+      </UIContextMenuItem>
+    )
+  }
+
   const renderItems = (items: SideToolbarItem[]) => {
     return items.map((item, index) => {
-      if ('type' in item) {
-        if (index === 0) return null
-        return <ContextMenuSeparator key={`${item}-${index}`} />
-      }
-      const { children, title, onSelect, href, ...rest } = item
-      if (children && children.length > 0) {
-        return (
-          <ContextMenuSub title={title} {...rest}>
-            {renderItems(children)}
-          </ContextMenuSub>
-        )
-      }
-      return (
-        <UIContextMenuItem
-          onSelect={event => {
-            if (onSelect) onSelect(event)
-            if (onContextSelect) onContextSelect(event)
-          }}
-          href={href}
-          {...rest}
-        >
-          {title}
-        </UIContextMenuItem>
-      )
+      return renderItem(item, index)
     })
   }
 
@@ -523,6 +533,10 @@ export const withSideToolbar = <T extends Editable>(
     Locale.setLocale(newEditor, key, locales[key])
   }
 
+  for (const key in options.locales) {
+    Locale.setLocale(newEditor, key, locales[key])
+  }
+
   Slot.mount(editor, SideToolbar)
 
   newEditor.on('destory', () => {
@@ -531,3 +545,5 @@ export const withSideToolbar = <T extends Editable>(
 
   return newEditor
 }
+
+export type { SideToolbarLocale }

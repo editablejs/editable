@@ -1008,6 +1008,7 @@ export {
   MenuContent,
   MenuLabel,
   MenuItem,
+  MenuGroup,
   MenuRadioGroup,
   MenuRadioItem,
   MenuItemIndicator,

@@ -7,6 +7,7 @@ import {
   ContextMenuSub,
   Portal,
   Point,
+  ContextMenuLabel,
 } from '@editablejs/plugin-ui'
 import { ContextMenuItem, useContextMenuItems, useContextMenuOpen } from './store'
 
@@ -26,26 +27,31 @@ interface ContextMenu extends UIContextMenu {
 }
 
 const ContextMenu: React.FC<ContextMenu> = ({ container, items, ...props }) => {
-  const renderItems = (items: ContextMenuItem[]) => {
-    return items.map((item, index) => {
-      if ('type' in item) {
-        if (index === 0) return null
-        return <ContextMenuSeparator key={`${item}-${index}`} />
-      }
-      const { children, title, onSelect, href, ...rest } = item
-      if (children && children.length > 0) {
-        return (
-          <ContextMenuSub title={title} {...rest}>
-            {renderItems(children)}
-          </ContextMenuSub>
-        )
-      }
+  const renderItem = (item: ContextMenuItem, index: number) => {
+    if ('type' in item) {
+      if (index === 0) return null
+      return <ContextMenuSeparator key={`${item}-${index}`} />
+    }
+    if ('content' in item) {
+      return <ContextMenuLabel>{item.content}</ContextMenuLabel>
+    }
+    const { children, title, onSelect, href, ...rest } = item
+    if (children && children.length > 0) {
       return (
-        <UIContextMenuItem onSelect={onSelect} href={href} {...rest}>
-          {title}
-        </UIContextMenuItem>
+        <ContextMenuSub title={title} {...rest}>
+          {renderItems(children)}
+        </ContextMenuSub>
       )
-    })
+    }
+    return (
+      <UIContextMenuItem onSelect={onSelect} href={href} {...rest}>
+        {title}
+      </UIContextMenuItem>
+    )
+  }
+
+  const renderItems = (items: ContextMenuItem[]) => {
+    return items.map(renderItem)
   }
 
   return (

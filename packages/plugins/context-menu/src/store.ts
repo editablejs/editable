@@ -6,7 +6,7 @@ import { ContextMenuItem as UIContextMenuItem } from '@editablejs/plugin-ui'
 
 interface BaseContextMenuItem extends UIContextMenuItem {
   key: string
-  title: JSX.Element | string
+  title: React.ReactElement | string
   children?: ContextMenuItem[]
 }
 
@@ -14,6 +14,9 @@ export type ContextMenuItem =
   | BaseContextMenuItem
   | {
       type: 'separator'
+    }
+  | {
+      content: React.ReactElement | string
     }
 
 interface ContextMenuState {

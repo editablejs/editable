@@ -117,6 +117,17 @@ export const ContextMenuSeparator: React.FC<React.HTMLAttributes<HTMLDivElement>
   )
 }
 
+export const ContextMenuLabel: React.FC<Omit<React.HTMLAttributes<HTMLDivElement>, 'title'>> = ({
+  children,
+  className,
+}) => {
+  return (
+    <div tw="py-2 pl-3 pr-3 text-gray-500" className={className}>
+      {children}
+    </div>
+  )
+}
+
 export type Point = { x: number; y: number }
 
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
