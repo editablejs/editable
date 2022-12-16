@@ -125,7 +125,7 @@ export const Dropdown: React.FC<Dropdown> = ({
             if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault()
           }}
         >
-          {children ?? activeItem?.children ?? value}
+          {children ?? activeItem?.content ?? value}
           <Icon
             name="arrowCaretDown"
             css={[tw`text-xs text-gray-400`, open && tw`rotate-180 mt-1`]}
