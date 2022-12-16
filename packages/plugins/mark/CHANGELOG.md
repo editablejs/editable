@@ -1,5 +1,14 @@
 # @editablejs/plugin-mark
 
+## 1.0.0-beta.9
+
+### Patch Changes
+
+- [`d9143b2`](https://github.com/editablejs/editable/commit/d9143b29b6c0c23d79641e61be64d4e164c58465) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - re ci
+
+- Updated dependencies [[`d9143b2`](https://github.com/editablejs/editable/commit/d9143b29b6c0c23d79641e61be64d4e164c58465)]:
+  - @editablejs/editor@1.0.0-beta.9
+
 ## 1.0.0-beta.8
 
 ### Patch Changes
