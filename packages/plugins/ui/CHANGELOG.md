@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- [`e58e5e6`](https://github.com/editablejs/editable/commit/e58e5e6fa8c6e4dc22837d1d3c29de3011993332) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Not setting the minimum width of the contextmenu
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
