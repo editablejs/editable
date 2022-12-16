@@ -1,5 +1,14 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [`824c85f`](https://github.com/editablejs/editable/commit/824c85f60a7e353c0bec69574ff8acd54df3b9a6) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - After inserting a grid or void node, append an empty paragraph
+
+- Updated dependencies [[`824c85f`](https://github.com/editablejs/editable/commit/824c85f60a7e353c0bec69574ff8acd54df3b9a6)]:
+  - @editablejs/editor@1.0.0-beta.7
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
