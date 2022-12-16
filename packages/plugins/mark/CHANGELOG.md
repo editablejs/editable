@@ -1,5 +1,12 @@
 # @editablejs/plugin-mark
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [[`824c85f`](https://github.com/editablejs/editable/commit/824c85f60a7e353c0bec69574ff8acd54df3b9a6)]:
+  - @editablejs/editor@1.0.0-beta.7
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
