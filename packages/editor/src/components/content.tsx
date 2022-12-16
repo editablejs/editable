@@ -184,7 +184,8 @@ export const ContentEditable = (props: EditableProps) => {
       const point = Editable.findEventPoint(editor, event)
       if (point && drag) {
         const { from, data, type = 'text' } = drag
-        if (!Range.includes(from, point)) {
+        const fromRange = Editor.range(editor, from)
+        if (!Range.includes(fromRange, point)) {
           const fragment = parseFragmentFromString(data.getData(APPLICATION_FRAGMENT_TYPE))
           if (type === 'block') {
             const path = Drag.toBlockPath(editor)
@@ -360,6 +361,7 @@ export const ContentEditable = (props: EditableProps) => {
             anchor: Editable.findPointOnLine(editor, focusPath, startOffset, true),
             focus: Editable.findPointOnLine(editor, focusPath, endOffset),
           })
+          editor.onSelectEnd()
           isDoubleClickRef.current = true
           setTimeout(() => {
             isDoubleClickRef.current = false
@@ -379,6 +381,7 @@ export const ContentEditable = (props: EditableProps) => {
 
         const range = Editor.range(editor, blockPath)
         Transforms.select(editor, range)
+        editor.onSelectEnd()
         isDoubleClickRef.current = false
         return false
       }

@@ -462,30 +462,6 @@ export const Editable = {
     return offsetNode
   },
 
-  toLowestPoint(editor: Editable, at: Point | Path, edge: SelectionEdge = 'start'): Point {
-    const isPoint = Point.isPoint(at)
-    let path = isPoint ? at.path : at
-    let offset = isPoint ? at.offset : 0
-    let [node] = Editor.node(editor, path)
-
-    while (Element.isElement(node)) {
-      const { children } = node
-      const isStart = ~['start', 'anchor'].indexOf(edge)
-      const index = isPoint
-        ? Math.min(offset, children.length - 1)
-        : isStart
-        ? 0
-        : children.length - 1
-      node = children[index]
-      path = path.concat(index)
-      offset = isStart ? 0 : Element.isElement(node) ? node.children.length : node.text.length
-    }
-    return {
-      path,
-      offset,
-    }
-  },
-
   /**
    * Find a native DOM selection point from a Slate point.
    */
@@ -727,7 +703,7 @@ export const Editable = {
         exactMatch: false,
         suppressThrow: true,
       })
-      if (!point) return Editable.toLowestPoint(editor, Editable.findPath(editor, node))
+      if (!point) return Editor.start(editor, Editable.findPath(editor, node))
       return point
     }
     return null

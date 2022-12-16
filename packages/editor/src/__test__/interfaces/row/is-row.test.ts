@@ -1,5 +1,5 @@
 import { GridRow } from '../../../interfaces/row'
-import { createEditor } from '../../../plugin/expand'
+import { createEditor } from '../../../plugin/create-editor'
 import { Editable } from '../../../plugin/editable'
 
 describe('interfaces/row', () => {

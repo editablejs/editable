@@ -16,6 +16,8 @@ import {
   useLocale,
   Decorate,
   Transforms,
+  List,
+  Path,
 } from '@editablejs/editor'
 import * as React from 'react'
 import {
@@ -55,6 +57,7 @@ export interface SideToolbar extends SlotComponentProps {
 
 interface CurrentCapturedData {
   selection: Range
+  path: Path
   element: Element
   isEmpty: boolean
 }
@@ -252,9 +255,16 @@ const SideToolbar: React.FC<SideToolbar> = ({
       }
       const point = Editable.findEventPoint(editor, event)
       if (!point) return
+      let isFindList = false
       const entry = Editor.above(editor, {
         at: point,
-        match: n => Element.isElement(n),
+        match: n => {
+          if (!isFindList && Editable.isList(editor, n)) {
+            isFindList = true
+            return true
+          }
+          return isFindList ? false : Element.isElement(n)
+        },
         mode: 'lowest',
       })
       if (!entry) return delayHide()
@@ -272,13 +282,13 @@ const SideToolbar: React.FC<SideToolbar> = ({
       }
       const [left, top] = Editable.toRelativePosition(editor, x, y)
       clearDelayHideTimer()
+      const [node, path] = entry
+
       capturedDataRef.current = {
-        selection: {
-          anchor: Editable.toLowestPoint(editor, entry[1]),
-          focus: Editable.toLowestPoint(editor, entry[1], 'end'),
-        },
-        element: entry[0],
-        isEmpty: Editable.isEmpty(editor, entry[0]),
+        selection: Editor.range(editor, path),
+        element: node,
+        path,
+        isEmpty: Editable.isEmpty(editor, node),
       }
       setPosition({
         x: left,
@@ -365,14 +375,14 @@ const SideToolbar: React.FC<SideToolbar> = ({
     if (!capturedDataRef.current || !position) {
       return
     }
-    const { selection, element } = capturedDataRef.current
+    const { path, element } = capturedDataRef.current
     const dataTransfer = new DataTransfer()
     FormatData.setDataTransfer(dataTransfer, {
       fragment: [element],
     })
     setDrag({
       type: 'block',
-      from: selection,
+      from: path,
       data: dataTransfer,
       position,
     })

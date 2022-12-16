@@ -1,5 +1,5 @@
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editor, Range, Element, Path } from 'slate'
+import { Editor, Range, Element, Path, Selection } from 'slate'
 import { Editable } from './editable'
 
 export interface DragStore {
@@ -8,11 +8,11 @@ export interface DragStore {
     /**
      * 拖拽的开始位置
      */
-    from: Range
+    from: Range | Path
     /**
      * 拖拽到目标位置
      */
-    to: Range | null
+    to: Selection | Path
     /**
      * 拖拽的数据
      */
@@ -69,7 +69,7 @@ export const Drag = {
     const { to, position } = drag
     if (!to) return
     const entry = Editor.above(editor, {
-      at: to.focus,
+      at: Path.isPath(to) ? to : to.focus,
       match: n => Element.isElement(n),
       mode: 'lowest',
     })

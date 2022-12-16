@@ -130,13 +130,13 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
               start: [0, 0],
               end: [path[path.length - 1], cells.length - 1],
             })
-            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+            anchor = Editor.start(editor, path.slice(0, -1).concat(sel.end))
           } else {
             const sel = Grid.edges(editor, table, {
               start: [path[path.length - 1], 0],
               end: [table[0].children.length - 1, cells.length - 1],
             })
-            anchor = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+            anchor = Editor.start(editor, path.slice(0, -1).concat(sel.start))
           }
         }
       }
@@ -154,13 +154,13 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
               start: [table[0].children.length - 1, cells.length - 1],
               end: [path[path.length - 1], 0],
             })
-            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.start))
+            focus = Editor.start(editor, path.slice(0, -1).concat(sel.start))
           } else {
             const sel = Grid.edges(editor, table, {
               start: [0, 0],
               end: [path[path.length - 1], cells.length - 1],
             })
-            focus = Editable.toLowestPoint(editor, path.slice(0, -1).concat(sel.end))
+            focus = Editor.start(editor, path.slice(0, -1).concat(sel.end))
           }
         }
       }

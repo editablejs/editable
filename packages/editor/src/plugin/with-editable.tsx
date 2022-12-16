@@ -827,9 +827,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           for (const [cell, row, col] of cells) {
             if (!cell) break
             if (!cell.span) {
-              const anchor = Editable.toLowestPoint(e, path.concat([row, col]))
-              const focus = Editable.toLowestPoint(e, path.concat([row, col]), 'end')
-              const range = { anchor, focus }
+              const range = Editor.range(editor, path.concat([row, col]))
               fn(range, { grid, row, col })
             }
           }

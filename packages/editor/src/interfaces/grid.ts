@@ -822,10 +822,8 @@ export const Grid = {
       }
     }
     const cellPath = toPath.slice(0, -1)
-    Transforms.select(editor, {
-      anchor: Editable.toLowestPoint(editor, cellPath),
-      focus: Editable.toLowestPoint(editor, cellPath, 'end'),
-    })
+
+    Transforms.select(editor, Editor.range(editor, cellPath))
   },
 
   canSplit: (editor: Editable, at?: GridLocation): boolean => {
@@ -1070,9 +1068,10 @@ export const Grid = {
     const sel = Grid.edges(editor, at, { start, end })
     const { start: startCell, end: endCell } = Grid.span(editor, at, sel)
     const [, path] = at
+
     Transforms.select(editor, {
-      anchor: Editable.toLowestPoint(editor, path.concat(startCell)),
-      focus: Editable.toLowestPoint(editor, path.concat(endCell), 'end'),
+      anchor: Editor.start(editor, path.concat(startCell)),
+      focus: Editor.end(editor, path.concat(endCell)),
     })
   },
 

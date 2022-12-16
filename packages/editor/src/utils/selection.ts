@@ -295,19 +295,15 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
     ranges.unshift(
       Editable.toDOMRange(editor, {
         anchor,
-        focus: Editable.toLowestPoint(
-          editor,
-          {
-            path: startPath,
-            offset: startBlock.children.length,
-          },
-          'end',
-        ),
+        focus: Editor.end(editor, {
+          path: startPath,
+          offset: startBlock.children.length,
+        }),
       }),
     )
     ranges.push(
       Editable.toDOMRange(editor, {
-        anchor: Editable.toLowestPoint(editor, {
+        anchor: Editor.start(editor, {
           path: endPath,
           offset: 0,
         }),

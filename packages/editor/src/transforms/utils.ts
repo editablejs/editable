@@ -72,7 +72,7 @@ export const handleInsertOnGrid = (editor: Editable, at: Location | null = edito
       if (selection) {
         Transforms.select(editor, {
           ...selection,
-          anchor: Editable.toLowestPoint(editor, {
+          anchor: Editor.start(editor, {
             path: nextPath,
             offset: 0,
           }),

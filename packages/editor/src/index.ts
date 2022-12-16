@@ -9,9 +9,10 @@ export * from './interfaces/cell'
 export * from './interfaces/row'
 export * from './interfaces/grid'
 export * from './interfaces/list'
+export * from './interfaces/editor'
 
-// Expand
-export * from './plugin/expand'
+// Transforms
+export * from './transforms'
 
 // Locale
 export * from './hooks/use-locale'
@@ -48,6 +49,7 @@ export * from './plugin/locale'
 export * from './plugin/decorate'
 export * from './plugin/placeholder'
 export * from './plugin/selection-drawing'
+export * from './plugin/create-editor'
 
 // Environment
 export * from './utils/environment'

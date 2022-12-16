@@ -3,7 +3,7 @@ import merge from 'lodash.merge'
 import * as React from 'react'
 import { cssStyleToString, htmlAttributesToString } from '../utils/dom'
 import { Editable } from './editable'
-import { Editor, Text, Node } from './expand'
+import { Editor, Text, Node } from '../interfaces/editor'
 
 export type TextSerializerTransform = typeof TextSerializer.transform
 

@@ -89,7 +89,7 @@ export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
             const path = Path.previous(focusGrid[1])
             Transforms.select(editor, {
               anchor,
-              focus: Editable.toLowestPoint(editor, path, 'end'),
+              focus: Editor.end(editor, path),
             })
           }
         }

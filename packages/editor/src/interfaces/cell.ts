@@ -50,7 +50,8 @@ export const GridCell = {
   },
 
   focus: (editor: Editable, path: Path, edge: SelectionEdge = 'start') => {
-    const point = Editable.toLowestPoint(editor, path, edge)
+    const fn = ~['anchor', 'start'].indexOf(edge) ? Editor.start : Editor.end
+    const point = fn(editor, path)
     Transforms.select(editor, point)
   },
 
