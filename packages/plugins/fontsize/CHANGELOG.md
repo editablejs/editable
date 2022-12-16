@@ -1,5 +1,12 @@
 # @editablejs/plugin-fontsize
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [[`2393373`](https://github.com/editablejs/editable/commit/2393373aa133d947509c721302d85834509054d8)]:
+  - @editablejs/editor@1.0.0-beta.8
+
 ## 1.0.0-beta.7
 
 ### Patch Changes
