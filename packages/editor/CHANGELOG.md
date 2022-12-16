@@ -1,5 +1,12 @@
 # @editablejs/editor
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- [`2393373`](https://github.com/editablejs/editable/commit/2393373aa133d947509c721302d85834509054d8) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - 1. Remove toLowestPoint API from Editable, use Editor.range instead
+  2. The from/to attribute of the Drag plugin supports Path type parameters
+
 ## 1.0.0-beta.7
 
 ### Patch Changes
