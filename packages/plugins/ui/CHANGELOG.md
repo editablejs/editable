@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.6
+
+### Patch Changes
+
+- [`b1faaf5`](https://github.com/editablejs/editable/commit/b1faaf58ab2493e21218bf0a3c174381663a0073) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - add heading icon
+
 ## 1.0.0-beta.5
 
 ### Patch Changes
