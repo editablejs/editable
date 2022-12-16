@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { NodeEntry, Range, Element, Text } from 'slate'
+import { NodeEntry, Range } from 'slate'
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from './editable'
 
@@ -38,6 +38,13 @@ const getStore = (editor: Editable) => {
 export const Decorate = {
   getStore: getStore,
 
+  predicate: (decorate: Decorate | string) => {
+    const isKey = typeof decorate === 'string'
+    return (d: Decorate) => {
+      return isKey ? d.key === decorate : d === decorate
+    }
+  },
+
   add: (editor: Editable, decorate: Decorate) => {
     const store = getStore(editor)
     store.setState(state => ({
@@ -47,9 +54,13 @@ export const Decorate = {
 
   remove: (editor: Editable, decorate: Decorate | string) => {
     const store = getStore(editor)
-    const isKey = typeof decorate === 'string'
     store.setState(state => ({
-      decorates: state.decorates.filter(d => (isKey ? d.key !== decorate : d !== decorate)),
+      decorates: state.decorates.filter(d => !Decorate.predicate(decorate)(d)),
     }))
+  },
+
+  has: (editor: Editable, decorate: Decorate | string) => {
+    const store = getStore(editor)
+    return store.getState().decorates.some(Decorate.predicate(decorate))
   },
 }

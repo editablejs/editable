@@ -47,7 +47,10 @@ export type SideToolbarItem =
       type: 'separator'
     }
   | {
-      content: React.ReactElement | string
+      content:
+        | React.ReactElement
+        | string
+        | React.FC<Record<'onSelect', (event: React.MouseEvent) => void>>
     }
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<ToolbarState>>>()

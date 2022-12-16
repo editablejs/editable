@@ -15,6 +15,7 @@ import {
   Locale,
   useLocale,
   Decorate,
+  Transforms,
 } from '@editablejs/editor'
 import * as React from 'react'
 import {
@@ -62,7 +63,7 @@ const StyledTooltipContent = tw.div`text-gray-400 text-xs text-left`
 
 const StyledTooltipContentAction = tw.span`text-white mr-1`
 
-const StyledElementDecorator = tw.div`rounded-md bg-blue-50`
+const StyledElementDecorator = tw.div`rounded-md bg-blue-50 relative -mx-1 px-1`
 
 interface ContextMenu extends UIContextMenu {
   onSelect?: (event: React.MouseEvent) => void
@@ -92,7 +93,15 @@ const ContextMenu: React.FC<ContextMenu> = ({
       return <ContextMenuSeparator key={`${item}-${index}`} />
     }
     if ('content' in item) {
-      return <ContextMenuLabel>{item.content}</ContextMenuLabel>
+      if (typeof item.content === 'function') {
+        const Content = item.content
+        return (
+          <ContextMenuLabel key={`label-${index}`}>
+            <Content onSelect={onContextSelect ?? (() => {})} />
+          </ContextMenuLabel>
+        )
+      }
+      return <ContextMenuLabel key={`label-${index}`}>{item.content}</ContextMenuLabel>
     }
     const { children, title, onSelect, href, ...rest } = item
     if (children && children.length > 0) {
@@ -105,8 +114,8 @@ const ContextMenu: React.FC<ContextMenu> = ({
     return (
       <UIContextMenuItem
         onSelect={event => {
-          if (onSelect) onSelect(event)
           if (onContextSelect) onContextSelect(event)
+          if (onSelect) onSelect(event)
         }}
         href={href}
         {...rest}
@@ -143,7 +152,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
   const [position, setPosition] = React.useState<Point | null>(null)
 
   const [menuOpen, setMenuOpen] = useSideToolbarMenuOpen(editor)
-  const prevVisibleRef = React.useRef(false)
+  // const prevVisibleRef = React.useRef(false)
   const prevEventPositionRef = React.useRef<Point | null>(null)
   const capturedDataRef = React.useRef<CurrentCapturedData | null>(null)
   const showingRef = React.useRef(false)
@@ -157,10 +166,17 @@ const SideToolbar: React.FC<SideToolbar> = ({
     if (dragging) return
     setPosition(null)
     setMenuOpen(false)
+    Decorate.remove(editor, 'sideToolbarDecorate')
     setTooltipDefaultOpen(false)
     capturedDataRef.current = null
     showingRef.current = false
   }, [dragging, setMenuOpen])
+
+  React.useEffect(() => {
+    if (!menuOpen) {
+      Decorate.remove(editor, 'sideToolbarDecorate')
+    }
+  }, [editor, menuOpen])
 
   React.useEffect(() => {
     const handleSelectionChange = () => {
@@ -181,12 +197,12 @@ const SideToolbar: React.FC<SideToolbar> = ({
   }, [editor, hide, menuOpen, setMenuOpen])
 
   React.useEffect(() => {
-    const handleKeydown = () => {
+    const handleKeyup = () => {
       hide()
     }
-    editor.on('keydown', handleKeydown)
+    editor.on('keyup', handleKeyup)
     return () => {
-      editor.off('keydown', handleKeydown)
+      editor.off('keyup', handleKeyup)
     }
   }, [editor, hide])
 
@@ -336,12 +352,12 @@ const SideToolbar: React.FC<SideToolbar> = ({
     return `translate3d(${x - offsetWidth - 4}px, ${y}px, 0)`
   }, [position])
 
-  const isTransformAmimation = React.useMemo(() => {
-    const visible = !!position
-    const isAmimation = visible === prevVisibleRef.current
-    prevVisibleRef.current = visible
-    return isAmimation
-  }, [position])
+  // const isTransformAmimation = React.useMemo(() => {
+  //   const visible = !!position
+  //   const isAmimation = visible === prevVisibleRef.current
+  //   prevVisibleRef.current = visible
+  //   return isAmimation
+  // }, [position])
 
   const { setDrag } = useDragMethods()
 
@@ -423,11 +439,13 @@ const SideToolbar: React.FC<SideToolbar> = ({
     showingRef.current = true
     const decorate = getDecorate()
     if (decorate) {
+      Decorate.remove(editor, 'sideToolbarDecorate')
       Decorate.add(editor, decorate)
     }
   }
 
   const handleMouseLeave = () => {
+    if (menuOpen) return
     delayHide()
     showingRef.current = false
     Decorate.remove(editor, 'sideToolbarDecorate')
@@ -452,6 +470,14 @@ const SideToolbar: React.FC<SideToolbar> = ({
     return <StyledTooltipContent>{contents}</StyledTooltipContent>
   }
 
+  const handleMenuSelect = () => {
+    if (capturedDataRef.current) {
+      const { selection } = capturedDataRef.current
+      Transforms.select(editor, selection)
+    }
+    hide()
+  }
+
   const renderMenu = () => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
@@ -465,7 +491,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
         <ContextMenu
           editor={editor}
           open={true}
-          onSelect={() => hide()}
+          onSelect={handleMenuSelect}
           side="left"
           container={{
             x: rect.left,
@@ -480,13 +506,13 @@ const SideToolbar: React.FC<SideToolbar> = ({
     return (
       <div
         ref={containerRef}
-        tw="absolute left-0 top-0 z-50 "
+        tw="absolute -left-0.5 top-0 z-50 "
         style={{
           opacity: visible ? 1 : 0,
           visibility: visible ? 'visible' : 'hidden',
           transform,
           willChange: 'transform',
-          transition: isTransformAmimation ? 'all 0.2s linear 0s' : 'opacity 0.2s linear 0s',
+          // transition: isTransformAmimation ? 'all 0.2s linear 0s' : 'opacity 0.2s linear 0s',
           cursor: dragging ? 'grabbing' : 'grab',
         }}
         onMouseEnter={handleMouseEnter}

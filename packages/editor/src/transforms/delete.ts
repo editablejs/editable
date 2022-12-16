@@ -1,4 +1,4 @@
-import { Editor, Transforms, Path } from 'slate'
+import { Editor, Transforms, Path, Range } from 'slate'
 import { TextDeleteOptions } from 'slate/dist/transforms/text'
 import { GridCell } from '../interfaces/cell'
 import { Grid } from '../interfaces/grid'
@@ -10,8 +10,8 @@ const { delete: defaultDelete } = Transforms
 export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
   const { at = editor.selection } = options
   const { grid, start, end } = findGridOfEdges(editor, at)
-  // anchor 与 focus 在同一grid内
   if (Editable.isEditor(editor)) {
+    // anchor 与 focus 在同一grid内
     if (grid) {
       const sel = Grid.getSelection(editor, grid)
       const selected = Grid.getSelected(editor, grid, sel)
@@ -95,6 +95,12 @@ export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
         }
       }
       defaultDelete(editor, options)
+      // 删除后，如果当前位置在grid内，说明删除空行后聚焦到了 gird，此时则选择整个grid
+      if (!start && !end && editor.selection && Range.isCollapsed(editor.selection)) {
+        const grid = Grid.find(editor, editor.selection)
+        if (!grid) return
+        Grid.select(editor, grid)
+      }
     }
   } else {
     defaultDelete(editor, options)

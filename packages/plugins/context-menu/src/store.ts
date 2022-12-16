@@ -16,7 +16,10 @@ export type ContextMenuItem =
       type: 'separator'
     }
   | {
-      content: React.ReactElement | string
+      content:
+        | React.ReactElement
+        | string
+        | React.FC<Record<'onSelect', (event: React.MouseEvent) => void>>
     }
 
 interface ContextMenuState {

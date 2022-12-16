@@ -24,16 +24,30 @@ export const ContextMenuEditor = {
 
 interface ContextMenu extends UIContextMenu {
   items: ContextMenuItem[]
+  onSelect?: (event: React.MouseEvent) => void
 }
 
-const ContextMenu: React.FC<ContextMenu> = ({ container, items, ...props }) => {
+const ContextMenu: React.FC<ContextMenu> = ({
+  container,
+  items,
+  onSelect: onSelectProps,
+  ...props
+}) => {
   const renderItem = (item: ContextMenuItem, index: number) => {
     if ('type' in item) {
       if (index === 0) return null
       return <ContextMenuSeparator key={`${item}-${index}`} />
     }
     if ('content' in item) {
-      return <ContextMenuLabel>{item.content}</ContextMenuLabel>
+      if (typeof item.content === 'function') {
+        const Content = item.content
+        return (
+          <ContextMenuLabel key={`label-${index}`}>
+            <Content onSelect={onSelectProps ?? (() => {})} />
+          </ContextMenuLabel>
+        )
+      }
+      return <ContextMenuLabel key={`label-${index}`}>{item.content}</ContextMenuLabel>
     }
     const { children, title, onSelect, href, ...rest } = item
     if (children && children.length > 0) {
@@ -100,7 +114,13 @@ const ContextMenuPortal = () => {
   if (containerRef.current && rootRef.current)
     return (
       <Portal container={rootRef.current}>
-        <ContextMenu open={open} items={items} container={point} onOpenChange={setOpen} />
+        <ContextMenu
+          open={open}
+          items={items}
+          container={point}
+          onOpenChange={setOpen}
+          onSelect={() => setOpen(false)}
+        />
       </Portal>
     )
   return null

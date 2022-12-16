@@ -40,7 +40,7 @@ export const useEditableStoreProvider = (
       return store
     }
     const {
-      store: storeValue,
+      storeValue,
       initialValue = [{ type: 'paragraph', children: [{ text: '' }] }],
       onChange,
       ...rest

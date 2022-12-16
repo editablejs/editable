@@ -3,6 +3,7 @@ import { Node } from 'slate'
 import { useStore } from 'zustand'
 import { Placeholder } from '../plugin/placeholder'
 import { useEditableStatic } from './use-editable'
+import { useFocused } from './use-focused'
 
 export const usePlaceholderStore = () => {
   const editor = useEditableStatic()
@@ -20,8 +21,9 @@ export const usePlaceholders = () => {
 export const usePlaceholder = (node: Node) => {
   const store = usePlaceholderStore()
   const current = useStore(store, state => state.current)
+  const [focused] = useFocused()
   return React.useMemo(() => {
-    if (!current) return
+    if (!current || !focused) return
     return current.node === node ? current.render : undefined
-  }, [current, node])
+  }, [current, node, focused])
 }

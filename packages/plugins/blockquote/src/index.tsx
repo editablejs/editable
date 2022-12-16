@@ -1,4 +1,13 @@
-import { Editable, Hotkey, Transforms, Editor, Range, Element, Path } from '@editablejs/editor'
+import {
+  Editable,
+  Hotkey,
+  Transforms,
+  Editor,
+  Range,
+  Element,
+  Path,
+  NodeEntry,
+} from '@editablejs/editor'
 import { BLOCKQUOTE_KEY } from './constants'
 
 type BlockquoteHotkey = string | ((e: KeyboardEvent) => boolean)
@@ -116,12 +125,19 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
       if (entry) {
         const [block, path] = entry
         const [parent, parentPath] = Editor.parent(newEditor, path)
-        if (Editable.isEmpty(newEditor, block) && (parent as Element).type === BLOCKQUOTE_KEY) {
+        if (Editable.isEmpty(newEditor, block) && BlockquoteEditor.isBlockquote(editor, parent)) {
           e.preventDefault()
-          Transforms.moveNodes(newEditor, {
-            at: path,
-            to: Path.next(parentPath),
-          })
+          if (parent.children.length === 1) {
+            Transforms.unwrapNodes(newEditor, {
+              at: parentPath,
+            })
+          } else {
+            Transforms.moveNodes(newEditor, {
+              at: path,
+              to: Path.next(parentPath),
+            })
+          }
+
           return
         }
       }

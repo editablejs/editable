@@ -80,10 +80,10 @@ export const List = {
     const elements = editor.queryActiveElements()
     const entries: NodeEntry<List>[] = []
     for (const key in elements) {
-      if (type && key === type) {
-        return elements[key] as any
+      if (type) {
+        return key === type ? (elements[key] as any) : []
       } else {
-        entries.concat(...(elements[key].filter(([node]) => Editable.isList(editor, node)) as any))
+        entries.push(...(elements[key].filter(([node]) => Editable.isList(editor, node)) as any))
       }
     }
     return entries
@@ -277,7 +277,7 @@ export const List = {
     const activeLists = List.queryActive(editor, type)
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
-      if (activeLists) {
+      if (activeLists.length > 0) {
         const topLists = new Map<string, NodeEntry<List>>()
         for (const [element, path] of activeLists) {
           const { key } = element
@@ -328,10 +328,11 @@ export const List = {
   splitList: (editor: Editable, options?: SplitListOptions) => {
     const { selection } = editor
     if (!selection || Range.isExpanded(selection)) return
-    const { type, props } = options ?? {}
+    let { type, props } = options ?? {}
     const entry = List.find(editor, type)
     if (!entry) return
     const [list, path] = entry
+    type = list.type
     // 空节点拆分
     if (Editable.isEmpty(editor, list)) {
       // 缩进的节点拆分
