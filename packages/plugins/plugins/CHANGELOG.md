@@ -1,5 +1,15 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [[`e58e5e6`](https://github.com/editablejs/editable/commit/e58e5e6fa8c6e4dc22837d1d3c29de3011993332)]:
+  - @editablejs/plugin-context-menu@1.0.0-beta.11
+  - @editablejs/plugin-toolbar@1.0.0-beta.11
+  - @editablejs/plugin-ui@1.0.0-beta.7
+  - @editablejs/plugin-table@1.0.0-beta.10
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
