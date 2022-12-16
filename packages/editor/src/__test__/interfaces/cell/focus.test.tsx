@@ -1,5 +1,5 @@
 import { GridCell } from '../../../interfaces/cell'
-import { createEditor } from '../../../plugin/create-editor'
+import { createEditor } from '../../../interfaces/editor'
 
 describe('interfaces/cell', () => {
   const editor = createEditor()

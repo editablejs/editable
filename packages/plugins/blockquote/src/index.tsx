@@ -1,13 +1,4 @@
-import {
-  Editable,
-  Hotkey,
-  Transforms,
-  Editor,
-  Range,
-  Element,
-  Path,
-  NodeEntry,
-} from '@editablejs/editor'
+import { Editable, Hotkey, Transforms, Editor, Range, Element, Path } from '@editablejs/editor'
 import { BLOCKQUOTE_KEY } from './constants'
 
 type BlockquoteHotkey = string | ((e: KeyboardEvent) => boolean)

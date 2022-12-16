@@ -10,7 +10,6 @@ export * from './interfaces/row'
 export * from './interfaces/grid'
 export * from './interfaces/list'
 export * from './interfaces/editor'
-
 // Transforms
 export * from './transforms'
 
@@ -49,7 +48,6 @@ export * from './plugin/locale'
 export * from './plugin/decorate'
 export * from './plugin/placeholder'
 export * from './plugin/selection-drawing'
-export * from './plugin/create-editor'
 
 // Environment
 export * from './utils/environment'

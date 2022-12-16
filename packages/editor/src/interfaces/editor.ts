@@ -1,5 +1,15 @@
-import { Editor, Node, Text, Element, EditorPointOptions, Point, Location, Path } from 'slate'
+import {
+  Editor,
+  Node,
+  Text,
+  Element,
+  EditorPointOptions,
+  Point,
+  Location,
+  createEditor as createSlateEditor,
+} from 'slate'
 import { Editable } from '../plugin/editable'
+import { withEditable } from '../plugin/with-editable'
 
 const { marks: slateMarks, point: slatePoint } = Editor
 
@@ -74,6 +84,12 @@ Editor.point = (editor: Editor, at: Location, options: EditorPointOptions = {}) 
   } else {
     return slatePoint(editor, at, options)
   }
+}
+
+export * from 'slate'
+
+export const createEditor = () => {
+  return withEditable(createSlateEditor())
 }
 
 export {

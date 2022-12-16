@@ -1,19 +1,19 @@
-import { BaseEditor, Editable, Editor } from '@editablejs/editor'
+import { Editable, Editor } from '@editablejs/editor'
 import { History } from './history'
 
 /**
  * Weakmaps for attaching state to the editor.
  */
 
-export const HISTORY = new WeakMap<Editor, History>()
-export const SAVING = new WeakMap<Editor, boolean | undefined>()
-export const MERGING = new WeakMap<Editor, boolean | undefined>()
+export const HISTORY = new WeakMap<Editable, History>()
+export const SAVING = new WeakMap<Editable, boolean | undefined>()
+export const MERGING = new WeakMap<Editable, boolean | undefined>()
 
 /**
  * `HistoryEditor` contains helpers for history-enabled editors.
  */
 
-export interface HistoryEditor extends BaseEditor {
+export interface HistoryEditor extends Editable {
   history: History
   undo: () => void
   redo: () => void
