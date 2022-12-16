@@ -497,6 +497,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
             x: rect.left,
             y: rect.top,
           }}
+          minWidth={160}
         />
       </div>
     )

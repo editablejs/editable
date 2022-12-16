@@ -120,6 +120,7 @@ const ContextMenuPortal = () => {
           container={point}
           onOpenChange={setOpen}
           onSelect={() => setOpen(false)}
+          minWidth={200}
         />
       </Portal>
     )

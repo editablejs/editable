@@ -153,7 +153,7 @@ export const ContextMenu: React.FC<ContextMenu> = ({
   children,
   side = 'right',
   align = 'start',
-  minWidth = 200,
+  minWidth,
 }) => {
   const [open, setOpen] = React.useState(openProps)
   const pointRef = React.useRef<Point>(
@@ -203,9 +203,10 @@ export const ContextMenu: React.FC<ContextMenu> = ({
         onPointerDownOutside={() => handleOpenChange(false)}
         css={[
           tw`z-50 overflow-hidden rounded border border-solid border-gray-300 bg-white py-2 shadow-outer`,
-          css`
-            min-width: ${minWidth}px;
-          `,
+          minWidth !== undefined &&
+            css`
+              min-width: ${minWidth}px;
+            `,
           className,
         ]}
       >
