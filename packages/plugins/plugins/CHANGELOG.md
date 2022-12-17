@@ -1,5 +1,22 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [[`2fb4f42`](https://github.com/editablejs/editable/commit/2fb4f42227b5505fa9adfe5a7548750cd479944b)]:
+  - @editablejs/editor@1.0.0-beta.10
+  - @editablejs/plugin-table@1.0.0-beta.14
+  - @editablejs/plugin-blockquote@1.0.0-beta.10
+  - @editablejs/plugin-context-menu@1.0.0-beta.15
+  - @editablejs/plugin-fontsize@1.0.0-beta.10
+  - @editablejs/plugin-heading@1.0.0-beta.10
+  - @editablejs/plugin-history@1.0.0-beta.10
+  - @editablejs/plugin-indent@1.0.0-beta.10
+  - @editablejs/plugin-list@1.0.0-beta.10
+  - @editablejs/plugin-mark@1.0.0-beta.10
+  - @editablejs/plugin-toolbar@1.0.0-beta.15
+
 ## 1.0.0-beta.14
 
 ### Patch Changes
