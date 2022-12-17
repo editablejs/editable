@@ -61,7 +61,7 @@ export const Locale = {
   getLocale: <T extends Locale>(editor: Editable): T => {
     const lang = Locale.getLang(editor)
     const locales = Locale.getLocales(editor)
-    return locales[lang] as any
+    return (locales[lang] ?? locales['en-US']) as any
   },
 
   getLocales: (editor: Editable): Record<string, Locale> => {

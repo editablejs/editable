@@ -1,6 +1,6 @@
 import { Editable, RenderElementProps, Transforms, Node, Grid, Locale } from '@editablejs/editor'
 import { withTableCell } from './cell'
-import locales from './locale'
+import locales, { TableLocale } from './locale'
 import { setOptions, TableOptions } from './options'
 import { withTableRow } from './row'
 import { TableEditor, TableComponent } from './table'
@@ -50,5 +50,5 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
 
 export { TableEditor }
 
-export type { TableOptions }
+export type { TableOptions, TableLocale }
 export * from './types'

@@ -40,7 +40,7 @@ export const useLocale = <
 export const useLocales = <T extends Locale>(editor: Editable, lang: string): T => {
   const store = useLocaleStore(editor)
 
-  const locales = useStore(store, state => state.locales[lang])
+  const locales = useStore(store, state => state.locales[lang] ?? state.locales['en-US'])
   return locales as T
 }
 
