@@ -16,7 +16,6 @@ import {
   useLocale,
   Decorate,
   Transforms,
-  List,
   Path,
 } from '@editablejs/editor'
 import * as React from 'react'

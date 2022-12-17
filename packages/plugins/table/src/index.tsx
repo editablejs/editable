@@ -15,6 +15,10 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
     Locale.setLocale(newEditor, key, locales[key])
   }
 
+  for (const key in options.locales) {
+    Locale.setLocale(newEditor, key, locales[key])
+  }
+
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)
 

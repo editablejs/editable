@@ -1,5 +1,6 @@
 import { Editable } from '@editablejs/editor'
 import * as React from 'react'
+import { TableLocale } from './locale'
 
 export const defaultTableMinRowHeight = 35
 export const defaultTableMinColWidth = 35
@@ -9,6 +10,8 @@ export const TABLE_OPTIONS_WEAKMAP = new WeakMap<Editable, TableOptions>()
 export interface TableOptions {
   minRowHeight?: number
   minColWidth?: number
+
+  locales?: Record<string, TableLocale>
 }
 
 export const getOptions = (editor: Editable): Required<TableOptions> => {
