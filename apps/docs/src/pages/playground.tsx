@@ -236,7 +236,7 @@ export default function Playground() {
     <>
       <CustomStyles />
       <Seo title="Editable Playground" />
-      <EditableProvider editor={editor} initialValue={initialValue} lang="ja">
+      <EditableProvider editor={editor} initialValue={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
             <div tw="flex text-2xl text-link flex-1 gap-3">
