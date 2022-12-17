@@ -1,5 +1,14 @@
 # @editablejs/plugin-table
 
+## 1.0.0-beta.14
+
+### Patch Changes
+
+- [`2fb4f42`](https://github.com/editablejs/editable/commit/2fb4f42227b5505fa9adfe5a7548750cd479944b) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Set locale to load en-US by default
+
+- Updated dependencies [[`2fb4f42`](https://github.com/editablejs/editable/commit/2fb4f42227b5505fa9adfe5a7548750cd479944b)]:
+  - @editablejs/editor@1.0.0-beta.10
+
 ## 1.0.0-beta.13
 
 ### Patch Changes

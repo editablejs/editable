@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [`2fb4f42`](https://github.com/editablejs/editable/commit/2fb4f42227b5505fa9adfe5a7548750cd479944b) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Set locale to load en-US by default
+
 ## 1.0.0-beta.9
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @editablejs/plugin-blockquote
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [[`2fb4f42`](https://github.com/editablejs/editable/commit/2fb4f42227b5505fa9adfe5a7548750cd479944b)]:
+  - @editablejs/editor@1.0.0-beta.10
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
