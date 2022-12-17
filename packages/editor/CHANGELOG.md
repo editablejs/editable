@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [`a0a603c`](https://github.com/editablejs/editable/commit/a0a603cd3e56663c73ad338d369692f5ad375aef) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - Remove focused restriction on Placeholder
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
