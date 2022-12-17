@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.9
+
+### Patch Changes
+
+- [`c8f2de7`](https://github.com/editablejs/editable/commit/c8f2de70655290969258b7b6ba140c7d6ed51c08) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - dropdown does not display correct text
+
 ## 1.0.0-beta.8
 
 ### Patch Changes

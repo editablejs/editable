@@ -1,5 +1,14 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.14
+
+### Patch Changes
+
+- [`4175fcc`](https://github.com/editablejs/editable/commit/4175fcc10eab0b7926914529b0e49b105bccdec2) Thanks [@yanmao-cc](https://github.com/yanmao-cc)! - export table locales type
+
+- Updated dependencies [[`c8f2de7`](https://github.com/editablejs/editable/commit/c8f2de70655290969258b7b6ba140c7d6ed51c08)]:
+  - @editablejs/plugin-ui@1.0.0-beta.9
+
 ## 1.0.0-beta.13
 
 ### Patch Changes
