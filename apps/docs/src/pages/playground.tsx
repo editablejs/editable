@@ -9,6 +9,7 @@ import {
   Placeholder,
   Editor,
   isTouchDevice,
+  Editable,
 } from '@editablejs/editor'
 import {
   withPlugins,
@@ -184,7 +185,7 @@ export default function Playground() {
     editor = withYHistory(editor)
     Placeholder.add(editor, {
       check: entry => {
-        return Editor.isBlock(editor, entry[0])
+        return Editable.isFocused(editor) && Editor.isBlock(editor, entry[0])
       },
       render: () => {
         return 'Enter some text...'

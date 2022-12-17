@@ -21,9 +21,8 @@ export const usePlaceholders = () => {
 export const usePlaceholder = (node: Node) => {
   const store = usePlaceholderStore()
   const current = useStore(store, state => state.current)
-  const [focused] = useFocused()
   return React.useMemo(() => {
-    if (!current || !focused) return
+    if (!current) return
     return current.node === node ? current.render : undefined
-  }, [current, node, focused])
+  }, [current, node])
 }
