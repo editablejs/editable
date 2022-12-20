@@ -6,6 +6,7 @@ import {
   TextSerializer,
   Transforms,
   useIsomorphicLayoutEffect,
+  useLocale,
   useNodeSelected,
 } from '@editablejs/editor'
 import { Popover, PopoverContent, PopoverPortal, PopoverTrigger, Icon } from '@editablejs/plugin-ui'
@@ -13,6 +14,7 @@ import React, { forwardRef, useState } from 'react'
 import tw from 'twin.macro'
 import { LinkEditor } from '../editor'
 import { Link } from '../interfaces/link'
+import { LinkLocale } from '../locale'
 
 export interface LinkComponentProps extends ElementAttributes {
   editor: LinkEditor
@@ -71,6 +73,8 @@ export const LinkComponent = forwardRef<
     setOpen(false)
   }
 
+  const locale = useLocale<LinkLocale>('link')
+
   return (
     <Popover open={open} onOpenChange={state => setOpen(selected ? true : state)} trigger="click">
       <PopoverTrigger>
@@ -82,19 +86,29 @@ export const LinkComponent = forwardRef<
         <PopoverContent align="start">
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
             <div tw="flex gap-2 mb-2">
-              <label>文本</label>
-              <StyledInput value={text} onChange={e => setText(e.target.value)} type="text" />
+              <label>{locale.text}</label>
+              <StyledInput
+                value={text}
+                onChange={e => setText(e.target.value)}
+                type="text"
+                placeholder={locale.textPlaceholder}
+              />
             </div>
             <div tw="flex gap-2 mb-2">
-              <label>链接</label>
-              <StyledInput value={url} onChange={e => setUrl(e.target.value)} type="url" />
+              <label>{locale.link}</label>
+              <StyledInput
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                type="url"
+                placeholder={locale.linkPlaceholder}
+              />
             </div>
             <div tw="flex justify-end gap-2">
               <button onClick={handleCancel}>
                 <Icon name="unLink" />
-                取消链接
+                {locale.cancelLink}
               </button>
-              <button onClick={handleOk}>确定</button>
+              <button onClick={handleOk}>{locale.ok}</button>
             </div>
           </div>
         </PopoverContent>

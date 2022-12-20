@@ -7,12 +7,14 @@ import {
   useIsomorphicLayoutEffect,
   useSelectionDrawingRects,
   Text,
+  useLocale,
 } from '@editablejs/editor'
 import { Popover, PopoverContent, PopoverPortal, PopoverAnchor } from '@editablejs/plugin-ui'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
 import { LINK_KEY } from '../constants'
 import { Link } from '../interfaces/link'
+import { LinkLocale } from '../locale'
 import { useLinkOpen } from '../store'
 
 export interface LinkCreateComponentProps extends SlotComponentProps {}
@@ -74,6 +76,8 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
     setOpen(false)
   }
 
+  const locale = useLocale<LinkLocale>('link')
+
   return (
     <Popover open={open} onOpenChange={setOpen} trigger="none">
       <PopoverAnchor virtualRef={virtualRef} />
@@ -81,9 +85,9 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
         <PopoverContent align="start">
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
             <div tw="flex gap-2">
-              <label>链接</label>
+              <label>{locale.link}</label>
               <StyledInput
-                placeholder="粘贴或输入一个链接"
+                placeholder={locale.linkPlaceholder}
                 value={url}
                 onChange={e => setUrl(e.target.value)}
                 type="url"
@@ -94,7 +98,7 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
                 tw="bg-blue-600 rounded text-white py-0.5 px-6 border-0 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-not-allowed"
                 onClick={handleOk}
               >
-                确定
+                {locale.ok}
               </button>
             </div>
           </div>

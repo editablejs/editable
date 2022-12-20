@@ -1,9 +1,11 @@
 import { Editable } from '@editablejs/editor'
+import { LinkLocale } from './locale'
 
 export type LinkHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface LinkOptions {
   hotkey?: LinkHotkey
+  locales?: Record<string, LinkLocale>
 }
 const LINK_OPTIONS = new WeakMap<Editable, LinkOptions>()
 

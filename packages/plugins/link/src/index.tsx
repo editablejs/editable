@@ -1,4 +1,4 @@
-import { Editable, Hotkey, Transforms, Text, Slot, Range, Editor } from '@editablejs/editor'
+import { Editable, Hotkey, Transforms, Text, Slot, Range, Editor, Locale } from '@editablejs/editor'
 import { LINK_KEY } from './constants'
 import { setOptions, LinkHotkey, LinkOptions } from './options'
 import { Link } from './interfaces/link'
@@ -6,6 +6,7 @@ import { LinkComponent } from './components/link'
 import { LinkCreateComponent } from './components/create'
 import { LinkStore } from './store'
 import { LinkEditor } from './editor'
+import locales, { LinkLocale } from './locale'
 
 const defaultHotkey: LinkHotkey = 'mod+k'
 
@@ -20,6 +21,14 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
   setOptions(newEditor, options)
 
   const { isInline } = newEditor
+
+  for (const key in locales) {
+    Locale.setLocale(newEditor, key, locales[key])
+  }
+
+  for (const key in options.locales) {
+    Locale.setLocale(newEditor, key, locales[key])
+  }
 
   Slot.mount(newEditor, LinkCreateComponent)
 
@@ -100,7 +109,7 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
   return newEditor
 }
 
-export type { LinkOptions }
+export type { LinkOptions, LinkLocale }
 
 export * from './interfaces/link'
 
