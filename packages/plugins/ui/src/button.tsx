@@ -7,7 +7,7 @@ export interface Button {
   children?: React.ReactNode
 }
 
-const ButtonStyles = styled.button(({ active, disabled }: Button) => [
+const StyledButton = styled.button(({ active, disabled }: Button) => [
   tw`flex cursor-pointer items-center rounded border-0 bg-transparent px-1 py-1 disabled:cursor-not-allowed disabled:hover:bg-transparent`,
   active && tw`text-primary bg-blue-100 hover:bg-blue-100`,
   !active && tw`hover:(bg-gray-100)`,
@@ -27,7 +27,7 @@ export const Button = React.forwardRef<
   Button & React.AnchorHTMLAttributes<HTMLButtonElement>
 >(({ type, ...props }, ref) => {
   return (
-    <ButtonStyles
+    <StyledButton
       onMouseDown={e => e.preventDefault()}
       {...props}
       ref={ref}

@@ -12,8 +12,8 @@ import {
   TaskListEditor,
   TableEditor,
   UI,
-  History,
   HistoryEditor,
+  LinkEditor,
 } from '@editablejs/plugins'
 
 const { Icon } = UI
@@ -116,6 +116,14 @@ export const createToolbarItems = (editor: Editable) => {
   )
   items.push(
     'separator',
+    {
+      type: 'button',
+      active: LinkEditor.isActive(editor),
+      onToggle: editor => {
+        LinkEditor.open(editor)
+      },
+      children: <Icon name="link" />,
+    },
     {
       type: 'button',
       active: BlockquoteEditor.isActive(editor),

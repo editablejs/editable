@@ -14,6 +14,7 @@ import {
   withTableDescendantTransform,
   withTableRowDescendantTransform,
 } from '@editablejs/plugin-table/deserializer'
+import { withLinkDescendantTransform } from '@editablejs/plugin-link/deserializer'
 
 export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withTableDescendantTransform, { editor })
@@ -27,4 +28,5 @@ export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withFontSizeDescendantTransform, {})
   HTMLDeserializer.with(withMarkDescendantTransform, {})
   HTMLDeserializer.with(withIndentDescendantTransform, {})
+  HTMLDeserializer.with(withLinkDescendantTransform, {})
 }

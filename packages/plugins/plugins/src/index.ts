@@ -18,6 +18,7 @@ import {
   TaskListEditor,
 } from '@editablejs/plugin-list'
 import { TableOptions, TableEditor, withTable } from '@editablejs/plugin-table'
+import { LinkOptions, LinkEditor, withLink } from '@editablejs/plugin-link'
 import {
   ContextMenuEditor,
   ContextMenuOptions,
@@ -36,6 +37,7 @@ export interface PluginOptions {
   taskList?: TaskListOptions
   indent?: IndentOptions
   table?: TableOptions
+  link?: LinkOptions
 }
 
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
@@ -50,6 +52,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withUnOrderedList(newEditor, options.unorderedList)
   newEditor = withTaskList(newEditor, options.taskList)
   newEditor = withTable(newEditor, options.table)
+  newEditor = withLink(newEditor, options.link)
   return newEditor as T &
     HistoryEditor &
     ContextMenuEditor &
@@ -61,7 +64,8 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     IndentEditor &
     UnOrderedListEditor &
     TaskListEditor &
-    TableEditor
+    TableEditor &
+    LinkEditor
 }
 
 export * from '@editablejs/plugin-history'
@@ -74,4 +78,5 @@ export * from '@editablejs/plugin-indent'
 export * from '@editablejs/plugin-table'
 export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
+export * from '@editablejs/plugin-link'
 export { UI }

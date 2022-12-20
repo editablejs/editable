@@ -1,4 +1,12 @@
-import { Editable, useEditableStatic, Range, Slot, SelectionDrawing } from '@editablejs/editor'
+import {
+  Editable,
+  useEditableStatic,
+  Range,
+  Slot,
+  SelectionDrawing,
+  useSlotActive,
+  useIsomorphicLayoutEffect,
+} from '@editablejs/editor'
 import { Popper, PopperAnchor, PopperContent, Portal, Presence } from '@editablejs/plugin-ui'
 import * as React from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from './store'
@@ -92,6 +100,17 @@ const InlineToolbar = () => {
       editor.off('selectionchange', handleSelectionChange)
     }
   }, [editor, handleSelectEnd, handleSelectStart, handleSelectionChange])
+
+  const [active] = useSlotActive(InlineToolbar)
+  useIsomorphicLayoutEffect(() => {
+    if (active === false) {
+      setOpen(false)
+    }
+  }, [active])
+
+  useIsomorphicLayoutEffect(() => {
+    if (open) Slot.update(editor, { active: true }, c => c === InlineToolbar)
+  }, [editor, open])
 
   if (items.length > 0 && containerRef.current && rootRef.current)
     return (

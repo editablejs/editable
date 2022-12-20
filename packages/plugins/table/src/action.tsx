@@ -256,11 +256,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
   const draging = useTableDragging()
 
   React.useEffect(() => {
-    if (draging) {
-      Slot.disable(editor, () => true)
-    } else {
-      Slot.enable(editor, () => true)
-    }
+    if (draging) Slot.update(editor, { active: false })
   }, [draging])
   const handleMouseOver = React.useCallback(() => {
     if (draging) return
