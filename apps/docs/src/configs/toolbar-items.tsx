@@ -12,8 +12,8 @@ import {
   TaskListEditor,
   TableEditor,
   UI,
-  History,
   HistoryEditor,
+  LinkEditor,
 } from '@editablejs/plugins'
 
 const { Icon } = UI
@@ -25,7 +25,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       disabled: !HistoryEditor.canUndo(editor),
-      children: <Icon name="undo" />,
+      icon: <Icon name="undo" />,
       onToggle: editor => {
         HistoryEditor.undo(editor)
       },
@@ -33,7 +33,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       disabled: !HistoryEditor.canRedo(editor),
-      children: <Icon name="redo" />,
+      icon: <Icon name="redo" />,
       onToggle: editor => {
         HistoryEditor.redo(editor)
       },
@@ -42,7 +42,7 @@ export const createToolbarItems = (editor: Editable) => {
   const markItems: ToolbarItem[] = marks.map(mark => ({
     type: 'button',
     active: MarkEditor.isActive(editor, mark),
-    children: <Icon name={mark} />,
+    icon: <Icon name={mark} />,
     onToggle: editor => {
       MarkEditor.toggle(editor, mark)
     },
@@ -118,11 +118,19 @@ export const createToolbarItems = (editor: Editable) => {
     'separator',
     {
       type: 'button',
+      active: LinkEditor.isActive(editor),
+      onToggle: editor => {
+        LinkEditor.open(editor)
+      },
+      icon: <Icon name="link" />,
+    },
+    {
+      type: 'button',
       active: BlockquoteEditor.isActive(editor),
       onToggle: editor => {
         BlockquoteEditor.toggle(editor)
       },
-      children: <Icon name="blockquote" />,
+      icon: <Icon name="blockquote" />,
     },
     {
       type: 'button',
@@ -130,7 +138,7 @@ export const createToolbarItems = (editor: Editable) => {
       onToggle: editor => {
         UnOrderedListEditor.toggle(editor)
       },
-      children: <Icon name="unorderedList" />,
+      icon: <Icon name="unorderedList" />,
     },
     {
       type: 'button',
@@ -138,7 +146,7 @@ export const createToolbarItems = (editor: Editable) => {
       onToggle: editor => {
         OrderedListEditor.toggle(editor)
       },
-      children: <Icon name="orderedList" />,
+      icon: <Icon name="orderedList" />,
     },
     {
       type: 'button',
@@ -146,7 +154,7 @@ export const createToolbarItems = (editor: Editable) => {
       onToggle: editor => {
         TaskListEditor.toggle(editor)
       },
-      children: <Icon name="taskList" />,
+      icon: <Icon name="taskList" />,
     },
     {
       type: 'button',
@@ -154,7 +162,7 @@ export const createToolbarItems = (editor: Editable) => {
       onToggle: editor => {
         TableEditor.toggle(editor)
       },
-      children: <Icon name="table" />,
+      icon: <Icon name="table" />,
     },
   )
 
@@ -168,11 +176,11 @@ export const createToolbarItems = (editor: Editable) => {
         onToggle: () => {
           Grid.mergeCell(editor, grid)
         },
-        children: <Icon name="tableMerge" />,
+        icon: <Icon name="tableMerge" />,
       },
       {
         type: 'button',
-        children: <Icon name="tableSplit" />,
+        icon: <Icon name="tableSplit" />,
         disabled: !Grid.canSplit(editor, grid),
         onToggle: () => {
           Grid.splitCell(editor, grid)

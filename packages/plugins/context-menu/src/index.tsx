@@ -1,4 +1,10 @@
-import { Editable, Slot, useEditableStatic, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import {
+  Editable,
+  Slot,
+  useEditableStatic,
+  useIsomorphicLayoutEffect,
+  useSlotActive,
+} from '@editablejs/editor'
 import * as React from 'react'
 import {
   ContextMenu as UIContextMenu,
@@ -103,11 +109,18 @@ const ContextMenuPortal = () => {
     }
   }, [editor, setOpen])
 
+  const [active] = useSlotActive(ContextMenuPortal)
+
+  useIsomorphicLayoutEffect(() => {
+    if (active === false) {
+      setOpen(false)
+    }
+  }, [active])
+
   useIsomorphicLayoutEffect(() => {
     if (open) {
-      Slot.disable(editor, component => component !== ContextMenuPortal)
-    } else {
-      Slot.enable(editor, component => component !== ContextMenuPortal)
+      Slot.update(editor, { active: false }, c => c !== ContextMenuPortal)
+      Slot.update(editor, { active: true }, c => c === ContextMenuPortal)
     }
   }, [editor, open])
 

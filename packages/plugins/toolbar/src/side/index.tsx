@@ -262,7 +262,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
             isFindList = true
             return true
           }
-          return isFindList ? false : Element.isElement(n)
+          return isFindList ? false : Editor.isBlock(editor, n)
         },
         mode: 'lowest',
       })

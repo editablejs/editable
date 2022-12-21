@@ -1,15 +1,12 @@
-import { useEditableStatic } from '../hooks/use-editable'
-import { useSlotComponents } from '../hooks/use-slots'
+import { useSlotComponents } from '../hooks/use-slot'
 
 export const Slots = () => {
-  const editor = useEditableStatic()
-  const slots = useSlotComponents(editor)
+  const slots = useSlotComponents()
   return (
     <>
-      {slots.map(
-        ({ component: Component, props: { active = true, ...props } }, index) =>
-          active && <Component key={index} {...props} />,
-      )}
+      {slots.map(({ component: Component, props }, index) => (
+        <Component key={index} {...props} />
+      ))}
     </>
   )
 }

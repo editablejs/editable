@@ -7,7 +7,7 @@ import { useEditable, useEditableStatic } from '../hooks/use-editable'
 import { Editable } from '../plugin/editable'
 import { useReadOnly } from '../hooks/use-read-only'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { DOMRange, getDefaultView } from '../utils/dom'
+import { DOMNode, DOMRange, getDefaultView } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
@@ -287,6 +287,8 @@ export const ContentEditable = (props: EditableProps) => {
   const handleRootMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     const event = getNativeEvent(e)
     if (e.defaultPrevented && isMouseEvent(event) && event.button !== 2) return
+    if (!event.target || !ref.current?.contains(event.target as DOMNode)) return
+
     IS_MOUSEDOWN.set(editor, true)
     if (isDoubleClickRef.current) {
       if (isSamePoint(event)) {

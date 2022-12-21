@@ -4,14 +4,30 @@ import { Button } from './button'
 import { Dropdown } from './dropdown'
 import { Tooltip } from './tooltip'
 
-export interface ToolbarButton extends Button {
+export interface ToolbarButton extends Omit<Button, 'type'> {
+  active?: boolean
   title?: React.ReactNode
   onToggle: () => void
 }
 
-export const ToolbarButton: React.FC<ToolbarButton> = ({ title, children, onToggle, ...props }) => {
+export const ToolbarButton: React.FC<ToolbarButton> = ({
+  title,
+  children,
+  onToggle,
+  active,
+  ...props
+}) => {
   const renderButton = () => (
-    <Button onClick={onToggle} {...props}>
+    <Button
+      css={[
+        tw`shadow-none`,
+        active &&
+          tw`text-primary bg-blue-100 border-blue-100 hover:bg-blue-100 hover:shadow-none hover:border-blue-100`,
+      ]}
+      onClick={onToggle}
+      type={active ? 'primary' : 'text'}
+      {...props}
+    >
       {children}
     </Button>
   )

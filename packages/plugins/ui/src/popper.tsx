@@ -292,10 +292,6 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
             : 'translate3d(0, -200%, 0)', // keep off the page when measuring
           minWidth: 'max-content',
           zIndex: contentZIndex,
-          ['--radix-popper-transform-origin' as any]: [
-            middlewareData.transformOrigin?.x,
-            middlewareData.transformOrigin?.y,
-          ].join(' '),
         }}
       >
         <PopperContentContext.Provider

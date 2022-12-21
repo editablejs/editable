@@ -29,6 +29,7 @@ export { useNodeSelected } from './hooks/use-node-selected'
 export { useNodeFocused } from './hooks/use-node-focused'
 export * from './hooks/use-drag'
 export * from './hooks/use-selection-drawing'
+export * from './hooks/use-slot'
 
 // Grid Hooks
 export { useGrid } from './hooks/use-grid'
@@ -53,8 +54,12 @@ export * from './plugin/selection-drawing'
 export * from './utils/environment'
 // Key
 export { generateRandomKey } from './utils/key'
-// dom
+// Dom
 export * from './utils/dom'
+// DataTransfer
+export * from './utils/data-transfer'
+// Clipboard
+export * from './utils/clipboard'
 
 export type {
   RenderElementProps,

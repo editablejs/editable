@@ -122,8 +122,7 @@ type PopperAnchorProps = React.ComponentPropsWithoutRef<typeof PopperAnchor>
 interface MenuAnchor extends PopperAnchorProps {}
 
 const MenuAnchor = React.forwardRef<MenuAnchorElement, MenuAnchor>((props, forwardedRef) => {
-  const { ...anchorProps } = props
-  return <PopperAnchor {...anchorProps} ref={forwardedRef} />
+  return <PopperAnchor {...props} ref={forwardedRef} />
 })
 
 MenuAnchor.displayName = ANCHOR_NAME

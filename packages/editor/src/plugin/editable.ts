@@ -1101,4 +1101,10 @@ export const Editable = {
 
     return [x - rootRect.left, y - rootRect.top]
   },
+
+  toGlobalPosition(editor: Editable, x: number, y: number): [number, number] {
+    const container = Editable.toDOMNode(editor, editor)
+    const rootRect = container.getBoundingClientRect()
+    return [x + rootRect.left, y + rootRect.top]
+  },
 }

@@ -38,7 +38,7 @@ export const Slot = {
   mount<T extends SlotComponentProps>(
     editor: Editable,
     component: React.FC<T>,
-    props: T = { active: true } as T,
+    props: T = {} as T,
   ) {
     const store = getStore(editor)
     store.setState(state => {
@@ -63,37 +63,18 @@ export const Slot = {
 
   update: <T extends SlotComponentProps>(
     editor: Editable,
-    component: React.FC<T>,
     props: Partial<T>,
+    predicate: (value: React.FC<T>, index: number) => boolean = () => true,
   ) => {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
-      if (!components.some(({ component }) => component === component)) return state
       return {
-        components: components.map(c => {
-          if (c.component !== component) return c
+        components: components.map((c, index) => {
+          if (!predicate(c.component, index)) return c
           return { ...c, props: merge(c.props, props) }
         }),
       }
-    })
-  },
-
-  disable: (editor: Editable, filter: (component: React.FC) => boolean) => {
-    const store = getStore(editor)
-    const { components } = store.getState()
-    components.forEach(({ component, props }) => {
-      if (props.active && filter(component)) {
-        Slot.update(editor, component, { active: false })
-      }
-    })
-  },
-
-  enable: (editor: Editable, filter: (component: React.FC) => boolean) => {
-    const store = getStore(editor)
-    const { components } = store.getState()
-    components.forEach(({ component, props }) => {
-      if (!props.active && filter(component)) Slot.update(editor, component, { active: true })
     })
   },
 }

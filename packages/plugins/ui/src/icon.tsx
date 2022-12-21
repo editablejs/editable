@@ -641,7 +641,40 @@ export const HeadingSixIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = pro
   )
 }
 
-const ICON_LIST = {
+export const LinkIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M555.149 690.9c15.63-15.631 40.97-15.631 56.601 0 15.63 15.629 15.63 40.969 0 56.6l-140.7 140.699c-92.6 92.601-242.6 92.601-335.2 0-92.6-92.6-92.6-242.6 0-335.199l140.7-140.7c15.63-15.63 40.97-15.63 56.6 0 15.63 15.63 15.63 40.97 0 56.6l-140.7 140.7c-61.3 61.301-61.3 160.7 0 222 61.3 61.301 160.7 61.301 222 0l140.699-140.7z m333-219.9l-140.7 140.699c-15.63 15.631-40.97 15.631-56.6 0-15.63-15.629-15.63-40.97 0-56.6l140.7-140.7c61.3-61.3 61.3-160.699 0-222-61.3-61.3-160.7-61.3-222 0l-140.7 140.7c-15.63 15.63-40.97 15.63-56.6 0-15.63-15.63-15.63-40.97 0-56.6l140.699-140.7c92.601-92.6 242.601-92.6 335.2 0 92.602 92.501 92.602 242.6 0.001 335.201zM320.35 703.6c-17.2-17.199-17.2-45.1 0-62.199l321-321.001c17.2-17.199 45-17.199 62.2 0 17.2 17.2 17.2 45 0 62.2l-321 321c-17.2 17.2-45 17.2-62.2 0z"></path>
+    </svg>
+  )
+}
+
+export const UnLinkIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      fill="currentColor"
+    >
+      <path d="M693.024 589.248a32 32 0 0 1-22.624-54.624l90.496-90.496a128 128 0 1 0-181.024-181.024l-90.496 90.496a32 32 0 1 1-45.248-45.248l90.496-90.496a192 192 0 0 1 271.52 271.52l-90.496 90.496a32 32 0 0 1-22.624 9.376zM353.6 862.272a192 192 0 0 1-135.744-327.648l90.496-90.496a32 32 0 1 1 45.248 45.248l-90.496 90.496a128 128 0 0 0 181.024 181.024l90.496-90.496a32 32 0 1 1 45.248 45.248l-90.496 90.496a191.488 191.488 0 0 1-135.776 56.128zM832 864a32 32 0 0 1-22.624-9.376l-640-640a32 32 0 0 1 45.248-45.248l640 640A32 32 0 0 1 832 864z"></path>
+      <path d="M384 672a32 32 0 0 1-22.624-54.624l64-64a32 32 0 0 1 45.248 45.248l-64 64A32 32 0 0 1 384 672zM576 480a32 32 0 0 1-22.624-54.624l64-64a32 32 0 0 1 45.248 45.248l-64 64A32 32 0 0 1 576 480z"></path>
+    </svg>
+  )
+}
+
+export const IconMap = {
   bold: BoldIcon,
   italic: ItalicIcon,
   underline: UnderlineIcon,
@@ -679,16 +712,22 @@ const ICON_LIST = {
   headingFour: HeadingFourIcon,
   headingFive: HeadingFiveIcon,
   headingSix: HeadingSixIcon,
+  link: LinkIcon,
+  unLink: UnLinkIcon,
 }
 
-const IconStyles = tw.span`overflow-hidden inline-flex
+export type IconName = keyof typeof IconMap
+
+const IconStyles = tw.span`overflow-hidden
   [> svg]:align-middle
   `
 
-export const Icon: React.FC<
-  React.HTMLAttributes<SVGSVGElement> & Record<'name', keyof typeof ICON_LIST>
-> = ({ name, className, ...props }) => {
-  const IconComponent = ICON_LIST[name]
+export const Icon: React.FC<React.HTMLAttributes<SVGSVGElement> & Record<'name', IconName>> = ({
+  name,
+  className,
+  ...props
+}) => {
+  const IconComponent = IconMap[name]
 
   return (
     <IconStyles className={className}>
