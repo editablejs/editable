@@ -17,7 +17,8 @@
     "@editablejs/plugin-toolbar": "0.0.0",
     "@editablejs/plugin-ui": "0.0.0",
     "@editablejs/plugin-yjs": "0.0.0",
-    "@editablejs/plugin-yjs-transform": "0.0.0"
+    "@editablejs/plugin-yjs-transform": "0.0.0",
+    "@editablejs/plugin-link": "0.0.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -34,12 +35,15 @@
     "nervous-bees-beg",
     "nine-eyes-remember",
     "perfect-kids-rule",
+    "rare-oranges-provide",
+    "sixty-snakes-switch",
     "smart-pillows-cough",
     "soft-coins-approve",
     "sour-news-hide",
     "stale-bees-do",
     "thirty-boats-glow",
     "unlucky-zebras-scream",
+    "wicked-dancers-sneeze",
     "young-flies-act"
   ]
 }
