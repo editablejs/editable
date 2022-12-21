@@ -9,17 +9,22 @@ import {
   Text,
   useLocale,
 } from '@editablejs/editor'
-import { Popover, PopoverContent, PopoverPortal, PopoverAnchor } from '@editablejs/plugin-ui'
+import {
+  Popover,
+  PopoverContent,
+  PopoverPortal,
+  PopoverAnchor,
+  Button,
+} from '@editablejs/plugin-ui'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import tw from 'twin.macro'
 import { LINK_KEY } from '../constants'
 import { Link } from '../interfaces/link'
 import { LinkLocale } from '../locale'
 import { useLinkOpen } from '../store'
+import { StyledInput } from './styled'
 
 export interface LinkCreateComponentProps extends SlotComponentProps {}
-
-const StyledInput = tw.input`border-gray-300 border rounded px-1 outline-0 min-w-[280px] hover:border-gray-300 hover:border focus:border-gray-300 focus:border`
 
 export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
   const editor = useEditableStatic()
@@ -84,7 +89,7 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
       <PopoverPortal>
         <PopoverContent align="start">
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
-            <div tw="flex gap-2">
+            <div tw="flex gap-2 items-center">
               <label>{locale.link}</label>
               <StyledInput
                 placeholder={locale.linkPlaceholder}
@@ -93,13 +98,9 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
                 type="url"
                 ref={inputRef}
               />
-              <button
-                disabled={!url}
-                tw="bg-blue-600 rounded text-white py-0.5 px-6 border-0 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-not-allowed"
-                onClick={handleOk}
-              >
+              <Button disabled={!url} type="primary" onClick={handleOk}>
                 {locale.ok}
-              </button>
+              </Button>
             </div>
           </div>
         </PopoverContent>

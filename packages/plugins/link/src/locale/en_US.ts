@@ -5,7 +5,7 @@ const locale: LinkLocale = {
   link: {
     link: 'Link',
     linkPlaceholder: 'Paste or enter a link',
-    text: 'text',
+    text: 'Text',
     textPlaceholder: 'Enter content description',
     ok: 'OK',
     cancelLink: 'Cancel link',

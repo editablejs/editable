@@ -674,7 +674,7 @@ export const UnLinkIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props =
   )
 }
 
-const ICON_LIST = {
+export const IconMap = {
   bold: BoldIcon,
   italic: ItalicIcon,
   underline: UnderlineIcon,
@@ -716,14 +716,18 @@ const ICON_LIST = {
   unLink: UnLinkIcon,
 }
 
-const IconStyles = tw.span`overflow-hidden inline-flex
+export type IconName = keyof typeof IconMap
+
+const IconStyles = tw.span`overflow-hidden
   [> svg]:align-middle
   `
 
-export const Icon: React.FC<
-  React.HTMLAttributes<SVGSVGElement> & Record<'name', keyof typeof ICON_LIST>
-> = ({ name, className, ...props }) => {
-  const IconComponent = ICON_LIST[name]
+export const Icon: React.FC<React.HTMLAttributes<SVGSVGElement> & Record<'name', IconName>> = ({
+  name,
+  className,
+  ...props
+}) => {
+  const IconComponent = IconMap[name]
 
   return (
     <IconStyles className={className}>

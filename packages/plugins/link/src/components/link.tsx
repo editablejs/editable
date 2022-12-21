@@ -9,19 +9,25 @@ import {
   useLocale,
   useNodeSelected,
 } from '@editablejs/editor'
-import { Popover, PopoverContent, PopoverPortal, PopoverTrigger, Icon } from '@editablejs/plugin-ui'
+import {
+  Popover,
+  PopoverContent,
+  PopoverPortal,
+  PopoverTrigger,
+  Icon,
+  Button,
+} from '@editablejs/plugin-ui'
 import React, { forwardRef, useState } from 'react'
 import tw from 'twin.macro'
 import { LinkEditor } from '../editor'
 import { Link } from '../interfaces/link'
 import { LinkLocale } from '../locale'
+import { StyledInput } from './styled'
 
 export interface LinkComponentProps extends ElementAttributes {
   editor: LinkEditor
   element: Link
 }
-
-const StyledInput = tw.input`border-gray-300 border rounded px-1 outline-0 min-w-[280px] hover:border-gray-300 hover:border focus:border-gray-300 focus:border`
 
 export const LinkComponent = forwardRef<
   HTMLAnchorElement,
@@ -85,7 +91,7 @@ export const LinkComponent = forwardRef<
       <PopoverPortal>
         <PopoverContent align="start">
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
-            <div tw="flex gap-2 mb-2">
+            <div tw="flex gap-2 mb-2 items-center">
               <label>{locale.text}</label>
               <StyledInput
                 value={text}
@@ -94,7 +100,7 @@ export const LinkComponent = forwardRef<
                 placeholder={locale.textPlaceholder}
               />
             </div>
-            <div tw="flex gap-2 mb-2">
+            <div tw="flex gap-2 mb-2 items-center">
               <label>{locale.link}</label>
               <StyledInput
                 value={url}
@@ -104,11 +110,12 @@ export const LinkComponent = forwardRef<
               />
             </div>
             <div tw="flex justify-end gap-2">
-              <button onClick={handleCancel}>
-                <Icon name="unLink" />
+              <Button icon={<Icon name="unLink" />} type="text" onClick={handleCancel}>
                 {locale.cancelLink}
-              </button>
-              <button onClick={handleOk}>{locale.ok}</button>
+              </Button>
+              <Button onClick={handleOk} type="primary">
+                {locale.ok}
+              </Button>
             </div>
           </div>
         </PopoverContent>

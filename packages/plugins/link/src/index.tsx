@@ -37,6 +37,7 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
   }
 
   newEditor.openLink = () => {
+    if (!newEditor.selection) return
     Slot.update(editor, { active: false })
     LinkStore.open(newEditor)
   }
