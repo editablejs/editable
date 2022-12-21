@@ -62,7 +62,7 @@ pnpm dev
 - [ ] BackgroundColor
 - [x] Redo
 - [x] Undo
-- [ ] Link
+- [x] Link
 - [ ] Image
 - [ ] Codeblock
 - [x] Heading
