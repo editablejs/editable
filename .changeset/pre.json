@@ -18,12 +18,14 @@
     "@editablejs/plugin-ui": "0.0.0",
     "@editablejs/plugin-yjs": "0.0.0",
     "@editablejs/plugin-yjs-transform": "0.0.0",
-    "@editablejs/plugin-link": "0.0.0"
+    "@editablejs/plugin-link": "0.0.0",
+    "@editablejs/plugin-image": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
     "brown-eyes-matter",
     "clever-drinks-burn",
+    "dull-pandas-accept",
     "flat-jobs-yell",
     "flat-mangos-yell",
     "friendly-coins-arrive",
