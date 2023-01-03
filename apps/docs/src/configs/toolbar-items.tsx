@@ -14,6 +14,7 @@ import {
   UI,
   LinkEditor,
   ImageEditor,
+  HrEditor,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
 
@@ -172,6 +173,14 @@ export const createToolbarItems = (editor: Editable) => {
         TableEditor.toggle(editor)
       },
       icon: <Icon name="table" />,
+    },
+    {
+      type: 'button',
+      active: HrEditor.isActive(editor),
+      onToggle: editor => {
+        HrEditor.insert(editor)
+      },
+      icon: <Icon name="hr" />,
     },
   )
 

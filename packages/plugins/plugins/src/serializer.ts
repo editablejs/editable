@@ -21,6 +21,7 @@ import {
 } from '@editablejs/plugin-table/serializer'
 import { withLinkHTMLTransform } from '@editablejs/plugin-link/serializer'
 import { withImageHTMLTransform } from '@editablejs/plugin-image/serializer'
+import { withHrHTMLTransform } from '@editablejs/plugin-hr/serializer'
 
 export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withTableHTMLTransform, {})
@@ -36,6 +37,7 @@ export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withIndentHTMLTransform, {})
   HTMLSerializer.with(withLinkHTMLTransform, {})
   HTMLSerializer.with(withImageHTMLTransform, {})
+  HTMLSerializer.with(withHrHTMLTransform, {})
 }
 
 export const withTextSerializer = (editor: Editable) => {

@@ -19,6 +19,7 @@ import {
 import { TableOptions, TableEditor, withTable } from '@editablejs/plugin-table'
 import { LinkOptions, LinkEditor, withLink } from '@editablejs/plugin-link'
 import { ImageOptions, ImageEditor, withImage } from '@editablejs/plugin-image'
+import { HrOptions, HrEditor, withHr } from '@editablejs/plugin-hr'
 import {
   ContextMenuEditor,
   ContextMenuOptions,
@@ -38,6 +39,7 @@ export interface PluginOptions {
   table?: TableOptions
   link?: LinkOptions
   image?: ImageOptions
+  hr?: HrOptions
 }
 
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
@@ -53,6 +55,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withTable(newEditor, options.table)
   newEditor = withLink(newEditor, options.link)
   newEditor = withImage(newEditor, options.image)
+  newEditor = withHr(newEditor, options.hr)
   return newEditor as T &
     ContextMenuEditor &
     MarkEditor &
@@ -65,7 +68,8 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     TaskListEditor &
     TableEditor &
     LinkEditor &
-    ImageEditor
+    ImageEditor &
+    HrEditor
 }
 
 export * from '@editablejs/plugin-mark'
@@ -79,4 +83,5 @@ export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
 export * from '@editablejs/plugin-link'
 export * from '@editablejs/plugin-image'
+export * from '@editablejs/plugin-hr'
 export { UI }

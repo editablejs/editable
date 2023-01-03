@@ -534,6 +534,49 @@ importers:
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
+  packages/plugins/hr:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@editablejs/plugin-ui': workspace:*
+      '@types/react': ^17.x
+      '@types/react-dom': ^17.x
+      '@types/styled-components': 5.1.26
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      react: ^17.x
+      react-dom: ^17.x
+      styled-components: 5.3.5
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      twin.macro: 3.0.1
+      typescript: latest
+    dependencies:
+      '@editablejs/plugin-ui': link:../ui
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/react': 17.0.47
+      '@types/react-dom': 17.0.17
+      '@types/styled-components': 5.1.26
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.0.1_tailwindcss@3.2.4
+      typescript: 4.9.4
+
   packages/plugins/image:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -762,6 +805,7 @@ importers:
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-fontsize': workspace:*
       '@editablejs/plugin-heading': workspace:*
+      '@editablejs/plugin-hr': workspace:1.0.0-beta.0
       '@editablejs/plugin-image': workspace:*
       '@editablejs/plugin-indent': workspace:*
       '@editablejs/plugin-link': workspace:*
@@ -787,6 +831,7 @@ importers:
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-fontsize': link:../fontsize
       '@editablejs/plugin-heading': link:../heading
+      '@editablejs/plugin-hr': link:../hr
       '@editablejs/plugin-image': link:../image
       '@editablejs/plugin-indent': link:../indent
       '@editablejs/plugin-link': link:../link

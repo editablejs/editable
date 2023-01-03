@@ -100,13 +100,15 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
     }
 
     const url = file instanceof File ? URL.createObjectURL(file) : file
+    editor.normalizeSelection(selection => {
+      if (editor.selection !== selection) editor.selection = selection
+      const path = insertImage(editor, {
+        url,
+        state: 'uploading',
+      })
 
-    const path = insertImage(editor, {
-      url,
-      state: 'uploading',
+      return uploadImage(editor, path, file)
     })
-
-    return uploadImage(editor, path, file)
   }
 
   newEditor.rotateImage = (rotate, image) => {

@@ -49,6 +49,7 @@ import { ExternalLink } from 'components/external-link'
 import { IconGitHub } from 'components/icon/github'
 import Image from 'next/image'
 import { IconLogo } from 'components/icon/logo'
+import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 
 const { Switch, SwitchThumb, Icon, Tooltip } = UI
 
@@ -225,7 +226,7 @@ export default function Playground() {
   }, editor)
 
   useInlineToolbarEffect(() => {
-    ToolbarStore.setInlineItems(editor, createToolbarItems(editor))
+    ToolbarStore.setInlineItems(editor, createInlineToolbarItems(editor))
   }, editor)
 
   useSideToolbarMenuEffect((...a) => {

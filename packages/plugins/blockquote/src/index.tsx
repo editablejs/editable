@@ -3,7 +3,7 @@ import { BLOCKQUOTE_KEY } from './constants'
 
 type BlockquoteHotkey = string | ((e: KeyboardEvent) => boolean)
 
-const defaultHotkey: BlockquoteHotkey = 'mod+shift+e'
+const defaultHotkey: BlockquoteHotkey = 'mod+shift+u'
 
 export interface BlockquoteOptions {
   hotkey?: BlockquoteHotkey

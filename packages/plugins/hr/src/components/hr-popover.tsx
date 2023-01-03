@@ -1,0 +1,135 @@
+import { useIsomorphicLayoutEffect, useLocale, useNodeFocused } from '@editablejs/editor'
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Toolbar,
+  ToolbarDropdown,
+  Tooltip,
+} from '@editablejs/plugin-ui'
+import { FC, useState } from 'react'
+import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH } from '../constants'
+import { HrEditor } from '../editor'
+import { Hr, HrStyle } from '../interfaces/hr'
+import { HrLocale } from '../locale/types'
+import { StyleIcon, ThicknessIcon } from './icons'
+
+export interface HrPopoverProps {
+  editor: HrEditor
+  element: Hr
+}
+
+export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => {
+  const focused = useNodeFocused()
+
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
+  const handlePopoverOpenChange = (open: boolean) => {
+    if (focused) {
+      setPopoverOpen(true)
+    } else {
+      setPopoverOpen(open)
+    }
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    setPopoverOpen(focused)
+  }, [focused])
+
+  const { toolbar } = useLocale<HrLocale>('hr')
+
+  return (
+    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} actions={[]}>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
+        <Toolbar mode="inline">
+          <Tooltip content={toolbar.style} side="top" sideOffset={5} arrow={false}>
+            <ToolbarDropdown
+              onToggle={value => editor.setStyleHr(value as HrStyle, element)}
+              value={element.style || DEFAULT_HR_STYLE}
+              items={[
+                {
+                  value: 'dashed',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <div tw="border-t-2 border-dashed leading-[2px] w-16 border-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: 'solid',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <div tw="border-t-2 border-solid leading-[2px] w-16 border-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: 'dotted',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <div tw="border-t-2 border-dotted leading-[2px] w-16 border-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: 'double',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <div tw="border-t-2 border-double leading-[2px] w-16 border-black" />
+                    </div>
+                  ),
+                },
+              ]}
+            >
+              <Button type="text" icon={<StyleIcon />} />
+            </ToolbarDropdown>
+          </Tooltip>
+          <Tooltip content={toolbar.width} side="top" sideOffset={5} arrow={false}>
+            <ToolbarDropdown
+              onToggle={value => editor.setWidthHr(Number(value), element)}
+              value={String(element.width || DEFAULT_HR_WIDTH)}
+              items={[
+                {
+                  value: '1',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <hr tw="h-[1px] border-none leading-[1px] w-16 bg-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: '2',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <hr tw="h-[2px] border-none leading-[2px] w-16 bg-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: '4',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <hr tw="h-[4px] border-none leading-[4px] w-16 bg-black" />
+                    </div>
+                  ),
+                },
+                {
+                  value: '6',
+                  content: (
+                    <div tw="min-h-[24px] flex items-center">
+                      <hr tw="h-[6px] border-none leading-[6px] w-16 bg-black" />
+                    </div>
+                  ),
+                },
+              ]}
+            >
+              <Button type="text" icon={<ThicknessIcon />} />
+            </ToolbarDropdown>
+          </Tooltip>
+        </Toolbar>
+      </PopoverContent>
+    </Popover>
+  )
+}

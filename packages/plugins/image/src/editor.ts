@@ -46,4 +46,12 @@ export const ImageEditor = {
   insert: (editor: Editable, options: InsertImageOptions) => {
     if (ImageEditor.isImageEditor(editor)) editor.insertImage(options)
   },
+
+  rotate: (editor: Editable, rotate: number, image: Image) => {
+    if (ImageEditor.isImageEditor(editor)) editor.rotateImage(rotate, image)
+  },
+
+  setStyle: (editor: Editable, style: ImageStyle, image: Image) => {
+    if (ImageEditor.isImageEditor(editor)) editor.setStyleImage(style, image)
+  },
 }

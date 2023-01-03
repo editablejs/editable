@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugins",
-  "version": "1.0.0-beta.18",
+  "name": "@editablejs/plugin-hr",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -39,6 +39,11 @@
   "files": [
     "dist/**"
   ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "scripts": {
     "test": "jest",
     "build": "tsup",
@@ -51,34 +56,27 @@
     "@editablejs/editor": "workspace:*",
     "@types/react": "^17.x",
     "@types/react-dom": "^17.x",
+    "@types/styled-components": "5.1.26",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
     "react": "^17.x",
     "react-dom": "^17.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
+    "twin.macro": "3.0.1",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-blockquote": "workspace:*",
-    "@editablejs/plugin-context-menu": "workspace:*",
-    "@editablejs/plugin-fontsize": "workspace:*",
-    "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-hr": "workspace:1.0.0-beta.0",
-    "@editablejs/plugin-image": "workspace:*",
-    "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-link": "workspace:*",
-    "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*",
-    "@editablejs/plugin-toolbar": "workspace:*",
-    "@editablejs/plugin-ui": "workspace:*"
+    "@editablejs/plugin-ui": "workspace:*",
+    "styled-components": "5.3.5"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

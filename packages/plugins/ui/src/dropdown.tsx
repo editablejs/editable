@@ -36,8 +36,8 @@ type DropdownItem = DropdownItemProps | 'separator'
 
 const sizeCls = (size: DropdownSize = 'default') => [
   tw`py-1`,
-  size === 'small' && tw`py-0.5 pr-1 pl-3`,
-  size === 'large' && tw`py-2 pr-3 pl-9`,
+  size === 'small' && tw`py-0.5 pr-1 pl-4`,
+  size === 'large' && tw`py-2 pr-3 pl-10`,
 ]
 
 export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
@@ -86,7 +86,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
               key={value}
               value={value}
               css={[
-                tw`relative flex cursor-pointer items-center py-1 pl-6 pr-2 hover:bg-gray-100`,
+                tw`relative flex cursor-pointer items-center py-1 pl-7 pr-2 hover:bg-gray-100`,
                 sizeCls(size),
               ]}
               onSelect={e => handleSelect(e, value)}

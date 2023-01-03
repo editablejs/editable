@@ -13,12 +13,12 @@ export interface ImageOptions {
     update: (options: Record<'percentage', number>) => void,
   ) => Promise<string>
 }
-const LINK_OPTIONS = new WeakMap<Editable, ImageOptions>()
+const IMAGE_OPTIONS = new WeakMap<Editable, ImageOptions>()
 
 export const getOptions = (editor: Editable): ImageOptions => {
-  return LINK_OPTIONS.get(editor) ?? {}
+  return IMAGE_OPTIONS.get(editor) ?? {}
 }
 
 export const setOptions = (editor: Editable, options: ImageOptions) => {
-  LINK_OPTIONS.set(editor, options)
+  IMAGE_OPTIONS.set(editor, options)
 }
