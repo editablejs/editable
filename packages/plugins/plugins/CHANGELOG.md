@@ -1,5 +1,31 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.18
+
+### Patch Changes
+
+- [`f04726e`](https://github.com/editablejs/editable/commit/f04726eb0889c30f0ec4bd3482ef132cfdb679e6) Thanks [@big-camel](https://github.com/big-camel)! - - Add picture plugin
+  - The history plugin adds `captureHistory` which can be used to filter operations that do not need to be stored in the history stack
+  - Fixed an error in restoring the cursor after dragging
+  - `editor.pasteText` -> `editor.insertTextFromClipboard`
+  - `editor.paste` -> `editor.insertFromClipboard`
+  - Add `editor.insertFile` api
+  - Fixed `selection` drawing related to void nodes
+- Updated dependencies [[`f04726e`](https://github.com/editablejs/editable/commit/f04726eb0889c30f0ec4bd3482ef132cfdb679e6)]:
+  - @editablejs/editor@1.0.0-beta.13
+  - @editablejs/plugin-blockquote@1.0.0-beta.13
+  - @editablejs/plugin-context-menu@1.0.0-beta.18
+  - @editablejs/plugin-fontsize@1.0.0-beta.13
+  - @editablejs/plugin-heading@1.0.0-beta.13
+  - @editablejs/plugin-indent@1.0.0-beta.13
+  - @editablejs/plugin-link@1.0.0-beta.1
+  - @editablejs/plugin-list@1.0.0-beta.13
+  - @editablejs/plugin-mark@1.0.0-beta.13
+  - @editablejs/plugin-table@1.0.0-beta.17
+  - @editablejs/plugin-toolbar@1.0.0-beta.18
+  - @editablejs/plugin-ui@1.0.0-beta.11
+  - @editablejs/plugin-image@1.0.0-beta.1
+
 ## 1.0.0-beta.17
 
 ### Patch Changes
