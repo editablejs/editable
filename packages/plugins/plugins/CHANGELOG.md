@@ -1,5 +1,21 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.19
+
+### Patch Changes
+
+- [`4fcf386`](https://github.com/editablejs/editable/commit/4fcf3868109e5352ee6ee947ef12e6fe6dc27556) Thanks [@big-camel](https://github.com/big-camel)! - add hr plugin
+
+- Updated dependencies [[`4fcf386`](https://github.com/editablejs/editable/commit/4fcf3868109e5352ee6ee947ef12e6fe6dc27556)]:
+  - @editablejs/plugin-blockquote@1.0.0-beta.14
+  - @editablejs/plugin-image@1.0.0-beta.2
+  - @editablejs/plugin-ui@1.0.0-beta.12
+  - @editablejs/plugin-context-menu@1.0.0-beta.19
+  - @editablejs/plugin-hr@1.0.0-beta.1
+  - @editablejs/plugin-link@1.0.0-beta.2
+  - @editablejs/plugin-table@1.0.0-beta.18
+  - @editablejs/plugin-toolbar@1.0.0-beta.19
+
 ## 1.0.0-beta.18
 
 ### Patch Changes
