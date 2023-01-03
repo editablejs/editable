@@ -69,7 +69,7 @@ plugin directory
 - [ ] Codeblock
 - [x] Heading
 - [x] Table
-- [ ] Hr
+- [x] Hr
 - [x] Toolbar
 - [x] Yjs
 - [x] Serializes
