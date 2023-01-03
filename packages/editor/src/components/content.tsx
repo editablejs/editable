@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Editor, Node, Range, Transforms, Point } from 'slate'
+import { Editor, Node, Range, Transforms, Point, Path, Element } from 'slate'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
@@ -7,7 +7,7 @@ import { useEditable, useEditableStatic } from '../hooks/use-editable'
 import { Editable } from '../plugin/editable'
 import { useReadOnly } from '../hooks/use-read-only'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { DOMNode, DOMRange, getDefaultView } from '../utils/dom'
+import { DOMNode, DOMRange, getDefaultView, isDOMNode } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
@@ -208,17 +208,39 @@ export const ContentEditable = (props: EditableProps) => {
               })
             }
           } else {
+            const deleteAfterRange = Editor.rangeRef(editor, Editor.range(editor, point))
             Transforms.delete(editor, {
               at: from,
               unit: 'line',
               hanging: true,
             })
-            Transforms.select(editor, point)
+            const anchorRange = deleteAfterRange.unref()
+            Transforms.select(editor, anchorRange ?? point)
             Transforms.insertFragment(editor, fragment)
             const focus = editor.selection?.focus
-            if (focus) {
+            if (anchorRange && focus) {
+              let anchor = anchorRange.anchor
+              const anchorElement = Editor.above(editor, {
+                at: anchorRange,
+                match: node => Element.isElement(node),
+                voids: true,
+              })
+
+              const nextPath = Path.next(anchor.path)
+
+              if (anchorElement && Editor.hasPath(editor, nextPath)) {
+                const nextRange = Editor.range(editor, nextPath)
+                const element = Editor.above(editor, {
+                  at: nextRange,
+                  match: node => Element.isElement(node),
+                  voids: true,
+                })
+                if (element && anchorElement[0] !== element[0]) {
+                  anchor = nextRange.anchor
+                }
+              }
               Transforms.select(editor, {
-                anchor: point,
+                anchor,
                 focus,
               })
             }
@@ -308,10 +330,11 @@ export const ContentEditable = (props: EditableProps) => {
         } else if (
           selection &&
           focused &&
-          Range.isExpanded(selection) &&
           Range.includes(selection, point) &&
-          !Point.equals(Range.end(selection), point) &&
-          !Point.equals(Range.start(selection), point)
+          ((!Point.equals(Range.end(selection), point) &&
+            !Point.equals(Range.start(selection), point)) ||
+            (Range.isCollapsed(selection) &&
+              !!Editor.above(editor, { match: n => Editor.isVoid(editor, n) })))
         ) {
           const dataTransfer = new DataTransfer()
           setDataTransfer(dataTransfer, {
@@ -340,15 +363,17 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const isDoubleClickRef = React.useRef(false)
-
+  const isDoubleClickTimerRef = React.useRef<number>()
   const { handleMultipleClick, isSamePoint } = useMultipleClick({
     onClick: () => {
       isDoubleClickRef.current = false
     },
     onMultipleClick: (event, count) => {
-      event.preventDefault()
       const { selection } = editor
-      if (!selection) return
+      if (!selection || event.defaultPrevented) return
+      event.preventDefault()
+      const container = Editable.toDOMNode(editor, editor)
+      if (isDOMNode(event.target) && !container.contains(event.target)) return
       const { focus } = selection
       const { path: focusPath } = focus
       const focusNode = Node.get(editor, focusPath)
@@ -365,7 +390,8 @@ export const ContentEditable = (props: EditableProps) => {
           })
           editor.onSelectEnd()
           isDoubleClickRef.current = true
-          setTimeout(() => {
+          if (isDoubleClickTimerRef.current) clearTimeout(isDoubleClickTimerRef.current)
+          isDoubleClickTimerRef.current = setTimeout(() => {
             isDoubleClickRef.current = false
           }, 500)
           return
@@ -469,7 +495,7 @@ export const ContentEditable = (props: EditableProps) => {
       }
       if (!dragging) {
         setDrag({
-          type: 'block',
+          type: 'text',
           from: dragRange,
           data: event.dataTransfer,
         })

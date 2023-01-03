@@ -44,7 +44,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --fix",
-    "format": "prettier --write",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
@@ -60,7 +60,7 @@
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
-    "typescript": "^4.5.3"
+    "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
@@ -70,7 +70,7 @@
     "@editablejs/plugin-context-menu": "workspace:*",
     "@editablejs/plugin-fontsize": "workspace:*",
     "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-history": "workspace:*",
+    "@editablejs/plugin-image": "workspace:*",
     "@editablejs/plugin-indent": "workspace:*",
     "@editablejs/plugin-link": "workspace:*",
     "@editablejs/plugin-list": "workspace:*",

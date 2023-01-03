@@ -1,4 +1,13 @@
-import { Editable, Editor, Hotkey, Operation, Path, Transforms } from '@editablejs/editor'
+import {
+  Editable,
+  Editor,
+  Hotkey,
+  InsertNodeOperation,
+  Operation,
+  Path,
+  Node,
+  Transforms,
+} from '@editablejs/editor'
 
 import { HistoryEditor } from './history-editor'
 
@@ -80,6 +89,10 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     return e.history.undos.length > 0
   }
 
+  e.captureHistory = op => {
+    return op.type !== 'set_selection'
+  }
+
   e.apply = (op: Operation) => {
     const { operations, history } = e
     const { undos } = history
@@ -89,7 +102,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     let merge = HistoryEditor.isMerging(e)
 
     if (save == null) {
-      save = shouldSave(op, lastOp)
+      save = e.captureHistory(op)
     }
     if (save && !Editable.isComposing(e)) {
       if (merge == null) {
@@ -103,10 +116,10 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       }
 
       if (lastBatch && merge) {
-        lastBatch.operations.push(op)
+        lastBatch.operations.push({ ...op })
       } else {
         const batch = {
-          operations: [op],
+          operations: [{ ...op }],
           selectionBefore: e.selection,
         }
         undos.push(batch)
@@ -117,6 +130,22 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       }
 
       history.redos = []
+    } else if (!save && op.type === 'set_node') {
+      const { path, newProperties } = op
+      for (const undo of undos) {
+        const predicate = (op: Operation): op is InsertNodeOperation =>
+          op.type === 'insert_node' && Path.equals(op.path, path)
+        const op: InsertNodeOperation | undefined = undo.operations.find(predicate)
+        if (op) {
+          for (const k in newProperties) {
+            if (k === 'children' || k === 'type') continue
+            const v = newProperties[k as keyof Node]
+            const node = { ...op.node, [k]: v }
+            op.node = node
+          }
+          break
+        }
+      }
     }
 
     apply(op)
@@ -177,16 +206,4 @@ const shouldMerge = (op: Operation, prev: Operation | undefined): boolean => {
   }
 
   return false
-}
-
-/**
- * Check whether an operation needs to be saved to the history.
- */
-
-const shouldSave = (op: Operation, prev: Operation | undefined): boolean => {
-  if (op.type === 'set_selection') {
-    return false
-  }
-
-  return true
 }

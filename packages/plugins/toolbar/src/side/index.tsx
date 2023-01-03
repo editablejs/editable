@@ -172,7 +172,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
     setTooltipDefaultOpen(false)
     capturedDataRef.current = null
     showingRef.current = false
-  }, [dragging, setMenuOpen])
+  }, [editor, dragging, setMenuOpen])
 
   React.useEffect(() => {
     if (!menuOpen) {
@@ -544,14 +544,7 @@ const SideToolbar: React.FC<SideToolbar> = ({
   if (dragging || menuOpen || !visible) return renderBtn()
 
   return (
-    <Tooltip
-      content={renderTooltipContent()}
-      mouseLeaveDelay={0}
-      mouseEnterDelay={0}
-      mouseEnterStay={false}
-      defaultOpen={tooltipDefaultOpen}
-      side="top"
-    >
+    <Tooltip content={renderTooltipContent()} defaultOpen={tooltipDefaultOpen} side="top">
       {renderBtn()}
     </Tooltip>
   )

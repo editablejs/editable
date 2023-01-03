@@ -1,6 +1,5 @@
 import { Editable } from '@editablejs/editor'
 import * as UI from '@editablejs/plugin-ui'
-import { HistoryEditor, HistoryOptions, withHistory } from '@editablejs/plugin-history'
 import { MarkEditor, MarkOptions, withMark } from '@editablejs/plugin-mark'
 import { FontSizeEditor, FontSizeOptions, withFontSize } from '@editablejs/plugin-fontsize'
 import { HeadingEditor, HeadingOptions, withHeading } from '@editablejs/plugin-heading'
@@ -19,6 +18,7 @@ import {
 } from '@editablejs/plugin-list'
 import { TableOptions, TableEditor, withTable } from '@editablejs/plugin-table'
 import { LinkOptions, LinkEditor, withLink } from '@editablejs/plugin-link'
+import { ImageOptions, ImageEditor, withImage } from '@editablejs/plugin-image'
 import {
   ContextMenuEditor,
   ContextMenuOptions,
@@ -26,7 +26,6 @@ import {
 } from '@editablejs/plugin-context-menu'
 
 export interface PluginOptions {
-  history?: HistoryOptions
   contextMenu?: ContextMenuOptions
   mark?: MarkOptions
   fontSize?: FontSizeOptions
@@ -38,11 +37,11 @@ export interface PluginOptions {
   indent?: IndentOptions
   table?: TableOptions
   link?: LinkOptions
+  image?: ImageOptions
 }
 
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
   let newEditor = withContextMenu(editor)
-  newEditor = withHistory(newEditor, options.history)
   newEditor = withIndent(newEditor, options.indent)
   newEditor = withMark(newEditor, options.mark)
   newEditor = withFontSize(newEditor, options.fontSize)
@@ -53,8 +52,8 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withTaskList(newEditor, options.taskList)
   newEditor = withTable(newEditor, options.table)
   newEditor = withLink(newEditor, options.link)
+  newEditor = withImage(newEditor, options.image)
   return newEditor as T &
-    HistoryEditor &
     ContextMenuEditor &
     MarkEditor &
     HeadingEditor &
@@ -65,10 +64,10 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     UnOrderedListEditor &
     TaskListEditor &
     TableEditor &
-    LinkEditor
+    LinkEditor &
+    ImageEditor
 }
 
-export * from '@editablejs/plugin-history'
 export * from '@editablejs/plugin-mark'
 export * from '@editablejs/plugin-fontsize'
 export * from '@editablejs/plugin-heading'
@@ -79,4 +78,5 @@ export * from '@editablejs/plugin-table'
 export * from '@editablejs/plugin-toolbar'
 export * from '@editablejs/plugin-context-menu'
 export * from '@editablejs/plugin-link'
+export * from '@editablejs/plugin-image'
 export { UI }

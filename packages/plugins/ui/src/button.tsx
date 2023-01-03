@@ -9,7 +9,7 @@ export interface Button {
   type?: 'primary' | 'default' | 'text'
   icon?: React.ReactNode
   shape?: 'circle' | 'round'
-  size?: 'small' | 'medium' | 'large'
+  size?: 'small' | 'default' | 'large'
 }
 
 const StyledButton = styled.button(
@@ -17,7 +17,7 @@ const StyledButton = styled.button(
     _type,
     disabled,
     shape,
-    size = 'medium',
+    size = 'default',
   }: Omit<Button, 'type'> & Record<'_type', ButtonType>) => [
     _type === 'default' &&
       tw`border border-primary text-primary font-medium rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out`,
@@ -25,11 +25,12 @@ const StyledButton = styled.button(
       tw`border border-primary bg-primary text-white font-medium rounded shadow hover:bg-blue-700 hover:border-blue-700 hover:shadow-md focus:bg-blue-700 focus:shadow-md focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-md transition duration-150 ease-in-out`,
     _type === 'text' &&
       tw`border border-transparent bg-transparent font-medium rounded hover:text-primary hover:bg-gray-100 hover:border-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-0 active:bg-gray-200 transition duration-150 ease-in-out`,
-    disabled && tw`opacity-60 cursor-not-allowed hover:text-white`,
+    disabled && tw`opacity-60 cursor-not-allowed hover:text-current`,
+    disabled && _type === 'primary' && tw`hover:text-white`,
     shape === 'circle' && tw`rounded-full`,
     size === 'large' && tw`px-7 py-1.5 text-lg`,
-    size === 'small' && tw`px-4 py-0.5 text-xs`,
-    size === 'medium' && tw`px-6 py-1 text-base`,
+    size === 'small' && tw`px-4 py-0.5 text-sm`,
+    size === 'default' && tw`px-6 py-1 text-base`,
   ],
 )
 

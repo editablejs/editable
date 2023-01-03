@@ -68,7 +68,7 @@ export const HTMLDeserializer = {
     const fns = HTML_DESERIALIZER_TRANSFORMS.get(editor) ?? []
     fns.push({
       transform: transform as HTMLDeserializerWithTransform,
-      options,
+      options: options as HTMLDeserializerOptions,
     })
     HTML_DESERIALIZER_TRANSFORMS.set(editor, fns)
   },

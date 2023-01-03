@@ -1,6 +1,7 @@
+import React from 'react'
 import { useSlotComponents } from '../hooks/use-slot'
 
-export const Slots = () => {
+export const Slots = React.memo(() => {
   const slots = useSlotComponents()
   return (
     <>
@@ -9,4 +10,5 @@ export const Slots = () => {
       ))}
     </>
   )
-}
+})
+Slots.displayName = 'Slots'

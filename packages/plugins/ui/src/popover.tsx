@@ -1,17 +1,13 @@
 import * as React from 'react'
 import { Popper, PopperAnchor, PopperArrow, PopperContent } from './popper'
-import { useControllableState } from './hooks/use-controllable-state'
 import { useId } from './hooks/use-id'
 import { useComposedRefs } from './compose-refs'
 import { composeEventHandlers } from './utils'
 import { Portal } from './portal'
 import { Presence } from './presence'
 import { DismissableLayer } from './dismissable-layer'
-
-function excludeTouch<E>(eventHandler: () => void) {
-  return (event: React.PointerEvent<E>) =>
-    event.pointerType === 'touch' ? undefined : eventHandler()
-}
+import { Root } from './root'
+import { PointerOpenOptions, usePointerOpen } from './hooks/use-pointer-open'
 
 /* -------------------------------------------------------------------------------------------------
  * Popover
@@ -20,103 +16,50 @@ function excludeTouch<E>(eventHandler: () => void) {
 const POPOVER_NAME = 'Popover'
 
 type PopoverContextValue = {
-  triggerRef: React.RefObject<HTMLButtonElement>
+  trigger: HTMLButtonElement | null
+  onTriggerChange(trigger: HTMLButtonElement | null): void
+  onContentChange(trigger: HTMLDivElement | null): void
   contentId: string
   open: boolean
-  onOpenChange(open: boolean): void
-  onOpenToggle(): void
+  onOpenChange: (open: boolean) => void
   hasCustomAnchor: boolean
   onCustomAnchorAdd(): void
   onCustomAnchorRemove(): void
-  onOpen(): void
-  onClose(): void
   onDismiss(): void
-  hasSelectionRef: React.MutableRefObject<boolean>
-  isPointerDownOnContentRef: React.MutableRefObject<boolean>
 }
 
 const PopoverContenxt = React.createContext<PopoverContextValue>({} as any)
 const usePopoverContext = () => React.useContext(PopoverContenxt)
-
-type PopoverTrigger = 'click' | 'hover' | 'none'
-
-interface PopoverProps {
+interface PopoverProps extends Omit<PointerOpenOptions, 'trigger' | 'content'> {
   children?: React.ReactNode
-  open?: boolean
-  defaultOpen?: boolean
-  onOpenChange?: (open: boolean) => void
-  openDelay?: number
-  closeDelay?: number
-  trigger?: PopoverTrigger
 }
 
 const Popover: React.FC<PopoverProps> = (props: PopoverProps) => {
-  const {
-    children,
-    open: openProp,
-    defaultOpen,
-    onOpenChange,
-    openDelay,
-    closeDelay,
-    trigger,
-  } = props
-  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const { children, open: openProp, ...options } = props
+  const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null)
+  const [content, setContent] = React.useState<HTMLDivElement | null>(null)
   const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false)
-  const [open = false, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
+  const [open = false, setOpen] = usePointerOpen({
+    open: openProp,
+    trigger,
+    content,
+    ...options,
   })
-
-  const openTimerRef = React.useRef(0)
-  const closeTimerRef = React.useRef(0)
-  const hasSelectionRef = React.useRef(false)
-  const isPointerDownOnContentRef = React.useRef(false)
-
-  const disableTrigger = (t: PopoverTrigger) => {
-    if (trigger === undefined) return false
-    if (trigger === 'none') return true
-    return t !== trigger
-  }
-
-  const handleOpen = React.useCallback(() => {
-    if (disableTrigger('hover')) return
-    clearTimeout(closeTimerRef.current)
-    openTimerRef.current = window.setTimeout(() => setOpen(true), openDelay)
-  }, [openDelay, setOpen])
-
-  const handleClose = React.useCallback(() => {
-    if (disableTrigger('hover')) return
-    clearTimeout(openTimerRef.current)
-    if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) {
-      closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay)
-    }
-  }, [closeDelay, setOpen])
-
-  const handleDismiss = React.useCallback(() => setOpen(false), [setOpen])
-
-  const handleToggle = React.useCallback(() => {
-    if (disableTrigger('click')) return
-    setOpen(prevOpen => !prevOpen)
-  }, [setOpen])
 
   return (
     <Popper>
       <PopoverContenxt.Provider
         value={{
           contentId: useId(),
-          triggerRef: triggerRef,
+          trigger,
+          onTriggerChange: setTrigger,
+          onContentChange: setContent,
           open,
           onOpenChange: setOpen,
-          onOpenToggle: handleToggle,
           hasCustomAnchor,
           onCustomAnchorAdd: React.useCallback(() => setHasCustomAnchor(true), []),
           onCustomAnchorRemove: React.useCallback(() => setHasCustomAnchor(false), []),
-          onOpen: handleOpen,
-          onClose: handleClose,
-          onDismiss: handleDismiss,
-          hasSelectionRef: hasSelectionRef,
-          isPointerDownOnContentRef: isPointerDownOnContentRef,
+          onDismiss: React.useCallback(() => setOpen(false), [setOpen]),
         }}
       >
         {children}
@@ -159,18 +102,20 @@ PopoverAnchor.displayName = ANCHOR_NAME
 
 const TRIGGER_NAME = 'PopoverTrigger'
 
-type PopoverTriggerElement = React.ElementRef<'button'>
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>
-interface PopoverTriggerProps extends PrimitiveButtonProps {}
+type PopoverTriggerElement = React.ElementRef<typeof Root.button>
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Root.button>
+interface PopoverTriggerProps extends PrimitiveButtonProps {
+  asChild?: boolean
+}
 
 const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerProps>(
   (props: PopoverTriggerProps, forwardedRef) => {
     const { ...triggerProps } = props
     const context = usePopoverContext()
-    const composedTriggerRef = useComposedRefs(forwardedRef, context.triggerRef)
+    const composedTriggerRef = useComposedRefs(forwardedRef, context.onTriggerChange)
 
     const trigger = (
-      <button
+      <Root.button
         type="button"
         aria-haspopup="dialog"
         aria-expanded={context.open}
@@ -178,10 +123,6 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
         data-state={getState(context.open)}
         {...triggerProps}
         ref={composedTriggerRef}
-        onClick={composeEventHandlers(props.onClick, context.onOpenToggle)}
-        onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
-        onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
-        onTouchStart={composeEventHandlers(props.onTouchStart, event => event.preventDefault())}
       />
     )
 
@@ -246,12 +187,7 @@ const PopoverContent = React.forwardRef<PopoverContentTypeElement, PopoverConten
     const context = usePopoverContext()
     return (
       <Presence present={forceMount || context.open}>
-        <PopoverContentNonModal
-          {...contentProps}
-          ref={forwardedRef}
-          onPointerEnter={composeEventHandlers(props.onPointerEnter, excludeTouch(context.onOpen))}
-          onPointerLeave={composeEventHandlers(props.onPointerLeave, excludeTouch(context.onClose))}
-        />
+        <PopoverContentNonModal {...contentProps} ref={forwardedRef} />
       </Presence>
     )
   },
@@ -287,7 +223,7 @@ const PopoverContentNonModal = React.forwardRef<PopoverContentTypeElement, Popov
           // We use `onInteractOutside` as some browsers also
           // focus on pointer down, creating the same issue.
           const target = event.target as HTMLElement
-          const targetIsTrigger = context.triggerRef.current?.contains(target)
+          const targetIsTrigger = context.trigger?.contains(target)
           if (targetIsTrigger) event.preventDefault()
         }}
       />
@@ -317,28 +253,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
     } = props
     const context = usePopoverContext()
 
-    const ref = React.useRef<PopoverContentImplElement>(null)
-    const composedRefs = useComposedRefs(forwardedRef, ref)
-    React.useEffect(() => {
-      if (ref.current) {
-        const handlePointerUp = () => {
-          context.isPointerDownOnContentRef.current = false
-
-          // Delay a frame to ensure we always access the latest selection
-          setTimeout(() => {
-            const hasSelection = document.getSelection()?.toString() !== ''
-            if (hasSelection) context.hasSelectionRef.current = true
-          })
-        }
-
-        document.addEventListener('pointerup', handlePointerUp)
-        return () => {
-          document.removeEventListener('pointerup', handlePointerUp)
-          context.hasSelectionRef.current = false
-          context.isPointerDownOnContentRef.current = false
-        }
-      }
-    }, [context.isPointerDownOnContentRef, context.hasSelectionRef])
+    const composedRefs = useComposedRefs(forwardedRef, context.onContentChange)
 
     return (
       <DismissableLayer
@@ -356,10 +271,6 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
           role="dialog"
           id={context.contentId}
           {...contentProps}
-          onPointerDown={composeEventHandlers(contentProps.onPointerDown, event => {
-            context.hasSelectionRef.current = false
-            context.isPointerDownOnContentRef.current = true
-          })}
           ref={composedRefs}
           style={{
             ...contentProps.style,
@@ -378,7 +289,7 @@ PopoverContentImpl.displayName = 'PopoverContentImpl'
 
 const CLOSE_NAME = 'PopoverClose'
 
-type PopoverCloseElement = React.ElementRef<'button'>
+type PopoverCloseElement = React.ElementRef<typeof Root.button>
 interface PopoverCloseProps extends PrimitiveButtonProps {}
 
 const PopoverClose = React.forwardRef<PopoverCloseElement, PopoverCloseProps>(

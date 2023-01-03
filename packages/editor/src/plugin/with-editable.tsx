@@ -180,15 +180,15 @@ export const withEditable = <T extends Editor>(editor: T) => {
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
 
-    if (!Editable.isFocused(e)) {
-      e.focus()
-    }
-
     apply(op)
 
     for (const [path, key] of matches) {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
+    }
+
+    if (!Editable.isFocused(e)) {
+      e.focus()
     }
   }
 
@@ -291,7 +291,19 @@ export const withEditable = <T extends Editor>(editor: T) => {
   /**
    * Focus the editor.
    */
-  e.focus = (): void => {
+  e.focus = (start): void => {
+    if (!editor.selection) {
+      const path = Editable.findPath(e, e)
+      const point = start ? Editor.start(e, path) : Editor.end(e, path)
+      Transforms.select(e, point)
+    } else if (start === true) {
+      const path = Editable.findPath(e, e)
+      Transforms.select(e, Editor.start(e, path))
+    } else if (start === false) {
+      const path = Editable.findPath(e, e)
+      Transforms.select(e, Editor.start(e, path))
+    }
+
     const shadow = EDITOR_TO_SHADOW.get(editor)
     const textarea = EDITOR_TO_INPUT.get(editor)
     if (textarea && shadow && shadow.activeElement !== textarea) {
@@ -714,7 +726,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     const { clipboardData } = event
     if (!clipboardData) return
     event.preventDefault()
-    const { text, fragment, html } = parseDataTransfer(clipboardData)
+    const { text, fragment, html, files } = parseDataTransfer(clipboardData)
     if (!isPasteText && fragment.length > 0) {
       e.insertFragment(fragment)
     } else if (!isPasteText && html) {
@@ -735,6 +747,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
         })
         split = true
       }
+    }
+    for (const file of files) {
+      e.insertFile(file)
     }
     e.emit('paste', event)
   }
@@ -923,7 +938,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     e.onCut(event)
   }
 
-  e.paste = range => {
+  e.insertFromClipboard = range => {
     if (range) {
       Transforms.select(e, range)
     }
@@ -933,7 +948,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     })
   }
 
-  e.pasteText = range => {
+  e.insertTextFromClipboard = range => {
     if (range) {
       Transforms.select(e, range)
     }
@@ -942,6 +957,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
       const event = new ClipboardEvent('paste-text', { clipboardData: data })
       e.onPaste(event)
     })
+  }
+
+  e.insertFile = (_, range) => {
+    if (range) {
+      Transforms.select(e, range)
+    }
   }
 
   return e

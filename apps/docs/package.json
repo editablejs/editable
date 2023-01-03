@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -rf .next"
   },
   "babelMacros": {
@@ -25,6 +25,7 @@
     "@docsearch/css": "3.3.0",
     "@docsearch/react": "3.3.0",
     "@editablejs/editor": "workspace:*",
+    "@editablejs/plugin-history": "workspace:*",
     "@editablejs/plugin-yjs": "workspace:*",
     "@editablejs/plugins": "workspace:*",
     "@faker-js/faker": "7.5.0",
@@ -79,7 +80,7 @@
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "twin.macro": "3.0.1",
-    "typescript": "^4.5.3",
+    "typescript": "latest",
     "unist-util-visit": "^2.0.3"
   },
   "lint-staged": {

@@ -7,7 +7,8 @@ import { Element, Node, Text } from './types'
 export function yTextToSlateElement<T extends Element>(yText: Y.XmlText): T {
   const delta = yTextToInsertDelta(yText)
 
-  const children = delta.length > 0 ? delta.map(deltaInsertToSlateNode) : [{ text: '' }]
+  const children =
+    delta.length > 0 ? delta.map(deltaInsertToSlateNode) : yText.parent ? [{ text: '' }] : []
 
   return { ...yText.getAttributes(), children } as T
 }

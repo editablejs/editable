@@ -18,6 +18,7 @@ import { Measurable } from './observe-element-rect'
 import { useIsomorphicLayoutEffect } from './utils'
 import { Arrow } from './arrow'
 import { Slot } from './slot'
+import { Root } from './root'
 
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
 const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
@@ -71,8 +72,8 @@ Popper.displayName = POPPER_NAME
 
 const ANCHOR_NAME = 'PopperAnchor'
 
-type PopperAnchorElement = React.ElementRef<'div'>
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
+type PopperAnchorElement = React.ElementRef<typeof Root.div>
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
 
 interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable>
@@ -141,7 +142,7 @@ const usePositionContext = () => {
 
 type Boundary = Element | null
 
-type PopperContentElement = React.ElementRef<'div'>
+type PopperContentElement = React.ElementRef<typeof Root.div>
 interface PopperContentProps extends PrimitiveDivProps {
   strategy?: Strategy
   side?: Side
@@ -281,7 +282,7 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
     }
 
     return (
-      <div
+      <Root.div
         ref={floating}
         style={{
           position: strategy,
@@ -310,13 +311,13 @@ const PopperContent = React.forwardRef<PopperContentElement, PopperContentProps>
                 positionUpdateFns,
               }}
             >
-              <div {...commonProps} />
+              <Root.div {...commonProps} />
             </PositionContext.Provider>
           ) : (
-            <div {...commonProps} />
+            <Root.div {...commonProps} />
           )}
         </PopperContentContext.Provider>
-      </div>
+      </Root.div>
     )
   },
 )

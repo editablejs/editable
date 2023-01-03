@@ -1,23 +1,18 @@
 import * as React from 'react'
+import tw from 'twin.macro'
 import { DismissableLayer } from './dismissable-layer'
-import { PopperAnchor, PopperArrow, PopperContent, Popper } from './popper'
+import { usePointerOpen } from './hooks/use-pointer-open'
+import { PopperAnchor, PopperArrow, PopperContent, Popper, PopperContentProps } from './popper'
 import { Portal } from './portal'
 import { Presence } from './presence'
 
-const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
-const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
-
-type Side = typeof SIDE_OPTIONS[number]
-type Align = typeof ALIGN_OPTIONS[number]
-interface TooltipProps {
+export interface TooltipProps extends PopperContentProps {
   content: React.ReactNode
-  side?: Side
-  align?: Align
   arrow?: boolean
-  mouseEnterDelay?: number
-  mouseLeaveDelay?: number
-  mouseEnterStay?: boolean
   defaultOpen?: boolean
+  size?: 'small' | 'default' | 'large'
+  className?: string
+  arrowFill?: string
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
@@ -25,62 +20,43 @@ export const Tooltip: React.FC<TooltipProps> = ({
   side = 'bottom',
   align = 'center',
   arrow = true,
+  arrowFill,
   content,
-  mouseEnterDelay = 0,
-  mouseLeaveDelay = 0.1,
-  mouseEnterStay = false,
   defaultOpen = false,
+  size = 'default',
+  className,
+  ...props
 }) => {
-  const [open, setOpen] = React.useState(defaultOpen)
-  const delayTimer = React.useRef<number | null>(null)
+  const [trigger, setTrigger] = React.useState<HTMLDivElement | null>(null)
+  const [contentRef, setContent] = React.useState<HTMLDivElement | null>(null)
 
-  const clearDelayTimer = () => {
-    if (delayTimer.current) {
-      clearTimeout(delayTimer.current)
-      delayTimer.current = null
-    }
-  }
-
-  const delaySetOpen = (open: boolean, delayS: number) => {
-    const delay = delayS * 1000
-    clearDelayTimer()
-    if (delay) {
-      delayTimer.current = window.setTimeout(() => {
-        setOpen(open)
-        clearDelayTimer()
-      }, delay)
-    } else {
-      setOpen(open)
-    }
-  }
+  const [open = false, setOpen] = usePointerOpen({
+    trigger,
+    content: contentRef,
+    defaultOpen: defaultOpen,
+  })
 
   return (
     <Popper>
-      <PopperAnchor
-        onMouseEnter={() => delaySetOpen(true, mouseEnterDelay)}
-        onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
-        onMouseDown={() => {
-          delaySetOpen(true, 0)
-        }}
-      >
-        {children}
-      </PopperAnchor>
+      <PopperAnchor ref={setTrigger}>{children}</PopperAnchor>
       <Presence present={open}>
         <DismissableLayer onPointerDownOutside={() => setOpen(false)}>
           <Portal>
             <PopperContent
+              ref={setContent}
               side={side}
               align={align}
-              onMouseEnter={() =>
-                mouseEnterStay
-                  ? delaySetOpen(true, mouseEnterDelay)
-                  : delaySetOpen(false, mouseLeaveDelay)
-              }
-              onMouseLeave={() => delaySetOpen(false, mouseLeaveDelay)}
-              tw="text-white bg-black bg-opacity-80 text-center text-sm rounded px-3 py-2 z-50"
+              css={[
+                tw`text-white bg-black bg-opacity-80 text-center rounded z-50`,
+                size === 'large' && tw`px-3 py-1.5 text-lg`,
+                size === 'small' && tw`px-1 py-0.5 text-xs`,
+                size === 'default' && tw`px-2 py-1 text-base`,
+              ]}
+              className={className}
+              {...props}
             >
               {content}
-              {arrow && <PopperArrow />}
+              {arrow && <PopperArrow style={{ fill: arrowFill }} />}
             </PopperContent>
           </Portal>
         </DismissableLayer>

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Root } from './root'
 
 /* -------------------------------------------------------------------------------------------------
  * Arrow
@@ -6,14 +7,14 @@ import * as React from 'react'
 
 const NAME = 'Arrow'
 
-type ArrowElement = React.ElementRef<'svg'>
-type PrimitiveSvgProps = React.ComponentPropsWithoutRef<'svg'>
+type ArrowElement = React.ElementRef<typeof Root.svg>
+type PrimitiveSvgProps = React.ComponentPropsWithoutRef<typeof Root.svg>
 interface Arrow extends PrimitiveSvgProps {}
 
 const Arrow = React.forwardRef<ArrowElement, Arrow>((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props
   return (
-    <svg
+    <Root.svg
       {...arrowProps}
       ref={forwardedRef}
       width={width}
@@ -22,7 +23,7 @@ const Arrow = React.forwardRef<ArrowElement, Arrow>((props, forwardedRef) => {
       preserveAspectRatio="none"
     >
       {children || <polygon points="0,0 30,0 15,10" />}
-    </svg>
+    </Root.svg>
   )
 })
 

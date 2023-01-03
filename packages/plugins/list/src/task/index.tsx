@@ -60,9 +60,9 @@ interface RenderTaskElementProps extends RenderElementProps {
 const TaskCheckboxStyles = styled.span(() => [
   tw`relative m-0 p-0 list-none whitespace-nowrap cursor-pointer outline-none inline-block`,
   css`
-    top: 4px;
     width: 18px;
     height: 18px;
+    vertical-align: text-top;
   `,
 ])
 

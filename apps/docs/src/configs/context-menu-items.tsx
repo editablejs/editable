@@ -1,5 +1,5 @@
 import { Editable, Grid, Hotkey, Range } from '@editablejs/editor'
-import { ContextMenuItem, ContextMenuStore, UI } from '@editablejs/plugins'
+import { ContextMenuItem, UI } from '@editablejs/plugins'
 
 const { Icon } = UI
 
@@ -35,7 +35,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+v'),
       disabled: !selection,
       onSelect() {
-        editor.paste()
+        editor.insertFromClipboard()
       },
     },
     {
@@ -45,7 +45,7 @@ export const createContextMenuItems = (editor: Editable) => {
       rightText: Hotkey.format('mod+shift+v'),
       disabled: !selection,
       onSelect() {
-        editor.pasteText()
+        editor.insertTextFromClipboard()
       },
     },
   ]

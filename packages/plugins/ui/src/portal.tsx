@@ -1,5 +1,6 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
+import { Root } from './root'
 
 /* -------------------------------------------------------------------------------------------------
  * Portal
@@ -7,15 +8,15 @@ import ReactDOM from 'react-dom'
 
 const PORTAL_NAME = 'Portal'
 
-type PortalElement = React.ElementRef<'div'>
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
+type PortalElement = React.ElementRef<typeof Root.div>
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
 interface Portal extends PrimitiveDivProps {
   container?: HTMLElement | null
 }
 
 const Portal = React.forwardRef<PortalElement, Portal>((props, forwardedRef) => {
   const { container = globalThis?.document?.body, ...portalProps } = props
-  const children = <div {...portalProps} ref={forwardedRef} />
+  const children = <Root.div {...portalProps} ref={forwardedRef} />
   return container ? ReactDOM.createPortal(children, container) : children
 })
 

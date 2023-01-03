@@ -49,7 +49,7 @@ const InlineToolbar = () => {
 
       const rects = SelectionDrawing.getRects(editor, selection, false)
       const isBackward = Range.isBackward(selection)
-      if (rects) {
+      if (rects.length > 0) {
         const rect = isBackward ? rects[0] : rects[rects.length - 1]
         x = isBackward ? rect.x : rect.right
         y = isBackward ? rect.y : rect.bottom
@@ -118,12 +118,8 @@ const InlineToolbar = () => {
         <PopperAnchor virtualRef={virtualRef} />
         <Presence present={open}>
           <Portal container={rootRef.current}>
-            <PopperContent
-              side={side}
-              sideOffset={5}
-              tw="bg-white shadow-outer z-50 px-2 py-1 rounded border-gray-300 border-solid border"
-            >
-              <Toolbar items={items} />
+            <PopperContent side={side} sideOffset={5}>
+              <Toolbar items={items} mode="inline" />
             </PopperContent>
           </Portal>
         </Presence>

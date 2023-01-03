@@ -1,0 +1,92 @@
+{
+  "name": "@editablejs/plugin-image",
+  "version": "1.0.0-beta.0",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "serializer": [
+        "dist/serializer.d.ts"
+      ],
+      "deserializer": [
+        "dist/deserializer.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@types/react": "^17.x",
+    "@types/react-dom": "^17.x",
+    "@types/styled-components": "5.1.26",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "react": "^17.x",
+    "react-dom": "^17.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.1.2",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.0.1",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*"
+  },
+  "dependencies": {
+    "@editablejs/plugin-ui": "workspace:*",
+    "react-image-previewer": "1.1.6",
+    "styled-components": "5.3.5",
+    "zustand": "4.1.4"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

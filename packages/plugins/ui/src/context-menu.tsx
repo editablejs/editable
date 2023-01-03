@@ -20,21 +20,34 @@ export interface ContextMenuItem {
   onSelect?: (e: React.MouseEvent<any>) => void
 }
 
+const sizeCls = (size: ContextMenuSize = 'default') => [
+  tw`py-1`,
+  size === 'small' && tw`py-0.5`,
+  size === 'large' && tw`py-2`,
+]
+
 const disabledCls = (disabled?: boolean) => [disabled && tw`text-gray-400 cursor-default`]
 
-const itemCls = (disabled?: boolean) => [
-  tw`relative flex cursor-pointer items-center py-2 pl-9 pr-3 text-center hover:bg-gray-100`,
+const itemCls = (disabled?: boolean, size?: ContextMenuSize) => [
+  tw`relative flex cursor-pointer items-center pl-6 pr-2 text-center hover:bg-gray-100`,
+  size === 'small' && `pr-1 pl-3`,
+  size === 'large' && `pr-3 pl-9`,
+  ...sizeCls(size),
   ...disabledCls(disabled),
 ]
 
-const iconCls = (disabled?: boolean) => [
-  tw`absolute left-3 top-0 flex items-center h-full`,
+const iconCls = (disabled?: boolean, size?: ContextMenuSize) => [
+  tw`absolute left-2 top-0 flex items-center h-full`,
+  size === 'small' && `left-1`,
+  size === 'large' && `left-3`,
   !disabled && tw`text-gray-500`,
   ...disabledCls(disabled),
 ]
 
-const rightCls = (disabled?: boolean) => [
-  tw`ml-auto pl-9`,
+const rightCls = (disabled?: boolean, size?: ContextMenuSize) => [
+  tw`ml-auto pl-6`,
+  size === 'small' && `pl-3`,
+  size === 'large' && `pl-9`,
   !disabled && tw`text-gray-500`,
   ...disabledCls(disabled),
 ]
@@ -47,18 +60,20 @@ export const ContextMenuItem: React.FC<ContextMenuItem> = ({
   href,
   onSelect,
 }) => {
+  const size = useContextMenuSize()
+
   const render = () => {
     return (
       <>
-        {icon && <span css={iconCls(disabled)}>{icon}</span>}
+        {icon && <span css={iconCls(disabled, size)}>{icon}</span>}
         {children}
-        {rightText && <div css={rightCls(disabled)}>{rightText}</div>}
+        {rightText && <div css={rightCls(disabled, size)}>{rightText}</div>}
       </>
     )
   }
   return (
     <MenuItem
-      css={itemCls(disabled)}
+      css={itemCls(disabled, size)}
       onMouseDown={e => {
         e.preventDefault()
         if (onSelect) onSelect(e)
@@ -121,8 +136,17 @@ export const ContextMenuLabel: React.FC<Omit<React.HTMLAttributes<HTMLDivElement
   children,
   className,
 }) => {
+  const size = useContextMenuSize()
   return (
-    <div tw="py-2 pl-3 pr-3 text-gray-500" className={className}>
+    <div
+      css={[
+        tw`px-2 text-gray-500`,
+        sizeCls(size),
+        size === 'small' && tw`px-1`,
+        size === 'large' && tw`px-3`,
+      ]}
+      className={className}
+    >
       {children}
     </div>
   )
@@ -135,6 +159,8 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
 
 type Side = typeof SIDE_OPTIONS[number]
 type Align = typeof ALIGN_OPTIONS[number]
+
+type ContextMenuSize = 'small' | 'default' | 'large'
 export interface ContextMenu {
   container?: HTMLElement | Point
   className?: string
@@ -143,6 +169,16 @@ export interface ContextMenu {
   side?: Side
   align?: Align
   minWidth?: number
+  size?: ContextMenuSize
+}
+
+const ContextMenuContext = React.createContext<{ size: ContextMenuSize }>({
+  size: 'default',
+})
+
+const useContextMenuSize = () => {
+  const context = React.useContext(ContextMenuContext)
+  return context.size
 }
 
 export const ContextMenu: React.FC<ContextMenu> = ({
@@ -153,6 +189,7 @@ export const ContextMenu: React.FC<ContextMenu> = ({
   children,
   side = 'right',
   align = 'start',
+  size = 'default',
   minWidth,
 }) => {
   const [open, setOpen] = React.useState(openProps)
@@ -160,7 +197,12 @@ export const ContextMenu: React.FC<ContextMenu> = ({
     container instanceof HTMLElement ? { x: 0, y: 0 } : container,
   )
   const virtualRef = React.useRef({
-    getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
+    getBoundingClientRect: () =>
+      DOMRect.fromRect({
+        width: 0,
+        height: 0,
+        ...pointRef.current,
+      }),
   })
 
   const handleOpenChange = React.useCallback(
@@ -193,25 +235,29 @@ export const ContextMenu: React.FC<ContextMenu> = ({
   }, [container, handleOpenChange])
 
   return (
-    <Menu open={open} onOpenChange={handleOpenChange}>
-      <MenuAnchor virtualRef={virtualRef} />
-      <MenuContent
-        side={side}
-        sideOffset={2}
-        align={align}
-        onEscapeKeyDown={() => handleOpenChange(false)}
-        onPointerDownOutside={() => handleOpenChange(false)}
-        css={[
-          tw`z-50 overflow-hidden rounded border border-solid border-gray-300 bg-white py-2 shadow-outer`,
-          minWidth !== undefined &&
-            css`
-              min-width: ${minWidth}px;
-            `,
-          className,
-        ]}
-      >
-        {children}
-      </MenuContent>
-    </Menu>
+    <ContextMenuContext.Provider value={{ size }}>
+      <Menu open={open} onOpenChange={handleOpenChange}>
+        <MenuAnchor virtualRef={virtualRef} />
+        <MenuContent
+          side={side}
+          sideOffset={2}
+          align={align}
+          onEscapeKeyDown={() => handleOpenChange(false)}
+          onPointerDownOutside={() => handleOpenChange(false)}
+          css={[
+            tw`z-50 py-1 text-base overflow-hidden rounded shadow-outer border border-solid border-gray-300 bg-white`,
+            minWidth !== undefined &&
+              css`
+                min-width: ${minWidth}px;
+              `,
+            size === 'large' && tw`py-2 text-lg`,
+            size === 'small' && tw`py-0.5 text-sm`,
+          ]}
+          className={className}
+        >
+          {children}
+        </MenuContent>
+      </Menu>
+    </ContextMenuContext.Provider>
   )
 }

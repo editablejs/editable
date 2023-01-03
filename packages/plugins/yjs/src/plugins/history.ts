@@ -1,4 +1,4 @@
-import { Editor, Transforms } from '@editablejs/editor'
+import { Editable, Editor, Operation, Transforms } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
@@ -17,6 +17,8 @@ export type YHistoryEditor = YjsEditor & {
 
   canUndo: () => boolean
   canRedo: () => boolean
+
+  captureHistory: (op: Operation) => boolean
 }
 
 export const YHistoryEditor = {
@@ -30,20 +32,25 @@ export const YHistoryEditor = {
     )
   },
 
-  canUndo(editor: YHistoryEditor) {
-    return editor.canUndo()
+  canUndo(editor: Editable) {
+    if (YHistoryEditor.isYHistoryEditor(editor)) return editor.canUndo()
+    return false
   },
 
-  canRedo(editor: YHistoryEditor) {
-    return editor.canRedo()
+  canRedo(editor: Editable) {
+    if (YHistoryEditor.isYHistoryEditor(editor)) return editor.canRedo()
+    return false
   },
 
-  isSaving(editor: YHistoryEditor): boolean {
-    return editor.undoManager.trackedOrigins.has(YjsEditor.origin(editor))
+  isSaving(editor: Editable): boolean {
+    if (YHistoryEditor.isYHistoryEditor(editor))
+      return editor.undoManager.trackedOrigins.has(YjsEditor.origin(editor))
+    return false
   },
 
-  withoutSaving(editor: YHistoryEditor, fn: () => void) {
-    YjsEditor.withOrigin(editor, editor.withoutSavingOrigin, fn)
+  withoutSaving(editor: Editable, fn: () => void) {
+    if (YHistoryEditor.isYHistoryEditor(editor))
+      YjsEditor.withOrigin(editor, editor.withoutSavingOrigin, fn)
   },
 }
 
@@ -63,6 +70,11 @@ export function withYHistory<T extends YjsEditor>(
 
   const undoManager = new Y.UndoManager(e.sharedRoot, {
     trackedOrigins,
+    captureTransaction: t => {
+      const ops: Operation[] = t.meta.get('ops') ?? []
+      if (!ops.every(op => e.captureHistory(op))) return false
+      return true
+    },
     ...options,
   })
 
@@ -148,6 +160,13 @@ export function withYHistory<T extends YjsEditor>(
     e.undoManager.off('stack-item-updated', handleStackItemUpdated)
 
     disconnect()
+  }
+
+  const { captureHistory } = e
+
+  e.captureHistory = op => {
+    if (YjsEditor.connected(e)) return true
+    return captureHistory ? captureHistory(op) : true
   }
 
   const { undo, redo, canRedo, canUndo } = e

@@ -13,7 +13,7 @@
     "build": "tsc",
     "dev": "nodemon --watch src ./src/index.ts",
     "lint": "eslint src --fix",
-    "format": "prettier --write",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "engines": {
@@ -28,7 +28,7 @@
     "prettier-config": "workspace:*",
     "ts-node": "10.9.1",
     "tsconfig": "workspace:*",
-    "typescript": "^4.5.3",
+    "typescript": "latest",
     "yjs": "^13.5.43"
   },
   "dependencies": {

@@ -17,7 +17,6 @@ import {
   Button,
 } from '@editablejs/plugin-ui'
 import React, { FC, useEffect, useRef, useState } from 'react'
-import tw from 'twin.macro'
 import { LINK_KEY } from '../constants'
 import { Link } from '../interfaces/link'
 import { LinkLocale } from '../locale'
@@ -84,10 +83,10 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
   const locale = useLocale<LinkLocale>('link')
 
   return (
-    <Popover open={open} onOpenChange={setOpen} trigger="none">
+    <Popover open={open} onOpenChange={setOpen} actions={[]}>
       <PopoverAnchor virtualRef={virtualRef} />
       <PopoverPortal>
-        <PopoverContent align="start">
+        <PopoverContent align="start" sideOffset={5}>
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
             <div tw="flex gap-2 items-center">
               <label>{locale.link}</label>

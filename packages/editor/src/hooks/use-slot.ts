@@ -25,5 +25,5 @@ export const useSlotActive = (component: React.FC) => {
         Slot.update(editor, { active }, c => c === component)
       },
     ] as const
-  }, [slot, component])
+  }, [editor, slot, component])
 }

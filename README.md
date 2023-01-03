@@ -64,7 +64,7 @@ plugin directory
 - [x] Redo
 - [x] Undo
 - [x] Link
-- [ ] Image
+- [x] Image
 - [ ] Codeblock
 - [x] Heading
 - [x] Table

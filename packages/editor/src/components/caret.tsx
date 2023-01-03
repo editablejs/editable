@@ -16,7 +16,7 @@ interface CaretProps {
   timeout?: number | false
 }
 
-const CaretComponent: React.FC<CaretProps> = ({ timeout = 530 }) => {
+const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()
@@ -81,6 +81,6 @@ const CaretComponent: React.FC<CaretProps> = ({ timeout = 530 }) => {
       style={{ willChange: 'opacity, transform', opacity: rect ? 1 : 0 }}
     />
   )
-}
-
+})
+CaretComponent.displayName = 'CaretComponent'
 export { CaretComponent }

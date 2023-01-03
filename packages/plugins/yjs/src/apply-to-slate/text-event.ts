@@ -222,10 +222,6 @@ export function translateYTextEvent(
   }
 
   if (delta.length > 0) {
-    if (Text.isText(targetElement)) {
-      throw new Error('Cannot apply delta to slate text')
-    }
-
     ops.push(...applyDelta(targetElement, slatePath, delta))
   }
 

@@ -4,6 +4,7 @@ import { useEscapeKeydown } from './hooks/use-escape-keydown'
 import { useCallbackRef } from './hooks/use-callback-ref'
 import { composeEventHandlers, dispatchDiscreteCustomEvent } from './utils'
 import { Slot } from './slot'
+import { Root } from './root'
 
 /* -------------------------------------------------------------------------------------------------
  * DismissableLayer
@@ -22,8 +23,8 @@ const DismissableLayerContext = React.createContext({
   branches: new Set<DismissableLayerBranchElement>(),
 })
 
-type DismissableLayerElement = React.ElementRef<'div'>
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
+type DismissableLayerElement = React.ElementRef<typeof Root.div>
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
 interface DismissableLayer extends PrimitiveDivProps {
   /**
    * When `true`, hover/focus/click interactions will be disabled on elements outside
@@ -181,7 +182,7 @@ DismissableLayer.displayName = DISMISSABLE_LAYER_NAME
 
 const BRANCH_NAME = 'DismissableLayerBranch'
 
-type DismissableLayerBranchElement = React.ElementRef<'div'>
+type DismissableLayerBranchElement = React.ElementRef<typeof Root.div>
 interface DismissableLayerBranchProps extends PrimitiveDivProps {}
 
 const DismissableLayerBranch = React.forwardRef<
@@ -202,7 +203,7 @@ const DismissableLayerBranch = React.forwardRef<
     }
   }, [context.branches])
 
-  return <div {...props} ref={composedRefs} />
+  return <Root.div {...props} ref={composedRefs} />
 })
 
 DismissableLayerBranch.displayName = BRANCH_NAME

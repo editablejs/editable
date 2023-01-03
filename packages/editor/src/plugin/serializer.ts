@@ -48,7 +48,7 @@ export const TextSerializer = {
     const fns = TEXT_SERIALIZER_TRANSFORMS.get(editor) ?? []
     fns.push({
       transform: transform as TextSerializerWithTransform,
-      options,
+      options: options as TextSerializerOptions,
     })
     TEXT_SERIALIZER_TRANSFORMS.set(editor, fns)
   },
@@ -155,7 +155,7 @@ export const HTMLSerializer = {
     const fns = HTML_SERIALIZER_TRANSFORMS.get(editor) ?? []
     fns.push({
       transform: transform as HTMLSerializerWithTransform,
-      options,
+      options: options as HTMLSerializerOptions,
     })
     HTML_SERIALIZER_TRANSFORMS.set(editor, fns)
   },

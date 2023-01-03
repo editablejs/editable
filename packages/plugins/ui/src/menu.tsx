@@ -8,6 +8,7 @@ import { composeRefs, useComposedRefs } from './compose-refs'
 import { composeEventHandlers, dispatchDiscreteCustomEvent } from './utils'
 import { useDirection } from './direction'
 import { useId } from './hooks/use-id'
+import { Root } from './root'
 
 type Direction = 'ltr' | 'rtl'
 
@@ -356,12 +357,12 @@ MenuContent.displayName = CONTENT_NAME
 
 const GROUP_NAME = 'MenuGroup'
 
-type MenuGroupElement = React.ElementRef<'div'>
-type PrimitiveDivProps = React.ComponentPropsWithoutRef<'div'>
+type MenuGroupElement = React.ElementRef<typeof Root.div>
+type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
 interface MenuGroupProps extends PrimitiveDivProps {}
 
 const MenuGroup = React.forwardRef<MenuGroupElement, MenuGroupProps>((props, forwardedRef) => {
-  return <div role="group" {...props} ref={forwardedRef} />
+  return <Root.div role="group" {...props} ref={forwardedRef} />
 })
 
 MenuGroup.displayName = GROUP_NAME
@@ -372,11 +373,11 @@ MenuGroup.displayName = GROUP_NAME
 
 const LABEL_NAME = 'MenuLabel'
 
-type MenuLabelElement = React.ElementRef<'div'>
+type MenuLabelElement = React.ElementRef<typeof Root.div>
 interface MenuLabel extends PrimitiveDivProps {}
 
 const MenuLabel = React.forwardRef<MenuLabelElement, MenuLabel>((props, forwardedRef) => {
-  return <div {...props} ref={forwardedRef} />
+  return <Root.div {...props} ref={forwardedRef} />
 })
 
 MenuLabel.displayName = LABEL_NAME
@@ -453,7 +454,7 @@ MenuItem.displayName = ITEM_NAME
 
 /* ---------------------------------------------------------------------------------------------- */
 
-type MenuItemImplElement = React.ElementRef<'div'>
+type MenuItemImplElement = React.ElementRef<typeof Root.div>
 interface MenuItemImplProps extends PrimitiveDivProps {
   disabled?: boolean
   textValue?: string
@@ -478,7 +479,7 @@ const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(
 
     return (
       <Collection.ItemSlot disabled={disabled} textValue={textValue ?? textContent}>
-        <div
+        <Root.div
           role="menuitem"
           data-highlighted={isFocused ? '' : undefined}
           aria-disabled={disabled || undefined}
@@ -607,8 +608,8 @@ const ItemIndicatorContext = React.createContext({
 
 const useItemIndicatorContext = () => React.useContext(ItemIndicatorContext)
 
-type MenuItemIndicatorElement = React.ElementRef<'span'>
-type PrimitiveSpanProps = React.ComponentPropsWithoutRef<'span'>
+type MenuItemIndicatorElement = React.ElementRef<typeof Root.span>
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Root.span>
 interface MenuItemIndicator extends PrimitiveSpanProps {
   /**
    * Used to force mounting when more control is needed. Useful when
@@ -623,7 +624,7 @@ const MenuItemIndicator = React.forwardRef<MenuItemIndicatorElement, MenuItemInd
     const indicatorContext = useItemIndicatorContext()
     return (
       <Presence present={forceMount || indicatorContext.checked}>
-        <span
+        <Root.span
           {...itemIndicatorProps}
           ref={forwardedRef}
           data-state={getCheckedState(indicatorContext.checked)}
@@ -641,12 +642,12 @@ MenuItemIndicator.displayName = ITEM_INDICATOR_NAME
 
 const SEPARATOR_NAME = 'MenuSeparator'
 
-type MenuSeparatorElement = React.ElementRef<'div'>
+type MenuSeparatorElement = React.ElementRef<typeof Root.div>
 interface MenuSeparator extends PrimitiveDivProps {}
 
 const MenuSeparator = React.forwardRef<MenuSeparatorElement, MenuSeparator>(
   (props, forwardedRef) => {
-    return <div role="separator" aria-orientation="horizontal" {...props} ref={forwardedRef} />
+    return <Root.div role="separator" aria-orientation="horizontal" {...props} ref={forwardedRef} />
   },
 )
 

@@ -1,5 +1,4 @@
 import {
-  Editable,
   HTMLDeserializerOptions,
   HTMLDeserializerWithTransform,
   isDOMHTMLElement,

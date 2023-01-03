@@ -1,4 +1,5 @@
 const path = require('path')
+
 const { PHASE_DEVELOPMENT_SERVER } = require('next/constants')
 const { redirects } = require('./src/redirects.json')
 
@@ -30,16 +31,16 @@ const baseConfig = {
  * @type {import('next').NextConfig}
  */
 const nextConfig = (phase, { defaultConfig }) => {
+  const config = {
+    ...defaultConfig,
+    ...baseConfig,
+  }
   if (phase === PHASE_DEVELOPMENT_SERVER) {
-    return {
-      ...defaultConfig,
-      ...baseConfig,
-    }
+    return config
   }
 
   return {
-    ...defaultConfig,
-    ...baseConfig,
+    ...config,
     output: 'standalone',
     experimental: {
       ...baseConfig.experimental,

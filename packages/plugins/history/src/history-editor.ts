@@ -1,4 +1,4 @@
-import { Editable, Editor } from '@editablejs/editor'
+import { Editable, Editor, Operation } from '@editablejs/editor'
 import { History } from './history'
 
 /**
@@ -19,6 +19,8 @@ export interface HistoryEditor extends Editable {
   redo: () => void
   canUndo: () => boolean
   canRedo: () => boolean
+
+  captureHistory: (op: Operation) => boolean
 }
 
 // eslint-disable-next-line no-redeclare

@@ -12,9 +12,10 @@ import {
   TaskListEditor,
   TableEditor,
   UI,
-  HistoryEditor,
   LinkEditor,
+  ImageEditor,
 } from '@editablejs/plugins'
+import { HistoryEditor } from '@editablejs/plugin-history'
 
 const { Icon } = UI
 
@@ -123,6 +124,14 @@ export const createToolbarItems = (editor: Editable) => {
         LinkEditor.open(editor)
       },
       icon: <Icon name="link" />,
+    },
+    {
+      type: 'button',
+      active: ImageEditor.isActive(editor),
+      onToggle: editor => {
+        ImageEditor.open(editor)
+      },
+      icon: <Icon name="image" />,
     },
     {
       type: 'button',

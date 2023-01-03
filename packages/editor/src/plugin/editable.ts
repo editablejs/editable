@@ -147,11 +147,12 @@ export interface Editable extends BaseEditor {
   hasRange: (editor: Editable, range: Range) => boolean
   getFragment: (range?: Range) => Descendant[]
   blur(): void
-  focus(): void
+  focus(start?: boolean): void
   copy(range?: Range): void
   cut(range?: Range): void
-  paste(range?: Range): void
-  pasteText(range?: Range): void
+  insertFromClipboard(at?: Range): void
+  insertTextFromClipboard(at?: Range): void
+  insertFile(file: File, at?: Range): void
   queryActiveMarks: <T extends Text>() => Omit<T, 'text'>
   queryActiveElements: () => EditorElements
   on: <T extends EventType>(type: T, handler: EventHandler<T>, prepend?: boolean) => void
@@ -596,7 +597,7 @@ export const Editable = {
       }
     } else {
       const node = Editable.toSlateNode(editor, element)
-      if (Text.isText(node)) {
+      if (Text.isText(node) || Editor.isVoid(editor, node)) {
         addToElements(node)
       } else {
         if (!editor.isSolidVoid(node)) {
@@ -651,10 +652,18 @@ export const Editable = {
         }
       } else if (nearbyLeft) {
         offsetNode = nearbyLeft.node
-        left = nearbyLeft.rect.right
+        if (left <= nearbyLeft.rect.left) left = nearbyLeft.rect.left
+        else if (left >= nearbyLeft.rect.right) left = nearbyLeft.rect.right
+        else {
+          top = nearbyLeft.rect.top
+        }
       } else if (nearbyRight) {
         offsetNode = nearbyRight.node
-        left = nearbyRight.rect.left
+        if (left <= nearbyRight.rect.left) left = nearbyRight.rect.left
+        else if (left >= nearbyRight.rect.right) left = nearbyRight.rect.right
+        else {
+          top = nearbyRight.rect.top
+        }
       } else if (nearbyBelow) {
         if (left < nearbyBelow.rect.left) {
           left = nearbyBelow.rect.left

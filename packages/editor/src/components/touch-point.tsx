@@ -17,80 +17,79 @@ interface TouchPointProps {
   onFocusTouchStart?: (e: React.TouchEvent) => void
 }
 
-const TouchPointComponent: React.FC<TouchPointProps> = ({
-  onAnchorTouchStart,
-  onFocusTouchStart,
-}) => {
-  const selection = useSelectionDrawingSelection()
-  const rects = useSelectionDrawingRects()
-  const enabled = useSelectionDrawingEnabled()
-  const style = useSelectionDrawingStyle()
-  const editor = useEditableStatic()
+const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
+  ({ onAnchorTouchStart, onFocusTouchStart }) => {
+    const selection = useSelectionDrawingSelection()
+    const rects = useSelectionDrawingRects()
+    const enabled = useSelectionDrawingEnabled()
+    const style = useSelectionDrawingStyle()
+    const editor = useEditableStatic()
 
-  const [focused] = useFocused()
-  if (
-    !isTouchDevice ||
-    !enabled ||
-    !selection ||
-    IS_TOUCHING.get(editor) ||
-    (!IS_TOUCHMOVING.get(editor) && Range.isCollapsed(selection)) ||
-    !focused
-  )
-    return null
-  const anchor = rects[0]
-  const focus = rects[rects.length - 1]
+    const [focused] = useFocused()
+    if (
+      !isTouchDevice ||
+      !enabled ||
+      !selection ||
+      IS_TOUCHING.get(editor) ||
+      (!IS_TOUCHMOVING.get(editor) && Range.isCollapsed(selection)) ||
+      !focused
+    )
+      return null
+    const anchor = rects[0]
+    const focus = rects[rects.length - 1]
 
-  const baseStyle: React.CSSProperties = {
-    position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: '100%',
-    overscrollBehavior: 'none',
-    background: style.dragColor,
-  }
+    const baseStyle: React.CSSProperties = {
+      position: 'absolute',
+      width: 12,
+      height: 12,
+      borderRadius: '100%',
+      overscrollBehavior: 'none',
+      background: style.dragColor,
+    }
 
-  return (
-    <>
-      <ShadowRect
-        rect={Object.assign({}, anchor.toJSON(), {
-          color: style.dragColor,
-          width: 2,
-          left: anchor.left - 1,
-        })}
-        style={{
-          zIndex: 2,
-        }}
-      >
-        <div
-          onTouchStart={onAnchorTouchStart}
+    return (
+      <>
+        <ShadowRect
+          rect={Object.assign({}, anchor.toJSON(), {
+            color: style.dragColor,
+            width: 2,
+            left: anchor.left - 1,
+          })}
           style={{
-            ...baseStyle,
-            top: -10,
-            left: -5,
+            zIndex: 2,
           }}
-        />
-      </ShadowRect>
-      <ShadowRect
-        rect={Object.assign({}, focus.toJSON(), {
-          color: style.dragColor,
-          width: 2,
-          left: focus.right - 1,
-        })}
-        style={{
-          zIndex: 2,
-        }}
-      >
-        <div
-          onTouchStart={onFocusTouchStart}
+        >
+          <div
+            onTouchStart={onAnchorTouchStart}
+            style={{
+              ...baseStyle,
+              top: -10,
+              left: -5,
+            }}
+          />
+        </ShadowRect>
+        <ShadowRect
+          rect={Object.assign({}, focus.toJSON(), {
+            color: style.dragColor,
+            width: 2,
+            left: focus.right - 1,
+          })}
           style={{
-            ...baseStyle,
-            bottom: -10,
-            right: -5,
+            zIndex: 2,
           }}
-        />
-      </ShadowRect>
-    </>
-  )
-}
-
+        >
+          <div
+            onTouchStart={onFocusTouchStart}
+            style={{
+              ...baseStyle,
+              bottom: -10,
+              right: -5,
+            }}
+          />
+        </ShadowRect>
+      </>
+    )
+  },
+)
+TouchPointComponent.displayName = 'TouchPointComponent'
 export { TouchPointComponent }

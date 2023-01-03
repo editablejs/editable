@@ -18,8 +18,8 @@ type LocalChange = {
   origin: unknown
 }
 
-const DEFAULT_LOCAL_ORIGIN = Symbol('slate-yjs-operation')
-const DEFAULT_POSITION_STORAGE_ORIGIN = Symbol('slate-yjs-position-storage')
+const DEFAULT_LOCAL_ORIGIN = Symbol('editable-yjs-operation')
+const DEFAULT_POSITION_STORAGE_ORIGIN = Symbol('editable-yjs-position-storage')
 
 const ORIGIN: WeakMap<Editor, unknown> = new WeakMap()
 const LOCAL_CHANGES: WeakMap<Editor, LocalChange[]> = new WeakMap()
@@ -196,8 +196,12 @@ export function withYjs<T extends Editor>(
 
     e.selection = null
     e.children = content.children
-    e.onChange()
+
     CONNECTED.add(e)
+    Editor.normalize(editor, { force: true })
+    if (!editor.operations.length) {
+      editor.onChange()
+    }
   }
 
   e.disconnect = () => {
@@ -237,9 +241,15 @@ export function withYjs<T extends Editor>(
     txGroups.forEach(txGroup => {
       assertDocumentAttachment(e.sharedRoot)
 
-      e.sharedRoot.doc.transact(() => {
+      e.sharedRoot.doc.transact(t => {
         txGroup.forEach(change => {
           assertDocumentAttachment(e.sharedRoot)
+          const ops = t.meta.get('ops')
+          if (!ops) {
+            t.meta.set('ops', [change.op])
+          } else {
+            ops.push(change.op)
+          }
           applySlateOp(e.sharedRoot, { children: change.doc }, change.op)
         })
       }, txGroup[0].origin)

@@ -7,7 +7,7 @@ import {
   Transforms,
   useIsomorphicLayoutEffect,
   useLocale,
-  useNodeSelected,
+  useNodeFocused,
 } from '@editablejs/editor'
 import {
   Popover,
@@ -18,7 +18,6 @@ import {
   Button,
 } from '@editablejs/plugin-ui'
 import React, { forwardRef, useState } from 'react'
-import tw from 'twin.macro'
 import { LinkEditor } from '../editor'
 import { Link } from '../interfaces/link'
 import { LinkLocale } from '../locale'
@@ -43,10 +42,10 @@ export const LinkComponent = forwardRef<
 
   const [open, setOpen] = useState(false)
 
-  const selected = useNodeSelected()
+  const focused = useNodeFocused()
   useIsomorphicLayoutEffect(() => {
-    setOpen(selected)
-  }, [selected])
+    setOpen(focused)
+  }, [focused])
 
   const handleCancel = () => {
     editor.cancelLink(element)
@@ -82,14 +81,18 @@ export const LinkComponent = forwardRef<
   const locale = useLocale<LinkLocale>('link')
 
   return (
-    <Popover open={open} onOpenChange={state => setOpen(selected ? true : state)} trigger="click">
+    <Popover
+      open={open}
+      onOpenChange={state => setOpen(focused ? true : state)}
+      actions={['click']}
+    >
       <PopoverTrigger>
         <a tw="font-medium mb-2 mt-0 text-blue-600 underline" {...props} ref={ref}>
           {children}
         </a>
       </PopoverTrigger>
       <PopoverPortal>
-        <PopoverContent align="start">
+        <PopoverContent align="start" sideOffset={5}>
           <div tw="shadow-md rounded px-4 py-2 border border-gray-300 bg-white text-base">
             <div tw="flex gap-2 mb-2 items-center">
               <label>{locale.text}</label>

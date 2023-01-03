@@ -3,6 +3,7 @@ import { useComposedRefs } from './compose-refs'
 import { useControllableState } from './hooks/use-controllable-state'
 import { usePrevious } from './hooks/use-previous'
 import { useSize } from './hooks/use-size'
+import { Root } from './root'
 import { composeEventHandlers } from './utils'
 
 /* -------------------------------------------------------------------------------------------------
@@ -15,8 +16,8 @@ type SwitchContextValue = { checked: boolean; disabled?: boolean }
 const SwitchContext = React.createContext<SwitchContextValue>({} as any)
 const useSwitchContext = () => React.useContext(SwitchContext)
 
-type SwitchElement = React.ElementRef<'button'>
-type PrimitiveButtonProps = React.ComponentPropsWithoutRef<'button'>
+type SwitchElement = React.ElementRef<typeof Root.button>
+type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Root.button>
 interface SwitchProps extends PrimitiveButtonProps {
   checked?: boolean
   defaultChecked?: boolean
@@ -49,7 +50,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>((props: SwitchProps,
 
   return (
     <SwitchContext.Provider value={{ checked, disabled }}>
-      <button
+      <Root.button
         type="button"
         role="switch"
         aria-checked={checked}
@@ -98,8 +99,8 @@ Switch.displayName = SWITCH_NAME
 
 const THUMB_NAME = 'SwitchThumb'
 
-type SwitchThumbElement = React.ElementRef<'span'>
-type PrimitiveSpanProps = React.ComponentPropsWithoutRef<'span'>
+type SwitchThumbElement = React.ElementRef<typeof Root.span>
+type PrimitiveSpanProps = React.ComponentPropsWithoutRef<typeof Root.span>
 interface SwitchThumbProps extends PrimitiveSpanProps {}
 
 const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
@@ -107,7 +108,7 @@ const SwitchThumb = React.forwardRef<SwitchThumbElement, SwitchThumbProps>(
     const { ...thumbProps } = props
     const context = useSwitchContext()
     return (
-      <span
+      <Root.span
         data-state={getState(context.checked)}
         data-disabled={context.disabled ? '' : undefined}
         {...thumbProps}

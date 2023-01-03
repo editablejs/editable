@@ -8,7 +8,7 @@ import { Editable } from '../plugin/editable'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { ShadowRect } from './shadow'
 
-export const DragCaretComponent = () => {
+export const DragCaretComponent = React.memo(() => {
   const editor = useEditableStatic()
   const dragTo = useDragTo()
   const dragType = useDragType()
@@ -17,7 +17,7 @@ export const DragCaretComponent = () => {
     if (!dragTo || !dragPosition) return null
     if (dragType === 'block') {
       const entry = Editor.above(editor, {
-        at: dragTo.focus,
+        at: dragTo,
         match: n => Element.isElement(n),
         mode: 'lowest',
       })
@@ -58,7 +58,8 @@ export const DragCaretComponent = () => {
       const [rx, ry] = Editable.toRelativePosition(editor, x, y)
       return [new DOMRect(rx, ry, width, 2)]
     }
-    return SelectionDrawing.getRects(editor, dragTo)
+
+    return SelectionDrawing.getRects(editor, Editor.range(editor, dragTo))
   }, [dragPosition, dragTo, dragType, editor])
 
   const { dragColor, caretWidth } = useSelectionDrawingStyle()
@@ -80,4 +81,6 @@ export const DragCaretComponent = () => {
       })}
     />
   )
-}
+})
+
+DragCaretComponent.displayName = 'DragCaretComponent'

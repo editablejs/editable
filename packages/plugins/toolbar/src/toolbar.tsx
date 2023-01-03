@@ -51,15 +51,11 @@ export const ToolbarDropdown = React.memo(ToolbarDropdownDefault, (prev, next) =
     prev.items.length === next.items.length
   )
 })
-export interface Toolbar {
+export interface Toolbar extends UIToolbar {
   items: ToolbarItem[]
 }
 
-export const Toolbar: React.FC<Toolbar & React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  items,
-  ...props
-}) => {
+export const Toolbar: React.FC<Toolbar> = ({ className, items, ...props }) => {
   const renderItem = (item: ToolbarItem, key: any) => {
     if (item === 'separator') return <ToolbarSeparator key={key} />
     const { type } = item

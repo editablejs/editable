@@ -20,6 +20,7 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
   const lines: Map<LineRect, DOMRect[]> = new Map()
   if (rects.length === 0) return lines
   const lineKeys: LineRect[] = []
+  // 找出每个 rect 所在的行的 key
   const findKey = (rect: DOMRect) => {
     for (const lineKey of lineKeys) {
       const { top, bottom, right } = lineKey
@@ -30,16 +31,13 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
             .reverse()
             .find(p => p.width > 0) ?? prevs[prevs.length - 1]
         : null
-      if (
-        ((rect.top >= top && rect.bottom <= bottom) ||
-          (rect.top <= top && rect.bottom >= bottom)) &&
-        rect.left <= (last ? last.right : right) + 1
-      ) {
+      if (inLine(rect, lineKey) && rect.left <= (last ? last.right : right) + 1) {
         return lineKey
       }
     }
     return null
   }
+  // 循环每个 rect，找出所在的行
   for (let r = 0; r < rects.length; r++) {
     const rect = rects[r]
     const key = findKey(rect)
@@ -57,10 +55,14 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
       lineKeys.push(lineRect)
     }
   }
+  // 找出每行的最小 top，最大 bottom，最大 right
   for (const [line, rects] of lines) {
+    // 一行只有一个 rect，直接跳过
+    if (rects.length === 1) continue
     let minTop = line.top,
       maxBottom = line.bottom,
       maxRight = line.right
+    // 循环比对每个 rect
     for (const rect of rects) {
       const { top, bottom, right } = rect
       if (top < minTop) minTop = top
@@ -116,12 +118,25 @@ const resetElementRect = (rect: DOMRect, height: number) => {
   return new DOMRect(rect.left, top, rect.width, height)
 }
 
-const inLine = (rect: DOMRect, line: Record<'top' | 'bottom', number>) => {
+const inLine = (rect: DOMRect, line: Record<'top' | 'bottom' | 'height', number>) => {
+  const deltaEdge = rect.height / 3
   return (
+    // 1. 介于行 top 与 bottom 之间，完全被行包住
     (rect.top >= line.top &&
-      (rect.bottom <= line.bottom || rect.top + rect.height / 3 < line.bottom)) ||
+      (rect.bottom <= line.bottom ||
+        // 2. 节点的 top 在行内，且溢出行的 bottom 在3分之2以内
+        rect.top + deltaEdge < line.bottom ||
+        // 3. 节点 bottom 在行的 top 下方至少 3分之2处，且 节点 top 位于行的 bottom 上方
+        (rect.top <= line.top + line.height / 3 && rect.bottom > line.top))) ||
+    // 4. 覆盖了行的高度，行 位于 rect 的 top 与 bottom 之间
     (rect.top <= line.top &&
-      (rect.bottom >= line.bottom || rect.bottom - rect.height / 3 > line.top))
+      (rect.bottom >= line.bottom ||
+        // 5. 节点的 top 位于行的上方或相等，且底部的高度至少3分之2在行内
+        rect.bottom - deltaEdge > line.top)) ||
+    // 6. 节点 top 在行的 bottom 上方至少 3分之2处，且 节点 bottom 位于行的 top 下方
+    (rect.bottom <= line.bottom &&
+      rect.bottom >= line.bottom - line.height / 3 &&
+      rect.top < line.bottom)
   )
 }
 
@@ -323,7 +338,10 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   for (const [line, rects] of lines) {
     // 找到对应行所在的 element
     const blockRect = blockRects.find(
-      r => inLine(r, line) && line.left >= r.left && line.right <= r.right,
+      r =>
+        inLine(r, line) &&
+        (line.left >= r.left || Math.abs(line.left - r.left) < 1) &&
+        (line.right <= r.right || Math.abs(line.right - r.right) < 1),
     )
     const el = blockRect ? rectMap.get(blockRect) : null
 

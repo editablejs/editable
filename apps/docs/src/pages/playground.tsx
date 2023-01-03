@@ -38,6 +38,7 @@ import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
+import { withHistory } from '@editablejs/plugin-history'
 import { Toolbar } from '../components/toolbar'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import { createToolbarItems } from '../configs/toolbar-items'
@@ -170,19 +171,19 @@ export default function Playground() {
       })
     }
 
-    editor = withInlineToolbar(
-      withToolbar(
-        withPlugins(editor, {
-          fontSize: { defaultSize: '14px' },
-        }),
-      ),
-    )
+    editor = withHistory(editor)
+
+    editor = withYHistory(editor)
+
+    editor = withPlugins(editor, {
+      fontSize: { defaultSize: '14px' },
+    })
+    editor = withInlineToolbar(withToolbar(editor))
 
     if (!isTouchDevice) {
       editor = withSideToolbar(editor)
     }
 
-    editor = withYHistory(editor)
     Placeholder.add(editor, {
       check: entry => {
         return Editable.isFocused(editor) && Editor.isBlock(editor, entry[0])

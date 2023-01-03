@@ -24,7 +24,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src --fix",
-    "format": "prettier --write",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
@@ -53,7 +53,7 @@
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
-    "typescript": "^4.5.3"
+    "typescript": "latest"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
