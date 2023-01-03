@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 import { Linter } from 'eslint/lib/linter/linter'
 
 import type { Diagnostic } from '@codemirror/lint'
