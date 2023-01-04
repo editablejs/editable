@@ -44,6 +44,21 @@ pnpm dev
 ### Input
 
 - [x] 组合输入法输入
+- [x] 粘贴
+- [x] 粘贴为纯文本
+- [x] 复制
+- [x] 剪切
+
+### Drag
+
+- [x] 拖拽选区文本
+- [x] 拖拽文件
+- [x] 拖拽节点
+
+### Serializer & Deserializer
+
+- [x] Text
+- [x] Html
 
 ### Plugins
 
@@ -71,10 +86,14 @@ pnpm dev
 - [x] Table
 - [x] Hr
 - [x] Toolbar
+- [x] InlineToolbar
+- [x] SideToolbar
+- [x] History
 - [x] Yjs
+- [x] Yjs-History
 - [x] Serializes
 - [x] ContextMenu
-- [x] Clipboard
-- [x] Drag
+- [x] Leading
+- [x] Align
 
 ### [More](https://github.com/orgs/editablejs/projects/1/views/1)

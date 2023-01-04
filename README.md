@@ -23,7 +23,7 @@ Use the slatejs data model, and use react to render in the self-drawn cursor mod
 
 plugin directory
 
-## Task
+## TODO
 
 ### Selection
 
@@ -44,6 +44,21 @@ plugin directory
 ### Input
 
 - [x] combined input method input
+- [x] paste
+- [x] paste as plain text
+- [x] copy
+- [x] cut
+
+### Drag
+
+- [x] drag and drop selection text
+- [x] drag and drop files
+- [x] drag node
+
+### Serializer & Deserializer
+
+- [x] Text
+- [x] Html
 
 ### Plugins
 
@@ -71,10 +86,16 @@ plugin directory
 - [x] Table
 - [x] Hr
 - [x] Toolbar
+- [x] InlineToolbar
+- [x] SideToolbar
+- [x] History
 - [x] Yjs
+- [x] Yjs-History
 - [x] Serializes
 - [x] ContextMenu
 - [x] Clipboard
 - [x] Drag
+- [x] Leading
+- [x] Align
 
 ### [More](https://github.com/orgs/editablejs/projects/1/views/1)
