@@ -2,7 +2,7 @@
 
 # Editable
 
-An experimental rich text editor framework which aims to replace the native `contenteditable` attribute with a self-drawn cursor to provide richer and more stable editing capabilities.
+An experimental rich text editor framework that replaces the native contenteditable attribute with a custom-drawn selection to provide richer and more stable editing capabilities.
 
 Playground: https://docs.editablejs.com/playground
 ## Development

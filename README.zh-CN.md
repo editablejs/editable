@@ -1,6 +1,6 @@
 # Editable
 
-一个实验性的富文本编辑器框架，希望通过自绘光标来替代原生 contenteditable 属性，提供更丰富、稳定的编辑能力。
+一个实验性的富文本编辑器框架，用自定义绘制的`selection`替代原生的`contenteditable`属性，提供更丰富、更稳定的编辑能力。
 
 演示：https://docs.editablejs.com/playground
 
@@ -59,6 +59,7 @@ pnpm dev
 
 - [x] Text
 - [x] Html
+- [ ] Markdown
 
 ### Plugins
 
