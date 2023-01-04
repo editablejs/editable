@@ -59,6 +59,7 @@ plugin directory
 
 - [x] Text
 - [x] Html
+- [ ] Markdown
 
 ### Plugins
 
