@@ -1,5 +1,24 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.20
+
+### Patch Changes
+
+- [`1bca53d`](https://github.com/editablejs/editable/commit/1bca53d995a2c6166481e33b858ec09217b3d7f7) Thanks [@big-camel](https://github.com/big-camel)! - add aling plugin
+
+* [`1bca53d`](https://github.com/editablejs/editable/commit/1bca53d995a2c6166481e33b858ec09217b3d7f7) Thanks [@big-camel](https://github.com/big-camel)! - add align plugin
+
+* Updated dependencies [[`1bca53d`](https://github.com/editablejs/editable/commit/1bca53d995a2c6166481e33b858ec09217b3d7f7), [`1bca53d`](https://github.com/editablejs/editable/commit/1bca53d995a2c6166481e33b858ec09217b3d7f7)]:
+  - @editablejs/plugin-hr@1.0.0-beta.2
+  - @editablejs/plugin-indent@1.0.0-beta.14
+  - @editablejs/plugin-ui@1.0.0-beta.13
+  - @editablejs/plugin-align@1.0.0-beta.1
+  - @editablejs/plugin-table@1.0.0-beta.19
+  - @editablejs/plugin-context-menu@1.0.0-beta.20
+  - @editablejs/plugin-image@1.0.0-beta.3
+  - @editablejs/plugin-link@1.0.0-beta.3
+  - @editablejs/plugin-toolbar@1.0.0-beta.20
+
 ## 1.0.0-beta.19
 
 ### Patch Changes
