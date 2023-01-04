@@ -1,5 +1,22 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.21
+
+### Patch Changes
+
+- [`f3279c7`](https://github.com/editablejs/editable/commit/f3279c7f96acdcdca92684a4ebf885eb05e7aac5) Thanks [@big-camel](https://github.com/big-camel)! - add leading plugin
+
+- Updated dependencies [[`f3279c7`](https://github.com/editablejs/editable/commit/f3279c7f96acdcdca92684a4ebf885eb05e7aac5)]:
+  - @editablejs/plugin-align@1.0.0-beta.2
+  - @editablejs/plugin-ui@1.0.0-beta.14
+  - @editablejs/plugin-leading@1.0.0-beta.1
+  - @editablejs/plugin-context-menu@1.0.0-beta.21
+  - @editablejs/plugin-hr@1.0.0-beta.3
+  - @editablejs/plugin-image@1.0.0-beta.4
+  - @editablejs/plugin-link@1.0.0-beta.4
+  - @editablejs/plugin-table@1.0.0-beta.20
+  - @editablejs/plugin-toolbar@1.0.0-beta.21
+
 ## 1.0.0-beta.20
 
 ### Patch Changes

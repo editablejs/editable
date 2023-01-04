@@ -1,6 +1,6 @@
 {
   "name": "@editablejs/plugins",
-  "version": "1.0.0-beta.20",
+  "version": "1.0.0-beta.21",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -74,7 +74,7 @@
     "@editablejs/plugin-hr": "workspace:*",
     "@editablejs/plugin-image": "workspace:*",
     "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-leading": "workspace:1.0.0-beta.0",
+    "@editablejs/plugin-leading": "workspace:1.0.0-beta.1",
     "@editablejs/plugin-link": "workspace:*",
     "@editablejs/plugin-list": "workspace:*",
     "@editablejs/plugin-mark": "workspace:*",
