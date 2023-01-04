@@ -20,7 +20,8 @@
     "@editablejs/plugin-yjs-transform": "0.0.0",
     "@editablejs/plugin-link": "0.0.0",
     "@editablejs/plugin-image": "1.0.0-beta.0",
-    "@editablejs/plugin-hr": "1.0.0-beta.0"
+    "@editablejs/plugin-hr": "1.0.0-beta.0",
+    "@editablejs/plugin-align": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -29,11 +30,13 @@
     "dull-pandas-accept",
     "flat-jobs-yell",
     "flat-mangos-yell",
+    "fluffy-jokes-kick",
     "friendly-coins-arrive",
     "funny-candles-kneel",
     "gentle-sloths-marry",
     "happy-starfishes-vanish",
     "honest-peas-develop",
+    "itchy-roses-study",
     "loud-actors-speak",
     "nervous-bees-beg",
     "nine-eyes-remember",
