@@ -20,7 +20,7 @@ export const AlignValue: AlignValue = {
 }
 
 export interface Align extends Element {
-  textAlign: AlignKeys
+  [ALIGN_ATTR_KEY]: AlignKeys
 }
 
 export const Align = {

@@ -21,6 +21,7 @@ import { LinkOptions, LinkEditor, withLink } from '@editablejs/plugin-link'
 import { ImageOptions, ImageEditor, withImage } from '@editablejs/plugin-image'
 import { HrOptions, HrEditor, withHr } from '@editablejs/plugin-hr'
 import { AlignOptions, AlignEditor, withAlign } from '@editablejs/plugin-align'
+import { LeadingOptions, LeadingEditor, withLeading } from '@editablejs/plugin-leading'
 import {
   ContextMenuEditor,
   ContextMenuOptions,
@@ -42,6 +43,7 @@ export interface PluginOptions {
   image?: ImageOptions
   hr?: HrOptions
   align?: AlignOptions
+  leading?: LeadingOptions
 }
 
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
@@ -59,6 +61,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withImage(newEditor, options.image)
   newEditor = withHr(newEditor, options.hr)
   newEditor = withAlign(newEditor, options.align)
+  newEditor = withLeading(newEditor, options.leading)
   return newEditor as T &
     ContextMenuEditor &
     MarkEditor &
@@ -73,7 +76,8 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     LinkEditor &
     ImageEditor &
     HrEditor &
-    AlignEditor
+    AlignEditor &
+    LeadingEditor
 }
 
 export * from '@editablejs/plugin-mark'
@@ -89,4 +93,5 @@ export * from '@editablejs/plugin-link'
 export * from '@editablejs/plugin-image'
 export * from '@editablejs/plugin-hr'
 export * from '@editablejs/plugin-align'
+export * from '@editablejs/plugin-leading'
 export { UI }

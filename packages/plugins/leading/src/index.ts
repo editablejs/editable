@@ -1,26 +1,21 @@
 import { Editable, Hotkey, Editor, Transforms, Element, List } from '@editablejs/editor'
-import { ALIGN_ATTR_KEY } from './constants'
-import { AlignEditor } from './editor'
-import { Align, AlignKeys, AlignValue } from './interfaces/align'
-import { AlignHotkey, AlignOptions, setOptions } from './options'
+import { LEADING_ATTR_KEY } from './constants'
+import { LeadingEditor } from './editor'
+import { Leading } from './interfaces/leading'
+import { LeadingHotkey, LeadingOptions, setOptions } from './options'
 
-const defaultHotkeys: AlignHotkey = {
-  left: 'mod+shift+l',
-  center: 'mod+shift+c',
-  right: 'mod+shift+r',
-  justify: 'mod+shift+j',
-}
+const defaultHotkeys: LeadingHotkey = {}
 
-export const withAlign = <T extends Editable>(editor: T, options: AlignOptions = {}) => {
-  const newEditor = editor as T & AlignEditor
+export const withLeading = <T extends Editable>(editor: T, options: LeadingOptions = {}) => {
+  const newEditor = editor as T & LeadingEditor
 
   setOptions(newEditor, options)
 
-  newEditor.toggleAlign = (value = AlignValue.Left) => {
+  newEditor.toggleLeading = value => {
     editor.normalizeSelection(selection => {
       if (!selection) return
       if (editor.selection !== selection) editor.selection = selection
-      if (!AlignEditor.isAlignEditor(editor)) return
+      if (!LeadingEditor.isLeadingEditor(editor)) return
 
       const lowestBlocks = Editor.nodes<Element>(editor, {
         mode: 'lowest',
@@ -33,12 +28,12 @@ export const withAlign = <T extends Editable>(editor: T, options: AlignOptions =
           match: n => editor.isList(n),
         })
         const el = entry ? entry[0] : element
-        if (Align.isAlign(el) && el[ALIGN_ATTR_KEY] === value) continue
+        if (Leading.isLeading(el) && el[LEADING_ATTR_KEY] === value) continue
         const at = entry ? entry[1] : path
-        Transforms.setNodes<Align>(
+        Transforms.setNodes<Leading>(
           editor,
           {
-            [ALIGN_ATTR_KEY]: value,
+            [LEADING_ATTR_KEY]: value,
           },
           {
             at,
@@ -52,14 +47,12 @@ export const withAlign = <T extends Editable>(editor: T, options: AlignOptions =
 
   newEditor.renderElementAttributes = ({ attributes, element }) => {
     const style: typeof attributes.style = attributes.style ?? {}
-    if (Align.isAlign(element)) {
-      const textAlign = element[ALIGN_ATTR_KEY]
-      const isList = editor.isList(element)
-      const attr = isList && textAlign !== AlignValue.Justify ? 'justifyContent' : 'textAlign'
-      if (textAlign === AlignValue.Left) {
-        delete style[attr]
+    if (Leading.isLeading(element)) {
+      const leading = element[LEADING_ATTR_KEY]
+      if (!leading) {
+        delete style[LEADING_ATTR_KEY]
       } else {
-        style[attr] = textAlign
+        style[LEADING_ATTR_KEY] = leading
       }
       attributes = Object.assign({}, attributes, { style })
     }
@@ -71,14 +64,14 @@ export const withAlign = <T extends Editable>(editor: T, options: AlignOptions =
 
   const { onKeydown } = newEditor
 
-  const hotkeys: AlignHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
+  const hotkeys: LeadingHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
   newEditor.onKeydown = (e: KeyboardEvent) => {
     for (let key in hotkeys) {
-      const value = key as AlignKeys
+      const value = key
       const hotkey = hotkeys[value]
       const toggle = () => {
         e.preventDefault()
-        newEditor.toggleAlign(value)
+        newEditor.toggleLeading(value)
       }
       if (
         (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
@@ -103,18 +96,18 @@ List.wrapList = (editor, entry, options = {}) => {
     ...options,
     props(key, node, path) {
       const p = props ? props(key, node, path) : {}
-      if (Align.isAlign(node)) {
-        const textAlign = node[ALIGN_ATTR_KEY]
-        Transforms.setNodes<Align>(
+      if (Leading.isLeading(node)) {
+        const lineHeight = node[LEADING_ATTR_KEY]
+        Transforms.setNodes<Leading>(
           editor,
-          { [ALIGN_ATTR_KEY]: AlignValue.Left },
+          { [LEADING_ATTR_KEY]: undefined },
           {
             at: path,
           },
         )
         return {
           ...p,
-          textAlign,
+          lineHeight,
         }
       }
       return p
@@ -129,11 +122,11 @@ List.unwrapList = (editor, options = {}) => {
     ...options,
     props(list, path) {
       const p = props ? props(list, path) : {}
-      if (Align.isAlign(list)) {
-        const textAlign = list[ALIGN_ATTR_KEY]
+      if (Leading.isLeading(list)) {
+        const lineHeight = list[LEADING_ATTR_KEY]
         return {
           ...p,
-          textAlign,
+          lineHeight,
         }
       }
       return p
@@ -148,11 +141,11 @@ List.splitList = (editor, options = {}) => {
     ...options,
     props(list, path) {
       const p = props ? props(list, path) : {}
-      if (Align.isAlign(list)) {
-        const textAlign = list[ALIGN_ATTR_KEY]
+      if (Leading.isLeading(list)) {
+        const lineHeight = list[LEADING_ATTR_KEY]
         return {
           ...p,
-          textAlign,
+          lineHeight,
         }
       }
       return p
@@ -160,8 +153,8 @@ List.splitList = (editor, options = {}) => {
   })
 }
 
-export type { AlignOptions, AlignHotkey }
+export type { LeadingOptions, LeadingHotkey }
 
-export * from './interfaces/align'
+export * from './interfaces/leading'
 
 export * from './editor'

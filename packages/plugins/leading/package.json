@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugins",
-  "version": "1.0.0-beta.20",
+  "name": "@editablejs/plugin-leading",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -34,6 +34,11 @@
       ]
     }
   },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "sideEffects": false,
   "license": "MIT",
   "files": [
@@ -41,7 +46,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsup",
+    "build": "tsup ",
     "dev": "tsup --watch",
     "lint": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
@@ -49,38 +54,20 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
+    "twin.macro": "3.0.1",
+    "tsup": "^6.1.2",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
-  },
-  "dependencies": {
-    "@editablejs/plugin-align": "workspace:*",
-    "@editablejs/plugin-blockquote": "workspace:*",
-    "@editablejs/plugin-context-menu": "workspace:*",
-    "@editablejs/plugin-fontsize": "workspace:*",
-    "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-hr": "workspace:*",
-    "@editablejs/plugin-image": "workspace:*",
-    "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-leading": "workspace:1.0.0-beta.0",
-    "@editablejs/plugin-link": "workspace:*",
-    "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*",
-    "@editablejs/plugin-toolbar": "workspace:*",
-    "@editablejs/plugin-ui": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

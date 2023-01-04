@@ -17,11 +17,12 @@ import {
   HrEditor,
   AlignEditor,
   AlignKeys,
+  LeadingEditor,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback } from 'react'
 
-const { Icon, IconMap, Button } = UI
+const { Icon, IconMap } = UI
 
 const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -38,7 +39,7 @@ const AlignDropdown: FC = () => {
     return 'alignLeft'
   }, [editor])
   const name: keyof typeof IconMap = getAlign()
-  return <Button type="text" icon={<Icon name={name} />} />
+  return <Icon name={name} />
 }
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup']
@@ -239,6 +240,35 @@ export const createToolbarItems = (editor: Editable) => {
       children: <AlignDropdown />,
       onToggle: (editor, value) => {
         AlignEditor.toggle(editor, value as AlignKeys)
+      },
+    },
+    {
+      type: 'dropdown',
+      items: [
+        {
+          value: 'default',
+          content: 'Default',
+        },
+        {
+          value: '1',
+        },
+        {
+          value: '1.15',
+        },
+        {
+          value: '1.5',
+        },
+        {
+          value: '2',
+        },
+        {
+          value: '3',
+        },
+      ],
+      value: LeadingEditor.queryActive(editor) ?? 'default',
+      children: <Icon name="leading" />,
+      onToggle: (editor, value) => {
+        LeadingEditor.toggle(editor, value === 'default' ? undefined : value)
       },
     },
     {

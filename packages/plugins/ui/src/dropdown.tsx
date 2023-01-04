@@ -1,5 +1,6 @@
 import * as React from 'react'
 import tw from 'twin.macro'
+import { Button } from './button'
 import { Icon } from './icon'
 import {
   MenuAnchor,
@@ -126,7 +127,9 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
     return (
       <Menu open={open} onOpenChange={onOpenChange} dir={dir}>
         <MenuAnchor>
-          <button
+          <Button
+            type="text"
+            size={size}
             disabled={disabled}
             css={[
               tw`inline-flex cursor-pointer text-base content-center items-center gap-2 rounded border-none bg-white px-1 outline-none hover:bg-gray-100`,
@@ -156,7 +159,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
               name="arrowCaretDown"
               css={[tw`text-xs text-gray-400`, open && tw`rotate-180 mt-1`]}
             />
-          </button>
+          </Button>
         </MenuAnchor>
         <Portal>
           <MenuContent
