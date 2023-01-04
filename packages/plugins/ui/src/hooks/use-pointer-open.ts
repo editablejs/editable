@@ -177,6 +177,7 @@ export const usePointerOpen = ({
   }, [
     actions,
     trigger,
+    handlePointerDown,
     handlePointerMove,
     handlePointerLeave,
     handleFocus,

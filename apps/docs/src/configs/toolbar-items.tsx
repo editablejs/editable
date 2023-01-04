@@ -1,4 +1,4 @@
-import { Editable, Grid } from '@editablejs/editor'
+import { Editable, Grid, useEditable } from '@editablejs/editor'
 import {
   FontSizeEditor,
   HeadingEditor,
@@ -15,10 +15,31 @@ import {
   LinkEditor,
   ImageEditor,
   HrEditor,
+  AlignEditor,
+  AlignKeys,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
+import { FC, useCallback, useMemo } from 'react'
 
-const { Icon } = UI
+const { Icon, IconMap, Button } = UI
+
+const AlignDropdown: FC = () => {
+  const editor = useEditable()
+  const getAlign = useCallback(() => {
+    const value = AlignEditor.queryActive(editor)
+    switch (value) {
+      case 'center':
+        return 'alignCenter'
+      case 'right':
+        return 'alignRight'
+      case 'justify':
+        return 'alignJustify'
+    }
+    return 'alignLeft'
+  }, [editor])
+  const name: keyof typeof IconMap = getAlign()
+  return <Button type="text" icon={<Icon name={name} />} />
+}
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup']
 
@@ -173,6 +194,52 @@ export const createToolbarItems = (editor: Editable) => {
         TableEditor.toggle(editor)
       },
       icon: <Icon name="table" />,
+    },
+    'separator',
+    {
+      type: 'dropdown',
+      items: [
+        {
+          value: 'left',
+          content: (
+            <div tw="flex gap-1 items-center">
+              <Icon name="alignLeft" />
+              Align Left
+            </div>
+          ),
+        },
+        {
+          value: 'center',
+          content: (
+            <div tw="flex gap-1 items-center">
+              <Icon name="alignCenter" />
+              Align Center
+            </div>
+          ),
+        },
+        {
+          value: 'right',
+          content: (
+            <div tw="flex gap-1 items-center">
+              <Icon name="alignRight" />
+              Align Right
+            </div>
+          ),
+        },
+        {
+          value: 'justify',
+          content: (
+            <div tw="flex gap-1 items-center">
+              <Icon name="alignJustify" />
+              Align Justify
+            </div>
+          ),
+        },
+      ],
+      children: <AlignDropdown />,
+      onToggle: (editor, value) => {
+        AlignEditor.toggle(editor, value as AlignKeys)
+      },
     },
     {
       type: 'button',

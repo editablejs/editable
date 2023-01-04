@@ -756,6 +756,38 @@ export const HrIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
   )
 }
 
+export const AlignLeftIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg {...props} viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+      <path d="M120 160h496q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0 405.333h496q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8zM120 768h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0-405.333h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z" />
+    </svg>
+  )
+}
+
+export const AlignCenterIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg {...props} viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+      <path d="M264 160h496q8 0 8 8v80q0 8-8 8H264q-8 0-8-8v-80q0-8 8-8z m0 405h496q8 0 8 8v80q0 8-8 8H264q-8 0-8-8v-80q0-8 8-8zM120 768h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0-405h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z" />
+    </svg>
+  )
+}
+
+export const AlignRightIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg {...props} viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+      <path d="M408 160h496q8 0 8 8v80q0 8-8 8H408q-8 0-8-8v-80q0-8 8-8z m0 405.333h496q8 0 8 8v80q0 8-8 8H408q-8 0-8-8v-80q0-8 8-8zM120 768h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0-405.333h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z" />
+    </svg>
+  )
+}
+
+export const AlignJustifyIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg {...props} viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+      <path d="M120 160h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0 405.333h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8zM120 768h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z m0-405.333h784q8 0 8 8v80q0 8-8 8H120q-8 0-8-8v-80q0-8 8-8z" />
+    </svg>
+  )
+}
+
 export const IconMap = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -805,6 +837,10 @@ export const IconMap = {
   download: DownloadIcon,
   close: CloseIcon,
   hr: HrIcon,
+  alignLeft: AlignLeftIcon,
+  alignCenter: AlignCenterIcon,
+  alignRight: AlignRightIcon,
+  alignJustify: AlignJustifyIcon,
 }
 
 export type IconName = keyof typeof IconMap

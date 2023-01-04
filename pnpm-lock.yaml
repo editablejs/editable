@@ -342,6 +342,34 @@ importers:
       tsup-config: link:../config/tsup-config
       typescript: 4.9.4
 
+  packages/plugins/align:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      twin.macro: 3.0.1
+      typescript: latest
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.0.1_tailwindcss@3.2.4
+      typescript: 4.9.4
+
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -633,9 +661,6 @@ importers:
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
-      postcss: ^8.4.16
-      postcss-cli: ^10.0.0
-      postcss-import: 15.0.0
       prettier-config: workspace:*
       react: ^17.x
       react-dom: ^17.x
@@ -657,9 +682,6 @@ importers:
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
-      postcss: 8.4.16
-      postcss-cli: 10.0.0_postcss@8.4.16
-      postcss-import: 15.0.0_postcss@8.4.16
       prettier-config: link:../../config/prettier-config
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
@@ -801,11 +823,12 @@ importers:
   packages/plugins/plugins:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-align': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-fontsize': workspace:*
       '@editablejs/plugin-heading': workspace:*
-      '@editablejs/plugin-hr': workspace:1.0.0-beta.0
+      '@editablejs/plugin-hr': workspace:*
       '@editablejs/plugin-image': workspace:*
       '@editablejs/plugin-indent': workspace:*
       '@editablejs/plugin-link': workspace:*
@@ -827,6 +850,7 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
+      '@editablejs/plugin-align': link:../align
       '@editablejs/plugin-blockquote': link:../blockquote
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-fontsize': link:../fontsize
@@ -4441,11 +4465,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /dependency-graph/0.11.0:
-    resolution: {integrity: sha512-JeMq7fEshyepOWDfcfHK06N3MhyPhz++vtqWhMT5O9A3K42rdsEDpfdVqjaqaAhsw6a+ZqeDvQVtD0hFHQWrzg==}
-    engines: {node: '>= 0.6.0'}
-    dev: true
-
   /dequal/2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
@@ -5382,17 +5401,6 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: true
 
-  /fast-glob/3.2.11:
-    resolution: {integrity: sha512-xrO3+1bxSo3ZVHAnqzyuewYT6aMFHRAd4Kcs92MAonjwQZLsK9d0SF1IyQ3k5PoirxTW0Oe/RqFgMQ6TcNE5Ew==}
-    engines: {node: '>=8.6.0'}
-    dependencies:
-      '@nodelib/fs.stat': 2.0.5
-      '@nodelib/fs.walk': 1.2.8
-      glob-parent: 5.1.2
-      merge2: 1.4.1
-      micromatch: 4.0.5
-    dev: true
-
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
     engines: {node: '>=8.6.0'}
@@ -5594,11 +5602,6 @@ packages:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
     engines: {node: '>=8.0.0'}
 
-  /get-stdin/9.0.0:
-    resolution: {integrity: sha512-dVKBjfWisLAicarI2Sf+JuBE/DghV4UzNAVe9yhEJuzeREd3JhOTE9cUaJTeSa77fsbQUK3pcOpJfM59+VKZaA==}
-    engines: {node: '>=12'}
-    dev: true
-
   /get-stream/6.0.1:
     resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
     engines: {node: '>=10'}
@@ -5698,17 +5701,6 @@ packages:
       ignore: 5.2.0
       merge2: 1.4.1
       slash: 3.0.0
-    dev: true
-
-  /globby/13.1.2:
-    resolution: {integrity: sha512-LKSDZXToac40u8Q1PQtZihbNdTYSNMuWe+K5l+oa6KgDzSvVrHXlJy40hUP522RjAIoNLJYBJi7ow+rbFpIhHQ==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      dir-glob: 3.0.1
-      fast-glob: 3.2.11
-      ignore: 5.2.0
-      merge2: 1.4.1
-      slash: 4.0.0
     dev: true
 
   /graceful-fs/4.2.9:
@@ -8409,30 +8401,6 @@ packages:
     dependencies:
       find-up: 4.1.0
 
-  /postcss-cli/10.0.0_postcss@8.4.16:
-    resolution: {integrity: sha512-Wjy/00wBBEgQqnSToznxLWDnATznokFGXsHtF/3G8glRZpz5KYlfHcBW/VMJmWAeF2x49zjgy4izjM3/Wx1dKA==}
-    engines: {node: '>=14'}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.0.0
-    dependencies:
-      chokidar: 3.5.3
-      dependency-graph: 0.11.0
-      fs-extra: 10.1.0
-      get-stdin: 9.0.0
-      globby: 13.1.2
-      picocolors: 1.0.0
-      postcss: 8.4.16
-      postcss-load-config: 4.0.1_postcss@8.4.16
-      postcss-reporter: 7.0.5_postcss@8.4.16
-      pretty-hrtime: 1.0.3
-      read-cache: 1.0.0
-      slash: 4.0.0
-      yargs: 17.5.1
-    transitivePeerDependencies:
-      - ts-node
-    dev: true
-
   /postcss-import/14.1.0_postcss@8.4.16:
     resolution: {integrity: sha512-flwI+Vgm4SElObFVPpTIT7SU7R3qk2L7PyduMcokiaVKuWv9d/U+Gm/QAd8NDLuykTWTkcrjOeD2Pp1rMeBTGw==}
     engines: {node: '>=10.0.0'}
@@ -8443,18 +8411,6 @@ packages:
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.1
-
-  /postcss-import/15.0.0_postcss@8.4.16:
-    resolution: {integrity: sha512-Y20shPQ07RitgBGv2zvkEAu9bqvrD77C9axhj/aA1BQj4czape2MdClCExvB27EwYEJdGgKZBpKanb0t1rK2Kg==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      postcss: ^8.0.0
-    dependencies:
-      postcss: 8.4.16
-      postcss-value-parser: 4.2.0
-      read-cache: 1.0.0
-      resolve: 1.22.1
-    dev: true
 
   /postcss-js/4.0.0_postcss@8.4.16:
     resolution: {integrity: sha512-77QESFBwgX4irogGVPgQ5s07vLvFqWr228qZY+w6lW599cRlK/HmnlivnnVUxkjHnCu4J16PDMHcH+e+2HbvTQ==}
@@ -8497,23 +8453,6 @@ packages:
       postcss: 8.4.16
       yaml: 1.10.2
 
-  /postcss-load-config/4.0.1_postcss@8.4.16:
-    resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
-    engines: {node: '>= 14'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.0.6
-      postcss: 8.4.16
-      yaml: 2.1.1
-    dev: true
-
   /postcss-nested/6.0.0_postcss@8.4.16:
     resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
     engines: {node: '>=12.0'}
@@ -8522,17 +8461,6 @@ packages:
     dependencies:
       postcss: 8.4.16
       postcss-selector-parser: 6.0.10
-
-  /postcss-reporter/7.0.5_postcss@8.4.16:
-    resolution: {integrity: sha512-glWg7VZBilooZGOFPhN9msJ3FQs19Hie7l5a/eE6WglzYqVeH3ong3ShFcp9kDWJT1g2Y/wd59cocf9XxBtkWA==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      postcss: ^8.1.0
-    dependencies:
-      picocolors: 1.0.0
-      postcss: 8.4.16
-      thenby: 1.3.4
-    dev: true
 
   /postcss-selector-parser/6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -8618,11 +8546,6 @@ packages:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
       react-is: 17.0.2
-
-  /pretty-hrtime/1.0.3:
-    resolution: {integrity: sha512-66hKPCr+72mlfiSjlEB1+45IjXSqvVAIy6mocupoww4tBFE9R9IhwwUGoI4G++Tc9Aq+2rxOt0RFU6gPcrte0A==}
-    engines: {node: '>= 0.8'}
-    dev: true
 
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
@@ -9288,11 +9211,6 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
-  /slash/4.0.0:
-    resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
-    engines: {node: '>=12'}
-    dev: true
-
   /slate/0.85.0:
     resolution: {integrity: sha512-SHlgOI7fDG50sL+lfAI+nXF9FQpoqf7KNRofggyyE4ngsj1nINOEpFSYKGPkZgVUUkPflWK6PuBJMR6nEuUiKg==}
     dependencies:
@@ -9754,10 +9672,6 @@ packages:
     resolution: {integrity: sha512-49WtAWS+tcsy93dRt6P0P3AMD2m5PvXRhuEA0kaXos5ZLlujtYmpmFsB+QvWUSxE1ZsstmYXfQ7L40+EcQgpAQ==}
     engines: {node: '>=0.8'}
     dev: false
-
-  /thenby/1.3.4:
-    resolution: {integrity: sha512-89Gi5raiWA3QZ4b2ePcEwswC3me9JIg+ToSgtE0JWeCynLnLxNr/f9G+xfo9K+Oj4AFdom8YNJjibIARTJmapQ==}
-    dev: true
 
   /thenify-all/1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}

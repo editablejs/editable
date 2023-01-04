@@ -17,6 +17,7 @@ import {
 import { withLinkDescendantTransform } from '@editablejs/plugin-link/deserializer'
 import { withImageDescendantTransform } from '@editablejs/plugin-image/deserializer'
 import { withHrDescendantTransform } from '@editablejs/plugin-hr/deserializer'
+import { withAlignDescendantTransform } from '@editablejs/plugin-align/deserializer'
 
 export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withTableDescendantTransform, { editor })
@@ -33,4 +34,5 @@ export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withLinkDescendantTransform, {})
   HTMLDeserializer.with(withImageDescendantTransform, { editor })
   HTMLDeserializer.with(withHrDescendantTransform, {})
+  HTMLDeserializer.with(withAlignDescendantTransform, {})
 }

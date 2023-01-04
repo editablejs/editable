@@ -1,5 +1,4 @@
 import { Editable, Hotkey, Locale, Transforms } from '@editablejs/editor'
-import React from 'react'
 import { HrComponent } from './components/hr'
 import { DEFAULT_HR_WIDTH, DEFAULT_HR_STYLE, DEFUALT_HR_COLOR, HR_KEY } from './constants'
 import { HrEditor } from './editor'

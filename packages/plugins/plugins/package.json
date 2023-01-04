@@ -66,11 +66,12 @@
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
+    "@editablejs/plugin-align": "workspace:*",
     "@editablejs/plugin-blockquote": "workspace:*",
     "@editablejs/plugin-context-menu": "workspace:*",
     "@editablejs/plugin-fontsize": "workspace:*",
     "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-hr": "workspace:1.0.0-beta.1",
+    "@editablejs/plugin-hr": "workspace:*",
     "@editablejs/plugin-image": "workspace:*",
     "@editablejs/plugin-indent": "workspace:*",
     "@editablejs/plugin-link": "workspace:*",

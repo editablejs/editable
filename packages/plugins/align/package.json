@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugin-indent",
-  "version": "1.0.0-beta.13",
+  "name": "@editablejs/plugin-align",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -54,15 +54,10 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
-    "@types/styled-components": "5.1.26",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
@@ -73,9 +68,6 @@
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
-  },
-  "dependencies": {
-    "styled-components": "5.3.5"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

@@ -63,8 +63,8 @@ export const IndentEditor = {
   queryActive: (editor: Editable) => {
     const elements = editor.queryActiveElements()
     for (const type in elements) {
-      for (const element of elements[type]) {
-        const { textIndent, lineIndent } = element[0] as Indent
+      for (const [element] of elements[type]) {
+        const { textIndent, lineIndent } = element as Indent
         if (textIndent || lineIndent) {
           const text = textIndent ?? 0
           const line = lineIndent ?? 0

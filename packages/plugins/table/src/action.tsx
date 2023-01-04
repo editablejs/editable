@@ -257,7 +257,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
 
   React.useEffect(() => {
     if (draging) Slot.update(editor, { active: false })
-  }, [draging])
+  }, [draging, editor])
   const handleMouseOver = React.useCallback(() => {
     if (draging) return
     cancellablePromisesApi.clearPendingPromises()
