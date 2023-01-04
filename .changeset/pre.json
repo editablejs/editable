@@ -19,7 +19,8 @@
     "@editablejs/plugin-yjs": "0.0.0",
     "@editablejs/plugin-yjs-transform": "0.0.0",
     "@editablejs/plugin-link": "0.0.0",
-    "@editablejs/plugin-image": "1.0.0-beta.0"
+    "@editablejs/plugin-image": "1.0.0-beta.0",
+    "@editablejs/plugin-hr": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -42,6 +43,7 @@
     "smart-pillows-cough",
     "soft-coins-approve",
     "sour-news-hide",
+    "spicy-donkeys-flash",
     "stale-bees-do",
     "thirty-boats-glow",
     "unlucky-zebras-scream",
