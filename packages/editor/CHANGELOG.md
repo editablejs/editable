@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.14
+
+### Minor Changes
+
+- [`c250e92`](https://github.com/editablejs/editable/commit/c250e92d89d1e86885cc8e498c465396fb47fc66) Thanks [@big-camel](https://github.com/big-camel)! - refactor ui
+
 ## 1.0.0-beta.13
 
 ### Patch Changes

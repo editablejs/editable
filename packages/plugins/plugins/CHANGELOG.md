@@ -1,5 +1,29 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.22
+
+### Minor Changes
+
+- [`c250e92`](https://github.com/editablejs/editable/commit/c250e92d89d1e86885cc8e498c465396fb47fc66) Thanks [@big-camel](https://github.com/big-camel)! - refactor ui
+
+### Patch Changes
+
+- Updated dependencies [[`c250e92`](https://github.com/editablejs/editable/commit/c250e92d89d1e86885cc8e498c465396fb47fc66)]:
+  - @editablejs/editor@1.0.0-beta.14
+  - @editablejs/plugin-align@1.0.0-beta.3
+  - @editablejs/plugin-blockquote@1.0.0-beta.15
+  - @editablejs/plugin-context-menu@1.0.0-beta.22
+  - @editablejs/plugin-heading@1.0.0-beta.14
+  - @editablejs/plugin-hr@1.0.0-beta.4
+  - @editablejs/plugin-image@1.0.0-beta.5
+  - @editablejs/plugin-indent@1.0.0-beta.15
+  - @editablejs/plugin-leading@1.0.0-beta.2
+  - @editablejs/plugin-link@1.0.0-beta.5
+  - @editablejs/plugin-list@1.0.0-beta.14
+  - @editablejs/plugin-mark@1.0.0-beta.14
+  - @editablejs/plugin-table@1.0.0-beta.21
+  - @editablejs/plugin-fontsize@1.0.0-beta.14
+
 ## 1.0.0-beta.21
 
 ### Patch Changes
