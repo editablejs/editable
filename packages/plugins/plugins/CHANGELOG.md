@@ -1,5 +1,22 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.23
+
+### Patch Changes
+
+- [`6f627f3`](https://github.com/editablejs/editable/commit/6f627f3646694cc3399ce7466eb17818ea20d2e3) Thanks [@big-camel](https://github.com/big-camel)! - add font-color & background-color plugin
+
+- Updated dependencies [[`6f627f3`](https://github.com/editablejs/editable/commit/6f627f3646694cc3399ce7466eb17818ea20d2e3)]:
+  - @editablejs/plugin-align@1.0.0-beta.4
+  - @editablejs/plugin-background-color@1.0.0-beta.1
+  - @editablejs/plugin-font-color@1.0.0-beta.1
+  - @editablejs/plugin-font-size@1.0.0-beta.1
+  - @editablejs/plugin-context-menu@1.0.0-beta.23
+  - @editablejs/plugin-hr@1.0.0-beta.5
+  - @editablejs/plugin-image@1.0.0-beta.6
+  - @editablejs/plugin-link@1.0.0-beta.6
+  - @editablejs/plugin-table@1.0.0-beta.22
+
 ## 1.0.0-beta.22
 
 ### Minor Changes

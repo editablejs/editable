@@ -22,7 +22,9 @@
     "@editablejs/plugin-image": "1.0.0-beta.0",
     "@editablejs/plugin-hr": "1.0.0-beta.0",
     "@editablejs/plugin-align": "1.0.0-beta.0",
-    "@editablejs/plugin-leading": "1.0.0-beta.0"
+    "@editablejs/plugin-leading": "1.0.0-beta.0",
+    "@editablejs/plugin-background-color": "1.0.0-beta.0",
+    "@editablejs/plugin-font-color": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -54,6 +56,7 @@
     "thirty-boats-glow",
     "unlucky-zebras-scream",
     "wicked-dancers-sneeze",
+    "wild-cooks-beg",
     "young-flies-act"
   ]
 }
