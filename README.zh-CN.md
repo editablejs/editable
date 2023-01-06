@@ -76,8 +76,8 @@ pnpm dev
 - [x] TaskList
 - [x] Blockquote
 - [x] Indent
-- [ ] Fontcolor
-- [ ] BackgroundColor
+- [x] Fontcolor
+- [x] BackgroundColor
 - [x] Redo
 - [x] Undo
 - [x] Link
