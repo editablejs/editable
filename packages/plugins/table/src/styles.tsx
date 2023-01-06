@@ -1,4 +1,4 @@
-import { Icon } from '@editablejs/plugin-ui'
+import { Icon } from '@editablejs/ui'
 import tw, { css, styled, theme } from 'twin.macro'
 
 export const TableStyles = styled.div(

@@ -1,13 +1,12 @@
 import { useIsomorphicLayoutEffect, useLocale, useNodeFocused } from '@editablejs/editor'
 import {
-  Button,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Toolbar,
   ToolbarDropdown,
   Tooltip,
-} from '@editablejs/plugin-ui'
+} from '@editablejs/ui'
 import { FC, useState } from 'react'
 import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH } from '../constants'
 import { HrEditor } from '../editor'
@@ -40,13 +39,13 @@ export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => 
   const { toolbar } = useLocale<HrLocale>('hr')
 
   return (
-    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} actions={[]}>
+    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
         <Toolbar mode="inline">
           <Tooltip content={toolbar.style} side="top" sideOffset={5} arrow={false}>
             <ToolbarDropdown
-              onToggle={value => editor.setStyleHr(value as HrStyle, element)}
+              onSelect={value => editor.setStyleHr(value as HrStyle, element)}
               value={element.style || DEFAULT_HR_STYLE}
               items={[
                 {
@@ -83,12 +82,12 @@ export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => 
                 },
               ]}
             >
-              <Button type="text" icon={<StyleIcon />} />
+              <StyleIcon />
             </ToolbarDropdown>
           </Tooltip>
           <Tooltip content={toolbar.width} side="top" sideOffset={5} arrow={false}>
             <ToolbarDropdown
-              onToggle={value => editor.setWidthHr(Number(value), element)}
+              onSelect={value => editor.setWidthHr(Number(value), element)}
               value={String(element.width || DEFAULT_HR_WIDTH)}
               items={[
                 {
@@ -125,7 +124,7 @@ export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => 
                 },
               ]}
             >
-              <Button type="text" icon={<ThicknessIcon />} />
+              <ThicknessIcon />
             </ToolbarDropdown>
           </Tooltip>
         </Toolbar>

@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
   Icon,
   Button,
-} from '@editablejs/plugin-ui'
+} from '@editablejs/ui'
 import React, { forwardRef, useState } from 'react'
 import { LinkEditor } from '../editor'
 import { Link } from '../interfaces/link'
@@ -81,11 +81,7 @@ export const LinkComponent = forwardRef<
   const locale = useLocale<LinkLocale>('link')
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={state => setOpen(focused ? true : state)}
-      actions={['click']}
-    >
+    <Popover open={open} onOpenChange={state => setOpen(focused ? true : state)}>
       <PopoverTrigger>
         <a tw="font-medium mb-2 mt-0 text-blue-600 underline" {...props} ref={ref}>
           {children}

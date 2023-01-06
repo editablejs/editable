@@ -14,7 +14,7 @@ import {
   Portal,
   Point,
   ContextMenuLabel,
-} from '@editablejs/plugin-ui'
+} from '@editablejs/ui'
 import { ContextMenuItem, useContextMenuItems, useContextMenuOpen } from './store'
 
 export interface ContextMenuOptions {}

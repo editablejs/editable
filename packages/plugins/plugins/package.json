@@ -74,13 +74,11 @@
     "@editablejs/plugin-hr": "workspace:*",
     "@editablejs/plugin-image": "workspace:*",
     "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-leading": "workspace:1.0.0-beta.1",
+    "@editablejs/plugin-leading": "workspace:*",
     "@editablejs/plugin-link": "workspace:*",
     "@editablejs/plugin-list": "workspace:*",
     "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*",
-    "@editablejs/plugin-toolbar": "workspace:*",
-    "@editablejs/plugin-ui": "workspace:*"
+    "@editablejs/plugin-table": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

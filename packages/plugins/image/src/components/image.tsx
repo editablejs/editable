@@ -12,13 +12,12 @@ import {
   PopoverContent,
   PopoverTrigger,
   Resizer,
-  RotateLeftIcon,
   Toolbar,
   ToolbarButton,
   ToolbarDropdown,
   Tooltip,
   useIsomorphicLayoutEffect,
-} from '@editablejs/plugin-ui'
+} from '@editablejs/ui'
 import React, { forwardRef, ReactNode, useMemo, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
 import { DATA_IMAGE_KEY } from '../constants'
@@ -226,13 +225,13 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     const { style: styleLocale, viewer: viewerLocale } = useLocale<ImageLocale>('image')
 
     return (
-      <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} actions={[]}>
+      <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
         <PopoverTrigger asChild>
           <div
             {...props}
             ref={ref}
             css={[
-              tw`relative inline-block max-w-full cursor-default rounded`,
+              tw`relative inline-block max-w-full cursor-default rounded border border-transparent`,
               css`
                 line-height: 0;
                 transform: rotate(${element.rotate ?? 0}deg);
@@ -240,6 +239,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
               element.style === 'shadow' && tw`shadow-outer`,
               focused && isDone && tw`cursor-zoom-in`,
               !loaded && tw`bg-gray-100`,
+              !focused && popoverOpen && tw`border-primary`,
             ]}
           >
             <div
@@ -268,13 +268,14 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
         <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
           <Toolbar mode="inline">
             <Tooltip content={viewerLocale.arrowLeft} side="top" sideOffset={5} arrow={false}>
-              <ToolbarButton onToggle={() => changeRotate((element.rotate ?? 0) - 90)}>
-                <RotateLeftIcon />
-              </ToolbarButton>
+              <ToolbarButton
+                icon={<Icon name="rotateLeft" />}
+                onToggle={() => changeRotate((element.rotate ?? 0) - 90)}
+              />
             </Tooltip>
             <Tooltip content={styleLocale.tooltip} side="top" sideOffset={5} arrow={false}>
               <ToolbarDropdown
-                onToggle={value => changeStyle(value as ImageStyle)}
+                onSelect={value => changeStyle(value as ImageStyle)}
                 value={element.style || 'none'}
                 items={[
                   { value: 'none', content: styleLocale.none },

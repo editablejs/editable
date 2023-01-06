@@ -9,13 +9,7 @@ import {
   Text,
   useLocale,
 } from '@editablejs/editor'
-import {
-  Popover,
-  PopoverContent,
-  PopoverPortal,
-  PopoverAnchor,
-  Button,
-} from '@editablejs/plugin-ui'
+import { Popover, PopoverContent, PopoverPortal, PopoverAnchor, Button } from '@editablejs/ui'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { LINK_KEY } from '../constants'
 import { Link } from '../interfaces/link'
@@ -83,7 +77,7 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
   const locale = useLocale<LinkLocale>('link')
 
   return (
-    <Popover open={open} onOpenChange={setOpen} actions={[]}>
+    <Popover open={open} onOpenChange={setOpen} trigger={[]}>
       <PopoverAnchor virtualRef={virtualRef} />
       <PopoverPortal>
         <PopoverContent align="start" sideOffset={5}>

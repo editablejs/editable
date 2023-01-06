@@ -30,15 +30,19 @@ const getStore = (editor: Editable) => {
 export const Locale = {
   getStore,
 
-  setLocale: <T extends Locale>(editor: Editable, lang: string, locale: T) => {
+  setLocale: <T extends Locale>(editor: Editable, ...locales: Record<string, T>[]) => {
     const store = getStore(editor)
     store.setState(state => {
+      const { lang, locales: prevLocales } = state
+      const newLocales = Object.assign({}, prevLocales)
+      for (const locale of locales) {
+        for (const key in locale) {
+          newLocales[key] = merge(newLocales[key], locale[key])
+        }
+      }
       return {
-        lang: state.lang,
-        locales: {
-          ...state.locales,
-          [lang]: merge(state.locales[lang], locale),
-        },
+        lang,
+        locales: newLocales,
       }
     })
   },

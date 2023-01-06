@@ -7,7 +7,7 @@ import {
   Slot,
 } from '@editablejs/editor'
 import * as React from 'react'
-import { Icon } from '@editablejs/plugin-ui'
+import { Icon } from '@editablejs/ui'
 import {
   ColsInsertIconStyles,
   ColsInsertLineStyles,

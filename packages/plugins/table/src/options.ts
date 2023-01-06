@@ -11,7 +11,7 @@ export interface TableOptions {
   minRowHeight?: number
   minColWidth?: number
 
-  locales?: Record<string, TableLocale>
+  locale?: Record<string, TableLocale>
 }
 
 export const getOptions = (editor: Editable): Required<TableOptions> => {

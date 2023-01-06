@@ -1,6 +1,6 @@
 import { Editable, RenderElementProps, Transforms, Node, Grid, Locale } from '@editablejs/editor'
 import { withTableCell } from './cell'
-import locales, { TableLocale } from './locale'
+import locale, { TableLocale } from './locale'
 import { setOptions, TableOptions } from './options'
 import { withTableRow } from './row'
 import { TableEditor, TableComponent } from './table'
@@ -11,13 +11,8 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
 
   setOptions(newEditor, options)
 
-  for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
-
-  for (const key in options.locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
+  const { locale: localeOptions = {} } = options
+  Locale.setLocale(newEditor, locale, localeOptions)
 
   newEditor = withTableCell(newEditor)
   newEditor = withTableRow(newEditor)

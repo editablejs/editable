@@ -1,15 +1,13 @@
 import { Editable, Range, Element } from '@editablejs/editor'
 import {
   TableEditor,
-  UI,
-  SideToolbarItem,
   BlockquoteEditor,
   UnOrderedListEditor,
   OrderedListEditor,
   TaskListEditor,
 } from '@editablejs/plugins'
-
-const { Icon } = UI
+import { SideToolbarItem } from '@editablejs/plugin-toolbar/side'
+import { Icon } from '@editablejs/ui'
 
 export const createSideToolbarItems = (editor: Editable, range: Range, element: Element) => {
   const items: SideToolbarItem[] = []

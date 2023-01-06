@@ -4,7 +4,7 @@ import { HrLocale } from './locale/types'
 export type HrHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface HrOptions {
-  locales?: Record<string, HrLocale>
+  locale?: Record<string, HrLocale>
   hotkey?: HrHotkey
 }
 

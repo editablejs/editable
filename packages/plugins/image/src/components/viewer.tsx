@@ -1,5 +1,5 @@
 import { isTouchDevice, SlotComponentProps } from '@editablejs/editor'
-import { Icon } from '@editablejs/plugin-ui'
+import { Icon } from '@editablejs/ui'
 import React, { FC, useMemo } from 'react'
 import { PhotoSlider } from 'react-image-previewer'
 import { useViewer } from '../hooks/use-viewer'

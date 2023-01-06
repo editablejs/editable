@@ -3,5 +3,6 @@ import defaultConfig from 'tsup-config'
 
 export default defineConfig(options => ({
   ...(defaultConfig(options) as any),
+  entry: ['src/index.ts', 'src/inline/index.ts', 'src/side/index.ts'],
   inject: ['react-shim.ts'],
 }))

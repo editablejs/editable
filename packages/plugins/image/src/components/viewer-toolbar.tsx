@@ -1,5 +1,5 @@
 import { useLocale } from '@editablejs/editor'
-import { CloseIcon, Tooltip } from '@editablejs/plugin-ui'
+import { CloseIcon, Tooltip } from '@editablejs/ui'
 import { FC } from 'react'
 import { OverlayRenderProps } from 'react-image-previewer'
 import {

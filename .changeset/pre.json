@@ -15,7 +15,7 @@
     "@editablejs/plugins": "0.0.0",
     "@editablejs/plugin-table": "0.0.0",
     "@editablejs/plugin-toolbar": "0.0.0",
-    "@editablejs/plugin-ui": "0.0.0",
+    "@editablejs/ui": "0.0.0",
     "@editablejs/plugin-yjs": "0.0.0",
     "@editablejs/plugin-yjs-transform": "0.0.0",
     "@editablejs/plugin-link": "0.0.0",

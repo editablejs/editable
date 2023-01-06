@@ -1,5 +1,4 @@
 import { SideToolbarLocale } from './types'
-
 const locale: SideToolbarLocale = {
   locale: 'en-US',
   sideToolbar: {

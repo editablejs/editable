@@ -1,7 +1,6 @@
 import { Editable, Grid, Hotkey, Range } from '@editablejs/editor'
-import { ContextMenuItem, UI } from '@editablejs/plugins'
-
-const { Icon } = UI
+import { ContextMenuItem } from '@editablejs/plugins'
+import { Icon } from '@editablejs/ui'
 
 export const createContextMenuItems = (editor: Editable) => {
   const { selection } = editor

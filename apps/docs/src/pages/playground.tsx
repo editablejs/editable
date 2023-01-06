@@ -11,18 +11,7 @@ import {
   isTouchDevice,
   Editable,
 } from '@editablejs/editor'
-import {
-  withPlugins,
-  withSideToolbar,
-  withInlineToolbar,
-  withToolbar,
-  useContextMenuEffect,
-  useInlineToolbarEffect,
-  ContextMenuStore,
-  ToolbarStore,
-  useSideToolbarMenuEffect,
-  UI,
-} from '@editablejs/plugins'
+import { withPlugins, useContextMenuEffect, ContextMenuStore } from '@editablejs/plugins'
 import {
   withYHistory,
   withYjs,
@@ -39,7 +28,23 @@ import * as Y from 'yjs'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
 import { withHistory } from '@editablejs/plugin-history'
-import { Toolbar } from '../components/toolbar'
+import {
+  ToolbarComponent,
+  useToolbarEffect,
+  withToolbar,
+  Toolbar,
+} from '@editablejs/plugin-toolbar'
+import {
+  withInlineToolbar,
+  useInlineToolbarEffect,
+  InlineToolbar,
+} from '@editablejs/plugin-toolbar/inline'
+import {
+  withSideToolbar,
+  useSideToolbarMenuEffect,
+  SideToolbar,
+} from '@editablejs/plugin-toolbar/side'
+import { Switch, SwitchThumb, Icon, Tooltip } from '@editablejs/ui'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import { createToolbarItems } from '../configs/toolbar-items'
 import { createSideToolbarItems } from '../configs/side-toolbar-items'
@@ -50,8 +55,6 @@ import { IconGitHub } from 'components/icon/github'
 import Image from 'next/image'
 import { IconLogo } from 'components/icon/logo'
 import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
-
-const { Switch, SwitchThumb, Icon, Tooltip } = UI
 
 const initialValue = [
   {
@@ -87,7 +90,7 @@ const CustomStyles = createGlobalStyle({
 
 const StyledHeader = tw.div`bg-white text-base`
 
-const StyledToolbar = styled(Toolbar)`
+const StyledToolbar = styled(ToolbarComponent)`
   ${tw`flex justify-start overscroll-contain md:justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-2 md:px-6 overflow-auto`}
 `
 
@@ -225,12 +228,16 @@ export default function Playground() {
     ContextMenuStore.setItems(editor, createContextMenuItems(editor))
   }, editor)
 
+  useToolbarEffect(() => {
+    Toolbar.setItems(editor, createToolbarItems(editor))
+  }, editor)
+
   useInlineToolbarEffect(() => {
-    ToolbarStore.setInlineItems(editor, createInlineToolbarItems(editor))
+    InlineToolbar.setItems(editor, createInlineToolbarItems(editor))
   }, editor)
 
   useSideToolbarMenuEffect((...a) => {
-    ToolbarStore.setSideMenuItems(editor, createSideToolbarItems(editor, ...a))
+    SideToolbar.setItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
 
   const remoteClients = useRemoteStates<CursorData>(editor as CursorEditor)
@@ -285,7 +292,7 @@ export default function Playground() {
               </div>
             </div>
           </div>
-          <StyledToolbar />
+          <StyledToolbar editor={editor} />
         </StyledHeader>
         <StyledContainer>
           <ContentEditable placeholder="Please enter content..." />

@@ -3,7 +3,7 @@ import { HrComponent } from './components/hr'
 import { DEFAULT_HR_WIDTH, DEFAULT_HR_STYLE, DEFUALT_HR_COLOR, HR_KEY } from './constants'
 import { HrEditor } from './editor'
 import { Hr } from './interfaces/hr'
-import locales from './locale'
+import locale from './locale'
 import { HrHotkey, HrOptions, setOptions } from './options'
 
 const defaultHotkey: HrHotkey = 'mod+shift+e'
@@ -12,13 +12,8 @@ export const withHr = <T extends Editable>(editor: T, options: HrOptions = {}) =
   const newEditor = editor as T & HrEditor
   setOptions(newEditor, options)
 
-  for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
-
-  for (const key in options.locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
+  const { locale: localeOptions = {} } = options
+  Locale.setLocale(newEditor, locale, localeOptions)
 
   const { renderElement, isVoid } = newEditor
 

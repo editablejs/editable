@@ -1,3 +1,4 @@
+import { FC, useCallback } from 'react'
 import { Editable, Grid, useEditable } from '@editablejs/editor'
 import {
   FontSizeEditor,
@@ -8,10 +9,8 @@ import {
   HeadingType,
   MarkFormat,
   MarkEditor,
-  ToolbarItem,
   TaskListEditor,
   TableEditor,
-  UI,
   LinkEditor,
   ImageEditor,
   HrEditor,
@@ -20,9 +19,8 @@ import {
   LeadingEditor,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
-import { FC, useCallback } from 'react'
-
-const { Icon, IconMap } = UI
+import { ToolbarItem } from '@editablejs/plugin-toolbar'
+import { Icon, IconMap } from '@editablejs/ui'
 
 const AlignDropdown: FC = () => {
   const editor = useEditable()
@@ -50,7 +48,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       disabled: !HistoryEditor.canUndo(editor),
       icon: <Icon name="undo" />,
-      onToggle: editor => {
+      onToggle: () => {
         HistoryEditor.undo(editor)
       },
     },
@@ -58,7 +56,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       disabled: !HistoryEditor.canRedo(editor),
       icon: <Icon name="redo" />,
-      onToggle: editor => {
+      onToggle: () => {
         HistoryEditor.redo(editor)
       },
     },
@@ -67,7 +65,7 @@ export const createToolbarItems = (editor: Editable) => {
     type: 'button',
     active: MarkEditor.isActive(editor, mark),
     icon: <Icon name={mark} />,
-    onToggle: editor => {
+    onToggle: () => {
       MarkEditor.toggle(editor, mark)
     },
   }))
@@ -97,7 +95,7 @@ export const createToolbarItems = (editor: Editable) => {
         },
       ],
       value: FontSizeEditor.queryActive(editor) ?? '14px',
-      onToggle: (editor, value) => {
+      onSelect: value => {
         FontSizeEditor.toggle(editor, value)
       },
     },
@@ -133,7 +131,7 @@ export const createToolbarItems = (editor: Editable) => {
         },
       ],
       value: HeadingEditor.queryActive(editor) ?? 'paragraph',
-      onToggle: (editor, value) => {
+      onSelect: value => {
         HeadingEditor.toggle(editor, value as HeadingType)
       },
     },
@@ -143,7 +141,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: LinkEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         LinkEditor.open(editor)
       },
       icon: <Icon name="link" />,
@@ -151,7 +149,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: ImageEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         ImageEditor.open(editor)
       },
       icon: <Icon name="image" />,
@@ -159,7 +157,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: BlockquoteEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         BlockquoteEditor.toggle(editor)
       },
       icon: <Icon name="blockquote" />,
@@ -167,7 +165,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!UnOrderedListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         UnOrderedListEditor.toggle(editor)
       },
       icon: <Icon name="unorderedList" />,
@@ -175,7 +173,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!OrderedListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         OrderedListEditor.toggle(editor)
       },
       icon: <Icon name="orderedList" />,
@@ -183,7 +181,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!TaskListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         TaskListEditor.toggle(editor)
       },
       icon: <Icon name="taskList" />,
@@ -191,7 +189,7 @@ export const createToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       disabled: !!TableEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         TableEditor.toggle(editor)
       },
       icon: <Icon name="table" />,
@@ -238,7 +236,7 @@ export const createToolbarItems = (editor: Editable) => {
         },
       ],
       children: <AlignDropdown />,
-      onToggle: (editor, value) => {
+      onSelect: value => {
         AlignEditor.toggle(editor, value as AlignKeys)
       },
     },
@@ -267,18 +265,28 @@ export const createToolbarItems = (editor: Editable) => {
       ],
       value: LeadingEditor.queryActive(editor) ?? 'default',
       children: <Icon name="leading" />,
-      onToggle: (editor, value) => {
+      onSelect: value => {
         LeadingEditor.toggle(editor, value === 'default' ? undefined : value)
       },
     },
     {
       type: 'button',
       active: HrEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         HrEditor.insert(editor)
       },
       icon: <Icon name="hr" />,
     },
+    // {
+    //   type: 'color-picker',
+    //   children: <Icon name="fontColor" />,
+    //   onSelect: color => {},
+    // },
+    // {
+    //   type: 'color-picker',
+    //   children: <Icon name="backgroundColor" />,
+    //   onSelect: color => {},
+    // },
   )
 
   const grid = Grid.find(editor)

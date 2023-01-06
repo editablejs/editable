@@ -12,6 +12,26 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*/index.d.ts",
+        "default": "./dist/*/index.mjs"
+      },
+      "require": {
+        "types": "./dist/*/index.d.ts",
+        "default": "./dist/*/index.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "inline": [
+        "dist/inline/index.d.ts"
+      ],
+      "side": [
+        "dist/side/index.d.ts"
+      ]
     }
   },
   "sideEffects": false,
@@ -48,14 +68,14 @@
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
-    "twin.macro": "3.0.1",
+    "twin.macro": "3.1.0",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-ui": "workspace:*",
+    "@editablejs/ui": "workspace:*",
     "styled-components": "5.3.5",
     "zustand": "4.1.4"
   },

@@ -6,7 +6,7 @@ import { LinkComponent } from './components/link'
 import { LinkCreateComponent } from './components/create'
 import { LinkStore } from './store'
 import { LinkEditor } from './editor'
-import locales, { LinkLocale } from './locale'
+import locale, { LinkLocale } from './locale'
 
 const defaultHotkey: LinkHotkey = 'mod+k'
 
@@ -22,13 +22,8 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
 
   const { isInline } = newEditor
 
-  for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
-
-  for (const key in options.locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
+  const { locale: localeOptions = {} } = options
+  Locale.setLocale(newEditor, locale, localeOptions)
 
   Slot.mount(newEditor, LinkCreateComponent)
 

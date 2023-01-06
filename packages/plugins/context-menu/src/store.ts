@@ -2,7 +2,7 @@ import * as React from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { ContextMenuItem as UIContextMenuItem } from '@editablejs/plugin-ui'
+import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
 
 interface BaseContextMenuItem extends UIContextMenuItem {
   key: string

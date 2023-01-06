@@ -17,7 +17,7 @@ import {
   GridCell,
   isDOMHTMLElement,
 } from '@editablejs/editor'
-import { useComposedRefs } from '@editablejs/plugin-ui'
+import { useComposedRefs } from '@editablejs/ui'
 import * as React from 'react'
 import { createStore } from 'zustand'
 import { TableCellEditor } from '../cell'

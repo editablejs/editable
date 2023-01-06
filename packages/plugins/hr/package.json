@@ -68,14 +68,14 @@
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
-    "twin.macro": "3.0.1",
+    "twin.macro": "3.1.0",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-ui": "workspace:*",
+    "@editablejs/ui": "workspace:*",
     "styled-components": "5.3.5"
   },
   "lint-staged": {

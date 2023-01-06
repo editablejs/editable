@@ -1,10 +1,10 @@
 import { Editable, Hotkey, Transforms, Locale, Editor, Operation, Slot } from '@editablejs/editor'
-import { openFileDialog } from '@editablejs/plugin-ui'
+import { openFileDialog } from '@editablejs/ui'
 import { setOptions, ImageHotkey, ImageOptions } from './options'
 import { Image } from './interfaces/image'
 import { ImageComponent } from './components/image'
 import { ImageEditor } from './editor'
-import locales, { ImageLocale } from './locale'
+import locale, { ImageLocale } from './locale'
 import { insertImage, readImageFileInfo, uploadImage } from './utils'
 import { ImageViewer } from './components/viewer'
 
@@ -37,13 +37,8 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
     }
   }
 
-  for (const key in locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
-
-  for (const key in options.locales) {
-    Locale.setLocale(newEditor, key, locales[key])
-  }
+  const { locale: localeOptions = {} } = options
+  Locale.setLocale(newEditor, locale, localeOptions)
 
   Slot.mount(newEditor, ImageViewer)
 
