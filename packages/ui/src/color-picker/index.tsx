@@ -3,7 +3,6 @@ import { SketchPicker } from 'react-color'
 import tinycolor2 from 'tinycolor2'
 import tw, { css } from 'twin.macro'
 import { Button } from '../button'
-import { useControllableState } from '../hooks/use-controllable-state'
 import { Icon, IconCustom } from '../icon'
 import { Popover, PopoverContent, PopoverContentProps, PopoverTrigger } from '../popover'
 import { ColorPickerGroup } from './group'
@@ -48,8 +47,8 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
     {
       size,
       colors = Palette.colors,
-      value: valueProp,
-      defaultValue,
+      value: valueProp = '',
+      defaultValue = '',
       disabled,
       onSelect,
       defaultColor,
@@ -73,18 +72,13 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
   ) => {
     const palette = useMemo(() => createPalette(colors), [colors])
     const [open, setOpen] = useState(false)
-    const [value = '', setValue] = useControllableState({
-      prop: valueProp,
-      defaultProp: defaultValue,
-      onChange: value => {
-        onSelect?.(value)
-      },
-    })
+    const [value, setValue] = useState(defaultValue)
 
     const [localColors, addLocalColors] = useLocalStore()
 
     const handleSelect = (color: string, isClose = true) => {
       setValue(color)
+      onSelect?.(color)
       if (isClose) setOpen(false)
     }
 
@@ -99,6 +93,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
           disabled={disabled}
           className={className}
           type="text"
+          onClick={() => handleSelect(value)}
         >
           <span tw="inline-block">{children}</span>
           <span tw="inline-block -mt-[1px]">
@@ -161,13 +156,11 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
             ]}
           >
             {defaultColor && (
-              <div tw="flex items-center gap-2 p-2 mb-2 cursor-pointer hover:bg-black/5">
-                <ColorPickerItem
-                  palette={palette}
-                  color={defaultColor.color}
-                  activeColors={[value]}
-                  onSelect={value => handleSelect(value)}
-                />
+              <div
+                tw="flex items-center gap-2 p-2 mb-2 cursor-pointer hover:bg-black/5"
+                onClick={() => handleSelect(defaultColor.color)}
+              >
+                <ColorPickerItem palette={palette} color={defaultColor.color} activeColors={[]} />
                 <span>{defaultColor.title}</span>
               </div>
             )}

@@ -7,7 +7,6 @@ export type ColorPickerItemProps = {
   palette: Palette
   color: string
   activeColors: Array<string>
-  setStroke?: boolean
   onSelect?: (color: string, event: React.MouseEvent) => void
 }
 
@@ -15,7 +14,6 @@ export const ColorPickerItem: React.FC<ColorPickerItemProps> = ({
   palette,
   color,
   activeColors,
-  setStroke,
   onSelect,
 }) => {
   const toState = (
@@ -68,37 +66,37 @@ export const ColorPickerItem: React.FC<ColorPickerItemProps> = ({
   const state = toState(color || '#FFFFFF')
   //接近白色的颜色，需要添加一个边框。不然看不见
   const needBorder = ['#ffffff', '#fafafa', 'transparent'].indexOf(state.hex) >= 0
-  //是否激活
-  const active = activeColors.indexOf(color) >= 0
-  const special = 'transparent' === color
+
+  const isChecked = activeColors.indexOf(color) >= 0
+  const isTransparent = 'transparent' === color
   const styles: any = {
     check: {
       fill: getContrastingColor(state),
-      display: active ? 'block' : 'none',
+      display: isChecked ? 'block' : 'none',
     },
     block: {
       backgroundColor: color,
     },
   }
-  if (setStroke) {
-    styles.block.border = `1px solid ${palette.getStroke(color)}`
-  }
+
   return (
     <span
       css={[
         tw`w-6 h-6 p-0.5 inline-block rounded-[3px] border border-transparent cursor-pointer bg-transparent hover:border hover:bg-white hover:border-zinc-200 hover:shadow`,
-        special && tw`relative`,
-        special &&
+        isTransparent && tw`relative`,
+        isTransparent &&
           css`
-            content: '';
-            display: block;
-            position: absolute;
-            top: 10px;
-            left: 0px;
-            width: 22px;
-            height: 0;
-            border-bottom: 2px solid #ff5151;
-            transform: rotate(45deg);
+            :after {
+              content: '';
+              display: block;
+              position: absolute;
+              top: 10px;
+              left: 0px;
+              width: 22px;
+              height: 0;
+              border-bottom: 2px solid #ff5151;
+              transform: rotate(45deg);
+            }
           `,
       ]}
       onClick={triggerSelect}

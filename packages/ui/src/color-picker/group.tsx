@@ -7,7 +7,6 @@ export interface ColorPickerGroupProps {
   palette: Palette
   colors: string[]
   activeColors: string[]
-  setStroke?: boolean
   onSelect?: (color: string, event: React.MouseEvent) => void
 }
 

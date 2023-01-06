@@ -46,7 +46,11 @@ import {
 } from '@editablejs/plugin-toolbar/side'
 import { Switch, SwitchThumb, Icon, Tooltip } from '@editablejs/ui'
 import { createContextMenuItems } from '../configs/context-menu-items'
-import { createToolbarItems } from '../configs/toolbar-items'
+import {
+  createToolbarItems,
+  defaultBackgroundColor,
+  defaultFontColor,
+} from '../configs/toolbar-items'
 import { createSideToolbarItems } from '../configs/side-toolbar-items'
 import { Seo } from 'components/seo'
 import { createGlobalStyle } from 'styled-components'
@@ -181,6 +185,8 @@ export default function Playground() {
 
     editor = withPlugins(editor, {
       fontSize: { defaultSize: '14px' },
+      fontColor: { defaultColor: defaultFontColor },
+      backgroundColor: { defaultColor: defaultBackgroundColor },
     })
     editor = withInlineToolbar(withToolbar(editor))
 

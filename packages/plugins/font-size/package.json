@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugins",
-  "version": "1.0.0-beta.22",
+  "name": "@editablejs/plugin-font-size",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -49,38 +49,17 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
+    "tsup": "^6.1.2",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
-  },
-  "dependencies": {
-    "@editablejs/plugin-align": "workspace:*",
-    "@editablejs/plugin-blockquote": "workspace:*",
-    "@editablejs/plugin-background-color": "workspace:*",
-    "@editablejs/plugin-context-menu": "workspace:*",
-    "@editablejs/plugin-font-color": "workspace:*",
-    "@editablejs/plugin-font-size": "workspace:*",
-    "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-hr": "workspace:*",
-    "@editablejs/plugin-image": "workspace:*",
-    "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-leading": "workspace:*",
-    "@editablejs/plugin-link": "workspace:*",
-    "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

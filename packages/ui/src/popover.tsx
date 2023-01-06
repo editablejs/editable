@@ -291,6 +291,7 @@ const PopoverContentImpl = React.forwardRef<PopoverContentImplElement, PopoverCo
           data-state={getState(context.open)}
           role="dialog"
           id={context.contentId}
+          tw="z-50"
           {...contentProps}
           ref={composedRefs}
           style={{

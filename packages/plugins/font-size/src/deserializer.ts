@@ -1,5 +1,5 @@
 import { HTMLDeserializerWithTransform, isDOMHTMLElement } from '@editablejs/editor'
-import { FontSize } from './types'
+import { FontSize } from './interfaces/font-size'
 
 export const withFontSizeDescendantTransform: HTMLDeserializerWithTransform = next => {
   return (node, options = {}) => {

@@ -20,7 +20,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     type: 'button',
     active: MarkEditor.isActive(editor, mark),
     icon: <Icon name={mark} />,
-    onToggle: editor => {
+    onToggle: () => {
       MarkEditor.toggle(editor, mark)
     },
   }))
@@ -31,7 +31,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
       type: 'button',
       active: HeadingEditor.queryActive(editor) === 'heading-one',
       icon: <Icon name="headingOne" />,
-      onToggle: editor => {
+      onToggle: () => {
         HeadingEditor.toggle(editor, 'heading-one')
       },
     },
@@ -39,7 +39,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
       type: 'button',
       active: HeadingEditor.queryActive(editor) === 'heading-two',
       icon: <Icon name="headingTwo" />,
-      onToggle: editor => {
+      onToggle: () => {
         HeadingEditor.toggle(editor, 'heading-two')
       },
     },
@@ -47,7 +47,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
       type: 'button',
       active: HeadingEditor.queryActive(editor) === 'heading-three',
       icon: <Icon name="headingThree" />,
-      onToggle: editor => {
+      onToggle: () => {
         HeadingEditor.toggle(editor, 'heading-three')
       },
     },
@@ -57,7 +57,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: ImageEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         ImageEditor.open(editor)
       },
       icon: <Icon name="image" />,
@@ -65,7 +65,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!UnOrderedListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         UnOrderedListEditor.toggle(editor)
       },
       icon: <Icon name="unorderedList" />,
@@ -73,7 +73,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!OrderedListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         OrderedListEditor.toggle(editor)
       },
       icon: <Icon name="orderedList" />,
@@ -81,7 +81,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       active: !!TaskListEditor.queryActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         TaskListEditor.toggle(editor)
       },
       icon: <Icon name="taskList" />,
@@ -89,7 +89,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     {
       type: 'button',
       disabled: !!TableEditor.isActive(editor),
-      onToggle: editor => {
+      onToggle: () => {
         TableEditor.toggle(editor)
       },
       icon: <Icon name="table" />,

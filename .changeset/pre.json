@@ -6,7 +6,7 @@
     "@editablejs/editor": "0.0.0",
     "@editablejs/plugin-blockquote": "0.0.0",
     "@editablejs/plugin-context-menu": "0.0.0",
-    "@editablejs/plugin-fontsize": "0.0.0",
+    "@editablejs/plugin-font-size": "0.0.0",
     "@editablejs/plugin-heading": "0.0.0",
     "@editablejs/plugin-history": "0.0.0",
     "@editablejs/plugin-indent": "0.0.0",

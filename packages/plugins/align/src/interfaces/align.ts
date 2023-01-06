@@ -25,6 +25,10 @@ export interface Align extends Element {
 
 export const Align = {
   isAlign: (value: any): value is Align => {
-    return Element.isElement(value) && ALIGN_ATTR_KEY in value
+    return (
+      Element.isElement(value) &&
+      ALIGN_ATTR_KEY in value &&
+      typeof value[ALIGN_ATTR_KEY] === 'string'
+    )
   },
 }

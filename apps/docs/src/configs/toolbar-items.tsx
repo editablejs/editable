@@ -2,6 +2,8 @@ import { FC, useCallback } from 'react'
 import { Editable, Grid, useEditable } from '@editablejs/editor'
 import {
   FontSizeEditor,
+  FontColorEditor,
+  BackgroundColorEditor,
   HeadingEditor,
   BlockquoteEditor,
   OrderedListEditor,
@@ -42,6 +44,9 @@ const AlignDropdown: FC = () => {
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough', 'code', 'sub', 'sup']
 
+export const defaultFontColor = '#262626'
+export const defaultBackgroundColor = 'transparent'
+
 export const createToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = [
     {
@@ -70,6 +75,33 @@ export const createToolbarItems = (editor: Editable) => {
     },
   }))
   items.push('separator', ...markItems)
+  items.push(
+    'separator',
+    {
+      type: 'color-picker',
+      defaultValue: '#F5222D',
+      defaultColor: {
+        color: defaultFontColor,
+        title: 'Default color',
+      },
+      children: <Icon name="fontColor" />,
+      onSelect: color => {
+        FontColorEditor.toggle(editor, color)
+      },
+    },
+    {
+      type: 'color-picker',
+      defaultValue: '#FADB14',
+      defaultColor: {
+        color: defaultBackgroundColor,
+        title: 'No color',
+      },
+      children: <Icon name="backgroundColor" />,
+      onSelect: color => {
+        BackgroundColorEditor.toggle(editor, color)
+      },
+    },
+  )
   items.push(
     'separator',
     {
@@ -277,16 +309,6 @@ export const createToolbarItems = (editor: Editable) => {
       },
       icon: <Icon name="hr" />,
     },
-    // {
-    //   type: 'color-picker',
-    //   children: <Icon name="fontColor" />,
-    //   onSelect: color => {},
-    // },
-    // {
-    //   type: 'color-picker',
-    //   children: <Icon name="backgroundColor" />,
-    //   onSelect: color => {},
-    // },
   )
 
   const grid = Grid.find(editor)

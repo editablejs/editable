@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugin-fontsize",
-  "version": "1.0.0-beta.14",
+  "name": "@editablejs/plugin-background-color",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -48,22 +48,20 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
+    "@types/tinycolor2": "1.4.3",
     "@editablejs/editor": "workspace:*",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
     "tsconfig": "workspace:*",
     "tsup-config": "workspace:*",
     "tsup": "^6.1.2",
     "typescript": "latest"
   },
   "peerDependencies": {
-    "@editablejs/editor": "workspace:*"
+    "@editablejs/editor": "workspace:*",
+    "tinycolor2": "1.5.2"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

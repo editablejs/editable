@@ -374,6 +374,33 @@ importers:
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
 
+  packages/plugins/background-color:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@types/tinycolor2': 1.4.3
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tinycolor2: 1.5.2
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      tinycolor2: 1.5.2
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/tinycolor2': 1.4.3
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_typescript@4.9.4
+      tsup-config: link:../../config/tsup-config
+      typescript: 4.9.4
+
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -462,31 +489,50 @@ importers:
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
 
-  packages/plugins/fontsize:
+  packages/plugins/font-color:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/tinycolor2': 1.4.3
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      tinycolor2: 1.5.2
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      tinycolor2: 1.5.2
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/tinycolor2': 1.4.3
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_typescript@4.9.4
+      tsup-config: link:../../config/tsup-config
+      typescript: 4.9.4
+
+  packages/plugins/font-size:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
       tsconfig: workspace:*
       tsup: ^6.1.2
       tsup-config: workspace:*
       typescript: latest
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
       tsconfig: link:../../config/tsconfig
       tsup: 6.1.2_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
@@ -856,9 +902,11 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/plugin-align': workspace:*
+      '@editablejs/plugin-background-color': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
-      '@editablejs/plugin-fontsize': workspace:*
+      '@editablejs/plugin-font-color': workspace:*
+      '@editablejs/plugin-font-size': workspace:*
       '@editablejs/plugin-heading': workspace:*
       '@editablejs/plugin-hr': workspace:*
       '@editablejs/plugin-image': workspace:*
@@ -882,9 +930,11 @@ importers:
       typescript: latest
     dependencies:
       '@editablejs/plugin-align': link:../align
+      '@editablejs/plugin-background-color': link:../background-color
       '@editablejs/plugin-blockquote': link:../blockquote
       '@editablejs/plugin-context-menu': link:../context-menu
-      '@editablejs/plugin-fontsize': link:../fontsize
+      '@editablejs/plugin-font-color': link:../font-color
+      '@editablejs/plugin-font-size': link:../font-size
       '@editablejs/plugin-heading': link:../heading
       '@editablejs/plugin-hr': link:../hr
       '@editablejs/plugin-image': link:../image

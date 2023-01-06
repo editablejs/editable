@@ -1,7 +1,7 @@
 import { HTMLSerializerWithTransform } from '@editablejs/editor'
-import { isFontSize } from './utils'
+import { FontColor } from './interfaces/font-color'
 
-export const withFontSizeHTMLTransform: HTMLSerializerWithTransform = (
+export const withFontColorHTMLTransform: HTMLSerializerWithTransform = (
   next,
   serializer,
   customOptions = {},
@@ -9,12 +9,12 @@ export const withFontSizeHTMLTransform: HTMLSerializerWithTransform = (
   const { attributes: customAttributes, style: customStyle } = customOptions
   return (node, options) => {
     const { attributes, style } = options ?? {}
-    if (isFontSize(node)) {
-      const { fontSize, text } = node
+    if (FontColor.isFontColor(node)) {
+      const { fontColor, text } = node
       return serializer.create(
         'span',
         serializer.mergeOptions(node, attributes, customAttributes),
-        serializer.mergeOptions(node, style, customStyle, { fontSize }),
+        serializer.mergeOptions(node, style, customStyle, { color: fontColor }),
         text,
       )
     }

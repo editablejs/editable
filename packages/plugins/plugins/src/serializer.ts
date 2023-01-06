@@ -1,6 +1,8 @@
 import { Editable, HTMLSerializer, TextSerializer } from '@editablejs/editor'
 import { withMarkHTMLTransform } from '@editablejs/plugin-mark/serializer'
-import { withFontSizeHTMLTransform } from '@editablejs/plugin-fontsize/serializer'
+import { withFontSizeHTMLTransform } from '@editablejs/plugin-font-size/serializer'
+import { withFontColorHTMLTransform } from '@editablejs/plugin-font-color/serializer'
+import { withBackgroundColorHTMLTransform } from '@editablejs/plugin-background-color/serializer'
 import { withHeadingHTMLTransform } from '@editablejs/plugin-heading/serializer'
 import {
   withBlockquoteHTMLTransform,
@@ -35,6 +37,8 @@ export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withOrderedListHTMLTransform, { editor })
   HTMLSerializer.with(withHeadingHTMLTransform, {})
   HTMLSerializer.with(withFontSizeHTMLTransform, {})
+  HTMLSerializer.with(withFontColorHTMLTransform, {})
+  HTMLSerializer.with(withBackgroundColorHTMLTransform, {})
   HTMLSerializer.with(withMarkHTMLTransform, {})
   HTMLSerializer.with(withIndentHTMLTransform, {})
   HTMLSerializer.with(withLinkHTMLTransform, {})
