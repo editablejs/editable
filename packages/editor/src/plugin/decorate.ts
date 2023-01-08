@@ -1,66 +1,74 @@
 import * as React from 'react'
-import { NodeEntry, Range } from 'slate'
+import { Range, Node, Path, Text, Element } from 'slate'
 import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from './editable'
 
-export type DecorateType = 'element' | 'text'
-
-export interface DecorateRenderProps {
-  entry: NodeEntry
-  ranges: Range[]
-  children: React.ReactNode
+export interface DecorateRenderProps<T = Node> {
+  node: T
+  path: Path
+  children: React.ReactElement
 }
 
-export interface Decorate {
+export interface BaseDecorate {
   key?: string
-  type: DecorateType
-  decorate: (entry: NodeEntry) => Range[]
-  render: (props: DecorateRenderProps) => JSX.Element
 }
+export interface TextDecorate extends BaseDecorate {
+  match: (node: Text, path: Path) => Range[]
+  renderText: (props: DecorateRenderProps<Text>) => React.ReactElement
+}
+
+export interface ElementDecorate extends BaseDecorate {
+  match: (node: Element, path: Path) => boolean
+  renderElement: (props: DecorateRenderProps<Element>) => React.ReactElement
+}
+
+export type Decorate = TextDecorate | ElementDecorate
 
 export interface DecorateStore {
-  decorates: Decorate[]
+  decorations: Decorate[]
 }
 
 const EDITOR_TO_DECORATE_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<DecorateStore>>>()
 
-const getStore = (editor: Editable) => {
+export const getDecorateStore = (editor: Editable) => {
   let store = EDITOR_TO_DECORATE_STORE.get(editor)
   if (!store) {
     store = create<DecorateStore>(() => ({
-      decorates: [],
+      decorations: [],
     }))
     EDITOR_TO_DECORATE_STORE.set(editor, store)
   }
   return store
 }
 
-export const Decorate = {
-  getStore: getStore,
+const predicate = (decorate: Decorate | string) => {
+  const isKey = typeof decorate === 'string'
+  return (d: Decorate) => {
+    return isKey ? d.key === decorate : d === decorate
+  }
+}
 
-  predicate: (decorate: Decorate | string) => {
-    const isKey = typeof decorate === 'string'
-    return (d: Decorate) => {
-      return isKey ? d.key === decorate : d === decorate
-    }
+export const Decorate = {
+  isTextDecorate: (value: any): value is TextDecorate => {
+    return value && typeof value.match === 'function' && typeof value.renderText === 'function'
   },
 
-  add: (editor: Editable, decorate: Decorate) => {
-    const store = getStore(editor)
+  create: (editor: Editable, decorate: Decorate) => {
+    const store = getDecorateStore(editor)
     store.setState(state => ({
-      decorates: [...state.decorates, decorate],
+      decorations: [...state.decorations, decorate],
     }))
   },
 
   remove: (editor: Editable, decorate: Decorate | string) => {
-    const store = getStore(editor)
+    const store = getDecorateStore(editor)
     store.setState(state => ({
-      decorates: state.decorates.filter(d => !Decorate.predicate(decorate)(d)),
+      decorations: state.decorations.filter(d => !predicate(decorate)(d)),
     }))
   },
 
   has: (editor: Editable, decorate: Decorate | string) => {
-    const store = getStore(editor)
-    return store.getState().decorates.some(Decorate.predicate(decorate))
+    const store = getDecorateStore(editor)
+    return store.getState().decorations.some(predicate(decorate))
   },
 }

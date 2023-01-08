@@ -17,8 +17,10 @@ const String: React.FC<{
   isLast: boolean
   parent: Element
   text: Text
+
+  leaf: Text
 }> = props => {
-  const { isLast, parent, text } = props
+  const { isLast, parent, text, leaf } = props
   const editor = useEditableStatic()
   const path = Editable.findPath(editor, text)
   const parentPath = Path.parent(path)
@@ -31,9 +33,9 @@ const String: React.FC<{
 
   if (CompositionText.isCompositionText(text)) {
     const { offset, text: compositionText } = text.composition
-    const t = text.text
-    const left = t.substring(0, offset)
-    const right = t.substring(offset)
+    const content = text.text
+    const left = content.substring(0, offset)
+    const right = content.substring(offset)
     return (
       <>
         {left && <TextString text={left} />}
@@ -46,7 +48,7 @@ const String: React.FC<{
   // width space that will convert into a line break when copying and pasting
   // to support expected plain text.
   if (
-    text.text === '' &&
+    leaf.text === '' &&
     parent.children[parent.children.length - 1] === text &&
     !editor.isInline(parent) &&
     Editor.string(editor, parentPath) === ''
@@ -57,16 +59,16 @@ const String: React.FC<{
   // COMPAT: If the text is empty, it's because it's on the edge of an inline
   // node, so we render a zero-width space so that the selection can be
   // inserted next to it still.
-  if (text.text === '') {
+  if (leaf.text === '') {
     return <ZeroWidthString />
   }
 
   // COMPAT: Browsers will collapse trailing new lines at the end of blocks,
   // so we need to add an extra trailing new lines to prevent that.
-  if (isLast && text.text.slice(-1) === '\n') {
-    return <TextString isTrailing text={text.text} />
+  if (isLast && leaf.text.slice(-1) === '\n') {
+    return <TextString isTrailing text={leaf.text} />
   }
-  return <TextString text={text.text} />
+  return <TextString text={leaf.text} />
 }
 
 /**

@@ -15,25 +15,25 @@ import {
   Decorate,
   Transforms,
   Path,
+  useIsomorphicLayoutEffect,
+  ElementDecorate,
 } from '@editablejs/editor'
 import * as React from 'react'
 import { Point, Icon, Tooltip } from '@editablejs/ui'
-import { useSideToolbarMenuOpen } from '../store'
+import {
+  useSideToolbarMenuOpen,
+  SideToolbar as SideToolbarStore,
+  useSideToolbarDecorateOpen,
+} from '../store'
 import { SideToolbarLocale } from '../locale'
 import tw from 'twin.macro'
 import { ContextMenu } from './context-menu'
+import { clearCapturedData, getCapturedData, setCapturedData } from '../weak-map'
 
 export interface SideToolbar extends SlotComponentProps {
   mouseEnterDelay?: number
   mouseLeaveDelay?: number
   mouseDragDelay?: number
-}
-
-interface CurrentCapturedData {
-  selection: Range
-  path: Path
-  element: Element
-  isEmpty: boolean
 }
 
 const StyledTooltipContent = tw.div`text-gray-400 text-xs text-left`
@@ -54,7 +54,6 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   const [menuOpen, setMenuOpen] = useSideToolbarMenuOpen(editor)
   // const prevVisibleRef = React.useRef(false)
   const prevEventPositionRef = React.useRef<Point | null>(null)
-  const capturedDataRef = React.useRef<CurrentCapturedData | null>(null)
   const showingRef = React.useRef(false)
   const delayHideTimer = React.useRef<number | null>(null)
 
@@ -66,15 +65,15 @@ export const SideToolbar: React.FC<SideToolbar> = ({
     if (dragging) return
     setPosition(null)
     setMenuOpen(false)
-    Decorate.remove(editor, 'sideToolbarDecorate')
+    SideToolbarStore.setDecorateOpen(editor, false)
     setTooltipDefaultOpen(false)
-    capturedDataRef.current = null
+    clearCapturedData(editor)
     showingRef.current = false
   }, [editor, dragging, setMenuOpen])
 
   React.useEffect(() => {
     if (!menuOpen) {
-      Decorate.remove(editor, 'sideToolbarDecorate')
+      SideToolbarStore.setDecorateOpen(editor, false)
     }
   }, [editor, menuOpen])
 
@@ -180,13 +179,12 @@ export const SideToolbar: React.FC<SideToolbar> = ({
       const [left, top] = Editable.toRelativePosition(editor, x, y)
       clearDelayHideTimer()
       const [node, path] = entry
-
-      capturedDataRef.current = {
+      setCapturedData(editor, {
         selection: Editor.range(editor, path),
         element: node,
         path,
         isEmpty: Editable.isEmpty(editor, node),
-      }
+      })
       setPosition({
         x: left,
         y: top,
@@ -246,11 +244,29 @@ export const SideToolbar: React.FC<SideToolbar> = ({
     }
   }, [editor, handleMoseLeave, handleMouseMove])
 
+  const decorateOpen = useSideToolbarDecorateOpen(editor)
+  useIsomorphicLayoutEffect(() => {
+    const data = getCapturedData(editor)
+
+    if (decorateOpen && data) {
+      const decorate: ElementDecorate = {
+        match: el => el === data.element,
+        renderElement: ({ children }) => (
+          <StyledElementDecorator>{children}</StyledElementDecorator>
+        ),
+      }
+      Decorate.create(editor, decorate)
+      return () => {
+        Decorate.remove(editor, decorate)
+      }
+    }
+  }, [editor, decorateOpen])
+
   const visible = React.useMemo(() => {
     return !!position
   }, [position])
 
-  const actionType = !capturedDataRef.current?.isEmpty ? 'drag' : 'add'
+  const actionType = !getCapturedData(editor)?.isEmpty ? 'drag' : 'add'
 
   const transformPosition = React.useMemo(() => {
     if (!position || !containerRef.current) return
@@ -272,10 +288,11 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   const { setDrag } = useDragMethods()
 
   const drag = React.useCallback(() => {
-    if (!capturedDataRef.current || !position) {
+    const data = getCapturedData(editor)
+    if (!data || !position) {
       return
     }
-    const { path, element } = capturedDataRef.current
+    const { path, element } = data
     const dataTransfer = new DataTransfer()
     FormatData.setDataTransfer(dataTransfer, {
       fragment: [element],
@@ -321,44 +338,22 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   const handleMouseUp = () => {
     clearDelayDragTimer()
     setDrag(null)
-    setMenuOpen(!menuOpen, {
-      range: capturedDataRef.current?.selection,
-      element: capturedDataRef.current?.element,
-    })
+    setMenuOpen(!menuOpen)
     setTooltipDefaultOpen(true)
   }
-
-  const getDecorate = React.useCallback((): Decorate | null => {
-    if (!capturedDataRef.current) return null
-    const { selection, element } = capturedDataRef.current
-    return {
-      key: 'sideToolbarDecorate',
-      type: 'element',
-      decorate: entry => {
-        if (element !== entry[0]) return []
-        return [selection]
-      },
-      render: ({ children }) => {
-        return <StyledElementDecorator>{children}</StyledElementDecorator>
-      },
-    }
-  }, [])
 
   const handleMouseEnter = () => {
     clearDelay()
     showingRef.current = true
-    const decorate = getDecorate()
-    if (decorate) {
-      Decorate.remove(editor, 'sideToolbarDecorate')
-      Decorate.add(editor, decorate)
-    }
+    const data = getCapturedData(editor)
+    SideToolbarStore.setDecorateOpen(editor, !!data)
   }
 
   const handleMouseLeave = () => {
     if (menuOpen) return
     delayHide()
     showingRef.current = false
-    Decorate.remove(editor, 'sideToolbarDecorate')
+    SideToolbarStore.setDecorateOpen(editor, false)
   }
 
   const local = useLocale<SideToolbarLocale>('sideToolbar')
@@ -381,8 +376,9 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   }
 
   const handleMenuSelect = () => {
-    if (capturedDataRef.current) {
-      const { selection } = capturedDataRef.current
+    const data = getCapturedData(editor)
+    if (data) {
+      const { selection } = data
       Transforms.select(editor, selection)
     }
     hide()

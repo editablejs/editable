@@ -14,7 +14,7 @@ import {
   EDITOR_TO_KEY_TO_ELEMENT,
 } from '../utils/weak-maps'
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from '../utils/constants'
-import { useDecorates } from '../hooks/use-decorate'
+import { useElementDecorations } from '../hooks/use-decorate'
 import { PlaceholderRender } from '../plugin/placeholder'
 import { usePlaceholder } from '../hooks/use-placeholder'
 
@@ -106,13 +106,13 @@ const Element = (props: {
 
   let content = editor.renderElement({ attributes: newAttributes, children, element })
 
-  const decorates = useDecorates([element, path])
+  const decorates = useElementDecorations(element, path)
 
   if (decorates.length > 0) {
-    content = decorates.reduceRight((children, { decorate, ranges }) => {
-      return decorate.render({
-        entry: [element, path],
-        ranges,
+    content = decorates.reduceRight((children, decorate) => {
+      return decorate.renderElement({
+        node: element,
+        path,
         children,
       })
     }, content)

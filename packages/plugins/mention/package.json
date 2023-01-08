@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugins",
-  "version": "1.0.0-beta.23",
+  "name": "@editablejs/plugin-mention",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -57,31 +57,21 @@
     "prettier-config": "workspace:*",
     "react": "^17.x",
     "react-dom": "^17.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "tsup": "^6.1.2",
     "tsup-config": "workspace:*",
+    "twin.macro": "3.1.0",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-align": "workspace:*",
-    "@editablejs/plugin-background-color": "workspace:*",
-    "@editablejs/plugin-blockquote": "workspace:*",
-    "@editablejs/plugin-context-menu": "workspace:*",
-    "@editablejs/plugin-font-color": "workspace:*",
-    "@editablejs/plugin-font-size": "workspace:*",
-    "@editablejs/plugin-heading": "workspace:*",
-    "@editablejs/plugin-hr": "workspace:*",
-    "@editablejs/plugin-image": "workspace:*",
-    "@editablejs/plugin-indent": "workspace:*",
-    "@editablejs/plugin-leading": "workspace:*",
-    "@editablejs/plugin-link": "workspace:*",
-    "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
-    "@editablejs/plugin-mention": "workspace:*",
-    "@editablejs/plugin-table": "workspace:*"
+    "@editablejs/ui": "workspace:1.0.0-beta.1",
+    "styled-components": "5.3.5",
+    "zustand": "4.1.4"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

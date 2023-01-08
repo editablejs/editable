@@ -23,7 +23,7 @@ importers:
       eslint-config-editable: link:packages/config/eslint-config-editable
       husky: 8.0.1
       lint-staged: 13.0.3
-      prettier: 2.8.1
+      prettier: 2.8.2
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
       turbo: 1.6.3
@@ -46,7 +46,7 @@ importers:
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
       '@editablejs/plugins': workspace:*
-      '@editablejs/ui': workspace:1.0.0-beta.0
+      '@editablejs/ui': workspace:*
       '@faker-js/faker': 7.5.0
       '@headlessui/react': 1.7.4
       '@mdx-js/mdx': 2.1.5
@@ -275,8 +275,8 @@ importers:
       prettier: latest
       prettier-plugin-tailwindcss: 0.1.13
     devDependencies:
-      prettier: 2.8.1
-      prettier-plugin-tailwindcss: 0.1.13_prettier@2.8.1
+      prettier: 2.8.2
+      prettier-plugin-tailwindcss: 0.1.13_prettier@2.8.2
 
   packages/config/tailwind-config:
     specifiers:
@@ -898,6 +898,49 @@ importers:
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
 
+  packages/plugins/mention:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@editablejs/ui': workspace:1.0.0-beta.1
+      '@types/react': ^17.x
+      '@types/react-dom': ^17.x
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      react: ^17.x
+      react-dom: ^17.x
+      styled-components: 5.3.5
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^6.1.2
+      tsup-config: workspace:*
+      twin.macro: 3.1.0
+      typescript: latest
+      zustand: 4.1.4
+    dependencies:
+      '@editablejs/ui': link:../../ui
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      zustand: 4.1.4_react@17.0.2
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/react': 17.0.47
+      '@types/react-dom': 17.0.17
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.1.0_tailwindcss@3.2.4
+      typescript: 4.9.4
+
   packages/plugins/plugins:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -915,6 +958,7 @@ importers:
       '@editablejs/plugin-link': workspace:*
       '@editablejs/plugin-list': workspace:*
       '@editablejs/plugin-mark': workspace:*
+      '@editablejs/plugin-mention': workspace:*
       '@editablejs/plugin-table': workspace:*
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
@@ -943,6 +987,7 @@ importers:
       '@editablejs/plugin-link': link:../link
       '@editablejs/plugin-list': link:../list
       '@editablejs/plugin-mark': link:../mark
+      '@editablejs/plugin-mention': link:../mention
       '@editablejs/plugin-table': link:../table
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1393,13 +1438,13 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/template': 7.18.10
-      '@babel/types': 7.19.0
+      '@babel/types': 7.20.5
 
   /@babel/helper-hoist-variables/7.18.6:
     resolution: {integrity: sha512-UlJQPkFqFULIcyW5sbzgbkxn2FKRgwWiRexcuaR8RNJRy8+LLveqPjwZV/bwrLZCN0eUHD/x8D0heK1ozuoo6Q==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.19.0
+      '@babel/types': 7.20.5
 
   /@babel/helper-member-expression-to-functions/7.18.9:
     resolution: {integrity: sha512-RxifAh2ZoVU67PyKIO4AMi1wTenGfMR/O/ae0CCRqwgBAt5v7xjdtRw7UoSbsreKrQn5t7r89eruK/9JjYHuDg==}
@@ -1479,7 +1524,7 @@ packages:
     resolution: {integrity: sha512-bde1etTx6ZyTmobl9LLMMQsaizFVZrquTEHOqKeQESMKo4PlObf+8+JA25ZsIpZhT/WEd39+vOdLXAFG/nELpA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.19.0
+      '@babel/types': 7.20.5
 
   /@babel/helper-string-parser/7.18.10:
     resolution: {integrity: sha512-XtIfWmeNY3i4t7t4D2t02q50HvqHybPqW2ki1kosnvWCwuCMeo81Jf0gwr85jy/neUdg5XDdeFE/80DXiO+njw==}
@@ -3815,7 +3860,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
 
   /babel-plugin-syntax-jsx/6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -8629,13 +8674,13 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-tailwindcss/0.1.13_prettier@2.8.1:
+  /prettier-plugin-tailwindcss/0.1.13_prettier@2.8.2:
     resolution: {integrity: sha512-/EKQURUrxLu66CMUg4+1LwGdxnz8of7IDvrSLqEtDqhLH61SAlNNUSr90UTvZaemujgl3OH/VHg+fyGltrNixw==}
     engines: {node: '>=12.17.0'}
     peerDependencies:
       prettier: '>=2.2.0'
     dependencies:
-      prettier: 2.8.1
+      prettier: 2.8.2
     dev: true
 
   /prettier/1.19.1:
@@ -8644,8 +8689,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier/2.8.1:
-    resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
+  /prettier/2.8.2:
+    resolution: {integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -8813,6 +8858,7 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
 
   /react-image-previewer/1.1.6_fane7jikarojcev26y27hpbhu4:
     resolution: {integrity: sha512-uLNycWU7CG0SbrtCHVHR0rUFxE1b0/O7l73QqIIX2tHATzj859raWdoYDEgL/lpvf8rCIPRwuzd7kjhyWbKWKw==}
@@ -8845,6 +8891,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /reactcss/1.2.3_react@17.0.2:
     resolution: {integrity: sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==}
@@ -9229,6 +9276,7 @@ packages:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /scroll-into-view-if-needed/2.2.29:
     resolution: {integrity: sha512-hxpAR6AN+Gh53AdAimHM6C8oTN1ppwVZITihix+WqalywBeFcQ6LdQP5ABNl26nX8GTEL7VT+b8lKpdqq65wXg==}
@@ -9651,7 +9699,6 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
-    dev: false
 
   /styled-components/5.3.5_pumtretovylab5lwhztzjp2kuy:
     resolution: {integrity: sha512-ndETJ9RKaaL6q41B69WudeqLzOpY1A/ET/glXkNZ2T7dPjPqpPCXXQjDFYZWwNnE5co0wX+gTCqx9mfxTmSIPg==}
@@ -9675,6 +9722,7 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
+    dev: false
 
   /styled-jsx/5.0.7_stn7tt2qafd37bpotzscxfaffy:
     resolution: {integrity: sha512-b3sUzamS086YLRuvnaDigdAewz1/EFYlHpYBP5mZovKEdQQOIIYq8lApylub3HHZ6xFjV051kkGU7cudJmrXEA==}

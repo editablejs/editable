@@ -26,6 +26,10 @@ import { withImageHTMLTransform } from '@editablejs/plugin-image/serializer'
 import { withHrHTMLTransform } from '@editablejs/plugin-hr/serializer'
 import { withAlignHTMLTransform } from '@editablejs/plugin-align/serializer'
 import { withLeadingHTMLTransform } from '@editablejs/plugin-leading/serializer'
+import {
+  withMentionTextTransform,
+  withMentionHTMLTransform,
+} from '@editablejs/plugin-mention/serializer'
 
 export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withTableHTMLTransform, {})
@@ -46,10 +50,12 @@ export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withHrHTMLTransform, {})
   HTMLSerializer.with(withAlignHTMLTransform, {})
   HTMLSerializer.with(withLeadingHTMLTransform, {})
+  HTMLSerializer.with(withMentionHTMLTransform, { editor })
 }
 
 export const withTextSerializer = (editor: Editable) => {
   TextSerializer.with(withTableTextTransform, {})
   TextSerializer.with(withListTextTransform, { editor })
   TextSerializer.with(withBlockquoteTextTransform, {})
+  TextSerializer.with(withMentionTextTransform, { editor })
 }

@@ -1,6 +1,6 @@
 import { Editable, Slot, Locale } from '@editablejs/editor'
-import { SideToolbar } from './components/side-toolbar'
-import locale, { SideToolbarLocale } from './locale'
+import { SideToolbar } from '../components/side-toolbar'
+import locale, { SideToolbarLocale } from '../locale'
 
 export interface SideToolbarOptions {
   locale?: Record<string, SideToolbarLocale>

@@ -29,7 +29,7 @@
     "@editablejs/plugin-toolbar": "workspace:*",
     "@editablejs/plugin-yjs": "workspace:*",
     "@editablejs/plugins": "workspace:*",
-    "@editablejs/ui": "workspace:1.0.0-beta.0",
+    "@editablejs/ui": "workspace:*",
     "@faker-js/faker": "7.5.0",
     "@headlessui/react": "1.7.4",
     "@mdx-js/react": "2.1.5",

@@ -1,30 +1,41 @@
 import * as React from 'react'
-import { NodeEntry, Range, Element } from 'slate'
+import { Text, Path, Range, Element } from 'slate'
 import { useStore } from 'zustand'
-import { Decorate } from '../plugin/decorate'
+import { Decorate, ElementDecorate, getDecorateStore, TextDecorate } from '../plugin/decorate'
 import { useEditableStatic } from './use-editable'
 
 export const useDecorateStore = () => {
   const editor = useEditableStatic()
   return React.useMemo(() => {
-    return Decorate.getStore(editor)
+    return getDecorateStore(editor)
   }, [editor])
 }
 
-export const useDecorates = (entry: NodeEntry) => {
+export const useTextDecorations = (text: Text, path: Path) => {
   const store = useDecorateStore()
-  const isElement = Element.isElement(entry[0])
-  const decorates = useStore(store, state =>
-    state.decorates.filter(d => d.type === (isElement ? 'element' : 'text')),
-  )
+  const decorations = useStore(store, state => state.decorations)
   return React.useMemo(() => {
-    const nodeDecorates: { decorate: Decorate; ranges: Range[] }[] = []
-    decorates.forEach(decorate => {
-      const ranges = decorate.decorate(entry)
+    return decorations.reduce<{ decorate: TextDecorate; ranges: Range[] }[]>((acc, decorate) => {
+      if (!Decorate.isTextDecorate(decorate)) return acc
+      const ranges = decorate.match(text, path)
       if (ranges.length > 0) {
-        nodeDecorates.push({ decorate, ranges })
+        acc.push({ decorate, ranges })
       }
-    })
-    return nodeDecorates
-  }, [decorates, entry])
+      return acc
+    }, [])
+  }, [decorations, text, path])
+}
+
+export const useElementDecorations = (element: Element, path: Path) => {
+  const store = useDecorateStore()
+  const decorations = useStore(store, state => state.decorations)
+  return React.useMemo(() => {
+    return decorations.reduce<ElementDecorate[]>((acc, decorate) => {
+      if (Decorate.isTextDecorate(decorate)) return acc
+      if (decorate.match(element, path)) {
+        acc.push(decorate)
+      }
+      return acc
+    }, [])
+  }, [decorations, element, path])
 }

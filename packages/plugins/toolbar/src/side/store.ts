@@ -3,6 +3,7 @@ import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect, Range, Element } from '@editablejs/editor'
 import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
+import { getCapturedData } from './weak-map'
 
 interface BaseSideToolbarItem extends UIContextMenuItem {
   key: string
@@ -12,9 +13,8 @@ interface BaseSideToolbarItem extends UIContextMenuItem {
 
 interface ToolbarState {
   items: SideToolbarItem[]
-  open: boolean
-  range?: Range
-  element?: Element
+  menuOpen: boolean
+  decorateOpen: boolean
 }
 
 export type SideToolbarItem =
@@ -36,7 +36,8 @@ const getStore = (editor: Editable) => {
   if (!store) {
     store = create<ToolbarState>(() => ({
       items: [],
-      open: false,
+      menuOpen: false,
+      decorateOpen: false,
     }))
     EDITOR_TO_TOOLBAR_STORE.set(editor, store)
   }
@@ -52,16 +53,21 @@ export const useSideToolbarItems = (editor: Editable) => {
   return useStore(store, state => state.items, shallow)
 }
 
-export const useSideToolbarMenuOpen = (
-  editor: Editable,
-): [boolean, (open: boolean, data?: { range?: Range; element?: Element }) => void] => {
+export const useSideToolbarDecorateOpen = (editor: Editable) => {
   const store = useSideToolbarStore(editor)
-  const open = useStore(store, state => state.open)
+  return useStore(store, ({ decorateOpen }) => {
+    return decorateOpen
+  })
+}
+
+export const useSideToolbarMenuOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
+  const store = useSideToolbarStore(editor)
+  const open = useStore(store, state => state.menuOpen)
   return React.useMemo(
     () => [
       open,
-      (open: boolean, data?: { range?: Range; element?: Element }) => {
-        SideToolbar.setOpen(editor, open, data)
+      (open: boolean) => {
+        SideToolbar.setOpen(editor, open)
       },
     ],
     [editor, open],
@@ -74,9 +80,10 @@ export const useSideToolbarMenuEffect = (aciton: SideToolbarEffectCallback, edit
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
 
-    const { range, element } = getStore(editor).getState()
-    if (open && range && element) {
-      destroy = aciton(range, element)
+    const data = getCapturedData(editor)
+    if (open && data) {
+      const { selection, element } = data
+      destroy = aciton(selection, element)
     }
     return () => {
       if (destroy) destroy()
@@ -85,13 +92,20 @@ export const useSideToolbarMenuEffect = (aciton: SideToolbarEffectCallback, edit
 }
 
 export const SideToolbar = {
-  setOpen(editor: Editable, open: boolean, data?: { range?: Range; element?: Element }) {
+  setOpen(editor: Editable, open: boolean) {
     const store = getStore(editor)
-    store.setState({ open, ...data })
+    store.setState({ menuOpen: open })
   },
 
   setItems(editor: Editable, items: SideToolbarItem[]) {
     const store = getStore(editor)
     store.setState({ items })
+  },
+
+  setDecorateOpen(editor: Editable, open: boolean) {
+    const store = getStore(editor)
+    store.setState({
+      decorateOpen: open,
+    })
   },
 }

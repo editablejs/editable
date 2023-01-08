@@ -18,7 +18,7 @@ import {
   Tooltip,
   useIsomorphicLayoutEffect,
 } from '@editablejs/ui'
-import React, { forwardRef, ReactNode, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
 import { DATA_IMAGE_KEY } from '../constants'
 import { ImageEditor } from '../editor'
@@ -83,7 +83,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
 
     const [maxWidth, setMaxWidth] = useState(0)
 
-    useIsomorphicLayoutEffect(() => {
+    useEffect(() => {
       const path = Editable.findPath(editor, element)
       const parentEntry = Editor.above(editor, {
         at: path,

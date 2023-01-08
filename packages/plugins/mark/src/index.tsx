@@ -111,7 +111,7 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     if (text.bold && MarkEditor.isEnabled(editor, 'bold')) {
       style.fontWeight = typeof text.bold === 'string' ? text.bold : 'bold'
     } else {
-      style.fontWeight = 'normal'
+      style.fontWeight = undefined
     }
 
     if (text.italic && MarkEditor.isEnabled(editor, 'italic')) {

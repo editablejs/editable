@@ -12,12 +12,13 @@ import { PlaceholderRender } from '../plugin/placeholder'
 const Leaf = (props: {
   isLast: boolean
   parent: Element
+  leaf: Text
   text: Text
   renderPlaceholder?: PlaceholderRender
 }) => {
-  const { isLast, text, parent, renderPlaceholder } = props
+  const { isLast, text, leaf, parent, renderPlaceholder } = props
 
-  let children = <String isLast={isLast} parent={parent} text={text} />
+  let children = <String isLast={isLast} parent={parent} text={text} leaf={leaf} />
 
   const editor = useEditableStatic()
   if (renderPlaceholder) {
