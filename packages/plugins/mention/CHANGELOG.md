@@ -1,5 +1,11 @@
 # @editablejs/plugin-mention
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [`fa2191a`](https://github.com/editablejs/editable/commit/fa2191a4075384d935bb3787a163aff79bf25520) Thanks [@big-camel](https://github.com/big-camel)! - refactor: ts
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
