@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [[`bacf7cc`](https://github.com/editablejs/editable/commit/bacf7cc4fd56df85735984539516a37519ec664c)]:
+  - @editablejs/plugin-mention@1.0.0-beta.3
+
 ## 1.0.0-beta.25
 
 ### Patch Changes
