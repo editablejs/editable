@@ -92,9 +92,11 @@ pnpm dev
 - [x] History
 - [x] Yjs
 - [x] Yjs-History
+- [x] Yjs-Websocket
 - [x] Serializes
 - [x] ContextMenu
 - [x] Leading
 - [x] Align
+- [x] Mention
 
 ### [More](https://github.com/orgs/editablejs/projects/1/views/1)
