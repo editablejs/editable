@@ -24,7 +24,9 @@
     "@editablejs/plugin-align": "1.0.0-beta.0",
     "@editablejs/plugin-leading": "1.0.0-beta.0",
     "@editablejs/plugin-background-color": "1.0.0-beta.0",
-    "@editablejs/plugin-font-color": "1.0.0-beta.0"
+    "@editablejs/plugin-font-color": "1.0.0-beta.0",
+    "@editablejs/plugin-mention": "1.0.0-beta.0",
+    "@editablejs/plugin-yjs-websocket": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -42,6 +44,7 @@
     "itchy-roses-study",
     "kind-laws-clean",
     "loud-actors-speak",
+    "lovely-icons-turn",
     "nervous-bees-beg",
     "nine-eyes-remember",
     "perfect-kids-rule",
@@ -55,6 +58,7 @@
     "stale-bees-do",
     "thirty-boats-glow",
     "unlucky-zebras-scream",
+    "weak-camels-grin",
     "wicked-dancers-sneeze",
     "wild-cooks-beg",
     "young-flies-act"
