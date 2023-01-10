@@ -194,7 +194,7 @@ export default function Playground() {
       backgroundColor: { defaultColor: defaultBackgroundColor },
       mention: {
         onSearch: value => {
-          return new Promise(resolve => {
+          return new Promise<MentionUser[]>(resolve => {
             const users: MentionUser[] = []
             for (let i = 0; i < 20; i++) {
               users.push({

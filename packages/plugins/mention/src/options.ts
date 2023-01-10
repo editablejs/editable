@@ -7,8 +7,8 @@ export interface MentionOptions {
   debounceWait?: number
   debounceMaxWait?: number
   placeholder?: React.ReactNode | ((children: React.ReactElement) => React.ReactElement)
-  onSearch?: <T = MentionUser>(value: string) => Promise<T[]>
-  onSearchRender?: <T = MentionUser>(users: T[]) => React.ReactElement
+  onSearch?: (value: string) => Promise<MentionUser[]>
+  onSearchRender?: (users: MentionUser[]) => React.ReactElement
   onSearchRenderItem?: (user: MentionUser) => React.ReactNode
   onSearchRenderEmpty?: () => React.ReactNode
 }
