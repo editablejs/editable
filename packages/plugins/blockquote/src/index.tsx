@@ -90,26 +90,22 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
   const hotkey = options.hotkey ?? defaultHotkey
   const { onKeydown } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    const value = Hotkey.match(hotkey, e)
+    if (value) {
       e.preventDefault()
       newEditor.toggleBlockquote()
-    }
-    if (
-      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
       return
     }
+
     const { selection } = editor
     if (
       !selection ||
       !Range.isCollapsed(selection) ||
       !BlockquoteEditor.isActive(newEditor) ||
-      Hotkey.is('shift+enter', e)
+      Hotkey.match('shift+enter', e)
     )
       return onKeydown(e)
-    if (Hotkey.is('enter', e)) {
+    if (Hotkey.match('enter', e)) {
       const entry = Editor.above(newEditor, {
         match: n => Editor.isBlock(newEditor, n) && !Editor.isVoid(newEditor, n),
       })

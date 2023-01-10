@@ -192,18 +192,12 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
   }
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    if (Hotkey.match(hotkey, e)) {
       e.preventDefault()
       newEditor.toggleTaskList()
+      return
     }
-    if (
-      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
-    } else {
-      onKeydown(e)
-    }
+    onKeydown(e)
   }
 
   return newEditor

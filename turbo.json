@@ -1,5 +1,5 @@
 {
-  "globalEnv": ["NODE_ENV", "YJS_SERVER"],
+  "globalEnv": ["NODE_ENV", "YJS_SERVER", "HOST", "PORT"],
   "pipeline": {
     "build": {
       "outputs": ["dist/**", ".next/**", "public/dist/**"],

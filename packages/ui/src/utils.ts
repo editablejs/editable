@@ -61,3 +61,7 @@ export const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' && typeof window.document !== 'undefined'
     ? React.useLayoutEffect
     : React.useEffect
+
+export const clamp = (value: number, [min, max]: [number, number]): number => {
+  return Math.min(max, Math.max(min, value))
+}

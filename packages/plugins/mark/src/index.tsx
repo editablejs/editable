@@ -148,20 +148,11 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
 
   const { onKeydown } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const format = key as MarkFormat
-      const hotkey = hotkeys[format]
-      const toggle = () => {
-        e.preventDefault()
-        newEditor.toggleMark(format)
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const format = Hotkey.match(hotkeys, e)
+    if (format) {
+      e.preventDefault()
+      newEditor.toggleMark(format)
+      return
     }
     onKeydown(e)
   }

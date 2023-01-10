@@ -86,15 +86,9 @@ export const withHr = <T extends Editable>(editor: T, options: HrOptions = {}) =
   const hotkey = options.hotkey ?? defaultHotkey
   const { onKeydown } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    if (Hotkey.match(hotkey, e)) {
       e.preventDefault()
       newEditor.insertHr()
-    }
-    if (
-      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
       return
     }
 

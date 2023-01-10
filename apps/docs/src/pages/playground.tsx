@@ -11,7 +11,12 @@ import {
   isTouchDevice,
   Editable,
 } from '@editablejs/editor'
-import { withPlugins, useContextMenuEffect, ContextMenuStore } from '@editablejs/plugins'
+import {
+  withPlugins,
+  useContextMenuEffect,
+  ContextMenuStore,
+  MentionUser,
+} from '@editablejs/plugins'
 import {
   withYHistory,
   withYjs,
@@ -23,7 +28,7 @@ import {
 } from '@editablejs/plugin-yjs'
 import randomColor from 'randomcolor'
 import { faker } from '@faker-js/faker'
-import { WebsocketProvider } from 'y-websocket'
+import { WebsocketProvider } from '@editablejs/plugin-yjs-websocket'
 import * as Y from 'yjs'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
@@ -187,6 +192,21 @@ export default function Playground() {
       fontSize: { defaultSize: '14px' },
       fontColor: { defaultColor: defaultFontColor },
       backgroundColor: { defaultColor: defaultBackgroundColor },
+      mention: {
+        onSearch: value => {
+          return new Promise(resolve => {
+            const users: MentionUser[] = []
+            for (let i = 0; i < 20; i++) {
+              users.push({
+                id: i,
+                name: faker.name.fullName(),
+                avatar: faker.image.avatar(),
+              })
+            }
+            resolve(users)
+          })
+        },
+      },
     })
     editor = withInlineToolbar(withToolbar(editor))
 

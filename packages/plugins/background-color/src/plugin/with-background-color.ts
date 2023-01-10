@@ -44,20 +44,11 @@ export const withBackgroundColor = <T extends Editable>(
 
   const hotkeys: BackgroundColorHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const value = key
-      const hotkey = hotkeys[value]
-      const toggle = () => {
-        e.preventDefault()
-        newEditor.toggleBackgroundColor(value)
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const value = Hotkey.match(hotkeys, e)
+    if (value) {
+      e.preventDefault()
+      newEditor.toggleBackgroundColor(value)
+      return
     }
     onKeydown(e)
   }

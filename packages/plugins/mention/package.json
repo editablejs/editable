@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
+    "@types/lodash.debounce": "4.0.7",
     "@types/react": "^17.x",
     "@types/react-dom": "^17.x",
     "eslint-config-editable": "workspace:*",
@@ -60,7 +61,7 @@
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
+    "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "twin.macro": "3.1.0",
     "typescript": "latest"
@@ -69,7 +70,8 @@
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/ui": "workspace:1.0.0-beta.1",
+    "@editablejs/ui": "workspace:*",
+    "lodash.debounce": "^4.0.8",
     "styled-components": "5.3.5",
     "zustand": "4.1.4"
   },

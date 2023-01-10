@@ -43,7 +43,7 @@
     "react": "^17.x",
     "react-dom": "^17.x",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
+    "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "latest"
   },

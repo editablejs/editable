@@ -112,11 +112,39 @@ const Hotkeys = {
 
 export default Hotkeys
 
+function match(
+  keys: string | string[] | ((e: KeyboardEvent) => boolean),
+  event: KeyboardEvent,
+): boolean
+function match<T extends string = string>(
+  keys: Record<T, string | string[] | ((e: KeyboardEvent) => boolean)>,
+  event: KeyboardEvent,
+): T | false
+function match<T extends string = string>(
+  keys:
+    | string
+    | string[]
+    | ((e: KeyboardEvent) => boolean)
+    | Record<T, string | string[] | ((e: KeyboardEvent) => boolean)>,
+  event: KeyboardEvent,
+): T | boolean {
+  if (typeof keys === 'string' || Array.isArray(keys)) {
+    return isHotkey(keys, event)
+  } else if (typeof keys === 'function') {
+    return keys(event)
+  } else {
+    for (const key in keys) {
+      const value = keys[key]
+      if (match(value, event)) {
+        return key
+      }
+    }
+  }
+  return false
+}
 export const Hotkey = {
-  is: isHotkey,
   isCode: isCodeHotkey,
   isKey: isKeyHotkey,
-
   format: (key: string, char = '+') => {
     let keys = key.toLowerCase().split('+')
     keys = keys.map(key => {
@@ -131,4 +159,5 @@ export const Hotkey = {
     })
     return keys.join(char)
   },
+  match,
 }

@@ -116,10 +116,10 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       }
 
       if (lastBatch && merge) {
-        lastBatch.operations.push({ ...op })
+        lastBatch.operations.push(op)
       } else {
         const batch = {
-          operations: [{ ...op }],
+          operations: [op],
           selectionBefore: e.selection,
         }
         undos.push(batch)
@@ -154,25 +154,15 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
   const { onKeydown } = e
   e.onKeydown = (event: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const type = key as HistoryType
-      const hotkey = hotkeys[type]
-      const toggle = () => {
-        event.preventDefault()
-        if (type === HISTORY_UNDO_KEY) {
-          e.undo()
-        } else {
-          e.redo()
-        }
+    const value = Hotkey.match(hotkeys, event)
+    if (value) {
+      event.preventDefault()
+      if (value === HISTORY_UNDO_KEY) {
+        e.undo()
+      } else {
+        e.redo()
       }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, event)) ||
-        (Array.isArray(hotkey) && hotkey.some(k => Hotkey.is(k, event))) ||
-        (typeof hotkey === 'function' && hotkey(event))
-      ) {
-        toggle()
-        return
-      }
+      return
     }
     onKeydown(event)
   }

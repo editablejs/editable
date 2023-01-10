@@ -55,7 +55,7 @@
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
     "tsup-config": "workspace:*",
-    "tsup": "^6.1.2",
+    "tsup": "^6.5.0",
     "typescript": "latest"
   },
   "peerDependencies": {

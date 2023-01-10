@@ -4,7 +4,6 @@ import http from 'http'
 import * as Y from 'yjs'
 import * as syncProtocol from 'y-protocols/sync'
 import * as awarenessProtocol from 'y-protocols/awareness'
-import { LeveldbPersistence } from 'y-leveldb'
 
 import * as encoding from 'lib0/encoding'
 import * as decoding from 'lib0/decoding'
@@ -13,12 +12,9 @@ import * as map from 'lib0/map'
 import debounce from 'lodash.debounce'
 import { WSSharedDoc as WSSharedDocInterface } from './types'
 
-import { callbackHandler, isCallbackSet } from './callback'
-import { Element, slateElementToYText } from '@editablejs/plugin-yjs-transform'
-
-const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT || '0') || 2000
-const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT || '0') || 10000
-const YXMLTEXT_CONTENT_FIELD = 'content'
+import { callbackHandler, CallbackOptions } from './callback'
+import { getPersistence } from './persistence'
+import { Element } from '@editablejs/plugin-yjs-transform'
 
 const wsReadyStateConnecting = 0
 const wsReadyStateOpen = 1
@@ -27,55 +23,6 @@ const wsReadyStateClosed = 3 // eslint-disable-line
 
 // disable gc when using snapshots!
 const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0'
-const persistenceDir = process.env.YPERSISTENCE || './db'
-
-interface Persistence {
-  bindState: (docname: string, doc: WSSharedDocInterface, initialValue?: Element) => void
-  writeState: (docname: string, doc: WSSharedDocInterface, element?: Element) => Promise<void>
-  provider: LeveldbPersistence
-}
-
-let persistence: null | Persistence = null
-if (typeof persistenceDir === 'string') {
-  console.info('Persisting documents to "' + persistenceDir + '"')
-  const ldb = new LeveldbPersistence(persistenceDir)
-  persistence = {
-    provider: ldb,
-    bindState: async (
-      docName,
-      ydoc,
-      initialValue = {
-        children: [{ text: '' }],
-      },
-    ) => {
-      const persistedYdoc = await ldb.getYDoc(docName)
-      const newUpdates = Y.encodeStateAsUpdate(ydoc)
-      ldb.storeUpdate(docName, newUpdates)
-
-      const content = persistedYdoc.get(YXMLTEXT_CONTENT_FIELD, Y.XmlText) as Y.XmlText
-      const updateContent = ydoc.get(YXMLTEXT_CONTENT_FIELD, Y.XmlText) as Y.XmlText
-
-      Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
-      ydoc.on('update', update => {
-        ldb.storeUpdate(docName, update)
-      })
-
-      // init empty content
-      if (content._length === 0 && updateContent._length === 0) {
-        ydoc.transact(() => {
-          updateContent.insertEmbed(0, slateElementToYText(initialValue))
-        })
-      }
-    },
-    writeState: async (docName, ydoc) => {},
-  }
-}
-
-export const setPersistence = (persistence_: Persistence | null) => {
-  persistence = persistence_
-}
-
-export const getPersistence = (): null | Persistence => persistence
 
 export const docs: Map<string, WSSharedDoc> = new Map()
 
@@ -86,6 +33,7 @@ const messageAwareness = 1
 const updateHandler = (update: Uint8Array, origin: string, doc: WSSharedDocInterface) => {
   const encoder = encoding.createEncoder()
   encoding.writeVarUint(encoder, messageSync)
+  encoding.writeAny(encoder, origin ?? {})
   syncProtocol.writeUpdate(encoder, update)
   const message = encoding.toUint8Array(encoder)
   doc.conns.forEach((_, conn) => send(doc, conn, message))
@@ -97,6 +45,13 @@ interface AwarenessChangeHandlerOptions {
   removed: number[]
 }
 
+export type UpdateCallback = CallbackOptions & {
+  // 默认 2000
+  debounceWait?: number
+  // 默认 10000
+  debounceMaxWait?: number
+}
+
 class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
   name: string
   conns: Map<WebSocket.WebSocket, Set<number>>
@@ -104,7 +59,7 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
   /**
    * @param {string} name
    */
-  constructor(name: string) {
+  constructor(name: string, callback?: UpdateCallback) {
     super({ gc: gcEnabled })
     this.name = name
 
@@ -143,10 +98,16 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
     }
     this.awareness.on('update', awarenessChangeHandler)
     this.on('update', updateHandler)
-    if (isCallbackSet) {
+    if (callback) {
+      const { debounceWait = 2000, debounceMaxWait = 10000 } = callback
       this.on(
         'update',
-        debounce(callbackHandler, CALLBACK_DEBOUNCE_WAIT, { maxWait: CALLBACK_DEBOUNCE_MAXWAIT }),
+        debounce(
+          (update: Uint8Array, origin: string, doc: WSSharedDocInterface) =>
+            callbackHandler(doc, callback),
+          debounceWait,
+          { maxWait: debounceMaxWait },
+        ),
       )
     }
   }
@@ -155,17 +116,50 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
 /**
  * Gets a Y.Doc by name, whether in memory or on disk
  */
-export const getYDoc = (docname: string, gc: boolean = true): WSSharedDocInterface =>
+export const getYDoc = (
+  docname: string,
+  gc: boolean = true,
+  initialValue?: Element,
+  callback?: UpdateCallback,
+): WSSharedDocInterface =>
   map.setIfUndefined(docs, docname, () => {
-    const doc = new WSSharedDoc(docname)
+    const doc = new WSSharedDoc(docname, callback)
     doc.gc = gc
+    const persistence = getPersistence()
     if (persistence !== null) {
-      persistence.bindState(docname, doc)
+      persistence.bindState(docname, doc, initialValue)
     }
     docs.set(docname, doc)
     return doc
   })
 
+const readSyncMessage: typeof syncProtocol.readSyncMessage = (
+  decoder,
+  encoder,
+  doc,
+  transactionOrigin,
+) => {
+  const meta = decoding.readAny(decoder)
+  if (!transactionOrigin) {
+    transactionOrigin = meta
+  }
+  const messageType = decoding.readVarUint(decoder)
+  switch (messageType) {
+    case syncProtocol.messageYjsSyncStep1:
+      encoding.writeAny(encoder, meta)
+      syncProtocol.readSyncStep1(decoder, encoder, doc)
+      break
+    case syncProtocol.messageYjsSyncStep2:
+      syncProtocol.readSyncStep2(decoder, doc, transactionOrigin)
+      break
+    case syncProtocol.messageYjsUpdate:
+      syncProtocol.readUpdate(decoder, doc, transactionOrigin)
+      break
+    default:
+      throw new Error('Unknown message type')
+  }
+  return messageType
+}
 const messageListener = (
   conn: WebSocket.WebSocket,
   doc: WSSharedDocInterface,
@@ -178,8 +172,7 @@ const messageListener = (
     switch (messageType) {
       case messageSync:
         encoding.writeVarUint(encoder, messageSync)
-        syncProtocol.readSyncMessage(decoder, encoder, doc, null)
-
+        readSyncMessage(decoder, encoder, doc, null)
         // If the `encoder` only contains the type of reply message and no
         // message, there is no need to send the message. When `encoder` only
         // contains the type of reply, its length is 1.
@@ -207,6 +200,7 @@ const closeConn = (doc: WSSharedDocInterface, conn: WebSocket.WebSocket) => {
     const controlledIds: Set<number> = doc.conns.get(conn)!
     doc.conns.delete(conn)
     awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null)
+    const persistence = getPersistence()
     if (doc.conns.size === 0 && persistence !== null) {
       // if persisted, we store state and destroy ydocument
       persistence.writeState(doc.name, doc).then(() => {
@@ -223,7 +217,7 @@ const send = (doc: WSSharedDocInterface, conn: WebSocket.WebSocket, m: Uint8Arra
     closeConn(doc, conn)
   }
   try {
-    conn.send(m, (/** @param {any} err */ err: any) => {
+    conn.send(m, (err: any) => {
       err != null && closeConn(doc, conn)
     })
   } catch (e) {
@@ -231,11 +225,12 @@ const send = (doc: WSSharedDocInterface, conn: WebSocket.WebSocket, m: Uint8Arra
   }
 }
 
-const pingTimeout = 30000
-
 interface SetupWSConnectionOptions {
   docName?: string
   gc?: boolean
+  initialValue?: Element
+  pingTimeout?: number
+  callback?: UpdateCallback
 }
 
 export const setupWSConnection = (
@@ -243,10 +238,16 @@ export const setupWSConnection = (
   req: http.IncomingMessage,
   options?: SetupWSConnectionOptions,
 ) => {
-  const { docName = req.url!.slice(1).split('?')[0], gc = true } = options ?? {}
+  const {
+    docName = req.url!.slice(1).split('?')[0],
+    gc = true,
+    initialValue,
+    pingTimeout = 30000,
+    callback,
+  } = options ?? {}
   conn.binaryType = 'arraybuffer'
   // get doc, initialize if it does not exist yet
-  const doc = getYDoc(docName, gc)
+  const doc = getYDoc(docName, gc, initialValue, callback)
   doc.conns.set(conn, new Set())
   // listen and reply to events
   conn.on('message', (message: ArrayBuffer) => messageListener(conn, doc, new Uint8Array(message)))
@@ -282,6 +283,7 @@ export const setupWSConnection = (
     // send sync step 1
     const encoder = encoding.createEncoder()
     encoding.writeVarUint(encoder, messageSync)
+    encoding.writeAny(encoder, {})
     syncProtocol.writeSyncStep1(encoder, doc)
     send(doc, conn, encoding.toUint8Array(encoder))
     const awarenessStates = doc.awareness.getStates()

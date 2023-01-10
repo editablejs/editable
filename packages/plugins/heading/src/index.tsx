@@ -134,23 +134,14 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
   const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
   const { onKeydown } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const type = key as HeadingType
-      const hotkey = hotkeys[type]
-      const toggle = () => {
-        e.preventDefault()
-        newEditor.toggleHeading(type)
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const value = Hotkey.match(hotkeys, e)
+    if (value) {
+      e.preventDefault()
+      newEditor.toggleHeading(value)
+      return
     }
     const { selection } = editor
-    if (selection && Range.isCollapsed(selection) && Hotkey.is('enter', e)) {
+    if (selection && Range.isCollapsed(selection) && Hotkey.match('enter', e)) {
       const entry = Editor.above(newEditor, {
         match: n => HeadingEditor.isHeading(editor, n),
       })

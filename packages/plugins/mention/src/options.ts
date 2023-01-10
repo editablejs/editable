@@ -1,9 +1,16 @@
 import { Editable } from '@editablejs/editor'
 import React from 'react'
+import { MentionUser } from './interfaces/mention'
 
 export interface MentionOptions {
   triggerChar?: string
+  debounceWait?: number
+  debounceMaxWait?: number
   placeholder?: React.ReactNode | ((children: React.ReactElement) => React.ReactElement)
+  onSearch?: <T = MentionUser>(value: string) => Promise<T[]>
+  onSearchRender?: <T = MentionUser>(users: T[]) => React.ReactElement
+  onSearchRenderItem?: (user: MentionUser) => React.ReactNode
+  onSearchRenderEmpty?: () => React.ReactNode
 }
 
 const MENTION_OPTIONS = new WeakMap<Editable, MentionOptions>()

@@ -91,15 +91,9 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
   const hotkey = options.hotkey ?? defaultHotkey
   const { onKeydown } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    if (Hotkey.match(hotkey, e)) {
       e.preventDefault()
       newEditor.openLink()
-    }
-    if (
-      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
       return
     }
     onKeydown(e)

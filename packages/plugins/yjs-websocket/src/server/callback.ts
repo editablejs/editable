@@ -1,31 +1,34 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 import http from 'http'
 import { AbstractType } from 'yjs'
-import { WSSharedDoc } from './types'
+import { ContentType, WSSharedDoc } from './types'
 
-const CALLBACK_URL = process.env.CALLBACK_URL ? new URL(process.env.CALLBACK_URL) : null
-const CALLBACK_TIMEOUT = parseInt(process.env.CALLBACK_TIMEOUT ?? '0', 10) || 5000
-const CALLBACK_OBJECTS = process.env.CALLBACK_OBJECTS
-  ? JSON.parse(process.env.CALLBACK_OBJECTS)
-  : {}
+export interface CallbackOptions {
+  action: (data: Record<string, any>) => void
+  timeout?: number
+  objects?: Record<string, ContentType>
+}
 
-const isCallbackSet = !!CALLBACK_URL
-
-const callbackHandler = (update: Uint8Array, origin: string, doc: WSSharedDoc) => {
+const callbackHandler = (doc: WSSharedDoc, options: CallbackOptions) => {
+  const { action, timeout = 5000, objects = {} } = options
   const room = doc.name
   const dataToSend: Record<string, any> = {
     room,
     data: {},
   }
-  const sharedObjectList = Object.keys(CALLBACK_OBJECTS)
+  const sharedObjectList = Object.keys(objects)
   sharedObjectList.forEach(sharedObjectName => {
-    const sharedObjectType = CALLBACK_OBJECTS[sharedObjectName]
+    const sharedObjectType = objects[sharedObjectName]
     dataToSend.data[sharedObjectName] = {
       type: sharedObjectType,
       content: getContent(sharedObjectName, sharedObjectType, doc)?.toJSON() || {},
     }
   })
-  if (CALLBACK_URL) callbackRequest(CALLBACK_URL, CALLBACK_TIMEOUT, dataToSend)
+  if (typeof action === 'function') {
+    action(dataToSend)
+  } else {
+    callbackRequest(action, timeout, dataToSend)
+  }
 }
 
 const callbackRequest = (url: URL, timeout: number, data: any) => {
@@ -54,8 +57,6 @@ const callbackRequest = (url: URL, timeout: number, data: any) => {
   req.end()
 }
 
-type ContentType = 'Array' | 'Map' | 'Text' | 'XmlFragment'
-
 const getContent = (
   objName: string,
   objType: ContentType,
@@ -75,4 +76,4 @@ const getContent = (
   }
 }
 
-export { isCallbackSet, callbackHandler }
+export { callbackHandler }

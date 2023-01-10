@@ -66,20 +66,11 @@ export const withLeading = <T extends Editable>(editor: T, options: LeadingOptio
 
   const hotkeys: LeadingHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const value = key
-      const hotkey = hotkeys[value]
-      const toggle = () => {
-        e.preventDefault()
-        newEditor.toggleLeading(value)
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const value = Hotkey.match(hotkeys, e)
+    if (value) {
+      e.preventDefault()
+      newEditor.toggleLeading(value)
+      return
     }
     onKeydown(e)
   }

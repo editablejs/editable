@@ -6,8 +6,9 @@ import {
   useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import { FC } from 'react'
+import { FC, useRef } from 'react'
 import { useMentionOpen } from '../hooks/use-mention-open'
+import { MentionEditor } from '../plugin/editor'
 import { getMentionTriggerData } from '../weak-map'
 import { MentionPlaceholder } from './mention-placeholder'
 import { MentionSearch } from './mention-search'
@@ -17,8 +18,9 @@ export interface MentionDecorateProps extends SlotComponentProps {}
 export const MentionDecorate: FC<MentionDecorateProps> = () => {
   const editor = useEditableStatic()
   const open = useMentionOpen(editor)
+  const ref = useRef<HTMLDivElement | null>(null)
   useIsomorphicLayoutEffect(() => {
-    if (!open) return
+    if (!open || !MentionEditor.isMentionEditor(editor)) return
     const data = getMentionTriggerData(editor)
     if (!data) return
     const decorate: TextDecorate = {
@@ -28,7 +30,7 @@ export const MentionDecorate: FC<MentionDecorateProps> = () => {
           : []
       },
       renderText: ({ children }) => (
-        <MentionSearch editor={editor}>
+        <MentionSearch editor={editor} container={ref.current ?? undefined}>
           <MentionPlaceholder editor={editor}>{children}</MentionPlaceholder>
         </MentionSearch>
       ),
@@ -40,5 +42,5 @@ export const MentionDecorate: FC<MentionDecorateProps> = () => {
     }
   }, [open, editor])
 
-  return null
+  return <div ref={ref} />
 }

@@ -3,6 +3,7 @@ import { assertDocumentAttachment, yTextToSlateElement } from '@editablejs/plugi
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-slate'
 import { applySlateOp } from '../apply-to-yjs'
+import { UniqueOperations } from '../constants'
 import {
   getStoredPosition,
   getStoredPositions,
@@ -231,7 +232,13 @@ export function withYjs<T extends Editor>(
     const txGroups: LocalChange[][] = []
     localChanges.forEach(change => {
       const currentGroup = txGroups[txGroups.length - 1]
-      if (currentGroup && currentGroup[0].origin === change.origin) {
+      if (
+        currentGroup &&
+        // If the current group contains a unique operation, we can't group
+        (~~UniqueOperations.indexOf(change.op.type) ||
+          ~UniqueOperations.indexOf(currentGroup[0].op.type)) &&
+        currentGroup[0].origin === change.origin
+      ) {
         return currentGroup.push(change)
       }
 
@@ -244,11 +251,12 @@ export function withYjs<T extends Editor>(
       e.sharedRoot.doc.transact(t => {
         txGroup.forEach(change => {
           assertDocumentAttachment(e.sharedRoot)
+          // 设置 origin ops 到 meta 中，在 applyRemoteEvents 中，可以使用 origin.meta.ops 来获取操作。前提需要使用 @editablejs/plugin-yjs-websocket 插件
           const ops = t.meta.get('ops')
           if (!ops) {
-            t.meta.set('ops', [change.op])
+            t.meta.set('ops', [{ ...change.op }])
           } else {
-            ops.push(change.op)
+            ops.push({ ...change.op })
           }
           applySlateOp(e.sharedRoot, { children: change.doc }, change.op)
         })

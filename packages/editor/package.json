@@ -34,7 +34,7 @@
     "is-hotkey": "^0.1.6",
     "lodash.merge": "^4.6.2",
     "scroll-into-view-if-needed": "^2.2.20",
-    "slate": "^0.85.0",
+    "slate": "^0.88.1",
     "zustand": "4.1.4"
   },
   "devDependencies": {
@@ -51,7 +51,7 @@
     "react": "^17.x",
     "react-dom": "^17.x",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
+    "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "latest"
   },

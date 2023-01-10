@@ -10,7 +10,7 @@ export interface MentionPlaceholderProps {
 
 export const MentionPlaceholder = forwardRef<HTMLSpanElement, MentionPlaceholderProps>(
   ({ editor, children }, ref) => {
-    const { placeholder = '123' } = useMemo(() => {
+    const { placeholder } = useMemo(() => {
       return getOptions(editor)
     }, [editor])
 
@@ -30,7 +30,7 @@ export const MentionPlaceholder = forwardRef<HTMLSpanElement, MentionPlaceholder
     }
 
     return (
-      <span tw="text-primary" ref={ref}>
+      <span tw="text-primary inline-block" ref={ref}>
         {renderChildren()}
       </span>
     )

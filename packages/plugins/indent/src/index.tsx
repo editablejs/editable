@@ -452,24 +452,15 @@ export const withIndent = <T extends Editable>(editor: T, options: IndentOptions
 
   const hotkeys: Hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const type = key as IndentPluginType
-      const hotkey = hotkeys[type]
-      const toggle = () => {
-        e.preventDefault()
-        if (type === 'outdent') newEditor.toggleOutdent()
-        else newEditor.toggleIndent()
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const value = Hotkey.match(hotkeys, e)
+    if (value) {
+      e.preventDefault()
+      if (value === 'outdent') newEditor.toggleOutdent()
+      else newEditor.toggleIndent()
+      return
     }
     const { selection } = editor
-    if (selection && Range.isCollapsed(selection) && Hotkey.is('backspace', e)) {
+    if (selection && Range.isCollapsed(selection) && Hotkey.match('backspace', e)) {
       const entry = Editor.above(newEditor, {
         match: newEditor.onIndentMatch,
       })

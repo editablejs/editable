@@ -145,17 +145,12 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
   const hotkey = options.hotkey ?? defaultHotkey
   const { onKeydown, insertFile } = newEditor
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    if (Hotkey.match(hotkey, e)) {
       e.preventDefault()
       newEditor.openImage()
-    }
-    if (
-      (typeof hotkey === 'string' && hotkey && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
       return
     }
+
     onKeydown(e)
   }
 

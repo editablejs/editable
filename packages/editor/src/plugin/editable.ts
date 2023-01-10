@@ -62,7 +62,7 @@ import {
   DATA_EDITABLE_VOID,
   DATA_EDITABLE_ZERO_WIDTH,
 } from '../utils/constants'
-import { getNativeEvent, isTouch, isTouchEvent } from '../utils/event'
+import { getNativeEvent, isTouch } from '../utils/event'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -75,7 +75,7 @@ export interface ElementAttributes<T extends any = any> extends BaseAttributes {
 }
 
 export interface TextAttributes extends BaseAttributes {
-  [DATA_EDITABLE_LEAF]: true
+  [DATA_EDITABLE_LEAF]?: true
 }
 
 export type NodeAttributes = ElementAttributes | TextAttributes

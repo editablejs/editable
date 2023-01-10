@@ -73,20 +73,11 @@ export const withAlign = <T extends Editable>(editor: T, options: AlignOptions =
 
   const hotkeys: AlignHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    for (let key in hotkeys) {
-      const value = key as AlignKeys
-      const hotkey = hotkeys[value]
-      const toggle = () => {
-        e.preventDefault()
-        newEditor.toggleAlign(value)
-      }
-      if (
-        (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-        (typeof hotkey === 'function' && hotkey(e))
-      ) {
-        toggle()
-        return
-      }
+    const value = Hotkey.match<AlignKeys>(hotkeys, e)
+    if (value) {
+      e.preventDefault()
+      newEditor.toggleAlign(value)
+      return
     }
     onKeydown(e)
   }

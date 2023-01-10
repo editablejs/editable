@@ -26,7 +26,8 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
   }, 0)
 
   // Apply changes in reverse order to avoid path changes.
-  delta.reverse().forEach(change => {
+  const changes = delta.reverse()
+  for (const change of changes) {
     if ('attributes' in change && 'retain' in change) {
       const [startPathOffset, startTextOffset] = yOffsetToSlateOffsets(
         node,
@@ -126,7 +127,7 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
         yOffset -= getSlateNodeYLength(child)
       }
 
-      return
+      continue
     }
 
     if ('insert' in change) {
@@ -141,21 +142,23 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
           typeof change.insert === 'string' &&
           deepEquals(change.attributes ?? {}, getProperties(child))
         ) {
-          return ops.push({
+          ops.push({
             type: 'insert_text',
             offset: textOffset,
             text: change.insert,
             path: childPath,
           })
+          continue
         }
 
         const toInsert = deltaInsertToSlateNode(change)
         if (textOffset === 0) {
-          return ops.push({
+          ops.push({
             type: 'insert_node',
             path: childPath,
             node: toInsert,
           })
+          continue
         }
 
         if (textOffset < child.text.length) {
@@ -167,20 +170,21 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
           })
         }
 
-        return ops.push({
+        ops.push({
           type: 'insert_node',
           path: Path.next(childPath),
           node: toInsert,
         })
+        continue
       }
 
-      return ops.push({
+      ops.push({
         type: 'insert_node',
         path: childPath,
         node: deltaInsertToSlateNode(change),
       })
     }
-  })
+  }
 
   return ops
 }

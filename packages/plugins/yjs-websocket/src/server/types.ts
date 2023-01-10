@@ -7,3 +7,5 @@ export interface WSSharedDoc extends Doc {
   conns: Map<WebSocket.WebSocket, Set<number>>
   awareness: awarenessProtocol.Awareness
 }
+
+export type ContentType = 'Array' | 'Map' | 'Text' | 'XmlFragment'

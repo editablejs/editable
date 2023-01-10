@@ -1,24 +1,13 @@
-import {
-  Editable,
-  Editor,
-  Range,
-  Decorate,
-  Text,
-  Path,
-  Point,
-  PointRef,
-  Slot,
-  Hotkey,
-} from '@editablejs/editor'
-import tw from 'twin.macro'
-import { MENTION_KEY, MENTION_TRIGGER_KEY } from '../constants'
+import { Editable, Editor, Range, Text, Point, Slot, Hotkey, Transforms } from '@editablejs/editor'
+import { MENTION_TRIGGER_KEY } from '../constants'
 import { MentionEditor } from './editor'
 import { Mention } from '../interfaces/mention'
 import { MentionOptions, setOptions } from '../options'
 import { MentionComponent } from '../components/mention'
-import { getMentionStore, MentionStore } from '../store'
+import { MentionStore } from '../store'
 import { clearMentionTriggerData, getMentionTriggerData, setMentionTriggerData } from '../weak-map'
 import { MentionDecorate } from '../components/mention-decorate'
+import { closeMentionDecorate } from '../utils'
 
 const defaultTriggerChar = MENTION_TRIGGER_KEY
 
@@ -26,8 +15,6 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
   const newEditor = editor as T & MentionEditor
 
   setOptions(newEditor, options)
-
-  const { placeholder = '123' } = options
 
   const { isInline, isVoid, markableVoid } = newEditor
 
@@ -44,10 +31,23 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
   }
 
   newEditor.insertMention = user => {
+    const data = getMentionTriggerData(editor)
+    if (data) {
+      const at = data.rangeRef.current
+      if (at)
+        Transforms.delete(editor, {
+          at,
+        })
+    }
+    closeMentionDecorate(newEditor)
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
       Editor.insertNode(editor, Mention.create(user))
     })
+    if (editor.selection) {
+      const point = Editor.after(editor, editor.selection, { unit: 'character' })
+      if (point) Transforms.select(editor, point)
+    }
   }
 
   const { renderElement } = newEditor
@@ -64,6 +64,7 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
       return renderElement(options)
     }
   }
+
   const triggerChar = options.triggerChar ?? defaultTriggerChar
 
   let isInputTrigger = false
@@ -76,37 +77,29 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
     }
   }
 
-  const closeMentionDecorate = () => {
-    MentionStore.setOpen(editor, false)
-    const triggerData = getMentionTriggerData(editor)
-    if (triggerData) {
-      triggerData.rangeRef.unref()
-      triggerData.startRef.unref()
-    }
-    clearMentionTriggerData(editor)
-  }
-
   newEditor.onKeydown = event => {
-    if (Hotkey.is('space', event)) {
-      closeMentionDecorate()
+    if (Hotkey.match(['space', 'esc'], event)) {
+      closeMentionDecorate(newEditor)
     }
     onKeydown(event)
   }
 
   newEditor.onSelectStart = () => {
     onSelectStart()
-    closeMentionDecorate()
+    closeMentionDecorate(newEditor)
   }
 
   newEditor.onBlur = () => {
     onBlur()
-    closeMentionDecorate()
+    // closeMentionDecorate(newEditor)
   }
 
   const getBeforeText = (editor: Editable, point: Point) => {
     const wordBefore = Editor.before(editor, point, { unit: 'word' })
     const before = wordBefore && Editor.before(editor, wordBefore)
-    const beforeRange = before && Editor.range(editor, before, point)
+    const beforeRange = before
+      ? Editor.range(editor, before, point)
+      : wordBefore && Editor.range(editor, wordBefore, point)
     const beforeText = beforeRange && Editor.string(editor, beforeRange)
     return beforeText
   }
@@ -151,9 +144,13 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
       const beforeText = getBeforeText(editor, start)
       const reg = new RegExp(`(^|.*)${triggerChar}(.*)$`)
       const match = beforeText && beforeText.match(reg)
+      if (match === null) {
+        closeMentionDecorate(newEditor)
+        return
+      }
       const searchValue = match && match[2]
       if (typeof searchValue === 'string') {
-        MentionStore.setSearchValue(editor, searchValue)
+        MentionStore.setSearchValue(editor, ~searchValue.indexOf(triggerChar) ? '' : searchValue)
       }
     }
   }

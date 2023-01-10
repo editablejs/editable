@@ -45,6 +45,7 @@ importers:
       '@editablejs/plugin-history': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
+      '@editablejs/plugin-yjs-websocket': workspace:*
       '@editablejs/plugins': workspace:*
       '@editablejs/ui': workspace:*
       '@faker-js/faker': 7.5.0
@@ -94,7 +95,6 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
       unist-util-visit: ^2.0.3
-      y-websocket: 1.4.5
       yjs: ^13.5.43
     dependencies:
       '@codemirror/highlight': 0.19.8
@@ -109,6 +109,7 @@ importers:
       '@editablejs/plugin-history': link:../../packages/plugins/history
       '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
+      '@editablejs/plugin-yjs-websocket': link:../../packages/plugins/yjs-websocket
       '@editablejs/plugins': link:../../packages/plugins/plugins
       '@editablejs/ui': link:../../packages/ui
       '@faker-js/faker': 7.5.0
@@ -127,7 +128,6 @@ importers:
       remark-frontmatter: 4.0.1
       remark-gfm: 3.0.1
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
-      y-websocket: 1.4.5_yjs@13.5.43
       yjs: 13.5.43
     devDependencies:
       '@babel/core': 7.19.1
@@ -167,38 +167,21 @@ importers:
 
   apps/server:
     specifiers:
-      '@editablejs/plugin-yjs-transform': workspace:*
-      '@types/lodash.debounce': 4.0.7
-      '@types/node': ^17.0.15
-      '@types/ws': 8.5.3
+      '@editablejs/plugin-yjs-websocket': workspace:*
       eslint-config-editable: workspace:*
-      lib0: ^0.2.52
-      lodash.debounce: ^4.0.8
       nodemon: 2.0.20
       prettier-config: workspace:*
       ts-node: 10.9.1
       tsconfig: workspace:*
       typescript: latest
-      ws: ^6.2.1
-      y-leveldb: ^0.1.0
-      y-protocols: ^1.0.5
       yjs: ^13.5.43
     dependencies:
-      '@editablejs/plugin-yjs-transform': link:../../packages/plugins/yjs-transform
-      lib0: 0.2.52
-      lodash.debounce: 4.0.8
-      y-protocols: 1.0.5
-    optionalDependencies:
-      ws: 6.2.2
-      y-leveldb: 0.1.1_yjs@13.5.43
+      '@editablejs/plugin-yjs-websocket': link:../../packages/plugins/yjs-websocket
     devDependencies:
-      '@types/lodash.debounce': 4.0.7
-      '@types/node': 17.0.23
-      '@types/ws': 8.5.3
       eslint-config-editable: link:../../packages/config/eslint-config-editable
       nodemon: 2.0.20
       prettier-config: link:../../packages/config/prettier-config
-      ts-node: 10.9.1_73inix45wpcdjnppmmovzbfudu
+      ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
       tsconfig: link:../../packages/config/tsconfig
       typescript: 4.9.4
       yjs: 13.5.43
@@ -215,7 +198,7 @@ importers:
       prettier-config: workspace:*
       tiny-inflate: ^1.0.3
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       typescript: latest
       unicode-trie: ^2.0.0
     dependencies:
@@ -231,7 +214,7 @@ importers:
       node-fetch: 2.6.7
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       typescript: 4.9.4
 
   packages/config/esbuild-plugin-styled-components:
@@ -313,9 +296,9 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       scroll-into-view-if-needed: ^2.2.20
-      slate: ^0.85.0
+      slate: ^0.88.1
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
       zustand: 4.1.4
@@ -326,7 +309,7 @@ importers:
       is-hotkey: 0.1.8
       lodash.merge: 4.6.2
       scroll-into-view-if-needed: 2.2.29
-      slate: 0.85.0
+      slate: 0.88.1
       zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@types/escape-html': 1.0.2
@@ -342,7 +325,7 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tsconfig: link:../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../config/tsup-config
       typescript: 4.9.4
 
@@ -356,7 +339,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -369,7 +352,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -384,7 +367,7 @@ importers:
       prettier-config: workspace:*
       tinycolor2: 1.5.2
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
@@ -397,7 +380,7 @@ importers:
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
@@ -417,7 +400,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -437,7 +420,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -460,7 +443,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -484,7 +467,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -499,7 +482,7 @@ importers:
       prettier-config: workspace:*
       tinycolor2: 1.5.2
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
@@ -512,7 +495,7 @@ importers:
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
@@ -524,7 +507,7 @@ importers:
       jest-presets: workspace:*
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     devDependencies:
@@ -534,7 +517,7 @@ importers:
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
@@ -554,7 +537,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -574,7 +557,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -592,7 +575,7 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
@@ -608,7 +591,7 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
@@ -629,7 +612,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -650,7 +633,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -673,7 +656,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -697,7 +680,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -718,7 +701,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -738,7 +721,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -753,7 +736,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -766,7 +749,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -788,7 +771,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -811,7 +794,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -832,7 +815,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -852,7 +835,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -873,7 +856,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -893,7 +876,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -901,12 +884,14 @@ importers:
   packages/plugins/mention:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/ui': workspace:1.0.0-beta.1
+      '@editablejs/ui': workspace:*
+      '@types/lodash.debounce': 4.0.7
       '@types/react': ^17.x
       '@types/react-dom': ^17.x
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      lodash.debounce: ^4.0.8
       prettier-config: workspace:*
       react: ^17.x
       react-dom: ^17.x
@@ -914,17 +899,19 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
+      lodash.debounce: 4.0.8
       styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
       zustand: 4.1.4_react@17.0.2
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@types/lodash.debounce': 4.0.7
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
       eslint-config-editable: link:../../config/eslint-config-editable
@@ -936,7 +923,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -969,7 +956,7 @@ importers:
       react: ^17.x
       react-dom: ^17.x
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
@@ -1000,7 +987,7 @@ importers:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
@@ -1021,7 +1008,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -1044,7 +1031,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -1066,7 +1053,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -1089,7 +1076,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -1113,7 +1100,7 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -1141,7 +1128,7 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -1155,7 +1142,7 @@ importers:
       jest-presets: workspace:*
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
       yjs: ^13.5.43
@@ -1166,7 +1153,49 @@ importers:
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.1.2_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.4
+      tsup-config: link:../../config/tsup-config
+      typescript: 4.9.4
+      yjs: 13.5.43
+
+  packages/plugins/yjs-websocket:
+    specifiers:
+      '@editablejs/plugin-yjs-transform': workspace:*
+      '@types/jest': ^26.0.22
+      '@types/lodash.debounce': 4.0.7
+      '@types/ws': 8.5.3
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      lodash.debounce: ^4.0.8
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+      ws: ^6.2.1
+      y-leveldb: ^0.1.0
+      y-protocols: ^1.0.5
+      yjs: ^13.5.43
+    dependencies:
+      '@editablejs/plugin-yjs-transform': link:../yjs-transform
+      lib0: 0.2.52
+      lodash.debounce: 4.0.8
+      y-protocols: 1.0.5
+    optionalDependencies:
+      ws: 6.2.2
+      y-leveldb: 0.1.1_yjs@13.5.43
+    devDependencies:
+      '@types/jest': 26.0.24
+      '@types/lodash.debounce': 4.0.7
+      '@types/ws': 8.5.3
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
       yjs: 13.5.43
@@ -1191,7 +1220,7 @@ importers:
       tailwindcss: ^3.2.4
       tinycolor2: 1.5.2
       tsconfig: workspace:*
-      tsup: ^6.1.2
+      tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
@@ -1215,7 +1244,7 @@ importers:
       tailwind-config: link:../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../config/tsconfig
-      tsup: 6.1.2_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
@@ -2542,6 +2571,24 @@ packages:
   /@emotion/unitless/0.7.5:
     resolution: {integrity: sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==}
 
+  /@esbuild/android-arm/0.15.18:
+    resolution: {integrity: sha512-5GT+kcs2WVGjVs7+boataCkO5Fg0y4kCjzkB5bAip7H4jfnOS3dA6KPiww9W1OEKTKeAcUVhdZGvgI65OXmUnw==}
+    engines: {node: '>=12'}
+    cpu: [arm]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-loong64/0.15.18:
+    resolution: {integrity: sha512-L4jVKS82XVhw2nvzLg/19ClLWg0y27ulRwuP7lcyL6AbUWB5aPglXY3M21mauDQMDfRLs8cQmeT03r/+X3cZYQ==}
+    engines: {node: '>=12'}
+    cpu: [loong64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /@eslint/eslintrc/0.4.3:
     resolution: {integrity: sha512-J6KFFz5QCYUJq3pf0mjEcCJVERbzv71PUIDczuh9JkwGEzced6CO5ADLHB1rbf/+oPBtoPfMYNOpGDzCANlbXw==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -2651,7 +2698,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       jest-message-util: 27.5.1
       jest-util: 27.5.1
@@ -2671,7 +2718,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.8.1
@@ -2707,7 +2754,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
 
   /@jest/fake-timers/27.5.1:
@@ -2716,7 +2763,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@sinonjs/fake-timers': 8.1.0
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       jest-message-util: 27.5.1
       jest-mock: 27.5.1
       jest-util: 27.5.1
@@ -2743,7 +2790,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       collect-v8-coverage: 1.0.1
       exit: 0.1.2
@@ -2822,7 +2869,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       '@types/yargs': 15.0.14
       chalk: 4.1.2
     dev: true
@@ -2833,7 +2880,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       '@types/yargs': 16.0.4
       chalk: 4.1.2
 
@@ -3219,7 +3266,7 @@ packages:
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
 
   /@types/hast/2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
@@ -3320,6 +3367,10 @@ packages:
 
   /@types/node/18.0.0:
     resolution: {integrity: sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==}
+    dev: true
+
+  /@types/node/18.11.18:
+    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -3416,7 +3467,7 @@ packages:
   /@types/ws/8.5.3:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -4009,13 +4060,13 @@ packages:
     dev: false
     optional: true
 
-  /bundle-require/3.0.4_esbuild@0.14.49:
-    resolution: {integrity: sha512-VXG6epB1yrLAvWVQpl92qF347/UXmncQj7J3U8kZEbdVZ1ZkQyr4hYeL/9RvcE8vVVdp53dY78Fd/3pqfRqI1A==}
+  /bundle-require/3.1.2_esbuild@0.15.18:
+    resolution: {integrity: sha512-Of6l6JBAxiyQ5axFxUM6dYeP/W7X2Sozeo/4EYB9sJhL+dqL7TKjg+shwxp6jlu/6ZSERfsYtIpSJ1/x3XkAEA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     peerDependencies:
       esbuild: '>=0.13'
     dependencies:
-      esbuild: 0.14.49
+      esbuild: 0.15.18
       load-tsconfig: 0.2.3
     dev: true
 
@@ -4850,8 +4901,8 @@ packages:
       ext: 1.7.0
     dev: false
 
-  /esbuild-android-64/0.14.49:
-    resolution: {integrity: sha512-vYsdOTD+yi+kquhBiFWl3tyxnj2qZJsl4tAqwhT90ktUdnyTizgle7TjNx6Ar1bN7wcwWqZ9QInfdk2WVagSww==}
+  /esbuild-android-64/0.15.18:
+    resolution: {integrity: sha512-wnpt3OXRhcjfIDSZu9bnzT4/TNTDsOUvip0foZOUBG7QbSt//w3QV4FInVJxNhKc/ErhUxc5z4QjHtMi7/TbgA==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [android]
@@ -4859,8 +4910,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-android-arm64/0.14.49:
-    resolution: {integrity: sha512-g2HGr/hjOXCgSsvQZ1nK4nW/ei8JUx04Li74qub9qWrStlysaVmadRyTVuW32FGIpLQyc5sUjjZopj49eGGM2g==}
+  /esbuild-android-arm64/0.15.18:
+    resolution: {integrity: sha512-G4xu89B8FCzav9XU8EjsXacCKSG2FT7wW9J6hOc18soEHJdtWu03L3TQDGf0geNxfLTtxENKBzMSq9LlbjS8OQ==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [android]
@@ -4868,8 +4919,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-darwin-64/0.14.49:
-    resolution: {integrity: sha512-3rvqnBCtX9ywso5fCHixt2GBCUsogNp9DjGmvbBohh31Ces34BVzFltMSxJpacNki96+WIcX5s/vum+ckXiLYg==}
+  /esbuild-darwin-64/0.15.18:
+    resolution: {integrity: sha512-2WAvs95uPnVJPuYKP0Eqx+Dl/jaYseZEUUT1sjg97TJa4oBtbAKnPnl3b5M9l51/nbx7+QAEtuummJZW0sBEmg==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [darwin]
@@ -4877,8 +4928,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-darwin-arm64/0.14.49:
-    resolution: {integrity: sha512-XMaqDxO846srnGlUSJnwbijV29MTKUATmOLyQSfswbK/2X5Uv28M9tTLUJcKKxzoo9lnkYPsx2o8EJcTYwCs/A==}
+  /esbuild-darwin-arm64/0.15.18:
+    resolution: {integrity: sha512-tKPSxcTJ5OmNb1btVikATJ8NftlyNlc8BVNtyT/UAr62JFOhwHlnoPrhYWz09akBLHI9nElFVfWSTSRsrZiDUA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [darwin]
@@ -4886,8 +4937,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-freebsd-64/0.14.49:
-    resolution: {integrity: sha512-NJ5Q6AjV879mOHFri+5lZLTp5XsO2hQ+KSJYLbfY9DgCu8s6/Zl2prWXVANYTeCDLlrIlNNYw8y34xqyLDKOmQ==}
+  /esbuild-freebsd-64/0.15.18:
+    resolution: {integrity: sha512-TT3uBUxkteAjR1QbsmvSsjpKjOX6UkCstr8nMr+q7zi3NuZ1oIpa8U41Y8I8dJH2fJgdC3Dj3CXO5biLQpfdZA==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [freebsd]
@@ -4895,8 +4946,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-freebsd-arm64/0.14.49:
-    resolution: {integrity: sha512-lFLtgXnAc3eXYqj5koPlBZvEbBSOSUbWO3gyY/0+4lBdRqELyz4bAuamHvmvHW5swJYL7kngzIZw6kdu25KGOA==}
+  /esbuild-freebsd-arm64/0.15.18:
+    resolution: {integrity: sha512-R/oVr+X3Tkh+S0+tL41wRMbdWtpWB8hEAMsOXDumSSa6qJR89U0S/PpLXrGF7Wk/JykfpWNokERUpCeHDl47wA==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [freebsd]
@@ -4904,8 +4955,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-32/0.14.49:
-    resolution: {integrity: sha512-zTTH4gr2Kb8u4QcOpTDVn7Z8q7QEIvFl/+vHrI3cF6XOJS7iEI1FWslTo3uofB2+mn6sIJEQD9PrNZKoAAMDiA==}
+  /esbuild-linux-32/0.15.18:
+    resolution: {integrity: sha512-lphF3HiCSYtaa9p1DtXndiQEeQDKPl9eN/XNoBf2amEghugNuqXNZA/ZovthNE2aa4EN43WroO0B85xVSjYkbg==}
     engines: {node: '>=12'}
     cpu: [ia32]
     os: [linux]
@@ -4913,8 +4964,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-64/0.14.49:
-    resolution: {integrity: sha512-hYmzRIDzFfLrB5c1SknkxzM8LdEUOusp6M2TnuQZJLRtxTgyPnZZVtyMeCLki0wKgYPXkFsAVhi8vzo2mBNeTg==}
+  /esbuild-linux-64/0.15.18:
+    resolution: {integrity: sha512-hNSeP97IviD7oxLKFuii5sDPJ+QHeiFTFLoLm7NZQligur8poNOWGIgpQ7Qf8Balb69hptMZzyOBIPtY09GZYw==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [linux]
@@ -4922,8 +4973,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-arm/0.14.49:
-    resolution: {integrity: sha512-iE3e+ZVv1Qz1Sy0gifIsarJMQ89Rpm9mtLSRtG3AH0FPgAzQ5Z5oU6vYzhc/3gSPi2UxdCOfRhw2onXuFw/0lg==}
+  /esbuild-linux-arm/0.15.18:
+    resolution: {integrity: sha512-UH779gstRblS4aoS2qpMl3wjg7U0j+ygu3GjIeTonCcN79ZvpPee12Qun3vcdxX+37O5LFxz39XeW2I9bybMVA==}
     engines: {node: '>=12'}
     cpu: [arm]
     os: [linux]
@@ -4931,8 +4982,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-arm64/0.14.49:
-    resolution: {integrity: sha512-KLQ+WpeuY+7bxukxLz5VgkAAVQxUv67Ft4DmHIPIW+2w3ObBPQhqNoeQUHxopoW/aiOn3m99NSmSV+bs4BSsdA==}
+  /esbuild-linux-arm64/0.15.18:
+    resolution: {integrity: sha512-54qr8kg/6ilcxd+0V3h9rjT4qmjc0CccMVWrjOEM/pEcUzt8X62HfBSeZfT2ECpM7104mk4yfQXkosY8Quptug==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [linux]
@@ -4940,8 +4991,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-mips64le/0.14.49:
-    resolution: {integrity: sha512-n+rGODfm8RSum5pFIqFQVQpYBw+AztL8s6o9kfx7tjfK0yIGF6tm5HlG6aRjodiiKkH2xAiIM+U4xtQVZYU4rA==}
+  /esbuild-linux-mips64le/0.15.18:
+    resolution: {integrity: sha512-Mk6Ppwzzz3YbMl/ZZL2P0q1tnYqh/trYZ1VfNP47C31yT0K8t9s7Z077QrDA/guU60tGNp2GOwCQnp+DYv7bxQ==}
     engines: {node: '>=12'}
     cpu: [mips64el]
     os: [linux]
@@ -4949,8 +5000,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-ppc64le/0.14.49:
-    resolution: {integrity: sha512-WP9zR4HX6iCBmMFH+XHHng2LmdoIeUmBpL4aL2TR8ruzXyT4dWrJ5BSbT8iNo6THN8lod6GOmYDLq/dgZLalGw==}
+  /esbuild-linux-ppc64le/0.15.18:
+    resolution: {integrity: sha512-b0XkN4pL9WUulPTa/VKHx2wLCgvIAbgwABGnKMY19WhKZPT+8BxhZdqz6EgkqCLld7X5qiCY2F/bfpUUlnFZ9w==}
     engines: {node: '>=12'}
     cpu: [ppc64]
     os: [linux]
@@ -4958,8 +5009,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-riscv64/0.14.49:
-    resolution: {integrity: sha512-h66ORBz+Dg+1KgLvzTVQEA1LX4XBd1SK0Fgbhhw4akpG/YkN8pS6OzYI/7SGENiN6ao5hETRDSkVcvU9NRtkMQ==}
+  /esbuild-linux-riscv64/0.15.18:
+    resolution: {integrity: sha512-ba2COaoF5wL6VLZWn04k+ACZjZ6NYniMSQStodFKH/Pu6RxzQqzsmjR1t9QC89VYJxBeyVPTaHuBMCejl3O/xg==}
     engines: {node: '>=12'}
     cpu: [riscv64]
     os: [linux]
@@ -4967,8 +5018,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-linux-s390x/0.14.49:
-    resolution: {integrity: sha512-DhrUoFVWD+XmKO1y7e4kNCqQHPs6twz6VV6Uezl/XHYGzM60rBewBF5jlZjG0nCk5W/Xy6y1xWeopkrhFFM0sQ==}
+  /esbuild-linux-s390x/0.15.18:
+    resolution: {integrity: sha512-VbpGuXEl5FCs1wDVp93O8UIzl3ZrglgnSQ+Hu79g7hZu6te6/YHgVJxCM2SqfIila0J3k0csfnf8VD2W7u2kzQ==}
     engines: {node: '>=12'}
     cpu: [s390x]
     os: [linux]
@@ -4976,8 +5027,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-netbsd-64/0.14.49:
-    resolution: {integrity: sha512-BXaUwFOfCy2T+hABtiPUIpWjAeWK9P8O41gR4Pg73hpzoygVGnj0nI3YK4SJhe52ELgtdgWP/ckIkbn2XaTxjQ==}
+  /esbuild-netbsd-64/0.15.18:
+    resolution: {integrity: sha512-98ukeCdvdX7wr1vUYQzKo4kQ0N2p27H7I11maINv73fVEXt2kyh4K4m9f35U1K43Xc2QGXlzAw0K9yoU7JUjOg==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [netbsd]
@@ -4985,8 +5036,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-openbsd-64/0.14.49:
-    resolution: {integrity: sha512-lP06UQeLDGmVPw9Rg437Btu6J9/BmyhdoefnQ4gDEJTtJvKtQaUcOQrhjTq455ouZN4EHFH1h28WOJVANK41kA==}
+  /esbuild-openbsd-64/0.15.18:
+    resolution: {integrity: sha512-yK5NCcH31Uae076AyQAXeJzt/vxIo9+omZRKj1pauhk3ITuADzuOx5N2fdHrAKPxN+zH3w96uFKlY7yIn490xQ==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [openbsd]
@@ -4994,8 +5045,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-sunos-64/0.14.49:
-    resolution: {integrity: sha512-4c8Zowp+V3zIWje329BeLbGh6XI9c/rqARNaj5yPHdC61pHI9UNdDxT3rePPJeWcEZVKjkiAS6AP6kiITp7FSw==}
+  /esbuild-sunos-64/0.15.18:
+    resolution: {integrity: sha512-On22LLFlBeLNj/YF3FT+cXcyKPEI263nflYlAhz5crxtp3yRG1Ugfr7ITyxmCmjm4vbN/dGrb/B7w7U8yJR9yw==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [sunos]
@@ -5003,8 +5054,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-windows-32/0.14.49:
-    resolution: {integrity: sha512-q7Rb+J9yHTeKr9QTPDYkqfkEj8/kcKz9lOabDuvEXpXuIcosWCJgo5Z7h/L4r7rbtTH4a8U2FGKb6s1eeOHmJA==}
+  /esbuild-windows-32/0.15.18:
+    resolution: {integrity: sha512-o+eyLu2MjVny/nt+E0uPnBxYuJHBvho8vWsC2lV61A7wwTWC3jkN2w36jtA+yv1UgYkHRihPuQsL23hsCYGcOQ==}
     engines: {node: '>=12'}
     cpu: [ia32]
     os: [win32]
@@ -5012,8 +5063,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-windows-64/0.14.49:
-    resolution: {integrity: sha512-+Cme7Ongv0UIUTniPqfTX6mJ8Deo7VXw9xN0yJEN1lQMHDppTNmKwAM3oGbD/Vqff+07K2gN0WfNkMohmG+dVw==}
+  /esbuild-windows-64/0.15.18:
+    resolution: {integrity: sha512-qinug1iTTaIIrCorAUjR0fcBk24fjzEedFYhhispP8Oc7SFvs+XeW3YpAKiKp8dRpizl4YYAhxMjlftAMJiaUw==}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
@@ -5021,8 +5072,8 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-windows-arm64/0.14.49:
-    resolution: {integrity: sha512-v+HYNAXzuANrCbbLFJ5nmO3m5y2PGZWLe3uloAkLt87aXiO2mZr3BTmacZdjwNkNEHuH3bNtN8cak+mzVjVPfA==}
+  /esbuild-windows-arm64/0.15.18:
+    resolution: {integrity: sha512-q9bsYzegpZcLziq0zgUi5KqGVtfhjxGbnksaBFYmWLxeV/S1fK4OLdq2DFYnXcLMjlZw2L0jLsk1eGoB522WXQ==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [win32]
@@ -5030,32 +5081,34 @@ packages:
     dev: true
     optional: true
 
-  /esbuild/0.14.49:
-    resolution: {integrity: sha512-/TlVHhOaq7Yz8N1OJrjqM3Auzo5wjvHFLk+T8pIue+fhnhIMpfAzsG6PLVMbFveVxqD2WOp3QHei+52IMUNmCw==}
+  /esbuild/0.15.18:
+    resolution: {integrity: sha512-x/R72SmW3sSFRm5zrrIjAhCeQSAWoni3CmHEqfQrZIQTM3lVCdehdwuIqaOtfC2slvpdlLa62GYoN8SxT23m6Q==}
     engines: {node: '>=12'}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      esbuild-android-64: 0.14.49
-      esbuild-android-arm64: 0.14.49
-      esbuild-darwin-64: 0.14.49
-      esbuild-darwin-arm64: 0.14.49
-      esbuild-freebsd-64: 0.14.49
-      esbuild-freebsd-arm64: 0.14.49
-      esbuild-linux-32: 0.14.49
-      esbuild-linux-64: 0.14.49
-      esbuild-linux-arm: 0.14.49
-      esbuild-linux-arm64: 0.14.49
-      esbuild-linux-mips64le: 0.14.49
-      esbuild-linux-ppc64le: 0.14.49
-      esbuild-linux-riscv64: 0.14.49
-      esbuild-linux-s390x: 0.14.49
-      esbuild-netbsd-64: 0.14.49
-      esbuild-openbsd-64: 0.14.49
-      esbuild-sunos-64: 0.14.49
-      esbuild-windows-32: 0.14.49
-      esbuild-windows-64: 0.14.49
-      esbuild-windows-arm64: 0.14.49
+      '@esbuild/android-arm': 0.15.18
+      '@esbuild/linux-loong64': 0.15.18
+      esbuild-android-64: 0.15.18
+      esbuild-android-arm64: 0.15.18
+      esbuild-darwin-64: 0.15.18
+      esbuild-darwin-arm64: 0.15.18
+      esbuild-freebsd-64: 0.15.18
+      esbuild-freebsd-arm64: 0.15.18
+      esbuild-linux-32: 0.15.18
+      esbuild-linux-64: 0.15.18
+      esbuild-linux-arm: 0.15.18
+      esbuild-linux-arm64: 0.15.18
+      esbuild-linux-mips64le: 0.15.18
+      esbuild-linux-ppc64le: 0.15.18
+      esbuild-linux-riscv64: 0.15.18
+      esbuild-linux-s390x: 0.15.18
+      esbuild-netbsd-64: 0.15.18
+      esbuild-openbsd-64: 0.15.18
+      esbuild-sunos-64: 0.15.18
+      esbuild-windows-32: 0.15.18
+      esbuild-windows-64: 0.15.18
+      esbuild-windows-arm64: 0.15.18
     dev: true
 
   /escalade/3.1.1:
@@ -6472,7 +6525,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       co: 4.6.0
       dedent: 0.7.0
@@ -6601,7 +6654,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -6618,7 +6671,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
       jest-util: 27.5.1
 
@@ -6637,7 +6690,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@types/graceful-fs': 4.1.5
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       anymatch: 3.1.2
       fb-watchman: 2.0.1
       graceful-fs: 4.2.9
@@ -6658,7 +6711,7 @@ packages:
       '@jest/source-map': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       co: 4.6.0
       expect: 27.5.1
@@ -6709,7 +6762,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
 
   /jest-pnp-resolver/1.2.2_jest-resolve@27.5.1:
     resolution: {integrity: sha512-olV41bKSMm8BdnuMsewT4jqlZ8+3TCARAXjZGT9jcoSnrfUnRCqnMoF9XEeoWjbzObpqF9dRhHQj0Xb9QdF6/w==}
@@ -6760,7 +6813,7 @@ packages:
       '@jest/test-result': 27.5.1
       '@jest/transform': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       emittery: 0.8.1
       graceful-fs: 4.2.9
@@ -6815,7 +6868,7 @@ packages:
     resolution: {integrity: sha512-jZCyo6iIxO1aqUxpuBlwTDMkzOAJS4a3eYz3YzgxxVQFwLeSA7Jfq5cbqCY+JLvTDrWirgusI/0KwxKMgrdf7w==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       graceful-fs: 4.2.9
 
   /jest-snapshot/27.5.1:
@@ -6852,7 +6905,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       chalk: 4.1.2
       ci-info: 3.3.0
       graceful-fs: 4.2.9
@@ -6875,7 +6928,7 @@ packages:
     dependencies:
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       jest-util: 27.5.1
@@ -6885,7 +6938,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 18.0.0
+      '@types/node': 18.11.18
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -9226,9 +9279,9 @@ packages:
     dependencies:
       glob: 7.2.0
 
-  /rollup/2.75.7:
-    resolution: {integrity: sha512-VSE1iy0eaAYNCxEXaleThdFXqZJ42qDBatAwrfnPlENEZ8erQ+0LYX4JXOLPceWfZpV1VtZwZ3dFCuOZiSyFtQ==}
-    engines: {node: '>=10.0.0'}
+  /rollup/3.9.1:
+    resolution: {integrity: sha512-GswCYHXftN8ZKGVgQhTFUJB/NBXxrRGgO2NCy6E8s1rwEJ4Q9/VttNqcYfEvx4dTo4j58YqdC3OVztPzlKSX8w==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
@@ -9371,7 +9424,7 @@ packages:
       shebang-regex: 3.0.0
 
   /shebang-regex/1.0.0:
-    resolution: {integrity: sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=}
+    resolution: {integrity: sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==}
     engines: {node: '>=0.10.0'}
     dev: true
 
@@ -9403,8 +9456,8 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
-  /slate/0.85.0:
-    resolution: {integrity: sha512-SHlgOI7fDG50sL+lfAI+nXF9FQpoqf7KNRofggyyE4ngsj1nINOEpFSYKGPkZgVUUkPflWK6PuBJMR6nEuUiKg==}
+  /slate/0.88.1:
+    resolution: {integrity: sha512-DEj9RpkNwPfdh3zbE9eGpeOVGWdS8BYQt754S0Lk6IvJXOkYaxza7WEZLZl/vnp7vloMdTe24zccyxywA3XK8g==}
     dependencies:
       immer: 9.0.15
       is-plain-object: 5.0.0
@@ -10057,7 +10110,7 @@ packages:
       yn: 3.1.1
     dev: true
 
-  /ts-node/10.9.1_73inix45wpcdjnppmmovzbfudu:
+  /ts-node/10.9.1_awa2wsr5thmg3i7jqycphctjfq:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -10076,7 +10129,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       acorn: 8.7.0
       acorn-walk: 8.2.0
       arg: 4.1.3
@@ -10104,8 +10157,8 @@ packages:
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
 
-  /tsup/6.1.2_bhwqdllmxuyazsjifedxrqprdq:
-    resolution: {integrity: sha512-Hw4hKDHaAQkm2eVavlArEOrAPA93bziRDamdfwaNs0vXQdUUFfItvUWY0L/F6oQQMVh6GvjQq1+HpDXw8UKtPA==}
+  /tsup/6.5.0_bhwqdllmxuyazsjifedxrqprdq:
+    resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
     engines: {node: '>=14'}
     hasBin: true
     peerDependencies:
@@ -10120,18 +10173,18 @@ packages:
       typescript:
         optional: true
     dependencies:
-      bundle-require: 3.0.4_esbuild@0.14.49
+      bundle-require: 3.1.2_esbuild@0.15.18
       cac: 6.7.12
       chokidar: 3.5.3
       debug: 4.3.4
-      esbuild: 0.14.49
+      esbuild: 0.15.18
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       postcss: 8.4.16
       postcss-load-config: 3.1.4_postcss@8.4.16
       resolve-from: 5.0.0
-      rollup: 2.75.7
+      rollup: 3.9.1
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
@@ -10141,8 +10194,8 @@ packages:
       - ts-node
     dev: true
 
-  /tsup/6.1.2_typescript@4.9.4:
-    resolution: {integrity: sha512-Hw4hKDHaAQkm2eVavlArEOrAPA93bziRDamdfwaNs0vXQdUUFfItvUWY0L/F6oQQMVh6GvjQq1+HpDXw8UKtPA==}
+  /tsup/6.5.0_typescript@4.9.4:
+    resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
     engines: {node: '>=14'}
     hasBin: true
     peerDependencies:
@@ -10157,17 +10210,17 @@ packages:
       typescript:
         optional: true
     dependencies:
-      bundle-require: 3.0.4_esbuild@0.14.49
+      bundle-require: 3.1.2_esbuild@0.15.18
       cac: 6.7.12
       chokidar: 3.5.3
       debug: 4.3.4
-      esbuild: 0.14.49
+      esbuild: 0.15.18
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       postcss-load-config: 3.1.4
       resolve-from: 5.0.0
-      rollup: 2.75.7
+      rollup: 3.9.1
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
@@ -10647,6 +10700,7 @@ packages:
 
   /w3c-hr-time/1.0.2:
     resolution: {integrity: sha512-z8P5DvDNjKDoFIHK7q8r8lackT6l+jo/Ye3HOle7l9nICP9lf1Ci25fy9vHd0JOWewkIFzXIEig3TdKT7JQ5fQ==}
+    deprecated: Use your platform's native performance.now() and performance.timeOrigin.
     dependencies:
       browser-process-hrtime: 1.0.0
 
@@ -10840,24 +10894,6 @@ packages:
     resolution: {integrity: sha512-Wil92b7cGk712lRHDqS4T90IczF6RkcvCwAD0A2OPg+adKmOe+nOiT/N2hvpQIWS3zfjmtL4CPaH5sIW1Hkm/A==}
     dependencies:
       lib0: 0.2.52
-    dev: false
-
-  /y-websocket/1.4.5_yjs@13.5.43:
-    resolution: {integrity: sha512-5d9LTSy0GQKqSd/FKRo5DMBlsiTlCipbKcIgPLlno+5xHtfT8bm3uQdcbY9JvLfckojilLZWauXJu0vzDZX05w==}
-    hasBin: true
-    peerDependencies:
-      yjs: ^13.5.6
-    dependencies:
-      lib0: 0.2.52
-      lodash.debounce: 4.0.8
-      y-protocols: 1.0.5
-      yjs: 13.5.43
-    optionalDependencies:
-      ws: 6.2.2
-      y-leveldb: 0.1.1_yjs@13.5.43
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
     dev: false
 
   /y18n/4.0.3:

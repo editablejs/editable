@@ -1,0 +1,83 @@
+{
+  "name": "@editablejs/plugin-yjs-websocket",
+  "version": "1.0.0-beta.0",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "server": [
+        "dist/server.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "4.0.7",
+    "@types/ws": "8.5.3",
+    "@types/jest": "^26.0.22",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.5.0",
+    "tsup-config": "workspace:*",
+    "typescript": "latest",
+    "yjs": "^13.5.43"
+  },
+  "dependencies": {
+    "@editablejs/plugin-yjs-transform": "workspace:*",
+    "lib0": "^0.2.52",
+    "lodash.debounce": "^4.0.8",
+    "y-protocols": "^1.0.5"
+  },
+  "peerDependencies": {
+    "yjs": "^13.5.43"
+  },
+  "optionalDependencies": {
+    "ws": "^6.2.1",
+    "y-leveldb": "^0.1.0"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

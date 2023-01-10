@@ -159,15 +159,9 @@ export const withOrderedList = <T extends Editable>(
   }
 
   newEditor.onKeydown = (e: KeyboardEvent) => {
-    const toggle = () => {
+    if (Hotkey.match(hotkey, e)) {
       e.preventDefault()
       newEditor.toggleOrderedList()
-    }
-    if (
-      (typeof hotkey === 'string' && Hotkey.is(hotkey, e)) ||
-      (typeof hotkey === 'function' && hotkey(e))
-    ) {
-      toggle()
       return
     }
     onKeydown(e)

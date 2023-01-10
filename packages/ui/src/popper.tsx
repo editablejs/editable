@@ -23,8 +23,8 @@ import { Root } from './root'
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
 const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
 
-type Side = typeof SIDE_OPTIONS[number]
-type Align = typeof ALIGN_OPTIONS[number]
+type Side = (typeof SIDE_OPTIONS)[number]
+type Align = (typeof ALIGN_OPTIONS)[number]
 
 /* -------------------------------------------------------------------------------------------------
  * Popper

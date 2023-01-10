@@ -48,7 +48,7 @@
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
-    "tsup": "^6.1.2",
+    "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "twin.macro": "3.1.0",
     "typescript": "latest",
