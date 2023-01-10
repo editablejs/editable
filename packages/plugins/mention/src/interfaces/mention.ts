@@ -2,7 +2,7 @@ import { Element } from '@editablejs/editor'
 import { MENTION_KEY } from '../constants'
 
 export interface MentionUser {
-  id: string
+  id: string | number
   name: string
   avatar?: string
 }
