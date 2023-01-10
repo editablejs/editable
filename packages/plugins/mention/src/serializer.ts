@@ -23,7 +23,9 @@ export const withMentionHTMLTransform: HTMLSerializerWithTransform<
       const { user } = node
       const mentionAttributes: Record<string, string | undefined> = {}
       for (const key in Object.keys(user)) {
-        mentionAttributes[`${MENTION_DATA_USER_PREFIX}${key}`] = user[key as keyof typeof user]
+        mentionAttributes[`${MENTION_DATA_USER_PREFIX}${key}`] = String(
+          user[key as keyof typeof user],
+        )
       }
       return serializer.create(
         'span',
