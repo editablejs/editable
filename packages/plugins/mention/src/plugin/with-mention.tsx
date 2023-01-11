@@ -91,7 +91,7 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
 
   newEditor.onBlur = () => {
     onBlur()
-    // closeMentionDecorate(newEditor)
+    closeMentionDecorate(newEditor)
   }
 
   const getBeforeText = (editor: Editable, point: Point) => {

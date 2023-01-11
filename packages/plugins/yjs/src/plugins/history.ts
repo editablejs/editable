@@ -68,11 +68,20 @@ export function withYHistory<T extends YjsEditor>(
 ): T & YHistoryEditor {
   const e = editor as T & YHistoryEditor
 
+  const HistoryTransactionMeta = new Map<any, Map<any, any>>()
   const undoManager = new Y.UndoManager(e.sharedRoot, {
     trackedOrigins,
     captureTransaction: t => {
       const ops: Operation[] = t.meta.get('ops') ?? []
       if (!ops.every(op => e.captureHistory(op))) return false
+      // 设置捕获到的事务 meta
+      // 在后面的 handleStackItemMeta 中会将事务 meta 设置到 stackItem 中
+      if (
+        undoManager.scope.some(type => t.changedParentTypes.has(type)) &&
+        (undoManager.trackedOrigins.has(t.origin) ||
+          (t.origin && undoManager.trackedOrigins.has(t.origin.constructor)))
+      )
+        HistoryTransactionMeta.set(t.origin, t.meta)
       return true
     },
     ...options,
@@ -90,17 +99,30 @@ export function withYHistory<T extends YjsEditor>(
 
   e.isLocalOrigin = origin => origin === e.withoutSavingOrigin || isLocalOrigin(origin)
 
+  const handleStackItemMeta = (origin: unknown, stackItem: HistoryStackItem) => {
+    const meta = HistoryTransactionMeta.get(origin)
+    if (meta) {
+      for (const [key, value] of meta) {
+        stackItem.meta.set(key, value)
+      }
+    }
+    HistoryTransactionMeta.delete(origin)
+  }
+
   const handleStackItemAdded = ({
     stackItem,
+    origin,
   }: {
     stackItem: HistoryStackItem
     type: 'redo' | 'undo'
+    origin: unknown
   }) => {
     stackItem.meta.set(
       'selection',
       e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection),
     )
     stackItem.meta.set('selectionBefore', LAST_SELECTION.get(e))
+    handleStackItemMeta(origin, stackItem)
   }
 
   const handleStackItemUpdated = ({
@@ -113,6 +135,7 @@ export function withYHistory<T extends YjsEditor>(
       'selection',
       e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection),
     )
+    handleStackItemMeta(origin, stackItem)
   }
 
   const handleStackItemPopped = ({
@@ -171,10 +194,40 @@ export function withYHistory<T extends YjsEditor>(
 
   const { undo, redo, canRedo, canUndo } = e
 
+  // 获取到 undo/redo 时的 Transaction
+  // 在 handleHistoryBeforeTransaction 中会将该 Transaction 设置到 popStackItemTransaction 中
+  // 在执行 undo/redo 时，将 meta 中的 ops 设置到 Transaction 中
+  // 具体信息可以参考它的源码 https://github.com/yjs/yjs/blob/main/src/utils/UndoManager.js#L53
+  let popStackItemTransaction: Y.Transaction | null = null
+  const handleHistoryBeforeTransaction = (transaction: Y.Transaction) => {
+    if (transaction.origin === e.undoManager) {
+      popStackItemTransaction = transaction
+    }
+  }
+
   e.undo = () => {
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
-      e.undoManager.undo()
+      const manager = e.undoManager
+      const undoStack = manager.undoStack
+      const { pop } = undoStack
+      // 执行 undo 时，将 undoStack 的 pop 方法替换为自定义的方法
+      // 在自定义的方法中，将 undoStack 中的操作转换为 inverse 操作并设置到 Transaction 的 meta 中
+      // 这样 undo 时，也会携带 meta 信息并且广播出去，这样就可以保证更新到其它客户端的 RangeRef PathRef PointRef
+      undoStack.pop = () => {
+        const item = pop.call(undoStack)
+        if (item) {
+          const meta = item.meta
+          const ops = meta.get('ops') ?? []
+          const inverseOps = ops.map(Operation.inverse).reverse()
+          popStackItemTransaction?.meta.set('ops', inverseOps)
+        }
+        return item
+      }
+      manager.doc.on('beforeTransaction', handleHistoryBeforeTransaction)
+      manager.undo()
+      undoStack.pop = pop
+      manager.doc.off('beforeTransaction', handleHistoryBeforeTransaction)
     } else if (undo) {
       undo()
     }
@@ -183,7 +236,23 @@ export function withYHistory<T extends YjsEditor>(
   e.redo = () => {
     if (YjsEditor.connected(e)) {
       YjsEditor.flushLocalChanges(e)
-      e.undoManager.redo()
+      const manager = e.undoManager
+      const redoStack = manager.redoStack
+      const { pop } = redoStack
+      redoStack.pop = () => {
+        const item = pop.call(redoStack)
+        if (item) {
+          const meta = item.meta
+          const ops = meta.get('ops') ?? []
+          const inverseOps = ops.map(Operation.inverse).reverse()
+          popStackItemTransaction?.meta.set('ops', inverseOps)
+        }
+        return item
+      }
+      manager.doc.on('beforeTransaction', handleHistoryBeforeTransaction)
+      manager.redo()
+      redoStack.pop = pop
+      manager.doc.off('beforeTransaction', handleHistoryBeforeTransaction)
     } else if (redo) {
       redo()
     }

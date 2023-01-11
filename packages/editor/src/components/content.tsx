@@ -162,6 +162,7 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleDocumentTouchEnd = (event: TouchEvent) => {
+    if (event.defaultPrevented) return
     clearTouchHoldTimer()
     // touch move 之后不会触发 mouse up 事件，所以需要在 touch end 时触发
     if (IS_TOUCHMOVING.get(editor)) {
@@ -253,6 +254,10 @@ export const ContentEditable = (props: EditableProps) => {
       } else {
         handleSelecting(point, !isContextMenu.current)
       }
+      // 修复 touch 时，触发了 mouse up 事件，导致无法触发 onSelectStart
+      if (IS_TOUCHING.get(editor) && touchHoldTimer.current) {
+        editor.onSelectStart()
+      }
       setDrag(null)
       if (!isDragEnded.current) editor.onSelectEnd()
     }
@@ -297,12 +302,15 @@ export const ContentEditable = (props: EditableProps) => {
     if (range) editor.onSelecting()
   }
 
-  const handleRootTouchStart = (e: React.TouchEvent) => {
+  const handleRootTouchStart = (event: React.TouchEvent) => {
+    if (event.defaultPrevented) return
+    if (!event.target || !ref.current?.contains(event.target as DOMNode)) return
     IS_TOUCHING.set(editor, true)
     IS_MOUSEDOWN.set(editor, true)
     clearTouchHoldTimer()
+    // touch 应该延迟选中
     touchHoldTimer.current = setTimeout(() => {
-      handleRootMouseDown(e)
+      handleRootMouseDown(event)
     }, 300)
   }
 

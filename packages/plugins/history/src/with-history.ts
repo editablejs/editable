@@ -130,7 +130,11 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       }
 
       history.redos = []
-    } else if (!save && op.type === 'set_node') {
+    } else if (
+      // 在 captureHistory 为 false 的情况下，如果是 set_node 操作，那么就要把 undo 中的对应的 insert_node 操作的 node 属性也更新一下
+      !save &&
+      op.type === 'set_node'
+    ) {
       const { path, newProperties } = op
       for (const undo of undos) {
         const predicate = (op: Operation): op is InsertNodeOperation =>

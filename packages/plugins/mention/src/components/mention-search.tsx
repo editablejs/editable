@@ -1,4 +1,4 @@
-import { Hotkey, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { Hotkey, isTouchDevice, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import {
   Avatar,
   AvatarFallback,
@@ -84,6 +84,7 @@ export const MentionSearch: FC<MentionSearchProps> = ({ editor, container, child
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (isTouchDevice) return
     ref.current?.children[active]?.scrollIntoView({
       block: 'nearest',
     })
@@ -133,7 +134,12 @@ export const MentionSearch: FC<MentionSearchProps> = ({ editor, container, child
     if (users.length === 0) return onSearchRenderEmpty()
     return (
       <ScrollArea tw="shadow-outer rounded bg-white">
-        <ScrollAreaViewport tw="overflow-hidden min-w-[120px] max-h-[calc(30vh)] z-50">
+        <ScrollAreaViewport
+          css={[
+            tw`overflow-hidden min-w-[120px] max-h-[calc(30vh)] z-50`,
+            isTouchDevice && tw`max-h-[calc(20vh)]`,
+          ]}
+        >
           <div ref={ref} tw="text-base py-1 ">
             {users.map((user, index) => {
               if (onSearchRenderItem) return onSearchRenderItem(user)
@@ -142,10 +148,12 @@ export const MentionSearch: FC<MentionSearchProps> = ({ editor, container, child
                 <div
                   key={id}
                   onMouseEnter={() => setActive(index)}
-                  onMouseDown={handleInsert}
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={handleInsert}
                   css={[
-                    tw`flex items-center cursor-pointer py-1 gap-3 px-4 hover:bg-gray-100`,
-                    active === index && tw`bg-gray-100`,
+                    tw`flex items-center cursor-pointer py-1 gap-3 px-4`,
+                    !isTouchDevice && tw` hover:bg-gray-100`,
+                    !isTouchDevice && active === index && tw`bg-gray-100`,
                   ]}
                 >
                   {avatar && (
