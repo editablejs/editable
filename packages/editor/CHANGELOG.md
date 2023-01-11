@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.16
+
+### Patch Changes
+
+- [`ba3b2cb`](https://github.com/editablejs/editable/commit/ba3b2cbe261a618a7bc21be14efe16c88100724a) Thanks [@big-camel](https://github.com/big-camel)! - fix touch bug & refactor mention
+
 ## 1.0.0-beta.15
 
 ### Patch Changes
