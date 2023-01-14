@@ -17,6 +17,8 @@ import {
   Path,
   useIsomorphicLayoutEffect,
   ElementDecorate,
+  Grid,
+  DATA_EDITABLE_LEAF,
 } from '@editablejs/editor'
 import * as React from 'react'
 import { Point, Icon, Tooltip } from '@editablejs/ui'
@@ -26,28 +28,31 @@ import {
   useSideToolbarDecorateOpen,
 } from '../store'
 import { SideToolbarLocale } from '../locale'
-import tw from 'twin.macro'
+import tw, { styled } from 'twin.macro'
 import { ContextMenu } from './context-menu'
 import { clearCapturedData, getCapturedData, setCapturedData } from '../weak-map'
+import { getOptions } from '../options'
 
-export interface SideToolbar extends SlotComponentProps {
-  mouseEnterDelay?: number
-  mouseLeaveDelay?: number
-  mouseDragDelay?: number
-}
+export interface SideToolbar extends SlotComponentProps {}
 
 const StyledTooltipContent = tw.div`text-gray-400 text-xs text-left`
 
 const StyledTooltipContentAction = tw.span`text-white mr-1`
 
-const StyledElementDecorator = tw.div`rounded-md bg-blue-50 relative -mx-1 px-1`
-
-export const SideToolbar: React.FC<SideToolbar> = ({
-  mouseEnterDelay = 0,
-  mouseLeaveDelay = 0.2,
-  mouseDragDelay = 0.2,
-}) => {
+const StyledElementDecorator = styled.div(({ isVoid }: { isVoid: boolean }) => [
+  tw`rounded-md bg-blue-50 relative -mx-1 px-1`,
+  isVoid && tw`-mx-0 px-0`,
+])
+export const SideToolbar: React.FC<SideToolbar> = () => {
   const editor = useEditableStatic()
+  const {
+    delayDragDuration = 0.2,
+    delayHideDuration = 0.2,
+    horizontalDistanceThreshold = 30,
+    verticalDistanceThreshold = 30,
+  } = React.useMemo(() => {
+    return getOptions(editor)
+  }, [editor])
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [position, setPosition] = React.useState<Point | null>(null)
 
@@ -56,8 +61,6 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   const prevEventPositionRef = React.useRef<Point | null>(null)
   const showingRef = React.useRef(false)
   const delayHideTimer = React.useRef<number | null>(null)
-
-  const delayUpdateTimer = React.useRef<number | null>(null)
 
   const dragging = useDragging()
 
@@ -113,7 +116,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   }, [])
 
   const delayHide = React.useCallback(
-    (delayS: number = mouseLeaveDelay) => {
+    (delayS: number = delayHideDuration) => {
       const delay = delayS * 1000
       clearDelayHideTimer()
       if (delay) {
@@ -125,30 +128,11 @@ export const SideToolbar: React.FC<SideToolbar> = ({
         hide()
       }
     },
-    [clearDelayHideTimer, hide, mouseLeaveDelay],
+    [clearDelayHideTimer, hide, delayHideDuration],
   )
 
-  const update = React.useCallback(
+  const handleUpdatePosition = React.useCallback(
     (event: MouseEvent) => {
-      if (dragging || menuOpen) return
-
-      const { target, clientX, clientY } = event
-      const { x: pX, y: pY } = prevEventPositionRef.current ?? { x: 0, y: 0 }
-      if (Math.abs(pX - clientX) <= 3 && Math.abs(pY - clientY) <= 3) return
-      if (
-        target instanceof HTMLElement &&
-        !Object.keys(Constants).some(key => {
-          if (!key.startsWith('data')) return false
-          const value = Constants[key as keyof typeof Constants]
-          return target.hasAttribute(value)
-        })
-      ) {
-        return
-      }
-      prevEventPositionRef.current = {
-        x: clientX,
-        y: clientY,
-      }
       const point = Editable.findEventPoint(editor, event)
       if (!point) return
       let isFindList = false
@@ -164,83 +148,96 @@ export const SideToolbar: React.FC<SideToolbar> = ({
         mode: 'lowest',
       })
       if (!entry) return delayHide()
-      const element = Editable.toDOMNode(editor, entry[0])
-      const rect = isDOMHTMLElement(element.firstChild)
-        ? element.firstChild.getBoundingClientRect()
-        : element.getBoundingClientRect()
-      let { x, y } = rect
+      const [node, path] = entry
+      const isVoid = editor.isVoid(node)
+      const element = Editable.toDOMNode(editor, node)
+      // 优先对齐文本节点
+      const textElement = element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
 
+      const rect = (!isVoid && textElement ? textElement : element).getBoundingClientRect()
+      let { x, y, height } = rect
       const gridCell = GridCell.find(editor, point)
       if (gridCell) {
         const cellElement = Editable.toDOMNode(editor, gridCell[0])
         const cellRect = cellElement.getBoundingClientRect()
         x = cellRect.x
       }
-      const [left, top] = Editable.toRelativePosition(editor, x, y)
+
+      const [left, top] = Editable.toRelativePosition(editor, x, isVoid ? y : y + height / 2)
       clearDelayHideTimer()
-      const [node, path] = entry
       setCapturedData(editor, {
         selection: Editor.range(editor, path),
         element: node,
         path,
         isEmpty: Editable.isEmpty(editor, node),
+        isVoid,
       })
       setPosition({
         x: left,
         y: top,
       })
     },
-    [clearDelayHideTimer, delayHide, dragging, editor, menuOpen],
-  )
-
-  const clearDelayUpdateTimer = React.useCallback(() => {
-    if (delayUpdateTimer.current) {
-      clearTimeout(delayUpdateTimer.current)
-      delayUpdateTimer.current = null
-    }
-  }, [])
-
-  const clearDelay = React.useCallback(() => {
-    clearDelayHideTimer()
-    clearDelayUpdateTimer()
-  }, [clearDelayHideTimer, clearDelayUpdateTimer])
-
-  const delayUpdate = React.useCallback(
-    (event: MouseEvent, delayS: number = mouseEnterDelay) => {
-      const delay = delayS * 1000
-
-      clearDelay()
-      if (delay) {
-        delayUpdateTimer.current = window.setTimeout(() => {
-          update(event)
-          clearDelayUpdateTimer()
-        }, delay)
-      } else {
-        update(event)
-      }
-    },
-    [clearDelay, clearDelayUpdateTimer, mouseEnterDelay, update],
+    [clearDelayHideTimer, delayHide, editor],
   )
 
   const handleMouseMove = React.useCallback(
     (event: MouseEvent) => {
-      delayUpdate(event)
+      if (dragging || menuOpen) return
+
+      const { clientX, clientY } = event
+
+      const data = getCapturedData(editor)
+      // 介于按钮和节点区域之间不处理
+      if (containerRef.current && data) {
+        const { x, y, bottom } = Editable.toDOMNode(editor, data.element).getBoundingClientRect()
+        const currentRect = containerRef.current.getBoundingClientRect()
+        const { x: cX } = currentRect
+        if (clientX >= cX && clientX <= x && clientY >= y && clientY <= bottom) {
+          return
+        }
+      }
+      // 编辑器的容错范围外直接隐藏
+      const container = Editable.toDOMNode(editor, editor)
+      const { x, y, width, height } = container.getBoundingClientRect()
+      if (
+        clientX < x - horizontalDistanceThreshold ||
+        clientX > x + width + horizontalDistanceThreshold ||
+        clientY < y - verticalDistanceThreshold ||
+        clientY > y + height + verticalDistanceThreshold
+      ) {
+        return delayHide()
+      }
+
+      const { x: pX, y: pY } = prevEventPositionRef.current ?? { x: 0, y: 0 }
+
+      if (Math.abs(pX - clientX) <= 3 && Math.abs(pY - clientY) <= 3) return
+
+      prevEventPositionRef.current = {
+        x: clientX,
+        y: clientY,
+      }
+
+      handleUpdatePosition(event)
     },
-    [delayUpdate],
+    [
+      dragging,
+      menuOpen,
+      handleUpdatePosition,
+      delayHide,
+      horizontalDistanceThreshold,
+      verticalDistanceThreshold,
+    ],
   )
 
   const handleMoseLeave = React.useCallback(() => {
-    clearDelay()
+    clearDelayHideTimer()
     if (!showingRef.current) delayHide()
-  }, [clearDelay, delayHide])
+  }, [clearDelayHideTimer, delayHide])
 
   React.useEffect(() => {
-    const container = Editable.toDOMNode(editor, editor)
-    container.addEventListener('mousemove', handleMouseMove)
-    container.addEventListener('mouseleave', handleMoseLeave)
+    window.addEventListener('mousemove', handleMouseMove)
     return () => {
-      container.removeEventListener('mousemove', handleMouseMove)
-      container.removeEventListener('mouseleave', handleMoseLeave)
+      window.removeEventListener('mousemove', handleMouseMove)
     }
   }, [editor, handleMoseLeave, handleMouseMove])
 
@@ -252,7 +249,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
       const decorate: ElementDecorate = {
         match: el => el === data.element,
         renderElement: ({ children }) => (
-          <StyledElementDecorator>{children}</StyledElementDecorator>
+          <StyledElementDecorator isVoid={data.isVoid}>{children}</StyledElementDecorator>
         ),
       }
       Decorate.create(editor, decorate)
@@ -271,12 +268,13 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   const transformPosition = React.useMemo(() => {
     if (!position || !containerRef.current) return
     const { x, y } = position
-    const { offsetWidth } = containerRef.current
+    const { offsetWidth, clientHeight } = containerRef.current
+    const data = getCapturedData(editor)
     return {
-      x: x - offsetWidth - 4,
-      y,
+      x: x - offsetWidth - 8,
+      y: data?.isVoid ? y : y - clientHeight / 2,
     }
-  }, [position])
+  }, [position, editor])
 
   // const isTransformAmimation = React.useMemo(() => {
   //   const visible = !!position
@@ -316,7 +314,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   }, [])
 
   const delayDrag = React.useCallback(
-    (delayS: number = mouseDragDelay) => {
+    (delayS: number = delayDragDuration) => {
       const delay = delayS * 1000
       clearDelayDragTimer()
       if (delay) {
@@ -328,7 +326,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
         drag()
       }
     },
-    [clearDelayDragTimer, drag, mouseDragDelay],
+    [clearDelayDragTimer, drag, delayDragDuration],
   )
 
   const handleMouseDown = () => {
@@ -343,7 +341,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
   }
 
   const handleMouseEnter = () => {
-    clearDelay()
+    clearDelayHideTimer()
     showingRef.current = true
     const data = getCapturedData(editor)
     SideToolbarStore.setDecorateOpen(editor, !!data)
@@ -413,7 +411,7 @@ export const SideToolbar: React.FC<SideToolbar> = ({
     return (
       <div
         ref={containerRef}
-        tw="absolute -left-0.5 top-0 z-50 "
+        tw="absolute left-0 top-0 z-50 "
         style={{
           opacity: visible ? 1 : 0,
           visibility: visible ? 'visible' : 'hidden',

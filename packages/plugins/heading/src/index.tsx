@@ -106,7 +106,7 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
         } else {
           Transforms.setNodes(
             editor,
-            { [textMark.fontSize]: '', [textMark.fontWeight]: false },
+            { [textMark.fontSize]: undefined, [textMark.fontWeight]: false },
             {
               at: path,
               match: n => Text.isText(n),

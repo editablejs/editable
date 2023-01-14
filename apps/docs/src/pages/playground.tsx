@@ -33,6 +33,8 @@ import * as Y from 'yjs'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
 import { withHistory } from '@editablejs/plugin-history'
+
+import { withYCodeBlock } from '@editablejs/plugin-codeblock/yjs'
 import {
   ToolbarComponent,
   useToolbarEffect,
@@ -208,6 +210,7 @@ export default function Playground() {
         },
       },
     })
+    editor = withYCodeBlock(editor, document)
     editor = withInlineToolbar(withToolbar(editor))
 
     if (!isTouchDevice) {
@@ -309,7 +312,7 @@ export default function Playground() {
                 {!connecting && (
                   <StyledSwitch
                     checked={enableCollaborative}
-                    onCheckedChange={setEnableCollaborative}
+                    onChange={setEnableCollaborative}
                     id="collaboration-mode"
                   >
                     <StyledSwitchThumb />

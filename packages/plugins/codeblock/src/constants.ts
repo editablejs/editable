@@ -1,0 +1,5 @@
+export const CODEBLOCK_KEY = 'codeblock'
+export const CODEBLOCK_DATA_SYNTAX = 'data-syntax'
+export const CODEBLOCK_LANGUAGE = 'language'
+export const CODEBLOCK_YJS_KEY = 'y_codeblock_docs'
+export const CODEBLOCK_YJS_FIELD = 'code'

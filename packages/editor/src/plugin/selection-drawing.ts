@@ -24,6 +24,14 @@ export interface SelectionDrawingStyle {
    * 拖拽光标的颜色
    */
   dragColor?: string
+  /**
+   * 触摸光标的颜色
+   */
+  touchColor?: string
+  /**
+   * 触摸光标的宽度
+   */
+  touchWidth?: number
 }
 
 export interface SelectionDrawingStore {
@@ -51,6 +59,10 @@ const getStore = (editor: Editable) => {
         caretWidth: 1,
 
         dragColor: 'rgb(37, 99, 235)',
+
+        touchWidth: 2,
+
+        touchColor: 'rgb(37, 99, 235)',
       },
       selection: null,
       rects: null,

@@ -5,7 +5,7 @@ import { Editable, useIsomorphicLayoutEffect, Range, Element } from '@editablejs
 import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
 import { getCapturedData } from './weak-map'
 
-interface BaseSideToolbarItem extends UIContextMenuItem {
+interface BaseSideToolbarItem extends Omit<UIContextMenuItem, 'children'> {
   key: string
   title: React.ReactElement | string
   children?: SideToolbarItem[]

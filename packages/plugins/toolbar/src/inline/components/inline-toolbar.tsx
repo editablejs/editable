@@ -47,6 +47,10 @@ export const InlineToolbar = () => {
         const range = Editable.toDOMRange(editor, selection)
         range.collapse(isBackward)
         const rect = range.getBoundingClientRect()
+        if (rect.width === 0 || rect.height === 0) {
+          setOpen(false)
+          return
+        }
         x = isBackward ? rect.x : rect.right
         y = isBackward ? rect.y : rect.bottom
       }
@@ -109,7 +113,7 @@ export const InlineToolbar = () => {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverAnchor virtualRef={virtualRef} />
         <PopoverPortal container={rootRef.current}>
-          <PopoverContent side={side} sideOffset={5}>
+          <PopoverContent side={side} sideOffset={10}>
             <Toolbar items={items} mode="inline" locale={locale} />
           </PopoverContent>
         </PopoverPortal>

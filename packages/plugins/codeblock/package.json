@@ -1,0 +1,98 @@
+{
+  "name": "@editablejs/plugin-codeblock",
+  "version": "1.0.0-beta.0",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "serializer": [
+        "dist/serializer.d.ts"
+      ],
+      "deserializer": [
+        "dist/deserializer.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x",
+    "@types/styled-components": "5.1.26",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.5.0",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.1.0",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*"
+  },
+  "dependencies": {
+    "@codemirror/commands": "6.1.3",
+    "@codemirror/lang-javascript": "6.1.2",
+    "@codemirror/language": "6.3.2",
+    "@codemirror/state": "6.2.0",
+    "@codemirror/view": "6.7.2",
+    "@editablejs/ui": "workspace:*",
+    "codemirror": "6.0.1",
+    "lib0": "^0.2.52",
+    "styled-components": "5.3.5",
+    "yjs": "^13.5.43"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

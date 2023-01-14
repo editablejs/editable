@@ -2,8 +2,8 @@
 import WebSocket from 'ws'
 import http from 'http'
 import * as Y from 'yjs'
-import * as syncProtocol from 'y-protocols/sync'
-import * as awarenessProtocol from 'y-protocols/awareness'
+import * as syncProtocol from '@editablejs/plugin-yjs-protocols/sync'
+import * as awarenessProtocol from '@editablejs/plugin-yjs-protocols/awareness'
 
 import * as encoding from 'lib0/encoding'
 import * as decoding from 'lib0/decoding'
@@ -15,6 +15,7 @@ import { WSSharedDoc as WSSharedDocInterface } from './types'
 import { callbackHandler, CallbackOptions } from './callback'
 import { getPersistence } from './persistence'
 import { Element } from '@editablejs/plugin-yjs-transform'
+import { messageAwareness, messageSubDocSync, messageSync } from '../message'
 
 const wsReadyStateConnecting = 0
 const wsReadyStateOpen = 1
@@ -26,14 +27,26 @@ const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0'
 
 export const docs: Map<string, WSSharedDoc> = new Map()
 
-const messageSync = 0
-const messageAwareness = 1
 // const messageAuth = 2
 
 const updateHandler = (update: Uint8Array, origin: string, doc: WSSharedDocInterface) => {
   const encoder = encoding.createEncoder()
   encoding.writeVarUint(encoder, messageSync)
   encoding.writeAny(encoder, origin ?? {})
+  syncProtocol.writeUpdate(encoder, update)
+  const message = encoding.toUint8Array(encoder)
+  doc.conns.forEach((_, conn) => send(doc, conn, message))
+}
+
+const updateSubDocHandler = (
+  subId: string,
+  update: Uint8Array,
+  origin: string,
+  doc: WSSharedDocInterface,
+) => {
+  const encoder = encoding.createEncoder()
+  encoding.writeVarUint(encoder, messageSubDocSync)
+  encoding.writeVarString(encoder, subId)
   syncProtocol.writeUpdate(encoder, update)
   const message = encoding.toUint8Array(encoder)
   doc.conns.forEach((_, conn) => send(doc, conn, message))
@@ -56,6 +69,7 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
   name: string
   conns: Map<WebSocket.WebSocket, Set<number>>
   awareness: awarenessProtocol.Awareness
+  subDocs: Map<string, Y.Doc> = new Map()
   /**
    * @param {string} name
    */
@@ -97,11 +111,35 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
       })
     }
     this.awareness.on('update', awarenessChangeHandler)
-    this.on('update', updateHandler)
+    this.on('updateV2', updateHandler)
+
+    const handleSubDocUpdate = (update: Uint8Array, origin: string, subDoc: Y.Doc) => {
+      updateSubDocHandler(subDoc.guid, update, origin, this)
+    }
+
+    const _subDocsHandler = ({
+      added,
+      removed,
+      loaded,
+    }: Record<'added' | 'removed' | 'loaded', Y.Doc[]>) => {
+      added.forEach(subDoc => {
+        this.subDocs.set(subDoc.guid, subDoc)
+      })
+      removed.forEach(subDoc => {
+        subDoc.off('updateV2', handleSubDocUpdate)
+        this.subDocs.delete(subDoc.guid)
+      })
+      loaded.forEach(subDoc => {
+        subDoc.on('updateV2', handleSubDocUpdate)
+        this.emit('subDocLoaded', [subDoc])
+      })
+    }
+    this.on('subdocs', _subDocsHandler)
+
     if (callback) {
       const { debounceWait = 2000, debounceMaxWait = 10000 } = callback
       this.on(
-        'update',
+        'updateV2',
         debounce(
           (update: Uint8Array, origin: string, doc: WSSharedDocInterface) =>
             callbackHandler(doc, callback),
@@ -110,6 +148,17 @@ class WSSharedDoc extends Y.Doc implements WSSharedDocInterface {
         ),
       )
     }
+  }
+
+  destroy(): void {
+    this.subDocs.forEach(subDoc => {
+      subDoc.destroy()
+    })
+    super.destroy()
+  }
+
+  getSubDoc(id: string) {
+    return this.subDocs.get(id)
   }
 }
 
@@ -133,33 +182,21 @@ export const getYDoc = (
     return doc
   })
 
-const readSyncMessage: typeof syncProtocol.readSyncMessage = (
-  decoder,
-  encoder,
-  doc,
-  transactionOrigin,
+const readSyncMetaMessage = (
+  decoder: decoding.Decoder,
+  encoder: encoding.Encoder,
+  doc: Y.Doc,
+  transactionOrigin: any,
 ) => {
   const meta = decoding.readAny(decoder)
   if (!transactionOrigin) {
     transactionOrigin = meta
   }
-  const messageType = decoding.readVarUint(decoder)
-  switch (messageType) {
-    case syncProtocol.messageYjsSyncStep1:
-      encoding.writeAny(encoder, meta)
-      syncProtocol.readSyncStep1(decoder, encoder, doc)
-      break
-    case syncProtocol.messageYjsSyncStep2:
-      syncProtocol.readSyncStep2(decoder, doc, transactionOrigin)
-      break
-    case syncProtocol.messageYjsUpdate:
-      syncProtocol.readUpdate(decoder, doc, transactionOrigin)
-      break
-    default:
-      throw new Error('Unknown message type')
-  }
-  return messageType
+  return syncProtocol.readSyncMessage(decoder, encoder, doc, transactionOrigin, () => {
+    encoding.writeAny(encoder, meta)
+  })
 }
+
 const messageListener = (
   conn: WebSocket.WebSocket,
   doc: WSSharedDocInterface,
@@ -172,7 +209,22 @@ const messageListener = (
     switch (messageType) {
       case messageSync:
         encoding.writeVarUint(encoder, messageSync)
-        readSyncMessage(decoder, encoder, doc, null)
+        readSyncMetaMessage(decoder, encoder, doc, null)
+        // If the `encoder` only contains the type of reply message and no
+        // message, there is no need to send the message. When `encoder` only
+        // contains the type of reply, its length is 1.
+        if (encoding.length(encoder) > 1) {
+          send(doc, conn, encoding.toUint8Array(encoder))
+        }
+        break
+      case messageSubDocSync:
+        encoding.writeVarUint(encoder, messageSubDocSync)
+        const subId = decoding.readVarString(decoder)
+        const subDoc = doc.getSubDoc(subId)
+        if (!subDoc) break
+        syncProtocol.readSyncMessage(decoder, encoder, subDoc, null, () => {
+          encoding.writeVarString(encoder, subId)
+        })
         // If the `encoder` only contains the type of reply message and no
         // message, there is no need to send the message. When `encoder` only
         // contains the type of reply, its length is 1.
@@ -249,6 +301,13 @@ export const setupWSConnection = (
   // get doc, initialize if it does not exist yet
   const doc = getYDoc(docName, gc, initialValue, callback)
   doc.conns.set(conn, new Set())
+  doc.on('subDocLoaded', subDoc => {
+    const encoder = encoding.createEncoder()
+    encoding.writeVarUint(encoder, messageSubDocSync)
+    encoding.writeVarString(encoder, subDoc.guid)
+    syncProtocol.writeSyncStep1(encoder, subDoc)
+    send(doc, conn, encoding.toUint8Array(encoder))
+  })
   // listen and reply to events
   conn.on('message', (message: ArrayBuffer) => messageListener(conn, doc, new Uint8Array(message)))
 

@@ -36,15 +36,15 @@
     "@editablejs/editor": "workspace:*",
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x",
     "@types/styled-components": "5.1.26",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
@@ -68,9 +68,9 @@
     "preset": "jest-presets/jest/node"
   },
   "dependencies": {
+    "@editablejs/plugin-yjs-protocols": "workspace:*",
     "@editablejs/plugin-yjs-transform": "workspace:*",
     "styled-components": "5.3.5",
-    "y-protocols": "1.0.5",
     "zustand": "4.1.4"
   }
 }

@@ -43,6 +43,9 @@ import { CompositionText } from '../interfaces/composition-text'
 import { EventEmitter } from './event'
 import { Placeholder } from './placeholder'
 import { Focused } from '../hooks/use-focused'
+import { CAN_USE_DOM } from '../utils/environment'
+import { DOMElement, isDOMHTMLElement } from '../utils/dom'
+import { canForceTakeFocus } from '../utils/selection'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 
@@ -186,8 +189,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
     }
-
-    if (!Editable.isFocused(e)) {
+    if (!Editable.isFocused(e) && canForceTakeFocus()) {
       e.focus()
     }
   }
@@ -245,8 +247,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
     EventEmitter.emit(e, type, ...args)
   }
 
+  let prevSelection: Range | null = null
+  let prevAnchorNode: Node | null = null
+  let prevFocusNode: Node | null = null
   e.onChange = () => {
-    let prevSelection: Range | null = null
     EDITOR_ACTIVE_MARKS.delete(editor)
     EDITOR_ACTIVE_ELEMENTS.delete(editor)
     // COMPAT: React doesn't batch `setState` hook calls, which means that the
@@ -256,10 +260,16 @@ export const withEditable = <T extends Editor>(editor: T) => {
     ReactDOM.unstable_batchedUpdates(() => {
       if (
         ((!prevSelection || !e.selection) && prevSelection !== e.selection) ||
-        (prevSelection && e.selection && !Range.equals(prevSelection, e.selection))
+        (prevSelection &&
+          e.selection &&
+          (!Range.equals(prevSelection, e.selection) ||
+            prevAnchorNode !== Node.get(e, e.selection.anchor.path) ||
+            prevFocusNode !== Node.get(e, e.selection.focus.path)))
       ) {
         e.onSelectionChange()
         prevSelection = e.selection ? Object.assign({}, e.selection) : null
+        prevAnchorNode = e.selection ? Node.get(e, e.selection.anchor.path) : null
+        prevFocusNode = e.selection ? Node.get(e, e.selection.focus.path) : null
       }
       Placeholder.clearCurrent(e)
       if (e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {

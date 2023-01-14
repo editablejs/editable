@@ -43,7 +43,7 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
   useIsomorphicLayoutEffect(() => {
     if (rects.length > 0) {
       const rect = rects[rects.length - 1]
-      const [x, y] = Editable.toGlobalPosition(editor, rect.x, rect.bottom)
+      const [x, y] = Editable.reverseRelativePosition(editor, rect.x, rect.bottom)
       pointRef.current = {
         x,
         y,

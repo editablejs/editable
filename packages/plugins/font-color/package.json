@@ -48,7 +48,6 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@types/tinycolor2": "1.4.3",
     "@editablejs/editor": "workspace:*",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
@@ -61,7 +60,7 @@
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*",
-    "tinycolor2": "1.5.2"
+    "colord": "2.9.0"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

@@ -64,7 +64,7 @@ export function applyYjsEvents(
 ) {
   Editor.withoutNormalizing(editor, () => {
     const origin: any = YjsEditor.origin(editor)
-    const originOps: Operation[] = origin.meta?.ops ?? []
+    const originOps: Operation[] = origin?.meta?.ops ?? []
     // yjs中未存在的操作，会成为组的发过来。这里需要对 ref 执行更新，否则yjs的原子op会导致ref的错误
     const originOp = originOps[0]
     if (originOp && ~UniqueOperations.indexOf(originOp.type)) {

@@ -1,4 +1,4 @@
-import tinycolor from 'tinycolor2'
+import { colord } from 'colord'
 import { Editable, RenderLeafProps, Editor, Hotkey } from '@editablejs/editor'
 import { FONTCOLOR_KEY } from '../constants'
 import { FontColorEditor } from './editor'
@@ -16,10 +16,7 @@ export const withFontColor = <T extends Editable>(editor: T, options: FontColorO
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
       const { defaultColor } = FontColorEditor.getOptions(editor)
-      if (
-        defaultColor &&
-        tinycolor(color).toRgbString() === tinycolor(defaultColor).toRgbString()
-      ) {
+      if (defaultColor && colord(color).toRgbString() === colord(defaultColor).toRgbString()) {
         Editor.removeMark(editor, FONTCOLOR_KEY)
       } else {
         Editor.addMark(editor, FONTCOLOR_KEY, color)

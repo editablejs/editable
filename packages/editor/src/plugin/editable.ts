@@ -26,6 +26,7 @@ import {
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
+  NODE_TO_ELEMENT,
 } from '../utils/weak-maps'
 import {
   DOMElement,
@@ -583,6 +584,7 @@ export const Editable = {
       : domEl.closest(`[${DATA_EDITABLE_NODE}]`)
 
     const addToElements = (node: Node) => {
+      if (!NODE_TO_ELEMENT.get(node)) return
       const children = Editable.findLowestDOMElements(editor, node)
       for (const child of children) {
         if (~elements.indexOf(child)) continue
@@ -850,7 +852,7 @@ export const Editable = {
       const path = blockEntry[1].concat(textPath)
       const [parent] = Editor.parent(editor, path)
       if (parent && Editor.isVoid(editor, parent)) {
-        text = ' '
+        text = ''
       }
       if (Path.equals(path, point.path)) {
         data.offset += point.offset
@@ -1111,7 +1113,7 @@ export const Editable = {
     return [x - rootRect.left, y - rootRect.top]
   },
 
-  toGlobalPosition(editor: Editable, x: number, y: number): [number, number] {
+  reverseRelativePosition(editor: Editable, x: number, y: number): [number, number] {
     const container = Editable.toDOMNode(editor, editor)
     const rootRect = container.getBoundingClientRect()
     return [x + rootRect.left, y + rootRect.top]

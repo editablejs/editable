@@ -815,6 +815,14 @@ export const BackgroundColorIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> 
   )
 }
 
+export const CodeBlockIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = props => {
+  return (
+    <svg {...props} viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+      <path d="M148.7 510.449c59.2 32.5 95.8 94.301 95.8 161.501v121.4c0 38.5 28.7 70.9 66.9 75.5l60.2 7.301c24.1 3 41.3 24.9 38.4 49-3 24.1-24.9 41.3-49 38.4l-60.2-7.301c-82.4-9.9-144.4-79.8-144.4-162.8v-121.7c0-35-19.1-67.199-49.8-84.1l-66.3-36.4c-5.1-2.801-8.3-8.199-8.3-14v-58.5c0-6.2 3.5-11.9 9.1-14.5l61.3-29.101c33-16.1 53.9-49.6 53.9-86.3v-118.7c0-83 62-152.899 144.4-162.8l60.2-7.3c24.2-2.9 46.1 14.3 49 38.399 2.899 24.2-14.3 46.101-38.4 49l-60.2 7.301c-38.2 4.699-66.9 37-66.9 75.5v118.699c0 67.501-37 129.402-95.7 161.501zM992 478.85v58.6c0 5.801-3.2 11.201-8.3 14l-66.2 36.4c-30.7 16.801-49.8 49.101-49.8 84.101V793.85c0 83-62 152.9-144.3 162.801l-60.101 7.3c-24.1 2.899-46-14.3-48.899-38.399-2.9-24.201 14.3-46.101 38.399-49l60.101-7.301c38.199-4.699 66.899-37 66.899-75.5v-121.7c0-67.201 36.5-129 95.7-161.501-58.8-32.2-95.7-94-95.7-161.5v-118.7c0-38.5-28.7-70.9-66.899-75.5l-60.101-7.3c-24.1-3-41.3-24.9-38.399-49 2.899-24.101 24.8-41.3 48.899-38.4l60.101 7.3c82.3 9.9 144.3 79.801 144.3 162.801V348.95c0 36.7 20.899 70.2 53.899 86.301l61.301 29.1c5.5 2.699 9.1 8.298 9.1 14.499z" />
+    </svg>
+  )
+}
+
 export const IconMap = {
   bold: BoldIcon,
   italic: ItalicIcon,
@@ -871,6 +879,7 @@ export const IconMap = {
   leading: LeadingIcon,
   fontColor: FontColorIcon,
   backgroundColor: BackgroundColorIcon,
+  codeBlock: CodeBlockIcon,
 }
 
 export type IconName = keyof typeof IconMap
@@ -899,7 +908,6 @@ export const Icon: React.FC<React.HTMLAttributes<SVGSVGElement> & Record<'name',
 export const IconCustom: React.FC<React.HTMLAttributes<SVGSVGElement>> = ({
   className,
   children,
-  ...props
 }) => {
   return <IconStyles className={className}>{children}</IconStyles>
 }

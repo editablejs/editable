@@ -28,6 +28,7 @@ import { HrOptions, HrEditor, withHr } from '@editablejs/plugin-hr'
 import { AlignOptions, AlignEditor, withAlign } from '@editablejs/plugin-align'
 import { LeadingOptions, LeadingEditor, withLeading } from '@editablejs/plugin-leading'
 import { MentionOptions, MentionEditor, withMention } from '@editablejs/plugin-mention'
+import { CodeBlockOptions, CodeBlockEditor, withCodeBlock } from '@editablejs/plugin-codeblock'
 import {
   ContextMenuEditor,
   ContextMenuOptions,
@@ -53,6 +54,7 @@ export interface PluginOptions {
   align?: AlignOptions
   leading?: LeadingOptions
   mention?: MentionOptions
+  codeBlock?: CodeBlockOptions
 }
 
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
@@ -74,6 +76,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withAlign(newEditor, options.align)
   newEditor = withLeading(newEditor, options.leading)
   newEditor = withMention(newEditor, options.mention)
+  newEditor = withCodeBlock(newEditor, options.codeBlock)
   return newEditor as T &
     ContextMenuEditor &
     MarkEditor &
@@ -92,7 +95,8 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     LeadingEditor &
     FontColorEditor &
     BackgroundColorEditor &
-    MentionEditor
+    MentionEditor &
+    CodeBlockEditor
 }
 
 export * from '@editablejs/plugin-mark'
@@ -111,3 +115,4 @@ export * from '@editablejs/plugin-hr'
 export * from '@editablejs/plugin-align'
 export * from '@editablejs/plugin-leading'
 export * from '@editablejs/plugin-mention'
+export * from '@editablejs/plugin-codeblock'

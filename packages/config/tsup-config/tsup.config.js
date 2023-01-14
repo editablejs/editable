@@ -9,7 +9,6 @@ module.exports = options => {
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
-    minify: !isDev,
     esbuildPlugins: [
       styled({
         displayName: isDev,

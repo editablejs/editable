@@ -59,10 +59,10 @@
     "yjs": "^13.5.43"
   },
   "dependencies": {
+    "@editablejs/plugin-yjs-protocols": "workspace:*",
     "@editablejs/plugin-yjs-transform": "workspace:*",
     "lib0": "^0.2.52",
-    "lodash.debounce": "^4.0.8",
-    "y-protocols": "^1.0.5"
+    "lodash.debounce": "^4.0.8"
   },
   "peerDependencies": {
     "yjs": "^13.5.43"

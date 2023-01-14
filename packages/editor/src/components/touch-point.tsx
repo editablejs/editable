@@ -27,6 +27,7 @@ const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
 
     const [focused] = useFocused()
     if (
+      rects.length === 0 ||
       !isTouchDevice ||
       !enabled ||
       !selection ||

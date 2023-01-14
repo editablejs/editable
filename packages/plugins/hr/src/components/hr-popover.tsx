@@ -17,6 +17,7 @@ import { StyleIcon, ThicknessIcon } from './icons'
 export interface HrPopoverProps {
   editor: HrEditor
   element: Hr
+  children?: React.ReactNode
 }
 
 export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => {

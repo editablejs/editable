@@ -3,17 +3,19 @@ import * as bc from 'lib0/broadcastchannel'
 import * as time from 'lib0/time'
 import * as encoding from 'lib0/encoding'
 import * as decoding from 'lib0/decoding'
-import * as syncProtocol from 'y-protocols/sync'
-import * as authProtocol from 'y-protocols/auth'
-import * as awarenessProtocol from 'y-protocols/awareness'
+import * as syncProtocol from '@editablejs/plugin-yjs-protocols/sync'
+import * as authProtocol from '@editablejs/plugin-yjs-protocols/auth'
+import * as awarenessProtocol from '@editablejs/plugin-yjs-protocols/awareness'
 import { Observable } from 'lib0/observable'
 import * as math from 'lib0/math'
 import * as url from 'lib0/url'
-
-export const messageSync = 0
-export const messageQueryAwareness = 3
-export const messageAwareness = 1
-export const messageAuth = 2
+import {
+  messageSync,
+  messageQueryAwareness,
+  messageAwareness,
+  messageAuth,
+  messageSubDocSync,
+} from './message'
 
 type MessageHandler = (
   encoder: encoding.Encoder,
@@ -25,38 +27,24 @@ type MessageHandler = (
 
 const messageHandlers: MessageHandler[] = []
 
-const readSyncMessage = (
+const readSyncMetaMessage = (
   decoder: decoding.Decoder,
   encoder: encoding.Encoder,
   doc: Y.Doc,
-  transactionOrigin: unknown,
+  transactionOrigin: any,
 ) => {
+  encoding.writeVarUint(encoder, messageSync)
   const meta = decoding.readAny(decoder)
-
   if (typeof transactionOrigin === 'object' && transactionOrigin !== null) {
     ;(transactionOrigin as any).meta = meta
   }
-  const messageType = decoding.readVarUint(decoder)
-  switch (messageType) {
-    case syncProtocol.messageYjsSyncStep1:
-      encoding.writeAny(encoder, meta)
-      syncProtocol.readSyncStep1(decoder, encoder, doc)
-      break
-    case syncProtocol.messageYjsSyncStep2:
-      syncProtocol.readSyncStep2(decoder, doc, transactionOrigin)
-      break
-    case syncProtocol.messageYjsUpdate:
-      syncProtocol.readUpdate(decoder, doc, transactionOrigin)
-      break
-    default:
-      throw new Error('Unknown message type')
-  }
-  return messageType
+  return syncProtocol.readSyncMessage(decoder, encoder, doc, transactionOrigin, () => {
+    encoding.writeAny(encoder, meta)
+  })
 }
 
 messageHandlers[messageSync] = (encoder, decoder, provider, emitSynced, _messageType) => {
-  encoding.writeVarUint(encoder, messageSync)
-  const syncMessageType = readSyncMessage(decoder, encoder, provider.doc, provider)
+  const syncMessageType = readSyncMetaMessage(decoder, encoder, provider.doc, provider)
   if (emitSynced && syncMessageType === syncProtocol.messageYjsSyncStep2 && !provider.synced) {
     provider.synced = true
   }
@@ -91,6 +79,20 @@ messageHandlers[messageAuth] = (_encoder, decoder, provider, _emitSynced, _messa
   authProtocol.readAuthMessage(decoder, provider.doc, (_ydoc, reason) =>
     permissionDeniedHandler(provider, reason),
   )
+}
+
+messageHandlers[messageSubDocSync] = (encoder, decoder, provider, emitSynced) => {
+  const subDocID = decoding.readVarString(decoder)
+  encoding.writeVarUint(encoder, messageSubDocSync)
+  const subDoc = provider.getSubDoc(subDocID)
+  if (subDoc) {
+    const syncMessageType = syncProtocol.readSyncMessage(decoder, encoder, subDoc, provider, () => {
+      encoding.writeVarString(encoder, subDocID)
+    })
+    if (emitSynced && syncMessageType === syncProtocol.messageYjsSyncStep2) {
+      subDoc.emit('synced', [true])
+    }
+  }
 }
 
 // @todo - this should depend on awareness.outdatedTime
@@ -229,6 +231,7 @@ export class WebsocketProvider extends Observable<string> {
   url: string
   roomname: string
   doc: Y.Doc
+  subDocs: Map<string, Y.Doc> = new Map()
   meta: Record<string, any> = {}
   _WS: typeof WebSocket
   awareness: awarenessProtocol.Awareness
@@ -251,6 +254,12 @@ export class WebsocketProvider extends Observable<string> {
   ) => void
   _unloadHandler: () => void
   _checkInterval: number
+  _subDocsHandler: ({
+    added,
+    removed,
+    loaded,
+  }: Record<'added' | 'removed' | 'loaded', Y.Doc[]>) => void
+  _updateSubDocHandler: (update: Uint8Array, origin: unknown, doc: Y.Doc) => void
 
   constructor(
     serverUrl: string,
@@ -339,7 +348,78 @@ export class WebsocketProvider extends Observable<string> {
         broadcastMessage(this, encoding.toUint8Array(encoder))
       }
     }
-    this.doc.on('update', this._updateHandler)
+    this.doc.on('updateV2', this._updateHandler)
+
+    /**
+     *
+     * @param callback
+     * @param interval
+     */
+    const waitForConnection = (callback: Function, interval: number) => {
+      const ws = this.ws
+      if (ws && ws.readyState === 1) {
+        callback()
+      } else {
+        // optional: implement backoff for interval here
+        setTimeout(function () {
+          waitForConnection(callback, interval)
+        }, interval)
+      }
+    }
+
+    /**
+     * When dealing with subdocs, it is possible to race the websocket connection
+     * where we are ready to load subdocuments but the connection is not yet ready to send
+     * This function is just a quick and dirty retry function for when we can't be sure
+     * if the connection is present
+     * @param message
+     * @param callback
+     */
+    const waitSend = (message: any, callback: Function) => {
+      waitForConnection(() => {
+        this.ws?.send(message)
+        if (typeof callback !== 'undefined') {
+          callback()
+        }
+      }, 1000)
+    }
+
+    this._updateSubDocHandler = (update: Uint8Array, origin: unknown, doc: Y.Doc) => {
+      const encoder = encoding.createEncoder()
+      encoding.writeVarUint(encoder, messageSubDocSync)
+      encoding.writeVarString(encoder, doc.guid)
+      syncProtocol.writeUpdate(encoder, update)
+      broadcastMessage(this, encoding.toUint8Array(encoder))
+    }
+
+    this._subDocsHandler = ({
+      added,
+      removed,
+      loaded,
+    }: Record<'added' | 'removed' | 'loaded', Y.Doc[]>) => {
+      added.forEach(subDoc => {
+        this.subDocs.set(subDoc.guid, subDoc)
+      })
+      removed.forEach(subDoc => {
+        subDoc.off('updateV2', this._updateSubDocHandler)
+        this.subDocs.delete(subDoc.guid)
+      })
+      loaded.forEach(subDoc => {
+        // always send sync step 1 when connected
+        const encoder = encoding.createEncoder()
+        encoding.writeVarUint(encoder, messageSubDocSync)
+        encoding.writeVarString(encoder, subDoc.guid)
+        syncProtocol.writeSyncStep1(encoder, subDoc)
+        if (this.ws) {
+          waitSend(encoding.toUint8Array(encoder), () => {
+            subDoc.on('updateV2', this._updateSubDocHandler)
+          })
+        }
+      })
+    }
+
+    this.doc.on('subdocs', this._subDocsHandler)
+
     /**
      * @param {any} changed
      * @param {any} _origin
@@ -398,6 +478,10 @@ export class WebsocketProvider extends Observable<string> {
     }
   }
 
+  getSubDoc(id: string) {
+    return this.subDocs.get(id)
+  }
+
   destroy() {
     if (this._resyncInterval !== 0) {
       clearInterval(this._resyncInterval)
@@ -406,14 +490,16 @@ export class WebsocketProvider extends Observable<string> {
     this.disconnect()
     if (typeof window !== 'undefined') {
       window.removeEventListener('unload', this._unloadHandler)
-    }
-    // @ts-ignore
-    else if (typeof process !== 'undefined') {
-      // @ts-ignore
+    } else if (typeof process !== 'undefined') {
       process.off('exit', this._unloadHandler)
     }
-    this.awareness.off('update', this._awarenessUpdateHandler)
-    this.doc.off('update', this._updateHandler)
+    this.awareness.off('updateV2', this._awarenessUpdateHandler)
+    this.subDocs.forEach(subDoc => {
+      subDoc.off('updateV2', this._updateSubDocHandler)
+      subDoc.destroy()
+    })
+    this.doc.off('subdocs', this._subDocsHandler)
+    this.doc.off('updateV2', this._updateHandler)
     super.destroy()
   }
 

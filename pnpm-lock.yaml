@@ -23,10 +23,10 @@ importers:
       eslint-config-editable: link:packages/config/eslint-config-editable
       husky: 8.0.1
       lint-staged: 13.0.3
-      prettier: 2.8.2
+      prettier: 2.8.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.6.3
+      turbo: 1.7.0
 
   apps/docs:
     specifiers:
@@ -42,6 +42,7 @@ importers:
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-codeblock': workspace:1.0.0-beta.0
       '@editablejs/plugin-history': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
@@ -106,6 +107,7 @@ importers:
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0_bbqmvyebg44zjqjhzodbnnxkxa
       '@editablejs/editor': link:../../packages/editor
+      '@editablejs/plugin-codeblock': link:../../packages/plugins/codeblock
       '@editablejs/plugin-history': link:../../packages/plugins/history
       '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
@@ -258,8 +260,8 @@ importers:
       prettier: latest
       prettier-plugin-tailwindcss: 0.1.13
     devDependencies:
-      prettier: 2.8.2
-      prettier-plugin-tailwindcss: 0.1.13_prettier@2.8.2
+      prettier: 2.8.3
+      prettier-plugin-tailwindcss: 0.1.13_prettier@2.8.3
 
   packages/config/tailwind-config:
     specifiers:
@@ -283,8 +285,8 @@ importers:
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/lodash.merge': ^4.6.7
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       direction: ^1.0.3
       escape-html: ^1.0.3
       eslint-config-editable: workspace:*
@@ -293,8 +295,8 @@ importers:
       jest-presets: workspace:*
       lodash.merge: ^4.6.2
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       scroll-into-view-if-needed: ^2.2.20
       slate: ^0.88.1
       tsconfig: workspace:*
@@ -310,20 +312,20 @@ importers:
       lodash.merge: 4.6.2
       scroll-into-view-if-needed: 2.2.29
       slate: 0.88.1
-      zustand: 4.1.4_react@17.0.2
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@types/escape-html': 1.0.2
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
       '@types/lodash.merge': 4.6.7
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       eslint-config-editable: link:../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../config/tsconfig
       tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../config/tsup-config
@@ -360,21 +362,19 @@ importers:
   packages/plugins/background-color:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/tinycolor2': 1.4.3
+      colord: 2.9.0
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      tinycolor2: 1.5.2
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
-      tinycolor2: 1.5.2
+      colord: 2.9.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/tinycolor2': 1.4.3
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
@@ -387,15 +387,15 @@ importers:
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -405,18 +405,77 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.1.0_tailwindcss@3.2.4
+      typescript: 4.9.4
+
+  packages/plugins/codeblock:
+    specifiers:
+      '@codemirror/commands': 6.1.3
+      '@codemirror/lang-javascript': 6.1.2
+      '@codemirror/language': 6.3.2
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@editablejs/editor': workspace:*
+      '@editablejs/ui': workspace:*
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
+      '@types/styled-components': 5.1.26
+      codemirror: 6.0.1
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      prettier-config: workspace:*
+      react: ^18.x
+      react-dom: ^18.x
+      styled-components: 5.3.5
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      twin.macro: 3.1.0
+      typescript: latest
+      yjs: ^13.5.43
+    dependencies:
+      '@codemirror/commands': 6.1.3
+      '@codemirror/lang-javascript': 6.1.2
+      '@codemirror/language': 6.3.2
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@editablejs/ui': link:../../ui
+      codemirror: 6.0.1_@lezer+common@1.0.2
+      lib0: 0.2.52
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      yjs: 13.5.43
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
+      '@types/styled-components': 5.1.26
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -430,15 +489,15 @@ importers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
       '@types/escape-html': ^1.0.2
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -450,20 +509,20 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/escape-html': 1.0.2
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -475,21 +534,19 @@ importers:
   packages/plugins/font-color:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/tinycolor2': 1.4.3
+      colord: 2.9.0
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      tinycolor2: 1.5.2
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
     dependencies:
-      tinycolor2: 1.5.2
+      colord: 2.9.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/tinycolor2': 1.4.3
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
@@ -524,15 +581,15 @@ importers:
   packages/plugins/heading:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -542,18 +599,18 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -565,15 +622,15 @@ importers:
   packages/plugins/history:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
       is-plain-object: ^5.0.0
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
@@ -582,14 +639,14 @@ importers:
       is-plain-object: 5.0.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
       tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
@@ -599,15 +656,15 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -618,18 +675,18 @@ importers:
       typescript: latest
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -642,15 +699,15 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       react-image-previewer: 1.1.6
       styled-components: 5.3.5
       tailwind-config: workspace:*
@@ -663,20 +720,20 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      react-image-previewer: 1.1.6_fane7jikarojcev26y27hpbhu4
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      react-image-previewer: 1.1.6_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -688,15 +745,15 @@ importers:
   packages/plugins/indent:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -706,18 +763,18 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -758,15 +815,15 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -778,19 +835,19 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -802,15 +859,15 @@ importers:
   packages/plugins/list:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -820,18 +877,18 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -843,15 +900,15 @@ importers:
   packages/plugins/mark:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -861,18 +918,18 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -886,15 +943,15 @@ importers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
       '@types/lodash.debounce': 4.0.7
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       lodash.debounce: ^4.0.8
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -907,19 +964,19 @@ importers:
     dependencies:
       '@editablejs/ui': link:../../ui
       lodash.debounce: 4.0.8
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/lodash.debounce': 4.0.7
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -934,6 +991,7 @@ importers:
       '@editablejs/plugin-align': workspace:*
       '@editablejs/plugin-background-color': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
+      '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
       '@editablejs/plugin-font-color': workspace:*
       '@editablejs/plugin-font-size': workspace:*
@@ -947,14 +1005,14 @@ importers:
       '@editablejs/plugin-mark': workspace:*
       '@editablejs/plugin-mention': workspace:*
       '@editablejs/plugin-table': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
@@ -963,6 +1021,7 @@ importers:
       '@editablejs/plugin-align': link:../align
       '@editablejs/plugin-background-color': link:../background-color
       '@editablejs/plugin-blockquote': link:../blockquote
+      '@editablejs/plugin-codeblock': link:../codeblock
       '@editablejs/plugin-context-menu': link:../context-menu
       '@editablejs/plugin-font-color': link:../font-color
       '@editablejs/plugin-font-size': link:../font-size
@@ -978,14 +1037,14 @@ importers:
       '@editablejs/plugin-table': link:../table
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
       tsup: 6.5.0_typescript@4.9.4
       tsup-config: link:../../config/tsup-config
@@ -995,15 +1054,15 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -1015,19 +1074,19 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -1040,15 +1099,15 @@ importers:
     specifiers:
       '@editablejs/editor': workspace:*
       '@editablejs/ui': workspace:*
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -1060,19 +1119,19 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -1084,18 +1143,19 @@ importers:
   packages/plugins/yjs:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-yjs-protocols': workspace:*
       '@editablejs/plugin-yjs-transform': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
-      '@types/react': ^17.x
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-dom: ^17.x
+      react: ^18.x
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -1104,33 +1164,59 @@ importers:
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
-      y-protocols: 1.0.5
       yjs: ^13.5.43
       zustand: 4.1.4
     dependencies:
+      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
       '@editablejs/plugin-yjs-transform': link:../yjs-transform
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      y-protocols: 1.0.5
-      zustand: 4.1.4_react@17.0.2
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
-      '@types/react': 17.0.47
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
       tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
+      typescript: 4.9.4
+      yjs: 13.5.43
+
+  packages/plugins/yjs-protocols:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+      yjs: ^13.5.43
+    dependencies:
+      lib0: 0.2.52
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.4
+      tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
       yjs: 13.5.43
 
@@ -1160,6 +1246,7 @@ importers:
 
   packages/plugins/yjs-websocket:
     specifiers:
+      '@editablejs/plugin-yjs-protocols': workspace:*
       '@editablejs/plugin-yjs-transform': workspace:*
       '@types/jest': ^26.0.22
       '@types/lodash.debounce': 4.0.7
@@ -1176,13 +1263,12 @@ importers:
       typescript: latest
       ws: ^6.2.1
       y-leveldb: ^0.1.0
-      y-protocols: ^1.0.5
       yjs: ^13.5.43
     dependencies:
+      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
       '@editablejs/plugin-yjs-transform': link:../yjs-transform
       lib0: 0.2.52
       lodash.debounce: 4.0.8
-      y-protocols: 1.0.5
     optionalDependencies:
       ws: 6.2.2
       y-leveldb: 0.1.1_yjs@13.5.43
@@ -1203,44 +1289,40 @@ importers:
   packages/ui:
     specifiers:
       '@floating-ui/react-dom': 1.0.0
-      '@types/react': ^17.x
-      '@types/react-color': 3.0.6
-      '@types/react-dom': ^17.x
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
-      '@types/tinycolor2': 1.4.3
+      colord: 2.9.0
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
-      react: ^17.x
-      react-color: 2.19.3
-      react-dom: ^17.x
+      react: ^18.x
+      react-colorful: 5.6.1
+      react-dom: ^18.x
       styled-components: 5.3.5
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
-      tinycolor2: 1.5.2
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
-      '@floating-ui/react-dom': 1.0.0_sfoxds7t5ydpegc3knd667wn6m
-      react-color: 2.19.3_react@17.0.2
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
-      tinycolor2: 1.5.2
+      '@floating-ui/react-dom': 1.0.0_biqbaboplfbrettd7655fr4n2y
+      colord: 2.9.0
+      react-colorful: 5.6.1_biqbaboplfbrettd7655fr4n2y
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
-      '@types/react': 17.0.47
-      '@types/react-color': 3.0.6
-      '@types/react-dom': 17.0.17
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
-      '@types/tinycolor2': 1.4.3
       eslint-config-editable: link:../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../config/tsconfig
@@ -2148,6 +2230,20 @@ packages:
       '@lezer/common': 0.15.12
     dev: false
 
+  /@codemirror/autocomplete/6.4.0_eo6pz6bvsllvatnnwfprpuflde:
+    resolution: {integrity: sha512-HLF2PnZAm1s4kGs30EiqKMgD7XsYaQ0XJnMR0rofEWQ5t5D60SfqpDIkIh1ze5tiEbyUWm8+VJ6W1/erVvBMIA==}
+    peerDependencies:
+      '@codemirror/language': ^6.0.0
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
+      '@lezer/common': ^1.0.0
+    dependencies:
+      '@codemirror/language': 6.3.2
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@lezer/common': 1.0.2
+    dev: false
+
   /@codemirror/closebrackets/0.19.2:
     resolution: {integrity: sha512-ClMPzPcPP0eQiDcVjtVPl6OLxgdtZSYDazsvT0AKl70V1OJva0eHgl4/6kCW3RZ0pb2n34i9nJz4eXCmK+TYDA==}
     deprecated: As of 0.20.0, this package has been merged into @codemirror/autocomplete
@@ -2168,6 +2264,15 @@ packages:
       '@codemirror/text': 0.19.6
       '@codemirror/view': 0.19.48
       '@lezer/common': 0.15.12
+    dev: false
+
+  /@codemirror/commands/6.1.3:
+    resolution: {integrity: sha512-wUw1+vb34Ultv0Q9m/OVB7yizGXgtoDbkI5f5ErM8bebwLyUYjicdhJTKhTvPTpgkv8dq/BK0lQ3K5pRf2DAJw==}
+    dependencies:
+      '@codemirror/language': 6.3.2
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@lezer/common': 1.0.2
     dev: false
 
   /@codemirror/comment/0.19.1:
@@ -2243,6 +2348,18 @@ packages:
       '@lezer/javascript': 0.15.3
     dev: false
 
+  /@codemirror/lang-javascript/6.1.2:
+    resolution: {integrity: sha512-OcwLfZXdQ1OHrLiIcKCn7MqZ7nx205CMKlhe+vL88pe2ymhT9+2P+QhwkYGxMICj8TDHyp8HFKVwpiisUT7iEQ==}
+    dependencies:
+      '@codemirror/autocomplete': 6.4.0_eo6pz6bvsllvatnnwfprpuflde
+      '@codemirror/language': 6.3.2
+      '@codemirror/lint': 6.1.0
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@lezer/common': 1.0.2
+      '@lezer/javascript': 1.4.1
+    dev: false
+
   /@codemirror/language/0.19.10:
     resolution: {integrity: sha512-yA0DZ3RYn2CqAAGW62VrU8c4YxscMQn45y/I9sjBlqB1e2OTQLg4CCkMBuMSLXk4xaqjlsgazeOQWaJQOKfV8Q==}
     dependencies:
@@ -2251,6 +2368,17 @@ packages:
       '@codemirror/view': 0.19.48
       '@lezer/common': 0.15.12
       '@lezer/lr': 0.15.8
+    dev: false
+
+  /@codemirror/language/6.3.2:
+    resolution: {integrity: sha512-g42uHhOcEMAXjmozGG+rdom5UsbyfMxQFh7AbkeoaNImddL6Xt4cQDL0+JxmG7+as18rUAvZaqzP/TjsciVIrA==}
+    dependencies:
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      '@lezer/common': 1.0.2
+      '@lezer/highlight': 1.1.3
+      '@lezer/lr': 1.3.0
+      style-mod: 4.0.0
     dev: false
 
   /@codemirror/lint/0.19.6:
@@ -2262,6 +2390,14 @@ packages:
       '@codemirror/state': 0.19.9
       '@codemirror/tooltip': 0.19.16
       '@codemirror/view': 0.19.48
+      crelt: 1.0.5
+    dev: false
+
+  /@codemirror/lint/6.1.0:
+    resolution: {integrity: sha512-mdvDQrjRmYPvQ3WrzF6Ewaao+NWERYtpthJvoQ3tK3t/44Ynhk8ZGjTSL9jMEv8CgSMogmt75X8ceOZRDSXHtQ==}
+    dependencies:
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
       crelt: 1.0.5
     dev: false
 
@@ -2290,10 +2426,22 @@ packages:
       '@codemirror/state': 0.19.9
     dev: false
 
+  /@codemirror/search/6.2.3:
+    resolution: {integrity: sha512-V9n9233lopQhB1dyjsBK2Wc1i+8hcCqxl1wQ46c5HWWLePoe4FluV3TGHoZ04rBRlGjNyz9DTmpJErig8UE4jw==}
+    dependencies:
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+      crelt: 1.0.5
+    dev: false
+
   /@codemirror/state/0.19.9:
     resolution: {integrity: sha512-psOzDolKTZkx4CgUqhBQ8T8gBc0xN5z4gzed109aF6x7D7umpDRoimacI/O6d9UGuyl4eYuDCZmDFr2Rq7aGOw==}
     dependencies:
       '@codemirror/text': 0.19.6
+    dev: false
+
+  /@codemirror/state/6.2.0:
+    resolution: {integrity: sha512-69QXtcrsc3RYtOtd+GsvczJ319udtBf1PTrr2KbLWM/e2CXUPnh0Nz9AUo8WfhSQ7GeL8dPVNUmhQVgpmuaNGA==}
     dev: false
 
   /@codemirror/text/0.19.6:
@@ -2315,6 +2463,14 @@ packages:
       '@codemirror/rangeset': 0.19.9
       '@codemirror/state': 0.19.9
       '@codemirror/text': 0.19.6
+      style-mod: 4.0.0
+      w3c-keyname: 2.2.6
+    dev: false
+
+  /@codemirror/view/6.7.2:
+    resolution: {integrity: sha512-HeK2GyycxceaQVyvYVYXmn1vUKYYBsHCcfGRSsFO+3fRRtwXx2STK0YiFBmiWx2vtU9gUAJgIUXUN8a0osI8Ng==}
+    dependencies:
+      '@codemirror/state': 6.2.0
       style-mod: 4.0.0
       w3c-keyname: 2.2.6
     dev: false
@@ -2621,15 +2777,15 @@ packages:
       '@floating-ui/core': 1.0.1
     dev: false
 
-  /@floating-ui/react-dom/1.0.0_sfoxds7t5ydpegc3knd667wn6m:
+  /@floating-ui/react-dom/1.0.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-uiOalFKPG937UCLm42RxjESTWUVpbbatvlphQAU6bsv+ence6IoVG8JOUZcy8eW81NkU+Idiwvx10WFLmR4MIg==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
       '@floating-ui/dom': 1.0.2
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@gaearon/react-collapsed/3.1.0-forked.1_biqbaboplfbrettd7655fr4n2y:
@@ -2670,14 +2826,6 @@ packages:
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
-
-  /@icons/material/0.2.4_react@17.0.2:
-    resolution: {integrity: sha512-QPcGmICAPbGLGb6F/yNf/KzKqvFx8z5qx3D1yFqVAjoFmXK35EgyW+cJ57Te3CNsmzblwtzakLGFqHPqrfb4Tw==}
-    peerDependencies:
-      react: '*'
-    dependencies:
-      react: 17.0.2
-    dev: false
 
   /@istanbuljs/load-nyc-config/1.1.0:
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
@@ -2920,10 +3068,20 @@ packages:
     resolution: {integrity: sha512-edfwCxNLnzq5pBA/yaIhwJ3U3Kz8VAUOTRg0hhxaizaI1N+qxV7EXDv/kLCkLeq2RzSFvxexlaj5Mzfn2kY0Ig==}
     dev: false
 
+  /@lezer/common/1.0.2:
+    resolution: {integrity: sha512-SVgiGtMnMnW3ActR8SXgsDhw7a0w0ChHSYAyAUxxrOiJ1OqYWEKk/xJd84tTSPo1mo6DXLObAJALNnd0Hrv7Ng==}
+    dev: false
+
   /@lezer/css/0.15.2:
     resolution: {integrity: sha512-tnMOMZY0Zs6JQeVjqfmREYMV0GnmZR1NitndLWioZMD6mA7VQF/PPKPmJX1f+ZgVZQc5Am0df9mX3aiJnNJlKQ==}
     dependencies:
       '@lezer/lr': 0.15.8
+    dev: false
+
+  /@lezer/highlight/1.1.3:
+    resolution: {integrity: sha512-3vLKLPThO4td43lYRBygmMY18JN3CPh9w+XS2j8WC30vR4yZeFG4z1iFe4jXE43NtGqe//zHW5q8ENLlHvz9gw==}
+    dependencies:
+      '@lezer/common': 1.0.2
     dev: false
 
   /@lezer/html/0.15.1:
@@ -2938,10 +3096,23 @@ packages:
       '@lezer/lr': 0.15.8
     dev: false
 
+  /@lezer/javascript/1.4.1:
+    resolution: {integrity: sha512-Hqx36DJeYhKtdpc7wBYPR0XF56ZzIp0IkMO/zNNj80xcaFOV4Oj/P7TQc/8k2TxNhzl7tV5tXS8ZOCPbT4L3nA==}
+    dependencies:
+      '@lezer/highlight': 1.1.3
+      '@lezer/lr': 1.3.0
+    dev: false
+
   /@lezer/lr/0.15.8:
     resolution: {integrity: sha512-bM6oE6VQZ6hIFxDNKk8bKPa14hqFrV07J/vHGOeiAbJReIaQXmkVb6xQu4MR+JBTLa5arGRyAAjJe1qaQt3Uvg==}
     dependencies:
       '@lezer/common': 0.15.12
+    dev: false
+
+  /@lezer/lr/1.3.0:
+    resolution: {integrity: sha512-rpvS+WPS/PlbJCiW+bzXPbIFIRXmzRiTEDzMvrvgpED05w5ZQO59AzH3BJen2AnHuJIlP3DcJRjsKLTrkknUNA==}
+    dependencies:
+      '@lezer/common': 1.0.2
     dev: false
 
   /@manypkg/find-root/1.1.0:
@@ -3393,31 +3564,10 @@ packages:
     resolution: {integrity: sha512-lKkW8DGUQpZldTrwa+HM5rY+7eTyaHOMTsnj9ewt7AAwXuMPwBmkLlfh8+SXdgOhBW9iNI4x4zRjQ/TQZkdycQ==}
     dev: true
 
-  /@types/react-color/3.0.6:
-    resolution: {integrity: sha512-OzPIO5AyRmLA7PlOyISlgabpYUa3En74LP8mTMa0veCA719SvYQov4WLMsHvCgXP+L+KI9yGhYnqZafVGG0P4w==}
-    dependencies:
-      '@types/react': 18.0.25
-      '@types/reactcss': 1.2.6
-    dev: true
-
-  /@types/react-dom/17.0.17:
-    resolution: {integrity: sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==}
-    dependencies:
-      '@types/react': 17.0.47
-    dev: true
-
   /@types/react-dom/18.0.9:
     resolution: {integrity: sha512-qnVvHxASt/H7i+XG1U1xMiY5t+IHcPGUK7TDMDzom08xa7e86eCeKOiLZezwCKVxJn6NEiiy2ekgX8aQssjIKg==}
     dependencies:
       '@types/react': 18.0.25
-    dev: true
-
-  /@types/react/17.0.47:
-    resolution: {integrity: sha512-mk0BL8zBinf2ozNr3qPnlu1oyVTYq+4V7WA76RgxUAtf0Em/Wbid38KN6n4abEkvO4xMTBWmnP1FtQzgkEiJoA==}
-    dependencies:
-      '@types/prop-types': 15.7.4
-      '@types/scheduler': 0.16.2
-      csstype: 3.0.11
     dev: true
 
   /@types/react/18.0.25:
@@ -3426,12 +3576,6 @@ packages:
       '@types/prop-types': 15.7.4
       '@types/scheduler': 0.16.2
       csstype: 3.0.11
-
-  /@types/reactcss/1.2.6:
-    resolution: {integrity: sha512-qaIzpCuXNWomGR1Xq8SCFTtF4v8V27Y6f+b9+bzHiv087MylI/nTCqqdChNeWS7tslgROmYB7yeiruWX7WnqNg==}
-    dependencies:
-      '@types/react': 18.0.25
-    dev: true
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
@@ -3449,10 +3593,6 @@ packages:
       '@types/hoist-non-react-statics': 3.3.1
       '@types/react': 18.0.25
       csstype: 3.0.11
-    dev: true
-
-  /@types/tinycolor2/1.4.3:
-    resolution: {integrity: sha512-Kf1w9NE5HEgGxCRyIcRXR/ZYtDv0V8FVPtYHwLxl0O+maGX0erE77pQlD0gpP+/KByMZ87mOA79SjifhSB3PjQ==}
     dev: true
 
   /@types/unicode-trie/2.0.0:
@@ -3911,7 +4051,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
 
   /babel-plugin-syntax-jsx/6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -4270,6 +4410,20 @@ packages:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
 
+  /codemirror/6.0.1_@lezer+common@1.0.2:
+    resolution: {integrity: sha512-J8j+nZ+CdWmIeFIGXEFbFPtpiYacFMDR8GlHK3IyHQJMCaVRfGx9NT+Hxivv1ckLWPvNdZqndbr/7lVhrf/Svg==}
+    dependencies:
+      '@codemirror/autocomplete': 6.4.0_eo6pz6bvsllvatnnwfprpuflde
+      '@codemirror/commands': 6.1.3
+      '@codemirror/language': 6.3.2
+      '@codemirror/lint': 6.1.0
+      '@codemirror/search': 6.2.3
+      '@codemirror/state': 6.2.0
+      '@codemirror/view': 6.7.2
+    transitivePeerDependencies:
+      - '@lezer/common'
+    dev: false
+
   /codesandbox-import-util-types/1.3.7:
     resolution: {integrity: sha512-8oP3emA0jyEuVOM2FBTpo/AF4C9vxHn14saVWZf2CQ/QhMtonBlNPE98ElrHkW+PFNXiO7Ad52Qr73b03n8qlA==}
     dev: false
@@ -4309,6 +4463,10 @@ packages:
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  /colord/2.9.0:
+    resolution: {integrity: sha512-D8guC3WXLzW892WdoQD+RhIRlfeQSZnTEOq+KxX6fak9ijrHt30oKF9L7jQovCA13pSIJJVFVEYzp4Y4f4k+Yg==}
+    dev: false
 
   /colorette/2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
@@ -4452,7 +4610,7 @@ packages:
     dev: false
 
   /cross-spawn/5.1.0:
-    resolution: {integrity: sha1-6L0O/uWPz/b4+UUQoKVUu/ojVEk=}
+    resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
     dependencies:
       lru-cache: 4.1.5
       shebang-command: 1.2.0
@@ -7307,10 +7465,6 @@ packages:
       p-locate: 5.0.0
     dev: true
 
-  /lodash-es/4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
-
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
     dev: false
@@ -7436,10 +7590,6 @@ packages:
 
   /markdown-table/3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
-    dev: false
-
-  /material-colors/1.2.6:
-    resolution: {integrity: sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==}
     dev: false
 
   /mdast-util-compact/2.0.1:
@@ -8299,6 +8449,7 @@ packages:
   /object-assign/4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+    dev: true
 
   /object-hash/3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
@@ -8727,13 +8878,13 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-tailwindcss/0.1.13_prettier@2.8.2:
+  /prettier-plugin-tailwindcss/0.1.13_prettier@2.8.3:
     resolution: {integrity: sha512-/EKQURUrxLu66CMUg4+1LwGdxnz8of7IDvrSLqEtDqhLH61SAlNNUSr90UTvZaemujgl3OH/VHg+fyGltrNixw==}
     engines: {node: '>=12.17.0'}
     peerDependencies:
       prettier: '>=2.2.0'
     dependencies:
-      prettier: 2.8.2
+      prettier: 2.8.3
     dev: true
 
   /prettier/1.19.1:
@@ -8742,8 +8893,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier/2.8.2:
-    resolution: {integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==}
+  /prettier/2.8.3:
+    resolution: {integrity: sha512-tJ/oJ4amDihPoufT5sM0Z1SKEuKay8LfVAMlbbhnnkvt6BUserZylqo2PN+p9KeljLr0OHa2rXHU1T8reeoTrw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
@@ -8784,6 +8935,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
+    dev: true
 
   /property-information/5.6.0:
     resolution: {integrity: sha512-YUHSPk+A30YPv+0Qf8i9Mbfe/C0hdPXk1s1jPVToV8pk8BQtpw10ct89Eo7OWkutrwqvT0eicAxlOg3dOAu8JA==}
@@ -8872,19 +9024,14 @@ packages:
       unpipe: 1.0.0
     dev: false
 
-  /react-color/2.19.3_react@17.0.2:
-    resolution: {integrity: sha512-LEeGE/ZzNLIsFWa1TMe8y5VYqr7bibneWmvJwm1pCn/eNmrabWDh659JSPn9BuaMpEfU83WTOJfnCcjDZwNQTA==}
+  /react-colorful/5.6.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
     peerDependencies:
-      react: '*'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
     dependencies:
-      '@icons/material': 0.2.4_react@17.0.2
-      lodash: 4.17.21
-      lodash-es: 4.17.21
-      material-colors: 1.2.6
-      prop-types: 15.8.1
-      react: 17.0.2
-      reactcss: 1.2.3_react@17.0.2
-      tinycolor2: 1.5.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react-devtools-inline/4.4.0:
@@ -8892,16 +9039,6 @@ packages:
     dependencies:
       es6-symbol: 3.1.3
     dev: false
-
-  /react-dom/17.0.2_react@17.0.2:
-    resolution: {integrity: sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==}
-    peerDependencies:
-      react: 17.0.2
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-      react: 17.0.2
-      scheduler: 0.20.2
 
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
@@ -8911,17 +9048,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
-    dev: false
 
-  /react-image-previewer/1.1.6_fane7jikarojcev26y27hpbhu4:
+  /react-image-previewer/1.1.6_pumtretovylab5lwhztzjp2kuy:
     resolution: {integrity: sha512-uLNycWU7CG0SbrtCHVHR0rUFxE1b0/O7l73QqIIX2tHATzj859raWdoYDEgL/lpvf8rCIPRwuzd7kjhyWbKWKw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
-      styled-components: 5.3.5_fane7jikarojcev26y27hpbhu4
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     transitivePeerDependencies:
       - react-is
     dev: false
@@ -8932,28 +9068,11 @@ packages:
   /react-is/17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
 
-  /react/17.0.2:
-    resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
-
-  /reactcss/1.2.3_react@17.0.2:
-    resolution: {integrity: sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==}
-    peerDependencies:
-      react: '*'
-    dependencies:
-      lodash: 4.17.21
-      react: 17.0.2
-    dev: false
 
   /read-cache/1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -9319,17 +9438,10 @@ packages:
     dependencies:
       xmlchars: 2.2.0
 
-  /scheduler/0.20.2:
-    resolution: {integrity: sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-
   /scheduler/0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /scroll-into-view-if-needed/2.2.29:
     resolution: {integrity: sha512-hxpAR6AN+Gh53AdAimHM6C8oTN1ppwVZITihix+WqalywBeFcQ6LdQP5ABNl26nX8GTEL7VT+b8lKpdqq65wXg==}
@@ -9692,7 +9804,7 @@ packages:
     dev: true
 
   /strip-bom/3.0.0:
-    resolution: {integrity: sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=}
+    resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
     engines: {node: '>=4'}
     dev: true
 
@@ -9730,29 +9842,6 @@ packages:
       inline-style-parser: 0.1.1
     dev: true
 
-  /styled-components/5.3.5_fane7jikarojcev26y27hpbhu4:
-    resolution: {integrity: sha512-ndETJ9RKaaL6q41B69WudeqLzOpY1A/ET/glXkNZ2T7dPjPqpPCXXQjDFYZWwNnE5co0wX+gTCqx9mfxTmSIPg==}
-    engines: {node: '>=10'}
-    requiresBuild: true
-    peerDependencies:
-      react: '>= 16.8.0'
-      react-dom: '>= 16.8.0'
-      react-is: '>= 16.8.0'
-    dependencies:
-      '@babel/helper-module-imports': 7.18.6
-      '@babel/traverse': 7.20.5_supports-color@5.5.0
-      '@emotion/is-prop-valid': 1.2.0
-      '@emotion/stylis': 0.8.5
-      '@emotion/unitless': 0.7.5
-      babel-plugin-styled-components: 2.0.7_styled-components@5.3.5
-      css-to-react-native: 3.0.0
-      hoist-non-react-statics: 3.3.2
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
-      react-is: 17.0.2
-      shallowequal: 1.1.0
-      supports-color: 5.5.0
-
   /styled-components/5.3.5_pumtretovylab5lwhztzjp2kuy:
     resolution: {integrity: sha512-ndETJ9RKaaL6q41B69WudeqLzOpY1A/ET/glXkNZ2T7dPjPqpPCXXQjDFYZWwNnE5co0wX+gTCqx9mfxTmSIPg==}
     engines: {node: '>=10'}
@@ -9775,7 +9864,6 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
-    dev: false
 
   /styled-jsx/5.0.7_stn7tt2qafd37bpotzscxfaffy:
     resolution: {integrity: sha512-b3sUzamS086YLRuvnaDigdAewz1/EFYlHpYBP5mZovKEdQQOIIYq8lApylub3HHZ6xFjV051kkGU7cudJmrXEA==}
@@ -9950,10 +10038,6 @@ packages:
 
   /tiny-warning/1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
-    dev: false
-
-  /tinycolor2/1.5.2:
-    resolution: {integrity: sha512-h80m9GPFGbcLzZByXlNSEhp1gf8Dy+VX/2JCGUZsWLo7lV1mnE/XlxGYgRBoMLJh1lIDXP0EMC4RPTjlRaV+Bg==}
     dev: false
 
   /tmp/0.0.33:
@@ -10253,65 +10337,65 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-darwin-64/1.6.3:
-    resolution: {integrity: sha512-QmDIX0Yh1wYQl0bUS0gGWwNxpJwrzZU2GIAYt3aOKoirWA2ecnyb3R6ludcS1znfNV2MfunP+l8E3ncxUHwtjA==}
+  /turbo-darwin-64/1.7.0:
+    resolution: {integrity: sha512-hSGAueSf5Ko8J67mpqjpt9FsP6ePn1nMcl7IVPoJq5dHsgX3anCP/BPlexJ502bNK+87DDyhQhJ/LPSJXKrSYQ==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.6.3:
-    resolution: {integrity: sha512-75DXhFpwE7CinBbtxTxH08EcWrxYSPFow3NaeFwsG8aymkWXF+U2aukYHJA6I12n9/dGqf7yRXzkF0S/9UtdyQ==}
+  /turbo-darwin-arm64/1.7.0:
+    resolution: {integrity: sha512-BLLOW5W6VZxk5+0ZOj5AO1qjM0P5isIgjbEuyAl8lHZ4s9antUbY4CtFrspT32XxPTYoDl4UjviPMcSsbcl3WQ==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.6.3:
-    resolution: {integrity: sha512-O9uc6J0yoRPWdPg9THRQi69K6E2iZ98cRHNvus05lZbcPzZTxJYkYGb5iagCmCW/pq6fL4T4oLWAd6evg2LGQA==}
+  /turbo-linux-64/1.7.0:
+    resolution: {integrity: sha512-aw2qxmfZa+kT87SB3GNUoFimqEPzTlzlRqhPgHuAAT6Uf0JHnmebPt4K+ZPtDNl5yfVmtB05bhHPqw+5QV97Yg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.6.3:
-    resolution: {integrity: sha512-dCy667qqEtZIhulsRTe8hhWQNCJO0i20uHXv7KjLHuFZGCeMbWxB8rsneRoY+blf8+QNqGuXQJxak7ayjHLxiA==}
+  /turbo-linux-arm64/1.7.0:
+    resolution: {integrity: sha512-AJEx2jX+zO5fQtJpO3r6uhTabj4oSA5ZhB7zTs/rwu/XqoydsvStA4X8NDW4poTbOjF7DcSHizqwi04tSMzpJw==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.6.3:
-    resolution: {integrity: sha512-lKRqwL3mrVF09b9KySSaOwetehmGknV9EcQTF7d2dxngGYYX1WXoQLjFP9YYH8ZV07oPm+RUOAKSCQuDuMNhiA==}
+  /turbo-windows-64/1.7.0:
+    resolution: {integrity: sha512-ewj7PPv2uxqv0r31hgnBa3E5qwUu7eyVRP5M1gB/TJXfSHduU79gbxpKCyxIZv2fL/N2/3U7EPOQPSZxBAoljA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.6.3:
-    resolution: {integrity: sha512-BXY1sDPEA1DgPwuENvDCD8B7Hb0toscjus941WpL8CVd10hg9pk/MWn9CNgwDO5Q9ks0mw+liDv2EMnleEjeNA==}
+  /turbo-windows-arm64/1.7.0:
+    resolution: {integrity: sha512-LzjOUzveWkvTD0jP8DBMYiAnYemmydsvqxdSmsUapHHJkl6wKZIOQNSO7pxsy+9XM/1/+0f9Y9F9ZNl5lePTEA==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.6.3:
-    resolution: {integrity: sha512-FtfhJLmEEtHveGxW4Ye/QuY85AnZ2ZNVgkTBswoap7UMHB1+oI4diHPNyqrQLG4K1UFtCkjOlVoLsllUh/9QRw==}
+  /turbo/1.7.0:
+    resolution: {integrity: sha512-cwympNwQNnQZ/TffBd8yT0i0O10Cf/hlxccCYgUcwhcGEb9rDjE5thDbHoHw1hlJQUF/5ua7ERJe7Zr0lNE/ww==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.6.3
-      turbo-darwin-arm64: 1.6.3
-      turbo-linux-64: 1.6.3
-      turbo-linux-arm64: 1.6.3
-      turbo-windows-64: 1.6.3
-      turbo-windows-arm64: 1.6.3
+      turbo-darwin-64: 1.7.0
+      turbo-darwin-arm64: 1.7.0
+      turbo-linux-64: 1.7.0
+      turbo-linux-arm64: 1.7.0
+      turbo-windows-64: 1.7.0
+      turbo-windows-arm64: 1.7.0
     dev: true
 
   /twin.macro/3.1.0_tailwindcss@3.2.4:
@@ -10594,14 +10678,6 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
-
-  /use-sync-external-store/1.2.0_react@17.0.2:
-    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 17.0.2
-    dev: false
 
   /use-sync-external-store/1.2.0_react@18.2.0:
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
@@ -10890,12 +10966,6 @@ packages:
     dev: false
     optional: true
 
-  /y-protocols/1.0.5:
-    resolution: {integrity: sha512-Wil92b7cGk712lRHDqS4T90IczF6RkcvCwAD0A2OPg+adKmOe+nOiT/N2hvpQIWS3zfjmtL4CPaH5sIW1Hkm/A==}
-    dependencies:
-      lib0: 0.2.52
-    dev: false
-
   /y18n/4.0.3:
     resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}
     dev: true
@@ -10994,7 +11064,7 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zustand/4.1.4_react@17.0.2:
+  /zustand/4.1.4_react@18.2.0:
     resolution: {integrity: sha512-k2jVOlWo8p4R83mQ+/uyB8ILPO2PCJOf+QVjcL+1PbMCk1w5OoPYpAIxy9zd93FSfmJqoH6lGdwzzjwqJIRU5A==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -11006,8 +11076,8 @@ packages:
       react:
         optional: true
     dependencies:
-      react: 17.0.2
-      use-sync-external-store: 1.2.0_react@17.0.2
+      react: 18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /zwitch/2.0.4:

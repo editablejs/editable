@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --watch src ./src/index.ts",
+    "dev": "nodemon --watch node_modules ./src/index.ts",
     "lint": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"

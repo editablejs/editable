@@ -39,7 +39,7 @@ export const findGridOfEdges = (editor: Editor, at: Location | null = editor.sel
   return value
 }
 
-export const handleInsertOnGrid = (editor: Editable, at: Location | null = editor.selection) => {
+export const handleInserInGrid = (editor: Editable, at: Location | null = editor.selection) => {
   const { grid, start, end } = findGridOfEdges(editor, at)
   // anchor 与 focus 在同一grid内
   if (grid) {

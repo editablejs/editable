@@ -17,6 +17,7 @@ export interface ContextMenuItem {
   rightText?: JSX.Element | string
   disabled?: boolean
   href?: string
+  children?: React.ReactNode
   onSelect?: (e: React.MouseEvent<any>) => void
 }
 
@@ -157,8 +158,8 @@ export type Point = { x: number; y: number }
 const SIDE_OPTIONS = ['top', 'right', 'bottom', 'left'] as const
 const ALIGN_OPTIONS = ['start', 'center', 'end'] as const
 
-type Side = typeof SIDE_OPTIONS[number]
-type Align = typeof ALIGN_OPTIONS[number]
+type Side = (typeof SIDE_OPTIONS)[number]
+type Align = (typeof ALIGN_OPTIONS)[number]
 
 type ContextMenuSize = 'small' | 'default' | 'large'
 export interface ContextMenu {
@@ -170,6 +171,7 @@ export interface ContextMenu {
   align?: Align
   minWidth?: number
   size?: ContextMenuSize
+  children?: React.ReactNode
 }
 
 const ContextMenuContext = React.createContext<{ size: ContextMenuSize }>({

@@ -1,6 +1,6 @@
 # Editable
 
-一个实验性的富文本编辑器框架，用自定义绘制的`selection`替代原生的`contenteditable`属性，提供更丰富、更稳定的编辑能力。
+editable是一个富文本编辑器框架，不再依赖~~**contenteditable**~~属性即可提供稳定的富文本编辑能力。
 
 演示：https://docs.editablejs.com/playground
 
@@ -14,14 +14,6 @@ pnpm install
 pnpm dev
 
 ```
-
-### packages/editor
-
-使用 slatejs 数据模型，借助 react 使用自绘光标的模式渲染，不再依赖 contenteditable 属性
-
-### packages/plugins
-
-插件目录
 
 ## 任务
 

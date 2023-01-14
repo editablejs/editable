@@ -34,6 +34,7 @@ export const IS_SHIFT_PRESSED: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_MOUSEDOWN: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_TOUCHMOVING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_TOUCHING: WeakMap<Editor, boolean> = new WeakMap()
+export const IS_TOUCH_HOLD: WeakMap<Editor, boolean> = new WeakMap()
 /**
  * Weak map for associating the context `onChange` context with the plugin.
  */

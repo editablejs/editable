@@ -33,17 +33,15 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@types/react": "^17.x",
-    "@types/react-color": "3.0.6",
-    "@types/react-dom": "^17.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x",
     "@types/styled-components": "5.1.26",
-    "@types/tinycolor2": "1.4.3",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
@@ -53,14 +51,14 @@
     "typescript": "latest"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
   },
   "dependencies": {
     "@floating-ui/react-dom": "1.0.0",
-    "react-color": "2.19.3",
+    "react-colorful": "5.6.1",
     "styled-components": "5.3.5",
-    "tinycolor2": "1.5.2"
+    "colord": "2.9.0"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

@@ -6,7 +6,8 @@ import {
   DATA_EDITABLE_STRING,
   DATA_EDITABLE_ZERO_WIDTH,
 } from './constants'
-import { DOMElement, DOMRange, isDOMElement } from './dom'
+import { DOMElement, DOMRange, isDOMElement, isDOMHTMLElement } from './dom'
+import { CAN_USE_DOM } from './environment'
 
 interface LineRect {
   top: number
@@ -367,4 +368,18 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
     lineRects.push(lineRect)
   }
   return lineRects
+}
+
+export const isEditableDOMElement = (value: any): boolean => {
+  if (isDOMHTMLElement(value)) {
+    return ['INPUT', 'TEXTAREA'].indexOf(value.nodeName) > -1 || value.isContentEditable
+  }
+  return false
+}
+
+export const canForceTakeFocus = () => {
+  if (!CAN_USE_DOM) return true
+  const activeElement = document.activeElement
+  if (isEditableDOMElement(activeElement)) return false
+  return true
 }

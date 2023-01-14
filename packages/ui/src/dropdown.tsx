@@ -1,5 +1,5 @@
 import * as React from 'react'
-import tw from 'twin.macro'
+import tw, { css } from 'twin.macro'
 import { Button } from './button'
 import { Icon } from './icon'
 import {
@@ -12,7 +12,6 @@ import {
   MenuSeparator,
   MenuItem,
 } from './menu'
-import { Portal } from './portal'
 
 export interface DropdownItemProps extends Omit<MenuItem, 'onSelect' | 'textValue'> {
   value: string
@@ -133,8 +132,13 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
               tw`inline-flex content-center items-center gap-2 px-1.5`,
               size === 'small' && tw`px-0.5 gap-1`,
               size === 'large' && tw`px-2.5 gap-3`,
-              open && tw`bg-gray-100 border-gray-100`,
+              css`
+                &[data-open='true'] {
+                  ${tw`bg-gray-100`}
+                }
+              `,
             ]}
+            data-open={open || undefined}
             {...triggerProps}
             onPointerDown={event => {
               if (!disabled && event.button === 0 && event.ctrlKey === false) {

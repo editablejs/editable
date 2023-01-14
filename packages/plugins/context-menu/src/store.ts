@@ -4,7 +4,7 @@ import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
 
-interface BaseContextMenuItem extends UIContextMenuItem {
+interface BaseContextMenuItem extends Omit<UIContextMenuItem, 'children'> {
   key: string
   title: React.ReactElement | string
   children?: ContextMenuItem[]

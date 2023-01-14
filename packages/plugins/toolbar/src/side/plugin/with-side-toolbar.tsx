@@ -1,19 +1,12 @@
 import { Editable, Slot, Locale } from '@editablejs/editor'
 import { SideToolbar } from '../components/side-toolbar'
-import locale, { SideToolbarLocale } from '../locale'
-
-export interface SideToolbarOptions {
-  locale?: Record<string, SideToolbarLocale>
-}
-
-export const SIDE_TOOLBAR_OPTIONS = new WeakMap<Editable, SideToolbarOptions>()
+import locale from '../locale'
+import { getOptions, setOptions, SideToolbarOptions } from '../options'
 
 export interface SideToolbarEditor extends Editable {}
 
 export const SideToolbarEditor = {
-  getOptions: (editor: Editable): SideToolbarOptions => {
-    return SIDE_TOOLBAR_OPTIONS.get(editor) ?? {}
-  },
+  getOptions,
 }
 
 export const withSideToolbar = <T extends Editable>(
@@ -22,7 +15,7 @@ export const withSideToolbar = <T extends Editable>(
 ) => {
   const newEditor = editor as T & SideToolbarEditor
 
-  SIDE_TOOLBAR_OPTIONS.set(newEditor, options)
+  setOptions(newEditor, options)
 
   const { locale: localeOptions = {} } = options
   Locale.setLocale(newEditor, locale, localeOptions)

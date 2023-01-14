@@ -1,4 +1,4 @@
-import tinycolor from 'tinycolor2'
+import { colord } from 'colord'
 import { Editable, RenderLeafProps, Editor, Hotkey } from '@editablejs/editor'
 import { BACKGROUND_COLOR_KEY } from '../constants'
 import { BackgroundColorEditor } from './editor'
@@ -19,10 +19,7 @@ export const withBackgroundColor = <T extends Editable>(
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
       const { defaultColor } = BackgroundColorEditor.getOptions(editor)
-      if (
-        defaultColor &&
-        tinycolor(color).toRgbString() === tinycolor(defaultColor).toRgbString()
-      ) {
+      if (defaultColor && colord(color).toRgbString() === colord(defaultColor).toRgbString()) {
         Editor.removeMark(editor, BACKGROUND_COLOR_KEY)
       } else {
         Editor.addMark(editor, BACKGROUND_COLOR_KEY, color)

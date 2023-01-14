@@ -22,6 +22,7 @@ import { withHrDescendantTransform } from '@editablejs/plugin-hr/deserializer'
 import { withAlignDescendantTransform } from '@editablejs/plugin-align/deserializer'
 import { withLeadingDescendantTransform } from '@editablejs/plugin-leading/deserializer'
 import { withMentionDescendantTransform } from '@editablejs/plugin-mention/deserializer'
+import { withCodeBlockDescendantTransform } from '@editablejs/plugin-codeblock/deserializer'
 
 export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withTableDescendantTransform, { editor })
@@ -43,4 +44,5 @@ export const withHTMLDeserializer = (editor: Editable) => {
   HTMLDeserializer.with(withAlignDescendantTransform, {})
   HTMLDeserializer.with(withLeadingDescendantTransform, {})
   HTMLDeserializer.with(withMentionDescendantTransform, {})
+  HTMLDeserializer.with(withCodeBlockDescendantTransform, {})
 }

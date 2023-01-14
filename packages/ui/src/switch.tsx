@@ -18,11 +18,11 @@ const useSwitchContext = () => React.useContext(SwitchContext)
 
 type SwitchElement = React.ElementRef<typeof Root.button>
 type PrimitiveButtonProps = React.ComponentPropsWithoutRef<typeof Root.button>
-interface SwitchProps extends PrimitiveButtonProps {
+interface SwitchProps extends Omit<PrimitiveButtonProps, 'onChange'> {
   checked?: boolean
   defaultChecked?: boolean
   required?: boolean
-  onCheckedChange?(checked: boolean): void
+  onChange?(checked: boolean): void
 }
 
 const Switch = React.forwardRef<SwitchElement, SwitchProps>((props: SwitchProps, forwardedRef) => {
@@ -33,7 +33,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>((props: SwitchProps,
     required,
     disabled,
     value = 'on',
-    onCheckedChange,
+    onChange,
     ...switchProps
   } = props
   const [button, setButton] = React.useState<HTMLButtonElement | null>(null)
@@ -45,7 +45,7 @@ const Switch = React.forwardRef<SwitchElement, SwitchProps>((props: SwitchProps,
   const [checked = false, setChecked] = useControllableState({
     prop: checkedProp,
     defaultProp: defaultChecked,
-    onChange: onCheckedChange,
+    onChange,
   })
 
   return (

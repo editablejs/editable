@@ -1,5 +1,5 @@
 import * as React from 'react'
-import tw, { styled } from 'twin.macro'
+import tw, { css, styled } from 'twin.macro'
 import { Button } from './button'
 import { ColorPicker, ColorPickerProps } from './color-picker'
 import { Dropdown } from './dropdown'
@@ -19,9 +19,13 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButton>(
       <Button
         css={[
           tw`shadow-none w-7 h-7`,
-          active &&
-            tw`text-primary bg-blue-100 border-blue-100 hover:bg-blue-100 hover:text-primary hover:border-blue-100`,
+          css`
+            &[data-active='true'] {
+              ${tw`text-primary bg-blue-100 border-blue-100 hover:bg-blue-100 hover:text-primary hover:border-blue-100`}
+            }
+          `,
         ]}
+        data-active={active || undefined}
         onClick={onToggle}
         type={active ? 'primary' : 'text'}
         {...props}

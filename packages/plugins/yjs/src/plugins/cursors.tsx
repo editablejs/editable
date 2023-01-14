@@ -1,8 +1,9 @@
 import { Editable, Range, Slot, useEditableStatic } from '@editablejs/editor'
 import * as React from 'react'
-import { Awareness } from 'y-protocols/awareness'
+import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
 import * as Y from 'yjs'
 import create, { StoreApi, UseBoundStore } from 'zustand'
+import tw, { css, styled } from 'twin.macro'
 import {
   CursorOverlayState,
   useRemoteCursorOverlayPositions,
@@ -50,6 +51,19 @@ type CaretProps = {
   data: CursorData
 }
 
+const StyledCaretInfo = styled.div`
+  ${tw`absolute top-0.5 -left-0.5 whitespace-nowrap rounded-full text-[0px] w-1.5 h-1.5 text-white transition-[width,height] duration-200 ease-in-out`}
+`
+
+const StyledCaret = styled.div(() => [
+  tw`absolute w-0.5 z-10`,
+  css`
+    &:hover ${StyledCaretInfo} {
+      ${tw`rounded text-xs leading-[18px] px-1 py-0 w-auto h-auto`}
+    }
+  `,
+])
+
 function Caret({ position, data }: CaretProps) {
   const caretStyle: React.CSSProperties = {
     ...position,
@@ -62,14 +76,9 @@ function Caret({ position, data }: CaretProps) {
   }
 
   return (
-    <div style={caretStyle} tw="absolute w-0.5 z-10">
-      <div
-        tw="absolute top-0 whitespace-nowrap rounded rounded-bl-none px-1.5 py-0.5 text-xs text-white"
-        style={labelStyle}
-      >
-        {data.name}
-      </div>
-    </div>
+    <StyledCaret style={caretStyle}>
+      <StyledCaretInfo style={labelStyle}>{data.name}</StyledCaretInfo>
+    </StyledCaret>
   )
 }
 

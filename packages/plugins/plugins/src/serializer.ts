@@ -30,6 +30,7 @@ import {
   withMentionTextTransform,
   withMentionHTMLTransform,
 } from '@editablejs/plugin-mention/serializer'
+import { withCodeBlockHTMLTransform } from '@editablejs/plugin-codeblock/serializer'
 
 export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withTableHTMLTransform, {})
@@ -51,6 +52,7 @@ export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withAlignHTMLTransform, {})
   HTMLSerializer.with(withLeadingHTMLTransform, {})
   HTMLSerializer.with(withMentionHTMLTransform, { editor })
+  HTMLSerializer.with(withCodeBlockHTMLTransform, {})
 }
 
 export const withTextSerializer = (editor: Editable) => {

@@ -1,6 +1,6 @@
 import { forwardRef, ReactNode, useEffect, useMemo, useState } from 'react'
-import { SketchPicker } from 'react-color'
-import tinycolor2 from 'tinycolor2'
+import { HexColorInput, RgbaStringColorPicker } from 'react-colorful'
+import { colord } from 'colord'
 import tw, { css } from 'twin.macro'
 import { Button } from '../button'
 import { Icon, IconCustom } from '../icon'
@@ -139,7 +139,18 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
     return (
       <Popover open={open} onOpenChange={setOpen} trigger="click">
         <PopoverTrigger asChild>
-          <div css={[tw`flex rounded-md`, open && tw`bg-gray-100 border-gray-100`]} ref={ref}>
+          <div
+            data-open={open || undefined}
+            css={[
+              tw`flex rounded-md`,
+              css`
+                &[data-open='true'] {
+                  ${tw`bg-gray-100`}
+                }
+              `,
+            ]}
+            ref={ref}
+          >
             {renderButton
               ? renderButton({ type: 'button', children: renderColorButton() })
               : renderColorButton()}
@@ -271,38 +282,34 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
                   </div>
                 </PopoverTrigger>
                 <PopoverContent side="right" sideOffset={6} align="end">
-                  <SketchPicker
-                    styles={{
-                      default: {
-                        picker: { boxShadow: '', borderRadius: '', padding: '', width: '' },
-                      },
-                    }}
-                    //@ts-ignore
+                  <div
                     css={[
-                      tw`shadow-outer border-none rounded-md p-2.5 w-52`,
+                      tw`shadow-outer border-none rounded-md p-2.5 flex flex-col gap-2.5`,
                       css`
-                        .flexbox-fix:last-child {
-                          display: none !important;
+                        .react-colorful__saturation {
+                          ${tw`rounded-t`}
                         }
-
-                        input {
-                          ${tw`rounded outline-none leading-[normal]`};
-                          box-shadow: none !important;
-                          border: 1px solid #d9d9d9 !important;
-                          padding: 2px 4px !important;
-                          width: 100% !important;
+                        .react-colorful__last-control {
+                          ${tw`rounded-b`}
                         }
-
-                        label {
-                          ${tw`leading-[normal]`};
-                          color: #8a8f8d !important;
-                          padding-bottom: 0 !important;
+                        .react-colorful__pointer {
+                          ${tw`w-4 h-4`}
                         }
                       `,
                     ]}
-                    color={value}
-                    onChange={color => handleSelect(tinycolor2(color.rgb).toRgbString(), false)}
-                  />
+                  >
+                    <RgbaStringColorPicker
+                      color={value}
+                      onChange={color => handleSelect(color, false)}
+                    />
+                    <HexColorInput
+                      tw="outline-none border border-gray-200 rounded bg-gray-100 text-base uppercase px-2 py-0.5 text-center"
+                      prefixed={true}
+                      alpha={true}
+                      color={colord(value).toRgbString()}
+                      onChange={color => handleSelect(colord(color).toRgbString(), false)}
+                    />
+                  </div>
                 </PopoverContent>
               </Popover>
             )}

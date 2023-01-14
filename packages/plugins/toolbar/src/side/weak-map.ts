@@ -5,6 +5,7 @@ interface CapturedData {
   path: Path
   element: Element
   isEmpty: boolean
+  isVoid: boolean
 }
 
 const SIDETOOLBAR_CAPTURED_DATA_WEAK_MAP = new WeakMap<Editable, CapturedData>()

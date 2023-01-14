@@ -2,7 +2,7 @@
 
 # Editable
 
-An experimental rich text editor framework that replaces the native contenteditable attribute with a custom-drawn selection to provide richer and more stable editing capabilities.
+Editable is a rich text editor framework that provides stable rich text editing capabilities without relying on the contenteditable attribute.
 
 Playground: https://docs.editablejs.com/playground
 ## Development
@@ -15,13 +15,6 @@ pnpm install
 pnpm dev
 
 ```
-### packages/editor
-
-Use the slatejs data model, and use react to render in the self-drawn cursor mode, no longer relying on the contenteditable attribute
-
-### packages/plugins
-
-plugin directory
 
 ## TODO
 

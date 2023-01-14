@@ -19,6 +19,7 @@ import {
   AlignEditor,
   AlignKeys,
   LeadingEditor,
+  CodeBlockEditor,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
@@ -308,6 +309,15 @@ export const createToolbarItems = (editor: Editable) => {
         HrEditor.insert(editor)
       },
       icon: <Icon name="hr" />,
+    },
+    'separator',
+    {
+      type: 'button',
+      active: CodeBlockEditor.isActive(editor),
+      onToggle: () => {
+        CodeBlockEditor.insert(editor)
+      },
+      icon: <Icon name="codeBlock" />,
     },
   )
 

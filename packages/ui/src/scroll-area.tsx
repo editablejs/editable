@@ -677,9 +677,7 @@ type ScrollAreaScrollbarImplPrivateProps = {
   onDragScroll(pointerPos: { x: number; y: number }): void
   onResize(): void
 }
-interface ScrollAreaScrollbarImplProps
-  extends PrimitiveDivProps,
-    ScrollAreaScrollbarImplPrivateProps {}
+type ScrollAreaScrollbarImplProps = PrimitiveDivProps & ScrollAreaScrollbarImplPrivateProps
 
 const ScrollAreaScrollbarImpl = React.forwardRef<
   ScrollAreaScrollbarImplElement,

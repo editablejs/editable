@@ -1,4 +1,13 @@
-import { Editable, Hotkey, Transforms, Locale, Editor, Operation, Slot } from '@editablejs/editor'
+import {
+  Editable,
+  Hotkey,
+  Transforms,
+  Locale,
+  Editor,
+  Operation,
+  Slot,
+  Path,
+} from '@editablejs/editor'
 import { openFileDialog } from '@editablejs/ui'
 import { setOptions, ImageHotkey, ImageOptions } from './options'
 import { Image } from './interfaces/image'
@@ -25,11 +34,13 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
     newEditor.captureHistory = (op: Operation) => {
       if (op.type === 'set_node') {
         const { path, newProperties } = op
-        const image = Editor.node(editor, path)
-        if (Image.isImage(image[0])) {
-          const prop = newProperties as Partial<Image>
-          if (prop.url || prop.state || prop.percentage) {
-            return false
+        if (Editor.hasPath(editor, path)) {
+          const image = Editor.node(editor, path)
+          if (Image.isImage(image[0])) {
+            const prop = newProperties as Partial<Image>
+            if (prop.url || prop.state || prop.percentage) {
+              return false
+            }
           }
         }
       }

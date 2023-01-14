@@ -15,11 +15,11 @@ import {
   NODE_TO_ELEMENT,
   EDITOR_TO_WINDOW,
   IS_SHIFT_PRESSED,
-  EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
   IS_MOUSEDOWN,
   IS_TOUCHMOVING,
   IS_TOUCHING,
+  IS_TOUCH_HOLD,
 } from '../utils/weak-maps'
 import { getWordRange } from '../utils/text'
 import { useMultipleClick } from '../hooks/use-multiple-click'
@@ -40,6 +40,7 @@ import { usePlaceholder } from '../hooks/use-placeholder'
 import { isTouchDevice } from '../utils/environment'
 import { TouchPointComponent } from './touch-point'
 import { getNativeEvent, isMouseEvent, isTouchEvent } from '../utils/event'
+import { canForceTakeFocus, isEditableDOMElement } from '../utils/selection'
 
 const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>) => {
   const editor = useEditable()
@@ -137,7 +138,7 @@ export const ContentEditable = (props: EditableProps) => {
     if (!isMouseDown && !event.defaultPrevented) setFocused(false)
   }
 
-  const handleSelecting = (point: Point | null, rest = true) => {
+  const handleSelecting = (point: Point | null, rest = true, forceFocus = true) => {
     if (!point) return
     const { selection } = editor
     if (!rest && selection && Range.includes(selection, point)) {
@@ -152,7 +153,7 @@ export const ContentEditable = (props: EditableProps) => {
     }
     if (!anchor) return
     const range: Range = { anchor, focus: point }
-    if (selection && Range.equals(range, selection)) {
+    if (selection && forceFocus && Range.equals(range, selection)) {
       editor.focus()
       setFocused(true)
       return
@@ -176,10 +177,11 @@ export const ContentEditable = (props: EditableProps) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
     if (
       drag ||
+      (IS_TOUCHING.get(editor) && !IS_TOUCH_HOLD.get(editor)) ||
       (isMouseDown &&
         (!event.defaultPrevented || (event instanceof MouseEvent && event.button === 2)))
     ) {
-      if (focused && EDITOR_TO_SHADOW.get(editor)?.activeElement !== EDITOR_TO_INPUT.get(editor)) {
+      if (focused && !isEditableDOMElement(event.target) && canForceTakeFocus()) {
         editor.focus()
       }
       const point = Editable.findEventPoint(editor, event)
@@ -252,10 +254,10 @@ export const ContentEditable = (props: EditableProps) => {
           Transforms.select(editor, point)
         }
       } else {
-        handleSelecting(point, !isContextMenu.current)
+        handleSelecting(point, !isContextMenu.current, !isEditableDOMElement(event.target))
       }
       // 修复 touch 时，触发了 mouse up 事件，导致无法触发 onSelectStart
-      if (IS_TOUCHING.get(editor) && touchHoldTimer.current) {
+      if (IS_TOUCHING.get(editor) && !IS_TOUCH_HOLD.get(editor)) {
         editor.onSelectStart()
       }
       setDrag(null)
@@ -271,7 +273,11 @@ export const ContentEditable = (props: EditableProps) => {
   const handleDocumentMouseMove = (event: MouseEvent | TouchEvent) => {
     const darg = getDrag()
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-
+    // 未长按不触发 move 事件
+    if (IS_TOUCHING.get(editor) && !IS_TOUCH_HOLD.get(editor)) {
+      clearTouchHoldTimer()
+      return
+    }
     IS_TOUCHMOVING.set(editor, isTouchEvent(event))
 
     if (
@@ -306,10 +312,11 @@ export const ContentEditable = (props: EditableProps) => {
     if (event.defaultPrevented) return
     if (!event.target || !ref.current?.contains(event.target as DOMNode)) return
     IS_TOUCHING.set(editor, true)
-    IS_MOUSEDOWN.set(editor, true)
+    IS_TOUCH_HOLD.set(editor, false)
     clearTouchHoldTimer()
     // touch 应该延迟选中
     touchHoldTimer.current = setTimeout(() => {
+      IS_TOUCH_HOLD.set(editor, true)
       handleRootMouseDown(event)
     }, 300)
   }
@@ -361,7 +368,11 @@ export const ContentEditable = (props: EditableProps) => {
         }
         startPointRef.current = point
       }
-      const range = handleSelecting(point, !isContextMenu.current)
+      const range = handleSelecting(
+        point,
+        !isContextMenu.current,
+        !isEditableDOMElement(event.target),
+      )
       if (range) editor.onSelectStart()
     } else startPointRef.current = null
   }

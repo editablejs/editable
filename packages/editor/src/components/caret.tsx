@@ -11,6 +11,7 @@ import {
   useSelectionDrawingSelection,
   useSelectionDrawingStyle,
 } from '../hooks/use-selection-drawing'
+import { isTouchDevice } from '../utils/environment'
 
 interface CaretProps {
   timeout?: number | false
@@ -29,6 +30,9 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   const selection = useSelectionDrawingSelection()
   const rects = useSelectionDrawingRects()
   const style = useSelectionDrawingStyle()
+
+  const caretWidth = isTouchDevice ? style.touchWidth : style.caretWidth
+  const caretColor = isTouchDevice ? style.touchColor : style.caretColor
 
   const rect = React.useMemo(() => {
     if (!selection || rects.length === 0 || !focused || !Range.isCollapsed(selection)) return null
@@ -74,7 +78,7 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
     <ShadowRect
       rect={
         rect
-          ? Object.assign({}, rect, { width: style.caretWidth, color: style.caretColor })
+          ? Object.assign({}, rect, { width: caretWidth, color: caretColor })
           : { width: 0, height: 0, top: 0, left: 0 }
       }
       ref={ref}

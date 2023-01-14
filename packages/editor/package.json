@@ -42,22 +42,22 @@
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
     "@types/lodash.merge": "^4.6.7",
-    "@types/react": "^17.x",
-    "@types/react-dom": "^17.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^17.x",
-    "react-dom": "^17.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
     "tsconfig": "workspace:*",
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "latest"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": "^18.x",
+    "react-dom": "^18.x"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

@@ -78,7 +78,7 @@ const Popover: React.FC<PopoverProps> = (props: PopoverProps) => {
           onCustomAnchorAdd: React.useCallback(() => setHasCustomAnchor(true), []),
           onCustomAnchorRemove: React.useCallback(() => setHasCustomAnchor(false), []),
           onDismiss: React.useCallback(() => setOpen(false), [setOpen]),
-          addChildOpen: React.useCallback(open => {
+          addChildOpen: React.useCallback((open: React.MutableRefObject<boolean>) => {
             if (!childOpens.current.find(c => c === open)) childOpens.current.push(open)
           }, []),
         }}
