@@ -79,7 +79,6 @@
   },
   "dependencies": {
     "@codemirror/commands": "6.1.3",
-    "@codemirror/lang-javascript": "6.1.2",
     "@codemirror/language": "6.3.2",
     "@codemirror/state": "6.2.0",
     "@codemirror/view": "6.7.2",
