@@ -31,6 +31,9 @@
       ],
       "deserializer": [
         "dist/deserializer.d.ts"
+      ],
+      "yjs": [
+        "dist/yjs.d.ts"
       ]
     }
   },
