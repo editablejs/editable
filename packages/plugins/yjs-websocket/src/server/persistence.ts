@@ -24,14 +24,13 @@ export const initPersistence = async (dir: string = './db', contentField = 'cont
       },
     ) => {
       const persistedYdoc = await ldb.getYDoc(docName)
-      const newUpdates = Y.encodeStateAsUpdateV2(ydoc)
+      const newUpdates = Y.encodeStateAsUpdate(ydoc)
       ldb.storeUpdate(docName, newUpdates)
-
       const content = persistedYdoc.get(contentField, Y.XmlText) as Y.XmlText
       const updateContent = ydoc.get(contentField, Y.XmlText) as Y.XmlText
 
-      Y.applyUpdateV2(ydoc, Y.encodeStateAsUpdateV2(persistedYdoc))
-      ydoc.on('updateV2', update => {
+      Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
+      ydoc.on('update', update => {
         ldb.storeUpdate(docName, update)
       })
 

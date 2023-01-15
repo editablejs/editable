@@ -42,7 +42,7 @@ importers:
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-codeblock': workspace:1.0.0-beta.0
+      '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-history': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
@@ -428,7 +428,6 @@ importers:
   packages/plugins/codeblock:
     specifiers:
       '@codemirror/commands': 6.1.3
-      '@codemirror/lang-javascript': 6.1.2
       '@codemirror/language': 6.3.2
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
@@ -456,7 +455,6 @@ importers:
       yjs: ^13.5.43
     dependencies:
       '@codemirror/commands': 6.1.3
-      '@codemirror/lang-javascript': 6.1.2
       '@codemirror/language': 6.3.2
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
@@ -2348,18 +2346,6 @@ packages:
       '@lezer/javascript': 0.15.3
     dev: false
 
-  /@codemirror/lang-javascript/6.1.2:
-    resolution: {integrity: sha512-OcwLfZXdQ1OHrLiIcKCn7MqZ7nx205CMKlhe+vL88pe2ymhT9+2P+QhwkYGxMICj8TDHyp8HFKVwpiisUT7iEQ==}
-    dependencies:
-      '@codemirror/autocomplete': 6.4.0_eo6pz6bvsllvatnnwfprpuflde
-      '@codemirror/language': 6.3.2
-      '@codemirror/lint': 6.1.0
-      '@codemirror/state': 6.2.0
-      '@codemirror/view': 6.7.2
-      '@lezer/common': 1.0.2
-      '@lezer/javascript': 1.4.1
-    dev: false
-
   /@codemirror/language/0.19.10:
     resolution: {integrity: sha512-yA0DZ3RYn2CqAAGW62VrU8c4YxscMQn45y/I9sjBlqB1e2OTQLg4CCkMBuMSLXk4xaqjlsgazeOQWaJQOKfV8Q==}
     dependencies:
@@ -3094,13 +3080,6 @@ packages:
     resolution: {integrity: sha512-8jA2NpOfpWwSPZxRhd9BxK2ZPvGd7nLE3LFTJ5AbMhXAzMHeMjneV6GEVd7dAIee85dtap0jdb6bgOSO0+lfwA==}
     dependencies:
       '@lezer/lr': 0.15.8
-    dev: false
-
-  /@lezer/javascript/1.4.1:
-    resolution: {integrity: sha512-Hqx36DJeYhKtdpc7wBYPR0XF56ZzIp0IkMO/zNNj80xcaFOV4Oj/P7TQc/8k2TxNhzl7tV5tXS8ZOCPbT4L3nA==}
-    dependencies:
-      '@lezer/highlight': 1.1.3
-      '@lezer/lr': 1.3.0
     dev: false
 
   /@lezer/lr/0.15.8:
