@@ -363,6 +363,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
       IS_SHIFT_PRESSED.set(e, true)
     }
 
+    if (Hotkeys.isSelectAll(event)) {
+      event.preventDefault()
+      Transforms.select(e, Editor.range(e, []))
+      return
+    }
+
     if (Hotkeys.isCut(event)) {
       event.preventDefault()
       e.cut()

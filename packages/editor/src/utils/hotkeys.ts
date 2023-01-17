@@ -7,6 +7,7 @@ import { IS_APPLE } from './environment'
 
 const HOTKEYS: Record<string, string | string[]> = {
   compose: ['down', 'left', 'right', 'up', 'backspace', 'enter'],
+  selectAll: 'mod+a',
   cut: 'mod+x',
   copy: 'mod+c',
   paste: 'mod+v',
@@ -77,6 +78,7 @@ const create = (key: string) => {
  */
 
 const Hotkeys = {
+  isSelectAll: create('selectAll'),
   isCut: create('cut'),
   isCopy: create('copy'),
   isPaste: create('paste'),
