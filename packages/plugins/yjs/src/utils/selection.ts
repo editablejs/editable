@@ -1,24 +1,11 @@
-import { BaseRange, Range } from '@editablejs/editor'
-
-export type SelectionRect = {
-  width: number
-  height: number
-  top: number
-  left: number
-}
-
-export type CaretPosition = {
-  height: number
-  top: number
-  left: number
-}
+import { CursorRect } from '@editablejs/plugin-yjs-protocols/remote-cursors'
+import { CaretPosition } from '../types'
 
 export function getCaretPosition(
-  selectionRects: SelectionRect[],
-  range: BaseRange,
+  selectionRects: CursorRect[],
+  isBackward: boolean,
+  isCollapsed: boolean,
 ): CaretPosition | null {
-  const isCollapsed = range && Range.isCollapsed(range)
-  const isBackward = range && Range.isBackward(range)
   const anchorRect = selectionRects[isBackward ? 0 : selectionRects.length - 1]
 
   if (!anchorRect) {

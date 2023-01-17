@@ -1,9 +1,9 @@
 import { Element, Node, Path, Text } from '@editablejs/editor'
-import { sliceInsertDelta, yTextToInsertDelta } from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
-import { YTarget } from '../types'
+import { sliceInsertDelta, yTextToInsertDelta } from './delta'
+import { YTarget } from './types'
 
-export function getSlateNodeYLength(node: Node | undefined): number {
+export function getEditorNodeYLength(node: Node | undefined): number {
   if (!node) {
     return 0
   }
@@ -11,28 +11,28 @@ export function getSlateNodeYLength(node: Node | undefined): number {
   return Text.isText(node) ? node.text.length : 1
 }
 
-export function slatePathOffsetToYOffset(element: Element, pathOffset: number) {
+export function editorPathOffsetToYOffset(element: Element, pathOffset: number) {
   return element.children
     .slice(0, pathOffset)
-    .reduce((yOffset, node) => yOffset + getSlateNodeYLength(node), 0)
+    .reduce((yOffset, node) => yOffset + getEditorNodeYLength(node), 0)
 }
 
-export function getYTarget(yRoot: Y.XmlText, slateRoot: Node, path: Path): YTarget {
+export function getYTarget(yRoot: Y.XmlText, editorRoot: Node, path: Path): YTarget {
   if (path.length === 0) {
     throw new Error('Path has to a have a length >= 1')
   }
 
-  if (Text.isText(slateRoot)) {
-    throw new Error('Cannot descent into slate text')
+  if (Text.isText(editorRoot)) {
+    throw new Error('Cannot descent into editor text')
   }
 
   const [pathOffset, ...childPath] = path
 
-  const yOffset = slatePathOffsetToYOffset(slateRoot, pathOffset)
-  const targetNode = slateRoot.children[pathOffset]
+  const yOffset = editorPathOffsetToYOffset(editorRoot, pathOffset)
+  const targetNode = editorRoot.children[pathOffset]
 
   const delta = yTextToInsertDelta(yRoot)
-  const targetLength = getSlateNodeYLength(targetNode)
+  const targetLength = getEditorNodeYLength(targetNode)
 
   const targetDelta = sliceInsertDelta(delta, yOffset, targetLength)
   if (targetDelta.length > 1) {
@@ -52,13 +52,13 @@ export function getYTarget(yRoot: Y.XmlText, slateRoot: Node, path: Path): YTarg
     yParent: yRoot,
     textRange: { start: yOffset, end: yOffset + targetLength },
     yTarget: yTarget instanceof Y.XmlText ? yTarget : undefined,
-    slateParent: slateRoot,
-    slateTarget: targetNode,
+    editorParent: editorRoot,
+    editorTarget: targetNode,
     targetDelta,
   }
 }
 
-export function yOffsetToSlateOffsets(
+export function yOffsetToEditorOffsets(
   parent: Element,
   yOffset: number,
   opts: { assoc?: number; insert?: boolean } = {},
@@ -96,7 +96,7 @@ export function yOffsetToSlateOffsets(
   return [lastNonEmptyPathOffset, textOffset]
 }
 
-export function getSlatePath(sharedRoot: Y.XmlText, slateRoot: Node, yText: Y.XmlText): Path {
+export function getEditorPath(sharedRoot: Y.XmlText, editorRoot: Node, yText: Y.XmlText): Path {
   const yNodePath = [yText]
   while (yNodePath[0] !== sharedRoot) {
     const { parent: yParent } = yNodePath[0]
@@ -116,7 +116,7 @@ export function getSlatePath(sharedRoot: Y.XmlText, slateRoot: Node, yText: Y.Xm
     return []
   }
 
-  let slateParent = slateRoot
+  let editorParent = editorRoot
   return yNodePath.reduce<Path>((path, yParent, idx) => {
     const yChild = yNodePath[idx + 1]
     if (!yChild) {
@@ -133,12 +133,12 @@ export function getSlatePath(sharedRoot: Y.XmlText, slateRoot: Node, yText: Y.Xm
       yOffset += typeof element.insert === 'string' ? element.insert.length : 1
     }
 
-    if (Text.isText(slateParent)) {
-      throw new Error('Cannot descent into slate text')
+    if (Text.isText(editorParent)) {
+      throw new Error('Cannot descent into editor text')
     }
 
-    const [pathOffset] = yOffsetToSlateOffsets(slateParent, yOffset)
-    slateParent = slateParent.children[pathOffset]
+    const [pathOffset] = yOffsetToEditorOffsets(editorParent, yOffset)
+    editorParent = editorParent.children[pathOffset]
     return path.concat(pathOffset)
   }, [])
 }

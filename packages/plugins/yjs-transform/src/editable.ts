@@ -1,5 +1,5 @@
 import { omit } from './object'
-import { Text, Node } from './types'
+import { Text, Node } from '@editablejs/editor'
 
 export function getProperties<TNode extends Node>(
   node: TNode,

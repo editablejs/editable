@@ -2,6 +2,7 @@
 import WebSocket from 'ws'
 import http from 'http'
 import * as Y from 'yjs'
+import { Element } from '@editablejs/editor'
 import * as syncProtocol from '@editablejs/plugin-yjs-protocols/sync'
 import * as awarenessProtocol from '@editablejs/plugin-yjs-protocols/awareness'
 
@@ -14,7 +15,6 @@ import { WSSharedDoc as WSSharedDocInterface } from './types'
 
 import { callbackHandler, CallbackOptions } from './callback'
 import { getPersistence } from './persistence'
-import { Element } from '@editablejs/plugin-yjs-transform'
 import { messageAwareness, messageSubDocSync, messageSync } from '../message'
 
 const wsReadyStateConnecting = 0

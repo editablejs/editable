@@ -1,24 +1,21 @@
-import { BasePoint, BaseRange, Node, Text } from '@editablejs/editor'
-import {
-  assertDocumentAttachment,
-  getInsertDeltaLength,
-  yTextToInsertDelta,
-} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
-import { InsertDelta, RelativeRange, TextRange } from '../types'
-import { getSlatePath, getYTarget, yOffsetToSlateOffsets } from './location'
+import { InsertDelta, RelativeRange, TextRange } from './types'
+import { getInsertDeltaLength, yTextToInsertDelta } from './delta'
+import { getEditorPath, getYTarget, yOffsetToEditorOffsets } from './location'
+import { assertDocumentAttachment } from './yjs'
+import { BasePoint, Node, Text, BaseRange } from '@editablejs/editor'
 
-export const STORED_POSITION_PREFIX = '__slateYjsStoredPosition_'
+export const STORED_POSITION_PREFIX = '__editorYjsStoredPosition_'
 
-export function slatePointToRelativePosition(
+export function editorPointToRelativePosition(
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   point: BasePoint,
 ): Y.RelativePosition {
-  const { yTarget, yParent, textRange } = getYTarget(sharedRoot, slateRoot, point.path)
+  const { yTarget, yParent, textRange } = getYTarget(sharedRoot, editorRoot, point.path)
 
   if (yTarget) {
-    throw new Error('Slate point points to a non-text element inside sharedRoot')
+    throw new Error('Editor point points to a non-text element inside sharedRoot')
   }
 
   return Y.createRelativePositionFromTypeIndex(
@@ -28,23 +25,23 @@ export function slatePointToRelativePosition(
   )
 }
 
-export function absolutePositionToSlatePoint(
+export function absolutePositionToEditorPoint(
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   { type, index, assoc }: Y.AbsolutePosition,
 ): BasePoint | null {
   if (!(type instanceof Y.XmlText)) {
     throw new Error('Absolute position points to a non-XMLText')
   }
 
-  const parentPath = getSlatePath(sharedRoot, slateRoot, type)
-  const parent = Node.get(slateRoot, parentPath)
+  const parentPath = getEditorPath(sharedRoot, editorRoot, type)
+  const parent = Node.get(editorRoot, parentPath)
 
   if (Text.isText(parent)) {
-    throw new Error("Absolute position doesn't match slateRoot, cannot descent into text")
+    throw new Error("Absolute position doesn't match editorRoot, cannot descent into text")
   }
 
-  const [pathOffset, textOffset] = yOffsetToSlateOffsets(parent, index, {
+  const [pathOffset, textOffset] = yOffsetToEditorOffsets(parent, index, {
     assoc,
   })
 
@@ -56,9 +53,9 @@ export function absolutePositionToSlatePoint(
   return { path: [...parentPath, pathOffset], offset: textOffset }
 }
 
-export function relativePositionToSlatePoint(
+export function relativePositionToEditorPoint(
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   pos: Y.RelativePosition,
 ): BasePoint | null {
   if (!sharedRoot.doc) {
@@ -67,7 +64,7 @@ export function relativePositionToSlatePoint(
 
   const absPos = Y.createAbsolutePositionFromRelativePosition(pos, sharedRoot.doc)
 
-  return absPos && absolutePositionToSlatePoint(sharedRoot, slateRoot, absPos)
+  return absPos && absolutePositionToEditorPoint(sharedRoot, editorRoot, absPos)
 }
 
 export function getStoredPosition(sharedRoot: Y.XmlText, key: string): Y.RelativePosition | null {
@@ -234,29 +231,29 @@ export function restoreStoredPositionsWithDeltaAbsolute(
   })
 }
 
-export function slateRangeToRelativeRange(
+export function editorRangeToRelativeRange(
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   range: BaseRange,
 ): RelativeRange {
   return {
-    anchor: slatePointToRelativePosition(sharedRoot, slateRoot, range.anchor),
-    focus: slatePointToRelativePosition(sharedRoot, slateRoot, range.focus),
+    anchor: editorPointToRelativePosition(sharedRoot, editorRoot, range.anchor),
+    focus: editorPointToRelativePosition(sharedRoot, editorRoot, range.focus),
   }
 }
 
-export function relativeRangeToSlateRange(
+export function relativeRangeToEditorRange(
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   range: RelativeRange,
 ): BaseRange | null {
-  const anchor = relativePositionToSlatePoint(sharedRoot, slateRoot, range.anchor)
+  const anchor = relativePositionToEditorPoint(sharedRoot, editorRoot, range.anchor)
 
   if (!anchor) {
     return null
   }
 
-  const focus = relativePositionToSlatePoint(sharedRoot, slateRoot, range.focus)
+  const focus = relativePositionToEditorPoint(sharedRoot, editorRoot, range.focus)
 
   if (!focus) {
     return null

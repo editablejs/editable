@@ -3,24 +3,23 @@ import {
   cloneInsertDeltaDeep,
   sliceInsertDelta,
   yTextToInsertDelta,
-} from '@editablejs/plugin-yjs-transform'
-import * as Y from 'yjs'
-import { getSlateNodeYLength, getYTarget } from '../../utils/location'
-import {
   getStoredPositionsInDeltaAbsolute,
   restoreStoredPositionsWithDeltaAbsolute,
-} from '../../utils/position'
+  getEditorNodeYLength,
+  getYTarget,
+} from '@editablejs/plugin-yjs-transform'
+import * as Y from 'yjs'
 
-export function splitNode(sharedRoot: Y.XmlText, slateRoot: Node, op: SplitNodeOperation): void {
-  const target = getYTarget(sharedRoot, slateRoot, op.path)
+export function splitNode(sharedRoot: Y.XmlText, editorRoot: Node, op: SplitNodeOperation): void {
+  const target = getYTarget(sharedRoot, editorRoot, op.path)
 
-  if (!target.slateTarget) {
-    throw new Error('Y target without corresponding slate node')
+  if (!target.editorTarget) {
+    throw new Error('Y target without corresponding editor node')
   }
 
   if (!target.yTarget) {
-    if (!Text.isText(target.slateTarget)) {
-      throw new Error('Mismatch node type between y target and slate node')
+    if (!Text.isText(target.editorTarget)) {
+      throw new Error('Mismatch node type between y target and editor node')
     }
 
     const unset: Record<string, null> = {}
@@ -39,18 +38,18 @@ export function splitNode(sharedRoot: Y.XmlText, slateRoot: Node, op: SplitNodeO
     )
   }
 
-  if (Text.isText(target.slateTarget)) {
-    throw new Error('Mismatch node type between y target and slate node')
+  if (Text.isText(target.editorTarget)) {
+    throw new Error('Mismatch node type between y target and editor node')
   }
 
-  const splitTarget = getYTarget(target.yTarget, target.slateTarget, [op.position])
+  const splitTarget = getYTarget(target.yTarget, target.editorTarget, [op.position])
 
-  const ySplitOffset = target.slateTarget.children
+  const ySplitOffset = target.editorTarget.children
     .slice(0, op.position)
-    .reduce((length, child) => length + getSlateNodeYLength(child), 0)
+    .reduce((length, child) => length + getEditorNodeYLength(child), 0)
 
-  const length = target.slateTarget.children.reduce(
-    (current, child) => current + getSlateNodeYLength(child),
+  const length = target.editorTarget.children.reduce(
+    (current, child) => current + getEditorNodeYLength(child),
     0,
   )
 

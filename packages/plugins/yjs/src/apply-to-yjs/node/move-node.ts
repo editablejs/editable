@@ -6,23 +6,23 @@ import {
 } from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../../types'
-import { getYTarget } from '../../utils/location'
+import { getYTarget } from '@editablejs/plugin-yjs-transform'
 import {
   getStoredPositionsInDeltaAbsolute,
   restoreStoredPositionsWithDeltaAbsolute,
-} from '../../utils/position'
+} from '@editablejs/plugin-yjs-transform'
 
-export function moveNode(sharedRoot: Y.XmlText, slateRoot: Node, op: MoveNodeOperation): void {
+export function moveNode(sharedRoot: Y.XmlText, editorRoot: Node, op: MoveNodeOperation): void {
   const newParentPath = Path.parent(op.newPath)
   const newPathOffset = op.newPath[op.newPath.length - 1]
-  const parent = Node.get(slateRoot, newParentPath)
+  const parent = Node.get(editorRoot, newParentPath)
   if (Text.isText(parent)) {
-    throw new Error('Cannot move slate node into text element')
+    throw new Error('Cannot move editor node into text element')
   }
   const normalizedNewPath = [...newParentPath, Math.min(newPathOffset, parent.children.length)]
 
-  const origin = getYTarget(sharedRoot, slateRoot, op.path)
-  const target = getYTarget(sharedRoot, slateRoot, normalizedNewPath)
+  const origin = getYTarget(sharedRoot, editorRoot, op.path)
+  const target = getYTarget(sharedRoot, editorRoot, normalizedNewPath)
   const insertDelta = cloneInsertDeltaDeep(origin.targetDelta)
 
   const storedPositions = getStoredPositionsInDeltaAbsolute(

@@ -1,6 +1,7 @@
 import * as Y from 'yjs'
 import { EditorView } from '@codemirror/view'
 import { Editable } from '@editablejs/editor'
+import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
 
 import { YRange } from './range'
 import { ySync, ySyncFacet, YSyncConfig } from './sync'
@@ -8,10 +9,15 @@ import { CodeBlockEditor } from '../editor'
 import { CODEBLOCK_YJS_FIELD, CODEBLOCK_YJS_KEY } from '../../constants'
 import { redo, undo, yUndoManager, YUndoManagerConfig, yUndoManagerFacet } from './undomanager'
 import { injectCodeBlockPlugins, IS_YJS, YJS_DEFAULT_VALUE } from '../../weak-map'
+import { yRemoteSelections } from './remote-selecton'
 
 export { YRange, ySync, ySyncFacet, YSyncConfig }
 
-export const withYCodeBlock = <T extends Editable>(editor: T, document: Y.Doc) => {
+export const withYCodeBlock = <T extends Editable>(
+  editor: T,
+  document: Y.Doc,
+  awareness: Awareness,
+) => {
   const { normalizeNode, apply } = editor
 
   editor.apply = op => {
@@ -54,9 +60,10 @@ export const withYCodeBlock = <T extends Editable>(editor: T, document: Y.Doc) =
     IS_YJS.set(editor, true)
     doc.load()
     const yText = doc.getText(CODEBLOCK_YJS_FIELD)
-    const ySyncConfig = new YSyncConfig(yText)
+    const ySyncConfig = new YSyncConfig(yText, awareness, editor)
     const undoManager = new Y.UndoManager(yText)
     return [
+      yRemoteSelections,
       ySyncFacet.of(ySyncConfig),
       ySync,
       // undoManager

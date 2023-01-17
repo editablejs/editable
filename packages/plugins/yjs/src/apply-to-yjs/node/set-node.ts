@@ -1,9 +1,9 @@
 import { Node, SetNodeOperation } from '@editablejs/editor'
 import * as Y from 'yjs'
-import { getYTarget } from '../../utils/location'
+import { getYTarget } from '@editablejs/plugin-yjs-transform'
 
-export function setNode(sharedRoot: Y.XmlText, slateRoot: Node, op: SetNodeOperation): void {
-  const { yTarget, textRange, yParent } = getYTarget(sharedRoot, slateRoot, op.path)
+export function setNode(sharedRoot: Y.XmlText, editorRoot: Node, op: SetNodeOperation): void {
+  const { yTarget, textRange, yParent } = getYTarget(sharedRoot, editorRoot, op.path)
 
   if (yTarget) {
     Object.entries(op.newProperties).forEach(([key, value]) => {

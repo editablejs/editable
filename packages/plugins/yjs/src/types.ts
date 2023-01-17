@@ -1,6 +1,25 @@
 import type { Editor, Element, Node } from '@editablejs/editor'
 import type Y from 'yjs'
 
+export interface CursorData extends Record<string, unknown> {
+  name: string
+  color: string
+  avatar?: string
+}
+
+export type CursorState<T extends CursorData = CursorData> = {
+  field: string
+  relativeSelection: RelativeRange | null
+  data?: T
+  clientId: number
+}
+
+export type CaretPosition = {
+  height: number
+  top: number
+  left: number
+}
+
 export type DeltaAttributes = {
   retain: number
   attributes: Record<string, unknown>
@@ -22,23 +41,23 @@ export type HistoryStackItem = {
 }
 
 export type YTarget = {
-  // TextRange in the yParent mapping to the slateTarget (or position to insert)
+  // TextRange in the yParent mapping to the editorTarget (or position to insert)
   textRange: TextRange
 
-  // Y.XmlText containing the slate node
+  // Y.XmlText containing the editor node
   yParent: Y.XmlText
 
-  // Slate element mapping to the yParent
-  slateParent: Element | Editor
+  // Editor element mapping to the yParent
+  editorParent: Element | Editor
 
-  // If the target points to a slate element, Y.XmlText representing the target.
+  // If the target points to a editor element, Y.XmlText representing the target.
   // If it points to a text (or position to insert), this will be undefined.
   yTarget?: Y.XmlText
 
-  // Slate node represented by the textRange, won't be set if position is insert.
-  slateTarget?: Node
+  // Editor node represented by the textRange, won't be set if position is insert.
+  editorTarget?: Node
 
-  // InsertDelta representing the slateTarget
+  // InsertDelta representing the editorTarget
   targetDelta: InsertDelta
 }
 

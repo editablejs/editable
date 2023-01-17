@@ -1,8 +1,11 @@
 import { Editable, Editor, Operation, Transforms } from '@editablejs/editor'
+import {
+  editorRangeToRelativeRange,
+  relativeRangeToEditorRange,
+} from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
-import { relativeRangeToSlateRange, slateRangeToRelativeRange } from '../utils/position'
-import { YjsEditor } from './yjs'
+import { YjsEditor } from './with-yjs'
 
 const LAST_SELECTION: WeakMap<Editor, RelativeRange | null> = new WeakMap()
 const DEFAULT_WITHOUT_SAVING_ORIGIN = Symbol('editable-yjs-history-without-saving')
@@ -94,7 +97,7 @@ export function withYHistory<T extends YjsEditor>(
   e.onChange = () => {
     onChange()
     if (YjsEditor.connected(e))
-      LAST_SELECTION.set(e, e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection))
+      LAST_SELECTION.set(e, e.selection && editorRangeToRelativeRange(e.sharedRoot, e, e.selection))
   }
 
   e.isLocalOrigin = origin => origin === e.withoutSavingOrigin || isLocalOrigin(origin)
@@ -119,7 +122,7 @@ export function withYHistory<T extends YjsEditor>(
   }) => {
     stackItem.meta.set(
       'selection',
-      e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection),
+      e.selection && editorRangeToRelativeRange(e.sharedRoot, e, e.selection),
     )
     stackItem.meta.set('selectionBefore', LAST_SELECTION.get(e))
     handleStackItemMeta(origin, stackItem)
@@ -133,7 +136,7 @@ export function withYHistory<T extends YjsEditor>(
   }) => {
     stackItem.meta.set(
       'selection',
-      e.selection && slateRangeToRelativeRange(e.sharedRoot, e, e.selection),
+      e.selection && editorRangeToRelativeRange(e.sharedRoot, e, e.selection),
     )
     handleStackItemMeta(origin, stackItem)
   }
@@ -159,7 +162,7 @@ export function withYHistory<T extends YjsEditor>(
       return
     }
 
-    const selection = relativeRangeToSlateRange(e.sharedRoot, e, relativeSelection)
+    const selection = relativeRangeToEditorRange(e.sharedRoot, e, relativeSelection)
 
     if (!selection) {
       return
@@ -168,21 +171,21 @@ export function withYHistory<T extends YjsEditor>(
     Transforms.select(e, selection)
   }
 
-  const { connect, disconnect } = e
-  e.connect = () => {
-    connect()
+  const { connectYjs, disconnectYjs } = e
+  e.connectYjs = () => {
+    connectYjs()
 
     e.undoManager.on('stack-item-added', handleStackItemAdded)
     e.undoManager.on('stack-item-popped', handleStackItemPopped)
     e.undoManager.on('stack-item-updated', handleStackItemUpdated)
   }
 
-  e.disconnect = () => {
+  e.disconnectYjs = () => {
     e.undoManager.off('stack-item-added', handleStackItemAdded)
     e.undoManager.off('stack-item-popped', handleStackItemPopped)
     e.undoManager.off('stack-item-updated', handleStackItemUpdated)
 
-    disconnect()
+    disconnectYjs()
   }
 
   const { captureHistory } = e

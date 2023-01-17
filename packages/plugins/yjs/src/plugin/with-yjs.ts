@@ -1,17 +1,18 @@
 import { Descendant, Editable, Editor, Operation, Point } from '@editablejs/editor'
-import { assertDocumentAttachment, yTextToSlateElement } from '@editablejs/plugin-yjs-transform'
-import * as Y from 'yjs'
-import { applyYjsEvents } from '../apply-to-slate'
-import { applySlateOp } from '../apply-to-yjs'
-import { UniqueOperations } from '../constants'
 import {
+  assertDocumentAttachment,
+  editorPointToRelativePosition,
   getStoredPosition,
   getStoredPositions,
-  relativePositionToSlatePoint,
+  relativePositionToEditorPoint,
   removeStoredPosition,
   setStoredPosition,
-  slatePointToRelativePosition,
-} from '../utils/position'
+  yTextToEditorElement,
+} from '@editablejs/plugin-yjs-transform'
+import * as Y from 'yjs'
+import { applyYjsEvents } from '../apply-to-editor'
+import { applyEditorOp } from '../apply-to-yjs'
+import { UniqueOperations } from '../constants'
 
 type LocalChange = {
   op: Operation
@@ -39,8 +40,8 @@ export type YjsEditor = Editable & {
 
   isLocalOrigin: (origin: unknown) => boolean
 
-  connect: () => void
-  disconnect: () => void
+  connectYjs: () => void
+  disconnectYjs: () => void
 }
 
 export const YjsEditor = {
@@ -54,8 +55,8 @@ export const YjsEditor = {
       typeof (value as YjsEditor).storeLocalChange === 'function' &&
       typeof (value as YjsEditor).flushLocalChanges === 'function' &&
       typeof (value as YjsEditor).isLocalOrigin === 'function' &&
-      typeof (value as YjsEditor).connect === 'function' &&
-      typeof (value as YjsEditor).disconnect === 'function'
+      typeof (value as YjsEditor).connectYjs === 'function' &&
+      typeof (value as YjsEditor).disconnectYjs === 'function'
     )
   },
 
@@ -80,11 +81,11 @@ export const YjsEditor = {
   },
 
   connect(editor: YjsEditor): void {
-    editor.connect()
+    editor.connectYjs()
   },
 
   disconnect(editor: YjsEditor): void {
-    editor.disconnect()
+    editor.disconnectYjs()
   },
 
   isLocal(editor: YjsEditor): boolean {
@@ -107,7 +108,7 @@ export const YjsEditor = {
     const { sharedRoot, positionStorageOrigin: locationStorageOrigin } = editor
     assertDocumentAttachment(sharedRoot)
 
-    const position = slatePointToRelativePosition(sharedRoot, editor, point)
+    const position = editorPointToRelativePosition(sharedRoot, editor, point)
 
     sharedRoot.doc.transact(() => {
       setStoredPosition(sharedRoot, key, position)
@@ -129,7 +130,7 @@ export const YjsEditor = {
       return undefined
     }
 
-    return relativePositionToSlatePoint(editor.sharedRoot, editor, position)
+    return relativePositionToEditorPoint(editor.sharedRoot, editor, position)
   },
 
   storedPositionsRelative(editor: YjsEditor): Record<string, Y.RelativePosition> {
@@ -140,7 +141,7 @@ export const YjsEditor = {
 export type WithYjsOptions = {
   autoConnect?: boolean
 
-  // Origin used when applying local slate operations to yjs
+  // Origin used when applying local editor operations to yjs
   localOrigin?: unknown
 
   // Origin used when storing positions
@@ -187,13 +188,13 @@ export function withYjs<T extends Editor>(
     })
   }
 
-  e.connect = () => {
+  e.connectYjs = () => {
     if (YjsEditor.connected(e)) {
       throw new Error('already connected')
     }
 
     e.sharedRoot.observeDeep(handleYEvents)
-    const content = yTextToSlateElement(e.sharedRoot)
+    const content = yTextToEditorElement(e.sharedRoot)
 
     e.selection = null
     e.children = content.children
@@ -205,7 +206,7 @@ export function withYjs<T extends Editor>(
     }
   }
 
-  e.disconnect = () => {
+  e.disconnectYjs = () => {
     if (autoConnectTimeoutId) {
       clearTimeout(autoConnectTimeoutId)
     }
@@ -258,7 +259,7 @@ export function withYjs<T extends Editor>(
           } else {
             ops.push({ ...change.op })
           }
-          applySlateOp(e.sharedRoot, { children: change.doc }, change.op)
+          applyEditorOp(e.sharedRoot, { children: change.doc }, change.op)
         })
       }, txGroup[0].origin)
     })

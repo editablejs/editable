@@ -1,4 +1,5 @@
-import { slateElementToYText, Element } from '@editablejs/plugin-yjs-transform'
+import { editorElementToYText } from '@editablejs/plugin-yjs-transform'
+import { Element } from '@editablejs/editor'
 import { LeveldbPersistence } from 'y-leveldb'
 import * as Y from 'yjs'
 import { WSSharedDoc } from './types'
@@ -37,7 +38,7 @@ export const initPersistence = async (dir: string = './db', contentField = 'cont
       // init empty content
       if (content._length === 0 && updateContent._length === 0) {
         ydoc.transact(() => {
-          updateContent.insertEmbed(0, slateElementToYText(initialValue))
+          updateContent.insertEmbed(0, editorElementToYText(initialValue))
         })
       }
     },

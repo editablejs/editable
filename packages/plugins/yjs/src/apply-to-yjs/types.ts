@@ -3,7 +3,7 @@ import * as Y from 'yjs'
 
 export type ApplyFunc<O extends Operation = Operation> = (
   sharedRoot: Y.XmlText,
-  slateRoot: Node,
+  editorRoot: Node,
   op: O,
 ) => void
 

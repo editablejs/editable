@@ -169,6 +169,7 @@ importers:
 
   apps/server:
     specifiers:
+      '@editablejs/editor': workspace:*
       '@editablejs/plugin-yjs-websocket': workspace:*
       eslint-config-editable: workspace:*
       nodemon: 2.0.20
@@ -178,6 +179,7 @@ importers:
       typescript: latest
       yjs: ^13.5.43
     dependencies:
+      '@editablejs/editor': link:../../packages/editor
       '@editablejs/plugin-yjs-websocket': link:../../packages/plugins/yjs-websocket
     devDependencies:
       eslint-config-editable: link:../../packages/config/eslint-config-editable
@@ -432,6 +434,7 @@ importers:
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-yjs-protocols': workspace:*
       '@editablejs/ui': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -458,6 +461,7 @@ importers:
       '@codemirror/language': 6.3.2
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
+      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
       '@editablejs/ui': link:../../ui
       codemirror: 6.0.1_@lezer+common@1.0.2
       lib0: 0.2.52
@@ -1220,6 +1224,7 @@ importers:
 
   packages/plugins/yjs-transform:
     specifiers:
+      '@editablejs/editor': workspace:*
       '@types/jest': ^26.0.22
       eslint-config-editable: workspace:*
       jest: ^27.5.1
@@ -1231,6 +1236,7 @@ importers:
       typescript: latest
       yjs: ^13.5.43
     devDependencies:
+      '@editablejs/editor': link:../../editor
       '@types/jest': 26.0.24
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
@@ -1244,6 +1250,7 @@ importers:
 
   packages/plugins/yjs-websocket:
     specifiers:
+      '@editablejs/editor': workspace:*
       '@editablejs/plugin-yjs-protocols': workspace:*
       '@editablejs/plugin-yjs-transform': workspace:*
       '@types/jest': ^26.0.22
@@ -1271,6 +1278,7 @@ importers:
       ws: 6.2.2
       y-leveldb: 0.1.1_yjs@13.5.43
     devDependencies:
+      '@editablejs/editor': link:../../editor
       '@types/jest': 26.0.24
       '@types/lodash.debounce': 4.0.7
       '@types/ws': 8.5.3
@@ -10954,7 +10962,7 @@ packages:
     engines: {node: '>=10'}
 
   /yallist/2.1.2:
-    resolution: {integrity: sha1-HBH5IY8HYImkfdUS+TxmmaaoHVI=}
+    resolution: {integrity: sha512-ncTzHV7NvsQZkYe1DW7cbDLm0YpzHmZF5r/iyP3ZnQtMiJ+pjzisCiMNI+Sj+xQF5pXhSHxSB3uDbsBTzY/c2A==}
     dev: true
 
   /yallist/4.0.0:

@@ -1,14 +1,18 @@
 import * as Y from 'yjs'
 import * as cmState from '@codemirror/state'
 import * as cmView from '@codemirror/view'
+import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
 import { createYRange, YRange } from './range'
+import { Editable } from '@editablejs/editor'
 
 export class YSyncConfig {
   ytext: Y.Text
-  constructor(ytext: Y.Text) {
+  awareness: Awareness
+  editor: Editable
+  constructor(ytext: Y.Text, awareness: Awareness, editor: Editable) {
     this.ytext = ytext
-    // this.awareness = awareness
-    // this.undoManager = new Y.UndoManager(ytext)
+    this.awareness = awareness
+    this.editor = editor
   }
 
   /**

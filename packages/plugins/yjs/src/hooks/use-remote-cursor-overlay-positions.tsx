@@ -3,19 +3,24 @@ import {
   BaseRange,
   Descendant,
   Editable,
-  SelectionDrawing,
   useEditable,
-  useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
-import { useRequestReRender } from './useRequestReRender'
-import { CaretPosition, getCaretPosition, SelectionRect } from '../utils/selection'
-import { RelativeRange } from '../types'
-import { CursorState, YjsEditor, CursorEditor } from '../plugins'
-import { relativeRangeToSlateRange } from '../utils/position'
-import { useRemoteStates } from './useRemoteStates'
+import { useRequestReRender } from './use-request-re-render'
+import { getCaretPosition } from '../utils/selection'
+import { CaretPosition, CursorData, CursorState, RelativeRange } from '../types'
+import { useRemoteStates } from './use-remote-states'
+import { CursorEditor } from '../plugin/cursors-editor'
+import {
+  CursorRect,
+  RemoteCursors,
+  RemoteNativeRange,
+} from '@editablejs/plugin-yjs-protocols/remote-cursors'
 
-const RANGE_CACHE: WeakMap<Descendant[], WeakMap<RelativeRange, BaseRange | null>> = new WeakMap()
+const RANGE_CACHE: WeakMap<
+  Descendant[],
+  WeakMap<RelativeRange, RemoteNativeRange | null>
+> = new WeakMap()
 
 const FROZEN_EMPTY_ARRAY = Object.freeze([])
 
@@ -29,41 +34,41 @@ export type UseRemoteCursorOverlayPositionsOptions = {
   refreshOnResize?: boolean
 }
 
-export type CursorOverlayState<TCursorData extends Record<string, unknown>> =
-  CursorState<TCursorData> & {
-    selection: BaseRange | null
-    caretPosition: CaretPosition | null
-    selectionRects: SelectionRect[]
-  }
+export type CursorOverlayState<TCursorData extends CursorData> = CursorState<TCursorData> & {
+  caretPosition: CaretPosition | null
+  selectionRects: CursorRect[]
+}
 
-function getRange(editor: YjsEditor, relativeRange: RelativeRange) {
+function getRange<T extends CursorData>(editor: CursorEditor<T>, state: CursorState) {
   let cache = RANGE_CACHE.get(editor.children)
   if (!cache) {
     cache = new WeakMap()
     RANGE_CACHE.set(editor.children, cache)
   }
+  const relativeRange = state.relativeSelection
+  if (!relativeRange) return null
 
   const cachedRange = cache.get(relativeRange)
   if (cachedRange !== undefined) {
     return cachedRange
   }
 
-  const range = relativeRangeToSlateRange(editor.sharedRoot, editor, relativeRange)
+  const range = RemoteCursors.relativeRangeToNativeRange(state.field, relativeRange)
 
   cache.set(relativeRange, range)
   return range
 }
 
-export function useRemoteCursorOverlayPositions<TCursorData extends Record<string, unknown>>({
+export function useRemoteCursorOverlayPositions<TCursorData extends CursorData>({
   containerRef,
   refreshOnResize = true,
 }: UseRemoteCursorOverlayPositionsOptions = {}) {
   const editor = useEditable() as CursorEditor<TCursorData> & Editable
 
   const requestReRender = useRequestReRender()
-  const selectionRectCache = React.useRef<WeakMap<BaseRange, SelectionRect[]>>(new WeakMap())
+  const selectionRectCache = React.useRef<WeakMap<RemoteNativeRange, CursorRect[]>>(new WeakMap())
 
-  const [selectionRects, setSelectionRects] = React.useState<Record<string, SelectionRect[]>>({})
+  const [selectionRects, setSelectionRects] = React.useState<Record<string, CursorRect[]>>({})
 
   const cursorStates = useRemoteStates<TCursorData>(editor)
 
@@ -80,7 +85,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
 
     const updated = Object.fromEntries(
       Object.entries(cursorStates).map(([key, state]) => {
-        const range = state.relativeSelection && getRange(editor, state.relativeSelection)
+        const range = getRange(editor, state)
 
         if (!range) {
           return [key, FROZEN_EMPTY_ARRAY]
@@ -90,8 +95,7 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
         if (cached) {
           return [key, cached]
         }
-
-        const rects = SelectionDrawing.getRects(editor, range)
+        const rects = range.toRects()
         selectionRectsChanged = true
         selectionRectCache.current.set(range, rects)
         return [key, rects]
@@ -106,13 +110,13 @@ export function useRemoteCursorOverlayPositions<TCursorData extends Record<strin
   const cursors = React.useMemo<CursorOverlayState<TCursorData>[]>(
     () =>
       Object.entries(cursorStates).map(([clientId, state]) => {
-        const selection = state.relativeSelection && getRange(editor, state.relativeSelection)
+        const range = getRange(editor, state)
         const rects = selectionRects[clientId] ?? FROZEN_EMPTY_ARRAY
-        const caretPosition = selection && getCaretPosition(rects, selection)
+        const caretPosition =
+          range && getCaretPosition(rects, range.isBackward(), range.isCollapsed())
 
         return {
           ...state,
-          selection,
           caretPosition,
           selectionRects: rects,
         }

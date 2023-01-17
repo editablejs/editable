@@ -3,7 +3,7 @@
 
 import WebSocket from 'ws'
 import http from 'http'
-import { Element } from '@editablejs/plugin-yjs-transform'
+import { Element } from '@editablejs/editor'
 import { setupWSConnection, UpdateCallback } from './utils'
 import { initPersistence } from './persistence'
 

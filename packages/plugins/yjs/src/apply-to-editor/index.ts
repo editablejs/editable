@@ -1,11 +1,11 @@
 import { Editor, Operation, PathRef, PointRef, RangeRef } from '@editablejs/editor'
 import * as Y from 'yjs'
 import { UniqueOperations } from '../constants'
-import { YjsEditor } from '../plugins'
+import { YjsEditor } from '../plugin'
 import { translateYTextEvent } from './text-event'
 
 /**
- * Translate a yjs event into slate operations. The editor state has to match the
+ * Traneditor a yjs event into editor operations. The editor state has to match the
  * yText state before the event occurred.
  *
  * @param sharedType
@@ -50,7 +50,7 @@ RangeRef.transform = (ref, op) => {
 }
 
 /**
- * Translates yjs events into slate operations and applies them to the editor. The
+ * Traneditors yjs events into editor operations and applies them to the editor. The
  * editor state has to match the yText state before the events occurred.
  *
  * @param sharedRoot

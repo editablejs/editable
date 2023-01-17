@@ -37,7 +37,7 @@ export const InlineToolbar = () => {
       let x = 0,
         y = 0
 
-      const rects = SelectionDrawing.getRects(editor, selection, false)
+      const rects = SelectionDrawing.toRects(editor, selection, false)
       const isBackward = Range.isBackward(selection)
       if (rects.length > 0) {
         const rect = isBackward ? rects[0] : rects[rects.length - 1]

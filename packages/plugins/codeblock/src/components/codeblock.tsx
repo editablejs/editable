@@ -19,7 +19,7 @@ import {
   crosshairCursor,
   keymap,
 } from '@codemirror/view'
-import { Compartment, EditorState } from '@codemirror/state'
+import { Compartment, EditorSelection, EditorState } from '@codemirror/state'
 import {
   foldGutter,
   indentOnInput,
@@ -136,9 +136,14 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
         },
       }),
       EditorView.updateListener.of(update => {
+        console.log(
+          update.state.selection.main,
+          update.view.domAtPos(update.state.selection.main.anchor),
+        )
         if (update.docChanged) {
           const code = update.state.doc.toString()
           CodeBlockEditor.updateCodeBlock(editor, elementRef.current, { code })
+          // console.log(viewRef.current?.state.selection, viewRef.current?.coordsAtPos)
         }
       }),
       ...plugins,

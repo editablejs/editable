@@ -91,7 +91,7 @@ export const SelectionDrawing = {
     store.setState(state => ({ ...state, enabled }))
   },
 
-  getRects(editor: Editable, range: Range, relative = true) {
+  toRects(editor: Editable, range: Range, relative = true) {
     let rects: DOMRect[] = []
     if (Range.isCollapsed(range)) {
       const domRange = Editable.toDOMRange(editor, range)

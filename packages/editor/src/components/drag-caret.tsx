@@ -59,7 +59,7 @@ export const DragCaretComponent = React.memo(() => {
       return [new DOMRect(rx, ry, width, 2)]
     }
 
-    return SelectionDrawing.getRects(editor, Editor.range(editor, dragTo))
+    return SelectionDrawing.toRects(editor, Editor.range(editor, dragTo))
   }, [dragPosition, dragTo, dragType, editor])
 
   const { dragColor, caretWidth } = useSelectionDrawingStyle()

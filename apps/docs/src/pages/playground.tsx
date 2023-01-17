@@ -20,12 +20,12 @@ import {
 import {
   withYHistory,
   withYjs,
-  withCursors,
   YjsEditor,
+  withCursors,
   CursorData,
   useRemoteStates,
-  CursorEditor,
 } from '@editablejs/plugin-yjs'
+
 import randomColor from 'randomcolor'
 import { faker } from '@faker-js/faker'
 import { WebsocketProvider } from '@editablejs/plugin-yjs-websocket'
@@ -181,7 +181,7 @@ export default function Playground() {
 
     let editor = withYjs(createEditor(), sharedType, { autoConnect: false })
     if (provider) {
-      editor = withCursors(editor, provider.awareness, {
+      editor = withCursors(editor, sharedType, provider.awareness, {
         data: cursorData,
       })
     }
@@ -210,7 +210,7 @@ export default function Playground() {
         },
       },
     })
-    editor = withYCodeBlock(editor, document)
+    if (provider) editor = withYCodeBlock(editor, document, provider.awareness)
     editor = withInlineToolbar(withToolbar(editor))
 
     if (!isTouchDevice) {
@@ -268,8 +268,7 @@ export default function Playground() {
   useSideToolbarMenuEffect((...a) => {
     SideToolbar.setItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
-
-  const remoteClients = useRemoteStates<CursorData>(editor as CursorEditor)
+  const remoteClients = useRemoteStates<CursorData>(editor)
 
   return (
     <>
@@ -299,7 +298,7 @@ export default function Playground() {
                 return (
                   <Tooltip key={id} content={name}>
                     <div tw="rounded-full w-7 h-7 overflow-hidden">
-                      <Image alt={name} src={avatar} width={28} height={28} />
+                      <Image alt={name} src={avatar ?? name} width={28} height={28} />
                     </div>
                   </Tooltip>
                 )

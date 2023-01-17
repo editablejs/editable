@@ -13,11 +13,11 @@ const opMappers: OpMapper = {
   set_selection: NOOP,
 }
 
-export function applySlateOp(sharedRoot: Y.XmlText, slateRoot: Node, op: Operation): void {
+export function applyEditorOp(sharedRoot: Y.XmlText, editorRoot: Node, op: Operation): void {
   const apply = opMappers[op.type] as ApplyFunc<typeof op>
   if (!apply) {
     throw new Error(`Unknown operation: ${op.type}`)
   }
 
-  apply(sharedRoot, slateRoot, op)
+  apply(sharedRoot, editorRoot, op)
 }

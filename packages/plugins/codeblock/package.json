@@ -82,6 +82,7 @@
     "@codemirror/language": "6.3.2",
     "@codemirror/state": "6.2.0",
     "@codemirror/view": "6.7.2",
+    "@editablejs/plugin-yjs-protocols": "workspace:*",
     "@editablejs/ui": "workspace:*",
     "codemirror": "6.0.1",
     "lib0": "^0.2.52",

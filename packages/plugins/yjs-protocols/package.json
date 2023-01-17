@@ -34,6 +34,9 @@
       ],
       "auth": [
         "dist/auth.d.ts"
+      ],
+      "remote-cursors": [
+        "dist/remote-cursors.d.ts"
       ]
     }
   },

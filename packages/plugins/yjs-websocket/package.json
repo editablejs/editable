@@ -45,6 +45,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
+    "@editablejs/editor": "workspace:*",
     "@types/lodash.debounce": "4.0.7",
     "@types/ws": "8.5.3",
     "@types/jest": "^26.0.22",
@@ -65,6 +66,7 @@
     "lodash.debounce": "^4.0.8"
   },
   "peerDependencies": {
+    "@editablejs/editor": "workspace:*",
     "yjs": "^13.5.43"
   },
   "optionalDependencies": {

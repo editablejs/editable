@@ -1,16 +1,18 @@
 import { Editor, Element, Node, Operation, Path, Text } from '@editablejs/editor'
 import {
   deepEquals,
-  deltaInsertToSlateNode,
+  deltaInsertToEditorNode,
   getProperties,
   omitNullEntries,
   pick,
+  getEditorNodeYLength,
+  getEditorPath,
+  yOffsetToEditorOffsets,
 } from '@editablejs/plugin-yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../types'
-import { getSlateNodeYLength, getSlatePath, yOffsetToSlateOffsets } from '../utils/location'
 
-function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
+function applyDelta(node: Element, editorPath: Path, delta: Delta): Operation[] {
   const ops: Operation[] = []
 
   let yOffset = delta.reduce((length, change) => {
@@ -29,15 +31,15 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
   const changes = delta.reverse()
   for (const change of changes) {
     if ('attributes' in change && 'retain' in change) {
-      const [startPathOffset, startTextOffset] = yOffsetToSlateOffsets(
+      const [startPathOffset, startTextOffset] = yOffsetToEditorOffsets(
         node,
         yOffset - change.retain,
       )
-      const [endPathOffset, endTextOffset] = yOffsetToSlateOffsets(node, yOffset, { assoc: -1 })
+      const [endPathOffset, endTextOffset] = yOffsetToEditorOffsets(node, yOffset, { assoc: -1 })
 
       for (let pathOffset = endPathOffset; pathOffset >= startPathOffset; pathOffset--) {
         const child = node.children[pathOffset]
-        const childPath = [...slatePath, pathOffset]
+        const childPath = [...editorPath, pathOffset]
 
         const newProperties = change.attributes
         const properties = pick(node, ...(Object.keys(change.attributes) as Array<keyof Element>))
@@ -87,11 +89,11 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
     }
 
     if ('delete' in change) {
-      const [startPathOffset, startTextOffset] = yOffsetToSlateOffsets(
+      const [startPathOffset, startTextOffset] = yOffsetToEditorOffsets(
         node,
         yOffset - change.delete,
       )
-      const [endPathOffset, endTextOffset] = yOffsetToSlateOffsets(node, yOffset, { assoc: -1 })
+      const [endPathOffset, endTextOffset] = yOffsetToEditorOffsets(node, yOffset, { assoc: -1 })
 
       for (
         let pathOffset = endTextOffset === 0 ? endPathOffset - 1 : endPathOffset;
@@ -99,7 +101,7 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
         pathOffset--
       ) {
         const child = node.children[pathOffset]
-        const childPath = [...slatePath, pathOffset]
+        const childPath = [...editorPath, pathOffset]
 
         if (
           Text.isText(child) &&
@@ -124,18 +126,18 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
           node: child,
           path: childPath,
         })
-        yOffset -= getSlateNodeYLength(child)
+        yOffset -= getEditorNodeYLength(child)
       }
 
       continue
     }
 
     if ('insert' in change) {
-      const [pathOffset, textOffset] = yOffsetToSlateOffsets(node, yOffset, {
+      const [pathOffset, textOffset] = yOffsetToEditorOffsets(node, yOffset, {
         insert: true,
       })
       const child = node.children[pathOffset]
-      const childPath = [...slatePath, pathOffset]
+      const childPath = [...editorPath, pathOffset]
 
       if (Text.isText(child)) {
         if (
@@ -151,7 +153,7 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
           continue
         }
 
-        const toInsert = deltaInsertToSlateNode(change)
+        const toInsert = deltaInsertToEditorNode(change)
         if (textOffset === 0) {
           ops.push({
             type: 'insert_node',
@@ -181,7 +183,7 @@ function applyDelta(node: Element, slatePath: Path, delta: Delta): Operation[] {
       ops.push({
         type: 'insert_node',
         path: childPath,
-        node: deltaInsertToSlateNode(change),
+        node: deltaInsertToEditorNode(change),
       })
     }
   }
@@ -202,15 +204,15 @@ export function translateYTextEvent(
   }
 
   const ops: Operation[] = []
-  const slatePath = getSlatePath(sharedRoot, editor, target)
-  const targetElement = Node.get(editor, slatePath)
+  const editorPath = getEditorPath(sharedRoot, editor, target)
+  const targetElement = Node.get(editor, editorPath)
 
   if (Text.isText(targetElement)) {
     throw new Error('Cannot apply yTextEvent to text node')
   }
 
   const keyChanges = Array.from(changes.keys.entries())
-  if (slatePath.length > 0 && keyChanges.length > 0) {
+  if (editorPath.length > 0 && keyChanges.length > 0) {
     const newProperties = Object.fromEntries(
       keyChanges.map(([key, info]) => [
         key,
@@ -222,11 +224,11 @@ export function translateYTextEvent(
       keyChanges.map(([key]) => [key, (targetElement as any)[key]]),
     )
 
-    ops.push({ type: 'set_node', newProperties, properties, path: slatePath })
+    ops.push({ type: 'set_node', newProperties, properties, path: editorPath })
   }
 
   if (delta.length > 0) {
-    ops.push(...applyDelta(targetElement, slatePath, delta))
+    ops.push(...applyDelta(targetElement, editorPath, delta))
   }
 
   return ops

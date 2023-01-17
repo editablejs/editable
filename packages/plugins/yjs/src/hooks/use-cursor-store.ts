@@ -1,9 +1,9 @@
 import { Editable } from '@editablejs/editor'
 import * as React from 'react'
-import { CursorEditor } from '../plugins'
+import { getCursorsStore } from '../store'
 
 export const useCursorStore = (editor: Editable) => {
   return React.useMemo(() => {
-    return CursorEditor.getStore(editor)
+    return getCursorsStore(editor)
   }, [editor])
 }

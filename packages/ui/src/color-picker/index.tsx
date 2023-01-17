@@ -97,7 +97,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
         >
           <span tw="inline-block">{children}</span>
           <span tw="inline-block -mt-[1px]">
-            <svg width="100%" height="2px" viewBox="0 0 14 2">
+            <svg width="14px" height="2px" viewBox="0 0 14 2">
               <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <rect
                   stroke={palette.getStroke(value)}
