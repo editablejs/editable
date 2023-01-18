@@ -1,5 +1,15 @@
 # @editablejs/plugin-context-menu
 
+## 1.0.0-beta.26
+
+### Patch Changes
+
+- [`cce1f0a`](https://github.com/editablejs/editable/commit/cce1f0a8fffb12e2adc7d65aa7960ed99236c5ed) Thanks [@big-camel](https://github.com/big-camel)! - reactor all
+
+- Updated dependencies [[`cce1f0a`](https://github.com/editablejs/editable/commit/cce1f0a8fffb12e2adc7d65aa7960ed99236c5ed), [`63fb6ec`](https://github.com/editablejs/editable/commit/63fb6ec7ad7818a275f7b64c4ec09d4934dfd533)]:
+  - @editablejs/editor@1.0.0-beta.17
+  - @editablejs/ui@1.0.0-beta.3
+
 ## 1.0.0-beta.25
 
 ### Patch Changes

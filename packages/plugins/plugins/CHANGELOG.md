@@ -1,5 +1,31 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.28
+
+### Patch Changes
+
+- [`cce1f0a`](https://github.com/editablejs/editable/commit/cce1f0a8fffb12e2adc7d65aa7960ed99236c5ed) Thanks [@big-camel](https://github.com/big-camel)! - reactor all
+
+- Updated dependencies [[`cce1f0a`](https://github.com/editablejs/editable/commit/cce1f0a8fffb12e2adc7d65aa7960ed99236c5ed), [`63fb6ec`](https://github.com/editablejs/editable/commit/63fb6ec7ad7818a275f7b64c4ec09d4934dfd533), [`a0abda0`](https://github.com/editablejs/editable/commit/a0abda0f26863b33d9c5c9eb982f5c638d3b658f)]:
+  - @editablejs/editor@1.0.0-beta.17
+  - @editablejs/plugin-background-color@1.0.0-beta.4
+  - @editablejs/plugin-blockquote@1.0.0-beta.18
+  - @editablejs/plugin-context-menu@1.0.0-beta.26
+  - @editablejs/plugin-font-color@1.0.0-beta.4
+  - @editablejs/plugin-font-size@1.0.0-beta.4
+  - @editablejs/plugin-heading@1.0.0-beta.17
+  - @editablejs/plugin-hr@1.0.0-beta.8
+  - @editablejs/plugin-image@1.0.0-beta.9
+  - @editablejs/plugin-indent@1.0.0-beta.18
+  - @editablejs/plugin-link@1.0.0-beta.9
+  - @editablejs/plugin-list@1.0.0-beta.17
+  - @editablejs/plugin-mark@1.0.0-beta.17
+  - @editablejs/plugin-mention@1.0.0-beta.5
+  - @editablejs/plugin-table@1.0.0-beta.25
+  - @editablejs/plugin-codeblock@1.0.0-beta.1
+  - @editablejs/plugin-align@1.0.0-beta.7
+  - @editablejs/plugin-leading@1.0.0-beta.5
+
 ## 1.0.0-beta.27
 
 ### Patch Changes
