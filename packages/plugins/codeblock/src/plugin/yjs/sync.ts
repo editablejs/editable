@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import * as cmState from '@codemirror/state'
 import * as cmView from '@codemirror/view'
-import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
+import { Awareness } from '@editablejs/yjs-protocols/awareness'
 import { createYRange, YRange } from './range'
 import { Editable } from '@editablejs/editor'
 
@@ -9,7 +9,9 @@ export class YSyncConfig {
   ytext: Y.Text
   awareness: Awareness
   editor: Editable
-  constructor(ytext: Y.Text, awareness: Awareness, editor: Editable) {
+  id: string
+  constructor(id: string, ytext: Y.Text, awareness: Awareness, editor: Editable) {
+    this.id = id
     this.ytext = ytext
     this.awareness = awareness
     this.editor = editor
@@ -159,7 +161,7 @@ class YSyncPluginValue implements cmView.PluginValue {
   }
 
   destroy() {
-    this._ytext.unobserve(this._observer)
+    if (this._ytext._eH.l.length > 0) this._ytext.unobserve(this._observer)
   }
 }
 

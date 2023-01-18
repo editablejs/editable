@@ -1,25 +1,15 @@
 import * as React from 'react'
-import {
-  BaseRange,
-  Descendant,
-  Editable,
-  useEditable,
-  useIsomorphicLayoutEffect,
-} from '@editablejs/editor'
+import { Descendant, Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { useRequestReRender } from './use-request-re-render'
 import { getCaretPosition } from '../utils/selection'
 import { CaretPosition, CursorData, CursorState, RelativeRange } from '../types'
 import { useRemoteStates } from './use-remote-states'
-import { CursorEditor } from '../plugin/cursors-editor'
-import {
-  CursorRect,
-  RemoteCursors,
-  RemoteNativeRange,
-} from '@editablejs/plugin-yjs-protocols/remote-cursors'
+import { YCursorEditor } from '../plugin/cursors-editor'
+import { CursorRect, AwarenessNativeSelection } from '@editablejs/yjs-protocols/awareness-selection'
 
 const RANGE_CACHE: WeakMap<
   Descendant[],
-  WeakMap<RelativeRange, RemoteNativeRange | null>
+  WeakMap<RelativeRange, AwarenessNativeSelection | null>
 > = new WeakMap()
 
 const FROZEN_EMPTY_ARRAY = Object.freeze([])
@@ -39,7 +29,7 @@ export type CursorOverlayState<TCursorData extends CursorData> = CursorState<TCu
   selectionRects: CursorRect[]
 }
 
-function getRange<T extends CursorData>(editor: CursorEditor<T>, state: CursorState) {
+function getRange<T extends CursorData>(editor: YCursorEditor<T>, state: CursorState) {
   let cache = RANGE_CACHE.get(editor.children)
   if (!cache) {
     cache = new WeakMap()
@@ -53,8 +43,11 @@ function getRange<T extends CursorData>(editor: CursorEditor<T>, state: CursorSt
     return cachedRange
   }
 
-  const range = RemoteCursors.relativeRangeToNativeRange(state.field, relativeRange)
-
+  const range = editor.awarenessSelection.relativeSelectionToNativeSelection(
+    relativeRange,
+    state.clientId,
+  )
+  if (!range) return null
   cache.set(relativeRange, range)
   return range
 }
@@ -63,10 +56,12 @@ export function useRemoteCursorOverlayPositions<TCursorData extends CursorData>(
   containerRef,
   refreshOnResize = true,
 }: UseRemoteCursorOverlayPositionsOptions = {}) {
-  const editor = useEditable() as CursorEditor<TCursorData> & Editable
+  const editor = useEditable() as YCursorEditor<TCursorData> & Editable
 
   const requestReRender = useRequestReRender()
-  const selectionRectCache = React.useRef<WeakMap<RemoteNativeRange, CursorRect[]>>(new WeakMap())
+  const selectionRectCache = React.useRef<WeakMap<AwarenessNativeSelection, CursorRect[]>>(
+    new WeakMap(),
+  )
 
   const [selectionRects, setSelectionRects] = React.useState<Record<string, CursorRect[]>>({})
 

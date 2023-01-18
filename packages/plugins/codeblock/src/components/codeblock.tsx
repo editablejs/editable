@@ -28,12 +28,12 @@ import { CodeBlockPopover } from './popover'
 import { createRoot } from 'react-dom/client'
 import { Icon } from '@editablejs/ui'
 import { getOptions } from '../options'
-import { getCodeBlockPlugins, IS_YJS, YJS_DEFAULT_VALUE } from '../weak-map'
 import { useIndent } from '../hooks/use-indent'
 import { useLineWrapping } from '../hooks/use-line-wrapping'
 import { useLanguage } from '../hooks/use-language'
 import { useEditorView } from '../hooks/use-editor-view'
 import { useTheme } from '../hooks/use-theme'
+import { yExtension, YExtensionConfig, yExtensionnFacet } from '../plugin/yjs/extension'
 
 const basicSetup = (() => [
   lineNumbers(),
@@ -77,32 +77,38 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
   const focused = useNodeFocused()
 
   const elementRef = useRef(element)
-  const [view, ref] = useEditorView(() => {
-    const plugins = getOptions(editor).plugins ?? []
-    plugins.push(getCodeBlockPlugins(editor, element))
-    const extensions = [
-      basicSetup,
-      baseTheme,
-      keymap.of([indentWithTab]),
-      EditorView.domEventHandlers({
-        focus: () => {
-          Transforms.select(editor, Editable.findPath(editor, elementRef.current))
-        },
-      }),
-      EditorView.updateListener.of(update => {
-        if (update.docChanged) {
-          const code = update.state.doc.toString()
-          CodeBlockEditor.updateCodeBlock(editor, elementRef.current, { code })
-        }
-      }),
-      ...plugins,
-    ]
+  const { view, ref } = useEditorView(
+    () => {
+      const plugins = getOptions(editor).plugins ?? []
+      const yExtensionConfig = new YExtensionConfig(element.id, editor)
+      const extensions = [
+        basicSetup,
+        baseTheme,
+        yExtensionnFacet.of(yExtensionConfig),
+        yExtension,
+        keymap.of([indentWithTab]),
+        EditorView.domEventHandlers({
+          focus: () => {
+            Transforms.select(editor, Editable.findPath(editor, elementRef.current))
+          },
+        }),
+        EditorView.updateListener.of(update => {
+          if (update.docChanged) {
+            const code = update.state.doc.toString()
+            CodeBlockEditor.updateCodeBlock(editor, elementRef.current, { code })
+          }
+        }),
+        ...plugins,
+      ]
 
-    return {
-      doc: IS_YJS.get(editor) ? YJS_DEFAULT_VALUE.get(editor) : elementRef.current.code,
-      extensions,
-    }
-  })
+      return {
+        doc: element.code,
+        extensions,
+      }
+    },
+    focused,
+    [editor, element.id],
+  )
 
   useIsomorphicLayoutEffect(() => {
     elementRef.current = element
@@ -113,7 +119,7 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
   useLineWrapping(view, element.lineWrapping ?? false)
 
   return (
-    <CodeBlockPopover editor={editor} element={element} viewRef={view}>
+    <CodeBlockPopover editor={editor} element={element} view={view}>
       <div {...attributes}>
         <div tw="hidden absolute">{children}</div>
         <div

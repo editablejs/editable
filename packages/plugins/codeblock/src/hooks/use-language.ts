@@ -3,13 +3,8 @@ import { EditorView } from '@codemirror/view'
 
 import { getOptions } from '../options'
 import { useExtension } from './use-extension'
-import { MutableRefObject } from 'react'
 
-export function useLanguage(
-  view: MutableRefObject<EditorView | null>,
-  editor: Editable,
-  language?: string,
-) {
+export function useLanguage(view: EditorView | null, editor: Editable, language?: string) {
   return useExtension(
     view,
     () => {

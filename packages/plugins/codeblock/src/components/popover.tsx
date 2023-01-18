@@ -22,14 +22,14 @@ export interface CodeBlockPopoverProps {
   editor: CodeBlockEditor
   element: CodeBlock
   children?: React.ReactNode
-  viewRef: React.MutableRefObject<EditorView | null>
+  view: EditorView | null
 }
 
 export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
   editor,
   element,
   children,
-  viewRef,
+  view,
 }) => {
   const focused = useNodeFocused()
 
@@ -109,7 +109,7 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
             <ToolbarSelect
               onSelect={value => {
                 CodeBlockEditor.updateCodeBlock(editor, element, { language: value })
-                viewRef.current?.focus()
+                view?.focus()
               }}
               defaultValue={element.language}
               value={element.language}

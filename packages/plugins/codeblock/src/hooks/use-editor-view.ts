@@ -3,23 +3,31 @@ import { EditorView } from '@codemirror/view'
 import { useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { useCallback, useState, useRef } from 'react'
 
-export function useEditorView(initState: (() => EditorStateConfig) | EditorStateConfig = {}) {
+export function useEditorView(
+  initState: (() => EditorStateConfig) | EditorStateConfig = {},
+  autoFocus = true,
+  deps: any[] = [],
+) {
   const [element, setElement] = useState<HTMLElement>()
 
   const ref = useCallback((node: HTMLElement | null) => {
     if (!node) return
     setElement(node)
   }, [])
-  const viewRef = useRef<EditorView | null>(null)
+  const [view, setView] = useState<EditorView | null>(null)
   useIsomorphicLayoutEffect(() => {
     if (!element) return
     const view = new EditorView({
       state: EditorState.create(typeof initState === 'function' ? initState() : initState),
       parent: element,
     })
-    view.focus()
-    viewRef.current = view
+    if (autoFocus) view.focus()
+    setView(view)
+
     return () => view.destroy()
-  }, [element])
-  return [viewRef, ref] as const
+  }, [element, ...deps])
+  return {
+    view,
+    ref,
+  }
 }

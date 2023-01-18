@@ -1,7 +1,6 @@
 import { EditorView } from '@codemirror/view'
-import { MutableRefObject } from 'react'
 import { useExtension } from './use-extension'
 
-export function useLineWrapping(view: MutableRefObject<EditorView | null>, autoWrap: boolean) {
-  return useExtension(view, () => [autoWrap ? EditorView.lineWrapping : []], [autoWrap])
+export function useLineWrapping(view: EditorView | null, lineWrapping: boolean) {
+  return useExtension(view, () => [lineWrapping ? EditorView.lineWrapping : []], [lineWrapping])
 }

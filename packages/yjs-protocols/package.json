@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/plugin-yjs-protocols",
+  "name": "@editablejs/yjs-protocols",
   "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
@@ -35,8 +35,8 @@
       "auth": [
         "dist/auth.d.ts"
       ],
-      "remote-cursors": [
-        "dist/remote-cursors.d.ts"
+      "awareness-selection": [
+        "dist/awareness-selection.d.ts"
       ]
     }
   },

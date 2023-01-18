@@ -9,6 +9,8 @@ import {
   setStoredPosition,
   yTextToEditorElement,
 } from '@editablejs/plugin-yjs-transform'
+
+import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-editor'
 import { applyEditorOp } from '../apply-to-yjs'
@@ -25,11 +27,10 @@ const DEFAULT_POSITION_STORAGE_ORIGIN = Symbol('editable-yjs-position-storage')
 
 const ORIGIN: WeakMap<Editor, unknown> = new WeakMap()
 const LOCAL_CHANGES: WeakMap<Editor, LocalChange[]> = new WeakMap()
-const CONNECTED: WeakSet<Editor> = new WeakSet()
 
 export type YjsEditor = Editable & {
   sharedRoot: Y.XmlText
-
+  undoManager: Y.UndoManager
   localOrigin: unknown
   positionStorageOrigin: unknown
 
@@ -39,9 +40,6 @@ export type YjsEditor = Editable & {
   flushLocalChanges: () => void
 
   isLocalOrigin: (origin: unknown) => boolean
-
-  connectYjs: () => void
-  disconnectYjs: () => void
 }
 
 export const YjsEditor = {
@@ -54,9 +52,7 @@ export const YjsEditor = {
       typeof (value as YjsEditor).applyRemoteEvents === 'function' &&
       typeof (value as YjsEditor).storeLocalChange === 'function' &&
       typeof (value as YjsEditor).flushLocalChanges === 'function' &&
-      typeof (value as YjsEditor).isLocalOrigin === 'function' &&
-      typeof (value as YjsEditor).connectYjs === 'function' &&
-      typeof (value as YjsEditor).disconnectYjs === 'function'
+      typeof (value as YjsEditor).isLocalOrigin === 'function'
     )
   },
 
@@ -77,15 +73,15 @@ export const YjsEditor = {
   },
 
   connected(editor: YjsEditor): boolean {
-    return CONNECTED.has(editor)
+    return useProviderProtocol(editor).connected()
   },
 
   connect(editor: YjsEditor): void {
-    editor.connectYjs()
+    useProviderProtocol(editor).connect()
   },
 
   disconnect(editor: YjsEditor): void {
-    editor.disconnectYjs()
+    useProviderProtocol(editor).disconnect()
   },
 
   isLocal(editor: YjsEditor): boolean {
@@ -188,32 +184,32 @@ export function withYjs<T extends Editor>(
     })
   }
 
-  e.connectYjs = () => {
-    if (YjsEditor.connected(e)) {
-      throw new Error('already connected')
-    }
-
+  const providerProtocol = useProviderProtocol(e)
+  const { connect, disconnect } = providerProtocol
+  providerProtocol.connect = () => {
     e.sharedRoot.observeDeep(handleYEvents)
     const content = yTextToEditorElement(e.sharedRoot)
 
-    e.selection = null
-    e.children = content.children
+    editor.selection = null
+    editor.children = content.children
 
-    CONNECTED.add(e)
     Editor.normalize(editor, { force: true })
     if (!editor.operations.length) {
       editor.onChange()
     }
+
+    connect()
   }
 
-  e.disconnectYjs = () => {
+  providerProtocol.disconnect = () => {
     if (autoConnectTimeoutId) {
       clearTimeout(autoConnectTimeoutId)
     }
 
     YjsEditor.flushLocalChanges(e)
-    if (YjsEditor.connected(e)) e.sharedRoot.unobserveDeep(handleYEvents)
-    CONNECTED.delete(e)
+    if (providerProtocol.connected()) e.sharedRoot.unobserveDeep(handleYEvents)
+
+    disconnect()
   }
 
   e.storeLocalChange = op => {

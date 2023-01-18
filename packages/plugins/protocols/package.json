@@ -1,6 +1,6 @@
 {
-  "name": "@editablejs/plugin-image",
-  "version": "1.0.0-beta.8",
+  "name": "@editablejs/plugin-protocols",
+  "version": "1.0.0-beta.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -26,11 +26,11 @@
   },
   "typesVersions": {
     "*": {
-      "serializer": [
-        "dist/serializer.d.ts"
+      "history": [
+        "dist/history.d.ts"
       ],
-      "deserializer": [
-        "dist/deserializer.d.ts"
+      "provider": [
+        "dist/provider.d.ts"
       ]
     }
   },
@@ -39,11 +39,6 @@
   "files": [
     "dist/**"
   ],
-  "babelMacros": {
-    "twin": {
-      "preset": "styled-components"
-    }
-  },
   "scripts": {
     "test": "jest",
     "build": "tsup",
@@ -54,32 +49,18 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
-    "@types/react": "^18.x",
-    "@types/react-dom": "^18.x",
-    "@types/styled-components": "5.1.26",
+    "@types/jest": "^26.0.22",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^18.x",
-    "react-dom": "^18.x",
-    "tailwind-config": "workspace:*",
-    "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
-    "twin.macro": "3.1.0",
     "typescript": "latest"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*"
-  },
-  "dependencies": {
-    "@editablejs/plugin-protocols": "workspace:*",
-    "@editablejs/ui": "workspace:*",
-    "react-image-previewer": "1.1.6",
-    "styled-components": "5.3.5",
-    "zustand": "4.1.4"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [
@@ -89,5 +70,8 @@
   },
   "jest": {
     "preset": "jest-presets/jest/node"
+  },
+  "dependencies": {
+    "lib0": "^0.2.52"
   }
 }

@@ -8,8 +8,10 @@ import {
   Node,
   Transforms,
 } from '@editablejs/editor'
+import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
 
 import { HistoryEditor } from './history-editor'
+import { HistoryStack } from './history-stack'
 
 const HISTORY_UNDO_KEY = 'undo'
 const HISTORY_REDO_KEY = 'redo'
@@ -30,45 +32,49 @@ export interface HistoryOptions {
 export const withHistory = <T extends Editable>(editor: T, options: HistoryOptions = {}) => {
   const e = editor as T & HistoryEditor
   const { apply } = e
-  e.history = { undos: [], redos: [] }
 
-  e.redo = () => {
-    const { history } = e
-    const { redos } = history
+  HistoryStack.set(e)
+  const historyProtocol = useHistoryProtocol(e)
+  const { redo, undo, canRedo, canUndo, capture } = historyProtocol
+
+  historyProtocol.redo = () => {
+    if (!HistoryEditor.isHistoryEditor(editor)) return redo()
+    const stack = HistoryStack.get(editor)
+    const { redos, undos } = stack
 
     if (redos.length > 0) {
       const batch = redos[redos.length - 1]
 
       if (batch.selectionBefore) {
-        Transforms.setSelection(e, batch.selectionBefore)
+        Transforms.setSelection(editor, batch.selectionBefore)
       }
 
-      HistoryEditor.withoutSaving(e, () => {
-        Editor.withoutNormalizing(e, () => {
+      HistoryEditor.withoutSaving(editor, () => {
+        Editor.withoutNormalizing(editor, () => {
           for (const op of batch.operations) {
-            e.apply(op)
+            editor.apply(op)
           }
         })
       })
-
-      history.redos.pop()
-      history.undos.push(batch)
+      redos.pop()
+      undos.push(batch)
     }
   }
 
-  e.undo = () => {
-    const { history } = e
-    const { undos } = history
+  historyProtocol.undo = () => {
+    if (!HistoryEditor.isHistoryEditor(editor)) return undo()
+    const stack = HistoryStack.get(editor)
+    const { undos, redos } = stack
 
     if (undos.length > 0) {
       const batch = undos[undos.length - 1]
 
-      HistoryEditor.withoutSaving(e, () => {
-        Editor.withoutNormalizing(e, () => {
+      HistoryEditor.withoutSaving(editor, () => {
+        Editor.withoutNormalizing(editor, () => {
           const inverseOps = batch.operations.map(Operation.inverse).reverse()
 
           for (const op of inverseOps) {
-            e.apply(op)
+            editor.apply(op)
           }
           if (batch.selectionBefore) {
             Transforms.setSelection(e, batch.selectionBefore)
@@ -76,33 +82,37 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
         })
       })
 
-      history.redos.push(batch)
-      history.undos.pop()
+      redos.push(batch)
+      undos.pop()
     }
   }
 
-  e.canRedo = () => {
-    return e.history.redos.length > 0
+  historyProtocol.canRedo = () => {
+    if (!HistoryEditor.isHistoryEditor(e)) return canRedo()
+    return HistoryStack.hasRedos(e)
   }
 
-  e.canUndo = () => {
-    return e.history.undos.length > 0
+  historyProtocol.canUndo = () => {
+    if (!HistoryEditor.isHistoryEditor(e)) return canUndo()
+    return HistoryStack.hasUndos(e)
   }
 
-  e.captureHistory = op => {
+  historyProtocol.capture = op => {
+    if (!HistoryEditor.isHistoryEditor(e)) return capture(op)
     return op.type !== 'set_selection'
   }
 
   e.apply = (op: Operation) => {
-    const { operations, history } = e
-    const { undos } = history
+    const stack = HistoryStack.get(e)
+    const { operations } = e
+    const { undos } = stack
     const lastBatch = undos[undos.length - 1]
     const lastOp = lastBatch && lastBatch.operations[lastBatch.operations.length - 1]
     let save = HistoryEditor.isSaving(e)
     let merge = HistoryEditor.isMerging(e)
 
     if (save == null) {
-      save = e.captureHistory(op)
+      save = historyProtocol.capture(op)
     }
     if (save && !Editable.isComposing(e)) {
       if (merge == null) {
@@ -128,8 +138,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       while (undos.length > 100) {
         undos.shift()
       }
-
-      history.redos = []
+      stack.redos = []
     } else if (
       // 在 captureHistory 为 false 的情况下，如果是 set_node 操作，那么就要把 undo 中的对应的 insert_node 操作的 node 属性也更新一下
       !save &&
@@ -162,9 +171,9 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     if (value) {
       event.preventDefault()
       if (value === HISTORY_UNDO_KEY) {
-        e.undo()
+        historyProtocol.undo()
       } else {
-        e.redo()
+        historyProtocol.redo()
       }
       return
     }

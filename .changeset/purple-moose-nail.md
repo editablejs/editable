@@ -22,7 +22,7 @@
 '@editablejs/plugin-yjs-websocket': patch
 '@editablejs/ui': patch
 '@editablejs/plugin-codeblock': patch
-'@editablejs/plugin-yjs-protocols': patch
+'@editablejs/yjs-protocols': patch
 ---
 
 reactor all

@@ -51,6 +51,7 @@
     "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
+    "@editablejs/plugin-protocols": "workspace:*",
     "is-plain-object": "^5.0.0"
   },
   "lint-staged": {

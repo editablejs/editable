@@ -3,6 +3,8 @@ import {
   editorRangeToRelativeRange,
   relativeRangeToEditorRange,
 } from '@editablejs/plugin-yjs-transform'
+import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
+import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { YjsEditor } from './with-yjs'
@@ -14,14 +16,6 @@ export type YHistoryEditor = YjsEditor & {
   undoManager: Y.UndoManager
 
   withoutSavingOrigin: unknown
-
-  undo: () => void
-  redo: () => void
-
-  canUndo: () => boolean
-  canRedo: () => boolean
-
-  captureHistory: (op: Operation) => boolean
 }
 
 export const YHistoryEditor = {
@@ -29,20 +23,24 @@ export const YHistoryEditor = {
     return (
       YjsEditor.isYjsEditor(value) &&
       (value as YHistoryEditor).undoManager instanceof Y.UndoManager &&
-      typeof (value as YHistoryEditor).undo === 'function' &&
-      typeof (value as YHistoryEditor).redo === 'function' &&
       'withoutSavingOrigin' in value
     )
   },
 
   canUndo(editor: Editable) {
-    if (YHistoryEditor.isYHistoryEditor(editor)) return editor.canUndo()
-    return false
+    return useHistoryProtocol(editor).canUndo()
   },
 
   canRedo(editor: Editable) {
-    if (YHistoryEditor.isYHistoryEditor(editor)) return editor.canRedo()
-    return false
+    return useHistoryProtocol(editor).canRedo()
+  },
+
+  undo(editor: Editable) {
+    useHistoryProtocol(editor).undo()
+  },
+
+  redo(editor: Editable) {
+    useHistoryProtocol(editor).redo()
   },
 
   isSaving(editor: Editable): boolean {
@@ -71,12 +69,32 @@ export function withYHistory<T extends YjsEditor>(
 ): T & YHistoryEditor {
   const e = editor as T & YHistoryEditor
 
+  const providerProtocol = useProviderProtocol(e)
+
+  const { connect, disconnect } = providerProtocol
+  providerProtocol.connect = () => {
+    connect()
+    e.undoManager.on('stack-item-added', handleStackItemAdded)
+    e.undoManager.on('stack-item-popped', handleStackItemPopped)
+    e.undoManager.on('stack-item-updated', handleStackItemUpdated)
+  }
+
+  providerProtocol.disconnect = () => {
+    e.undoManager.off('stack-item-added', handleStackItemAdded)
+    e.undoManager.off('stack-item-popped', handleStackItemPopped)
+    e.undoManager.off('stack-item-updated', handleStackItemUpdated)
+
+    disconnect()
+  }
+
+  const historyProtocol = useHistoryProtocol(e)
+
   const HistoryTransactionMeta = new Map<any, Map<any, any>>()
   const undoManager = new Y.UndoManager(e.sharedRoot, {
     trackedOrigins,
     captureTransaction: t => {
       const ops: Operation[] = t.meta.get('ops') ?? []
-      if (!ops.every(op => e.captureHistory(op))) return false
+      if (!ops.every(op => historyProtocol.capture(op))) return false
       // 设置捕获到的事务 meta
       // 在后面的 handleStackItemMeta 中会将事务 meta 设置到 stackItem 中
       if (
@@ -96,7 +114,7 @@ export function withYHistory<T extends YjsEditor>(
   const { onChange, isLocalOrigin } = e
   e.onChange = () => {
     onChange()
-    if (YjsEditor.connected(e))
+    if (providerProtocol.connected())
       LAST_SELECTION.set(e, e.selection && editorRangeToRelativeRange(e.sharedRoot, e, e.selection))
   }
 
@@ -171,31 +189,7 @@ export function withYHistory<T extends YjsEditor>(
     Transforms.select(e, selection)
   }
 
-  const { connectYjs, disconnectYjs } = e
-  e.connectYjs = () => {
-    connectYjs()
-
-    e.undoManager.on('stack-item-added', handleStackItemAdded)
-    e.undoManager.on('stack-item-popped', handleStackItemPopped)
-    e.undoManager.on('stack-item-updated', handleStackItemUpdated)
-  }
-
-  e.disconnectYjs = () => {
-    e.undoManager.off('stack-item-added', handleStackItemAdded)
-    e.undoManager.off('stack-item-popped', handleStackItemPopped)
-    e.undoManager.off('stack-item-updated', handleStackItemUpdated)
-
-    disconnectYjs()
-  }
-
-  const { captureHistory } = e
-
-  e.captureHistory = op => {
-    if (YjsEditor.connected(e)) return true
-    return captureHistory ? captureHistory(op) : true
-  }
-
-  const { undo, redo, canRedo, canUndo } = e
+  const { undo, redo, canRedo, canUndo, capture } = historyProtocol
 
   // 获取到 undo/redo 时的 Transaction
   // 在 handleHistoryBeforeTransaction 中会将该 Transaction 设置到 popStackItemTransaction 中
@@ -208,8 +202,13 @@ export function withYHistory<T extends YjsEditor>(
     }
   }
 
-  e.undo = () => {
-    if (YjsEditor.connected(e)) {
+  historyProtocol.capture = op => {
+    if (providerProtocol.connected()) return true
+    return capture(op)
+  }
+
+  historyProtocol.undo = () => {
+    if (providerProtocol.connected()) {
       YjsEditor.flushLocalChanges(e)
       const manager = e.undoManager
       const undoStack = manager.undoStack
@@ -231,13 +230,13 @@ export function withYHistory<T extends YjsEditor>(
       manager.undo()
       undoStack.pop = pop
       manager.doc.off('beforeTransaction', handleHistoryBeforeTransaction)
-    } else if (undo) {
+    } else {
       undo()
     }
   }
 
-  e.redo = () => {
-    if (YjsEditor.connected(e)) {
+  historyProtocol.redo = () => {
+    if (providerProtocol.connected()) {
       YjsEditor.flushLocalChanges(e)
       const manager = e.undoManager
       const redoStack = manager.redoStack
@@ -256,23 +255,21 @@ export function withYHistory<T extends YjsEditor>(
       manager.redo()
       redoStack.pop = pop
       manager.doc.off('beforeTransaction', handleHistoryBeforeTransaction)
-    } else if (redo) {
+    } else {
       redo()
     }
   }
 
-  e.canRedo = () => {
-    if (YjsEditor.connected(e)) {
+  historyProtocol.canRedo = () => {
+    if (providerProtocol.connected()) {
       return e.undoManager.redoStack.length > 0
-    } else if (canRedo) return canRedo()
-    return false
+    } else return canRedo()
   }
 
-  e.canUndo = () => {
-    if (YjsEditor.connected(e)) {
+  historyProtocol.canUndo = () => {
+    if (providerProtocol.connected()) {
       return e.undoManager.undoStack.length > 0
-    } else if (canUndo) return canUndo()
-    return false
+    } else return canUndo()
   }
 
   return e

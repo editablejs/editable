@@ -1,9 +1,9 @@
 import { Extension, Compartment, StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { useMemo, useEffect, MutableRefObject } from 'react'
+import { useMemo, useEffect } from 'react'
 
 export function useExtension(
-  view: MutableRefObject<EditorView | null>,
+  view: EditorView | null,
   extensionCreator: () => Extension,
   deps: any[],
 ) {
@@ -11,12 +11,11 @@ export function useExtension(
   const extension = useMemo(extensionCreator, deps)
 
   useEffect(() => {
-    if (!view.current) return
-    const v = view.current
-    if (!compartment.get(v.state)) {
-      v.dispatch({ effects: StateEffect.appendConfig.of(compartment.of(extension)) })
+    if (!view) return
+    if (!compartment.get(view.state)) {
+      view.dispatch({ effects: StateEffect.appendConfig.of(compartment.of(extension)) })
     } else {
-      v.dispatch({ effects: compartment.reconfigure(extension) })
+      view.dispatch({ effects: compartment.reconfigure(extension) })
     }
   }, [view, extension])
 }

@@ -1,5 +1,5 @@
 import WebSocket from 'ws'
-import awarenessProtocol from '@editablejs/plugin-yjs-protocols/awareness'
+import awarenessProtocol from '@editablejs/yjs-protocols/awareness'
 import { Doc } from 'yjs'
 
 export interface WSSharedDoc extends Doc {

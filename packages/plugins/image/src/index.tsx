@@ -1,13 +1,5 @@
-import {
-  Editable,
-  Hotkey,
-  Transforms,
-  Locale,
-  Editor,
-  Operation,
-  Slot,
-  Path,
-} from '@editablejs/editor'
+import { Editable, Hotkey, Transforms, Locale, Editor, Operation, Slot } from '@editablejs/editor'
+import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
 import { openFileDialog } from '@editablejs/ui'
 import { setOptions, ImageHotkey, ImageOptions } from './options'
 import { Image } from './interfaces/image'
@@ -24,28 +16,28 @@ const defaultBeforeUpload = (files: File[]) => {
 }
 
 export const withImage = <T extends Editable>(editor: T, options: ImageOptions = {}) => {
-  const newEditor = editor as T & ImageEditor & { captureHistory?: (op: Operation) => boolean }
+  const newEditor = editor as T & ImageEditor
 
   setOptions(newEditor, options)
 
-  const { isInline, isVoid, captureHistory } = newEditor
+  const { isInline, isVoid } = newEditor
+  const historyProtocol = useHistoryProtocol(newEditor)
+  const { capture } = historyProtocol
 
-  if (captureHistory) {
-    newEditor.captureHistory = (op: Operation) => {
-      if (op.type === 'set_node') {
-        const { path, newProperties } = op
-        if (Editor.hasPath(editor, path)) {
-          const image = Editor.node(editor, path)
-          if (Image.isImage(image[0])) {
-            const prop = newProperties as Partial<Image>
-            if (prop.url || prop.state || prop.percentage) {
-              return false
-            }
+  historyProtocol.capture = (op: Operation) => {
+    if (op.type === 'set_node') {
+      const { path, newProperties } = op
+      if (Editor.hasPath(editor, path)) {
+        const image = Editor.node(editor, path)
+        if (Image.isImage(image[0])) {
+          const prop = newProperties as Partial<Image>
+          if (prop.url || prop.state || prop.percentage) {
+            return false
           }
         }
       }
-      return captureHistory(op)
     }
+    return capture(op)
   }
 
   const { locale: localeOptions = {} } = options

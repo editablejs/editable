@@ -1,48 +1,66 @@
 import * as cmView from '@codemirror/view'
 import * as Y from 'yjs'
-import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
-import { createRemoteCursors, RemoteCursors } from '@editablejs/plugin-yjs-protocols/remote-cursors'
+import { Awareness } from '@editablejs/yjs-protocols/awareness'
+import {
+  AwarenessSelection,
+  AwarenessRelativeSelection,
+  useAwarenessSelection,
+} from '@editablejs/yjs-protocols/awareness-selection'
 import { YSyncConfig, ySyncFacet } from './sync'
-import { CODEBLOCK_AWARENESS_FIELD } from '../../constants'
-import { Editable } from '@editablejs/editor'
+import { CODEBLOCK_AWARENESS_FIELD, CODEBLOCK_AWARENESS_ID } from '../../constants'
+import { Editable, Editor } from '@editablejs/editor'
+import { CodeBlock } from '../../interfaces/codeblock'
+
+interface CodeBlockAwarenessSelection {
+  [CODEBLOCK_AWARENESS_ID]: string
+}
+
+const isCodeBlockAwarenessSelection = (value: any): value is CodeBlockAwarenessSelection => {
+  return typeof value === 'object' && value[CODEBLOCK_AWARENESS_ID] !== undefined
+}
 
 export class YRemoteSelectionsPluginValue {
   conf: YSyncConfig
   _awareness: Awareness
-  _remoteCursors: RemoteCursors
+  _awarenessSelection: AwarenessSelection
   constructor(view: cmView.EditorView) {
     this.conf = view.state.facet(ySyncFacet)
 
     this._awareness = this.conf.awareness
 
-    const { getAwarenessField, relativeRangeToNativeRange, nativeRangeToRelativeRange } =
-      RemoteCursors
+    const awarenessSelection = useAwarenessSelection(this._awareness, CODEBLOCK_AWARENESS_FIELD)
+    const { relativeSelectionToNativeSelection, nativeSelectionToRelativeSelection } =
+      awarenessSelection
 
-    RemoteCursors.getAwarenessField = state => {
-      const currentRange = state?.[CODEBLOCK_AWARENESS_FIELD]
-      if (currentRange) return CODEBLOCK_AWARENESS_FIELD
-      return getAwarenessField(state)
-    }
-
-    RemoteCursors.relativeRangeToNativeRange = (awarenessField, range) => {
-      if (awarenessField === CODEBLOCK_AWARENESS_FIELD) {
+    awarenessSelection.relativeSelectionToNativeSelection = (
+      selection: AwarenessRelativeSelection,
+      clientID,
+    ) => {
+      if (
+        isCodeBlockAwarenessSelection(selection) &&
+        selection[CODEBLOCK_AWARENESS_ID] === this.conf.id
+      ) {
         const ytext = this.conf.ytext
         const editor = this.conf.editor
         const ydoc = ytext.doc
         if (!ydoc) return null
-        const anchor = Y.createAbsolutePositionFromRelativePosition(range.anchor, ydoc)
-        const head = Y.createAbsolutePositionFromRelativePosition(range.focus, ydoc)
+        const anchor = Y.createAbsolutePositionFromRelativePosition(selection.anchor, ydoc)
+        const head = Y.createAbsolutePositionFromRelativePosition(selection.focus, ydoc)
         if (anchor == null || head == null || anchor.type !== ytext || head.type !== ytext) {
           return null
         }
-        const editorRange = { anchor: anchor.index, focus: head.index }
-        if (!editorRange) return null
+        const editorSelection = {
+          anchor: anchor.index,
+          focus: head.index,
+          [CODEBLOCK_AWARENESS_ID]: selection[CODEBLOCK_AWARENESS_ID],
+        }
+        if (!editorSelection) return null
         return {
-          isBackward: () => editorRange.anchor > editorRange.focus,
-          isCollapsed: () => editorRange.anchor === editorRange.focus,
+          isBackward: () => editorSelection.anchor > editorSelection.focus,
+          isCollapsed: () => editorSelection.anchor === editorSelection.focus,
           toRects() {
-            const anchor = view.domAtPos(editorRange.anchor)
-            const focus = view.domAtPos(editorRange.focus)
+            const anchor = view.domAtPos(editorSelection.anchor)
+            const focus = view.domAtPos(editorSelection.focus)
             const range = document.createRange()
             range.setEnd(focus.node, focus.offset)
             range.setStart(anchor.node, anchor.offset)
@@ -53,28 +71,29 @@ export class YRemoteSelectionsPluginValue {
             }
             return rects
           },
-          ...editorRange,
+          ...editorSelection,
         }
       }
-      return relativeRangeToNativeRange(awarenessField, range)
+      return relativeSelectionToNativeSelection(selection, clientID)
     }
 
-    RemoteCursors.nativeRangeToRelativeRange = (
-      awarenessField,
-      range: Record<'anchor' | 'focus', number>,
+    awarenessSelection.nativeSelectionToRelativeSelection = (
+      selection: Record<'anchor' | 'focus', number>,
+      clientID,
     ) => {
-      if (awarenessField === CODEBLOCK_AWARENESS_FIELD) {
+      if (
+        isCodeBlockAwarenessSelection(selection) &&
+        selection[CODEBLOCK_AWARENESS_ID] === this.conf.id
+      ) {
         const ytext = this.conf.ytext
-        const anchor = Y.createRelativePositionFromTypeIndex(ytext, range.anchor)
-        const focus = Y.createRelativePositionFromTypeIndex(ytext, range.focus)
-        return { anchor, focus }
+        const anchor = Y.createRelativePositionFromTypeIndex(ytext, selection.anchor)
+        const focus = Y.createRelativePositionFromTypeIndex(ytext, selection.focus)
+        return { anchor, focus, [CODEBLOCK_AWARENESS_ID]: selection[CODEBLOCK_AWARENESS_ID] }
       }
-      return nativeRangeToRelativeRange(awarenessField, range)
+      return nativeSelectionToRelativeSelection(selection, clientID)
     }
 
-    this._remoteCursors = createRemoteCursors(this.conf.awareness, {
-      awarenessField: CODEBLOCK_AWARENESS_FIELD,
-    })
+    this._awarenessSelection = awarenessSelection
   }
 
   destroy() {}
@@ -85,10 +104,23 @@ export class YRemoteSelectionsPluginValue {
   update(update: cmView.ViewUpdate) {
     const hasFocus = update.view.hasFocus && update.view.dom.ownerDocument.hasFocus()
     const sel = hasFocus ? update.state.selection.main : null
-    this._remoteCursors.sendLocalRange(sel ? {
-      anchor: sel.anchor,
-      focus: sel.head,
-    }: null)
+
+    if (
+      !sel &&
+      Editor.above(this.conf.editor, {
+        match: node => CodeBlock.isCodeBlock(node),
+      })
+    )
+      return null
+    this._awarenessSelection.sendSelection(
+      sel
+        ? {
+            anchor: sel.anchor,
+            focus: sel.head,
+            [CODEBLOCK_AWARENESS_ID]: this.conf.id,
+          }
+        : null,
+    )
   }
 }
 

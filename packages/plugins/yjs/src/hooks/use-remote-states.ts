@@ -1,7 +1,7 @@
 import { Editable } from '@editablejs/editor'
 import { useStore } from 'zustand'
 import shallow from 'zustand/shallow'
-import { CursorEditor } from '../plugin/cursors-editor'
+import { YCursorEditor } from '../plugin/cursors-editor'
 import { CursorData, CursorState } from '../types'
 import { useCursorStore } from './use-cursor-store'
 
@@ -10,17 +10,17 @@ export const useRemoteStates = <T extends CursorData>(editor: Editable) => {
   return useStore(
     store,
     state => {
-      if (!CursorEditor.isCursorEditor(editor)) {
+      if (!YCursorEditor.isYCursorEditor(editor)) {
         return {} as Record<string, CursorState<T>>
       }
       const { added, removed, updated } = state.clientIds
       const clientIds = added.concat(removed, updated)
       if (!clientIds || clientIds.length === 0) {
-        return CursorEditor.cursorStates<T>(editor)
+        return YCursorEditor.cursorStates<T>(editor)
       }
 
       const updatedStates = Object.fromEntries(
-        clientIds.map(id => [id, CursorEditor.cursorState<T>(editor, id)]),
+        clientIds.map(id => [id, YCursorEditor.cursorState<T>(editor, id)]),
       )
 
       return Object.fromEntries(

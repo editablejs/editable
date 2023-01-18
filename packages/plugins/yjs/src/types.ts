@@ -8,7 +8,6 @@ export interface CursorData extends Record<string, unknown> {
 }
 
 export type CursorState<T extends CursorData = CursorData> = {
-  field: string
   relativeSelection: RelativeRange | null
   data?: T
   clientId: number

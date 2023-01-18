@@ -440,8 +440,9 @@ importers:
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.7.2
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-yjs-protocols': workspace:*
+      '@editablejs/plugin-protocols': workspace:1.0.0-beta.0
       '@editablejs/ui': workspace:*
+      '@editablejs/yjs-protocols': workspace:*
       '@lezer/highlight': 1.1.3
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -467,8 +468,9 @@ importers:
       '@codemirror/language': 6.4.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
+      '@editablejs/plugin-protocols': link:../protocols
       '@editablejs/ui': link:../../ui
+      '@editablejs/yjs-protocols': link:../../yjs-protocols
       '@lezer/highlight': 1.1.3
       lib0: 0.2.52
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
@@ -630,6 +632,7 @@ importers:
   packages/plugins/history:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-protocols': workspace:1.0.0-beta.0
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
@@ -644,6 +647,7 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
+      '@editablejs/plugin-protocols': link:../protocols
       is-plain-object: 5.0.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -706,6 +710,7 @@ importers:
   packages/plugins/image:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/plugin-protocols': workspace:1.0.0-beta.0
       '@editablejs/ui': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -727,6 +732,7 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
+      '@editablejs/plugin-protocols': link:../protocols
       '@editablejs/ui': link:../../ui
       react-image-previewer: 1.1.6_pumtretovylab5lwhztzjp2kuy
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
@@ -1058,6 +1064,33 @@ importers:
       tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
 
+  packages/plugins/protocols:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      lib0: 0.2.52
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.4
+      tsup-config: link:../../config/tsup-config
+      typescript: 4.9.4
+
   packages/plugins/table:
     specifiers:
       '@editablejs/editor': workspace:*
@@ -1151,8 +1184,9 @@ importers:
   packages/plugins/yjs:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-yjs-protocols': workspace:*
+      '@editablejs/plugin-protocols': workspace:1.0.0-beta.0
       '@editablejs/plugin-yjs-transform': workspace:*
+      '@editablejs/yjs-protocols': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/react': ^18.x
@@ -1175,8 +1209,9 @@ importers:
       yjs: ^13.5.43
       zustand: 4.1.4
     dependencies:
-      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
+      '@editablejs/plugin-protocols': link:../protocols
       '@editablejs/plugin-yjs-transform': link:../yjs-transform
+      '@editablejs/yjs-protocols': link:../../yjs-protocols
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
@@ -1198,33 +1233,6 @@ importers:
       tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
-      yjs: 13.5.43
-
-  packages/plugins/yjs-protocols:
-    specifiers:
-      '@types/jest': ^26.0.22
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      lib0: ^0.2.52
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.5.0
-      tsup-config: workspace:*
-      typescript: latest
-      yjs: ^13.5.43
-    dependencies:
-      lib0: 0.2.52
-    devDependencies:
-      '@types/jest': 26.0.24
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
-      tsup-config: link:../../config/tsup-config
       typescript: 4.9.4
       yjs: 13.5.43
 
@@ -1257,8 +1265,8 @@ importers:
   packages/plugins/yjs-websocket:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-yjs-protocols': workspace:*
       '@editablejs/plugin-yjs-transform': workspace:*
+      '@editablejs/yjs-protocols': workspace:*
       '@types/jest': ^26.0.22
       '@types/lodash.debounce': 4.0.7
       '@types/ws': 8.5.3
@@ -1276,8 +1284,8 @@ importers:
       y-leveldb: ^0.1.0
       yjs: ^13.5.43
     dependencies:
-      '@editablejs/plugin-yjs-protocols': link:../yjs-protocols
       '@editablejs/plugin-yjs-transform': link:../yjs-transform
+      '@editablejs/yjs-protocols': link:../../yjs-protocols
       lib0: 0.2.52
       lodash.debounce: 4.0.8
     optionalDependencies:
@@ -1342,6 +1350,33 @@ importers:
       tsup-config: link:../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.4
+
+  packages/yjs-protocols:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+      yjs: ^13.5.43
+    dependencies:
+      lib0: 0.2.52
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.4
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.4
+      yjs: 13.5.43
 
 packages:
 

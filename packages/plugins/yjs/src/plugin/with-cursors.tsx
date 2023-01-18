@@ -1,17 +1,17 @@
-import { BaseRange, Editable, Range, SelectionDrawing, Slot } from '@editablejs/editor'
-import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
+import { Editable, Range, SelectionDrawing, Slot } from '@editablejs/editor'
+import { Awareness } from '@editablejs/yjs-protocols/awareness'
 
-import { createRemoteCursors, RemoteCursors } from '@editablejs/plugin-yjs-protocols/remote-cursors'
-import * as Y from 'yjs'
+import { useAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
+
+import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import {
   editorRangeToRelativeRange,
   relativeRangeToEditorRange,
 } from '@editablejs/plugin-yjs-transform'
-import { CursorEditor } from './cursors-editor'
+import { YCursorEditor } from './cursors-editor'
 import { getCursorsStore } from '../store'
 import { RemoteCursors as CursorsComponent } from '../components/selection'
 import { CursorData } from '../types'
-import { YjsEditor } from './with-yjs'
 
 export interface RemoteCursorChangeState {
   added: number[]
@@ -33,9 +33,8 @@ export type WithCursorsOptions<T extends CursorData = CursorData> = {
   autoSend?: boolean
 }
 
-export function withCursors<TCursorData extends CursorData, T extends Editable>(
+export function withYCursors<TCursorData extends CursorData, T extends Editable>(
   editor: T,
-  sharedRoot: Y.XmlText,
   awareness: Awareness,
   {
     cursorStateField: selectionStateField = 'selection',
@@ -43,48 +42,34 @@ export function withCursors<TCursorData extends CursorData, T extends Editable>(
     autoSend = true,
     data,
   }: WithCursorsOptions<TCursorData> = {},
-): T & CursorEditor<TCursorData> {
-  const e = editor as Editable & T & CursorEditor<TCursorData>
+): T & YCursorEditor<TCursorData> {
+  const e = editor as Editable & T & YCursorEditor<TCursorData>
+  const awarenessSelection = useAwarenessSelection(awareness, selectionStateField)
 
-  const { getAwarenessField, relativeRangeToNativeRange, nativeRangeToRelativeRange } =
-    RemoteCursors
-
-  RemoteCursors.getAwarenessField = state => {
-    const currentRange = state?.[selectionStateField]
-    if (currentRange) return selectionStateField
-    return getAwarenessField(state)
-  }
-
-  RemoteCursors.relativeRangeToNativeRange = (awarenessField, range) => {
-    if (awarenessField === selectionStateField) {
-      const editorRange = relativeRangeToEditorRange(e.sharedRoot, e, range)
-      if (!editorRange) return null
-      return {
-        isBackward: () => Range.isBackward(editorRange),
-        isCollapsed: () => Range.isCollapsed(editorRange),
-        toRects() {
-          return SelectionDrawing.toRects(e, editorRange)
-        },
-        ...editorRange,
-      }
+  awarenessSelection.relativeSelectionToNativeSelection = selection => {
+    if (Object.keys(selection).length !== 2) return null
+    const editorRange = relativeRangeToEditorRange(e.sharedRoot, e, selection)
+    if (!editorRange) return null
+    return {
+      isBackward: () => Range.isBackward(editorRange),
+      isCollapsed: () => Range.isCollapsed(editorRange),
+      toRects() {
+        return SelectionDrawing.toRects(e, editorRange)
+      },
+      ...editorRange,
     }
-    return relativeRangeToNativeRange(awarenessField, range)
   }
 
-  RemoteCursors.nativeRangeToRelativeRange = (awarenessField, range: BaseRange) => {
-    if (awarenessField === selectionStateField) {
-      return editorRangeToRelativeRange(e.sharedRoot, e, range)
+  awarenessSelection.nativeSelectionToRelativeSelection = selection => {
+    if (Range.isRange(selection)) {
+      return editorRangeToRelativeRange(e.sharedRoot, e, selection)
     }
-    return nativeRangeToRelativeRange(awarenessField, range)
+    return null
   }
-
-  const remoteCursors = createRemoteCursors(awareness, {
-    awarenessField: selectionStateField,
-  })
 
   Slot.mount(e, CursorsComponent)
-  e.sharedRoot = sharedRoot
   e.awareness = awareness
+  e.awarenessSelection = awarenessSelection
   e.cursorDataField = cursorDataField
   e.selectionStateField = selectionStateField
 
@@ -92,7 +77,7 @@ export function withCursors<TCursorData extends CursorData, T extends Editable>(
     e.awareness.setLocalStateField(e.cursorDataField, cursorData)
   }
 
-  e.sendCursorPosition = remoteCursors.sendLocalRange
+  e.sendCursorPosition = awarenessSelection.sendSelection
 
   const awarenessChangeListener: RemoteCursorChangeEventListener = yEvent => {
     const localId = e.awareness.clientID
@@ -113,9 +98,12 @@ export function withCursors<TCursorData extends CursorData, T extends Editable>(
       })
     }
   }
-  const { connectYjs, disconnectYjs } = e
-  e.connectYjs = () => {
-    connectYjs()
+
+  const providerProtocol = useProviderProtocol(e)
+
+  const { connect, disconnect } = providerProtocol
+  providerProtocol.connect = () => {
+    connect()
     e.awareness.on('change', awarenessChangeListener)
 
     awarenessChangeListener({
@@ -125,20 +113,12 @@ export function withCursors<TCursorData extends CursorData, T extends Editable>(
     })
     if (autoSend) {
       if (data) {
-        CursorEditor.sendCursorData(e, data)
-      }
-
-      const { onChange } = e
-      e.onChange = () => {
-        onChange()
-        if (YjsEditor.connected(e) && !Editable.isComposing(e)) {
-          CursorEditor.sendCursorPosition(e)
-        }
+        YCursorEditor.sendCursorData(e, data)
       }
     }
   }
 
-  e.disconnectYjs = () => {
+  providerProtocol.disconnect = () => {
     e.awareness.off('change', awarenessChangeListener)
 
     awarenessChangeListener({
@@ -146,7 +126,15 @@ export function withCursors<TCursorData extends CursorData, T extends Editable>(
       added: [],
       updated: [],
     })
-    disconnectYjs()
+    disconnect()
+  }
+
+  const { onChange } = e
+  e.onChange = () => {
+    onChange()
+    if (providerProtocol.connected() && !Editable.isComposing(e)) {
+      YCursorEditor.sendCursorPosition(e)
+    }
   }
 
   return e

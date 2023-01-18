@@ -1,15 +1,12 @@
-import * as Y from 'yjs'
 import { Range } from '@editablejs/editor'
-import { Awareness } from '@editablejs/plugin-yjs-protocols/awareness'
-import { RemoteCursors } from '@editablejs/plugin-yjs-protocols/remote-cursors'
+import { Awareness } from '@editablejs/yjs-protocols/awareness'
+import { AwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
 import { CursorData, CursorState } from '../types'
 import { YjsEditor } from './with-yjs'
 
-export interface CursorEditor<T extends CursorData = CursorData> extends YjsEditor {
+export interface YCursorEditor<T extends CursorData = CursorData> extends YjsEditor {
   awareness: Awareness
-
-  sharedRoot: Y.XmlText
-
+  awarenessSelection: AwarenessSelection
   cursorDataField: string
   selectionStateField: string
 
@@ -18,30 +15,30 @@ export interface CursorEditor<T extends CursorData = CursorData> extends YjsEdit
   sendCursorData: (data: T) => void
 }
 
-export const CursorEditor = {
-  isCursorEditor(value: unknown): value is CursorEditor {
+export const YCursorEditor = {
+  isYCursorEditor(value: unknown): value is YCursorEditor {
     return (
-      (value as CursorEditor).awareness instanceof Awareness &&
-      typeof (value as CursorEditor).cursorDataField === 'string' &&
-      typeof (value as CursorEditor).selectionStateField === 'string' &&
-      typeof (value as CursorEditor).sendCursorPosition === 'function' &&
-      typeof (value as CursorEditor).sendCursorData === 'function'
+      (value as YCursorEditor).awareness instanceof Awareness &&
+      typeof (value as YCursorEditor).cursorDataField === 'string' &&
+      typeof (value as YCursorEditor).selectionStateField === 'string' &&
+      typeof (value as YCursorEditor).sendCursorPosition === 'function' &&
+      typeof (value as YCursorEditor).sendCursorData === 'function'
     )
   },
 
   sendCursorPosition<T extends CursorData>(
-    editor: CursorEditor<T>,
+    editor: YCursorEditor<T>,
     range: Range | null = editor.selection,
   ) {
     editor.sendCursorPosition(range)
   },
 
-  sendCursorData<T extends CursorData>(editor: CursorEditor<T>, data: T) {
+  sendCursorData<T extends CursorData>(editor: YCursorEditor<T>, data: T) {
     editor.sendCursorData(data)
   },
 
   cursorState<T extends CursorData>(
-    editor: CursorEditor<T>,
+    editor: YCursorEditor<T>,
     clientId: number,
   ): CursorState<T> | null {
     if (clientId === editor.awareness.clientID || !YjsEditor.connected(editor)) {
@@ -54,14 +51,13 @@ export const CursorEditor = {
     }
 
     return {
-      field: RemoteCursors.getAwarenessField(state),
-      relativeSelection: RemoteCursors.getRelativeRange(state),
+      relativeSelection: editor.awarenessSelection.getRelativeSelection(clientId),
       data: state[editor.cursorDataField],
       clientId,
     }
   },
 
-  cursorStates<T extends CursorData>(editor: CursorEditor<T>): Record<string, CursorState<T>> {
+  cursorStates<T extends CursorData>(editor: YCursorEditor<T>): Record<string, CursorState<T>> {
     if (!YjsEditor.connected(editor)) {
       return {}
     }

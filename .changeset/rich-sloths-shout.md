@@ -3,7 +3,7 @@
 '@editablejs/plugin-codeblock': patch
 '@editablejs/plugin-toolbar': patch
 '@editablejs/plugin-yjs': patch
-'@editablejs/plugin-yjs-protocols': patch
+'@editablejs/yjs-protocols': patch
 '@editablejs/plugin-yjs-transform': patch
 '@editablejs/plugin-yjs-websocket': patch
 '@editablejs/ui': patch

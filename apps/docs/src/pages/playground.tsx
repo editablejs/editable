@@ -21,7 +21,7 @@ import {
   withYHistory,
   withYjs,
   YjsEditor,
-  withCursors,
+  withYCursors,
   CursorData,
   useRemoteStates,
 } from '@editablejs/plugin-yjs'
@@ -183,7 +183,7 @@ export default function Playground() {
 
     let editor = withYjs(createEditor(), sharedType, { autoConnect: false })
     if (provider) {
-      editor = withCursors(editor, sharedType, provider.awareness, {
+      editor = withYCursors(editor, provider.awareness, {
         data: cursorData,
       })
     }
