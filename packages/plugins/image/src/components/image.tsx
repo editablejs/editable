@@ -193,7 +193,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     }
 
     const changeRotate = (rotate: number) => {
-      editor.rotateImage(rotate, element)
+      editor.rotateImage(rotate % -360, element)
     }
 
     const isDone = state === 'done'
@@ -267,7 +267,13 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
         </PopoverTrigger>
         <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
           <Toolbar mode="inline">
-            <Tooltip content={viewerLocale.arrowLeft} side="top" sideOffset={5} arrow={false}>
+            <Tooltip content={viewerLocale.rotateRight} side="top" sideOffset={5} arrow={false}>
+              <ToolbarButton
+                icon={<Icon name="rotateRight" />}
+                onToggle={() => changeRotate((element.rotate ?? 0) + 90)}
+              />
+            </Tooltip>
+            <Tooltip content={viewerLocale.rotateLeft} side="top" sideOffset={5} arrow={false}>
               <ToolbarButton
                 icon={<Icon name="rotateLeft" />}
                 onToggle={() => changeRotate((element.rotate ?? 0) - 90)}

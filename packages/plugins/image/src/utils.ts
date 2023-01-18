@@ -118,3 +118,26 @@ export const uploadImage = (editor: Editable, path: Path, file: File | string) =
   })
   return promise
 }
+
+export function drawRotated(image: HTMLImageElement, degrees: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    let canvas = document.createElement('canvas')
+    var ctx = canvas.getContext('2d')
+    console.log('image.width', image.width, image.height, image.naturalWidth, image.naturalHeight, degrees)
+    if (!ctx || !image.height || !image.width) return
+    let horizontal = [-270, -90, 90, 270]
+    if (horizontal.includes(degrees)) {
+      canvas.width = image.naturalHeight || 0
+      canvas.height = image.naturalWidth || 0
+    } else {
+      canvas.width = image.naturalWidth || 0
+      canvas.height = image.naturalHeight || 0
+    }
+    ctx.translate(canvas.width / 2, canvas.height / 2)
+    ctx.rotate((degrees * Math.PI) / 180)
+    ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2)
+    canvas.toBlob(blob => {
+      blob ? resolve(blob) : reject('Error')
+    }, 'image/jpeg')
+  })
+}

@@ -14,7 +14,7 @@ import { Image } from './interfaces/image'
 import { ImageComponent } from './components/image'
 import { ImageEditor } from './editor'
 import locale, { ImageLocale } from './locale'
-import { insertImage, readImageFileInfo, uploadImage } from './utils'
+import { insertImage, readImageFileInfo, uploadImage, drawRotated } from './utils'
 import { ImageViewer } from './components/viewer'
 
 const defaultHotkey: ImageHotkey = ''
@@ -117,11 +117,14 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
     })
   }
 
-  newEditor.rotateImage = (rotate, image) => {
+  newEditor.rotateImage = async (rotate, image) => {
+    let imageDom = Editable.toDOMNode(editor, image).querySelector('img')
+    if (!imageDom) return;
+    let blob = await drawRotated(imageDom, rotate)
     Transforms.setNodes<Image>(
       editor,
       {
-        rotate,
+        url: URL.createObjectURL(blob),
       },
       {
         at: Editable.findPath(editor, image),
