@@ -75,7 +75,7 @@ pnpm dev
 - [x] Undo
 - [x] Link
 - [x] Image
-- [ ] Codeblock
+- [x] Codeblock
 - [x] Heading
 - [x] Table
 - [x] Hr
