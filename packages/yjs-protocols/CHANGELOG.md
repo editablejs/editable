@@ -1,5 +1,11 @@
 # @editablejs/yjs-protocols
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360) Thanks [@big-camel](https://github.com/big-camel)! - fix deps
+
 ## 1.0.0-beta.1
 
 ### Patch Changes

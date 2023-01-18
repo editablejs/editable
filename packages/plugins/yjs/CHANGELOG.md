@@ -1,5 +1,17 @@
 # @editablejs/plugin-yjs
 
+## 1.0.0-beta.20
+
+### Patch Changes
+
+- [`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360) Thanks [@big-camel](https://github.com/big-camel)! - fix deps
+
+- Updated dependencies [[`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360)]:
+  - @editablejs/editor@1.0.0-beta.18
+  - @editablejs/plugin-protocols@1.0.0-beta.2
+  - @editablejs/plugin-yjs-transform@1.0.0-beta.6
+  - @editablejs/yjs-protocols@1.0.0-beta.2
+
 ## 1.0.0-beta.19
 
 ### Patch Changes
