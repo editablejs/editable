@@ -1,5 +1,14 @@
 # @editablejs/plugin-background-color
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- [`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360) Thanks [@big-camel](https://github.com/big-camel)! - fix deps
+
+- Updated dependencies [[`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360)]:
+  - @editablejs/editor@1.0.0-beta.18
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
