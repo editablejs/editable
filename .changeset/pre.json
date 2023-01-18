@@ -26,7 +26,10 @@
     "@editablejs/plugin-background-color": "1.0.0-beta.0",
     "@editablejs/plugin-font-color": "1.0.0-beta.0",
     "@editablejs/plugin-mention": "1.0.0-beta.0",
-    "@editablejs/plugin-yjs-websocket": "1.0.0-beta.0"
+    "@editablejs/plugin-yjs-websocket": "1.0.0-beta.0",
+    "@editablejs/plugin-codeblock": "1.0.0-beta.0",
+    "@editablejs/plugin-protocols": "1.0.0-beta.0",
+    "@editablejs/yjs-protocols": "1.0.0-beta.0"
   },
   "changesets": [
     "beige-needles-decide",
@@ -50,7 +53,10 @@
     "nervous-bees-beg",
     "nine-eyes-remember",
     "perfect-kids-rule",
+    "pink-queens-cheat",
+    "purple-moose-nail",
     "rare-oranges-provide",
+    "rich-sloths-shout",
     "sixty-snakes-switch",
     "smart-pillows-cough",
     "soft-coins-approve",
@@ -59,6 +65,7 @@
     "spicy-donkeys-flash",
     "spicy-ties-guess",
     "stale-bees-do",
+    "tame-teachers-cross",
     "thirty-boats-glow",
     "unlucky-zebras-scream",
     "weak-camels-grin",
