@@ -59,7 +59,9 @@
     "typescript": "latest"
   },
   "peerDependencies": {
-    "@editablejs/editor": "workspace:*",
+    "@editablejs/editor": "workspace:*"
+  },
+  "dependencies": {
     "colord": "2.9.0"
   },
   "lint-staged": {
