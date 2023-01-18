@@ -359,7 +359,9 @@ const GROUP_NAME = 'MenuGroup'
 
 type MenuGroupElement = React.ElementRef<typeof Root.div>
 type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
-interface MenuGroupProps extends PrimitiveDivProps {}
+interface MenuGroupProps extends PrimitiveDivProps {
+  children?: React.ReactNode
+}
 
 const MenuGroup = React.forwardRef<MenuGroupElement, MenuGroupProps>((props, forwardedRef) => {
   return <Root.div role="group" {...props} ref={forwardedRef} />
@@ -458,6 +460,7 @@ type MenuItemImplElement = React.ElementRef<typeof Root.div>
 interface MenuItemImplProps extends PrimitiveDivProps {
   disabled?: boolean
   textValue?: string
+  children?: React.ReactNode
 }
 
 const MenuItemImpl = React.forwardRef<MenuItemImplElement, MenuItemImplProps>(

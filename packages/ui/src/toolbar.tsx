@@ -3,6 +3,7 @@ import tw, { css, styled } from 'twin.macro'
 import { Button } from './button'
 import { ColorPicker, ColorPickerProps } from './color-picker'
 import { Dropdown } from './dropdown'
+import { Select } from './select'
 import { Tooltip, TooltipProps } from './tooltip'
 import { composeEventHandlers } from './utils'
 
@@ -80,6 +81,30 @@ export const ToolbarDropdown = React.forwardRef<HTMLButtonElement, ToolbarDropdo
 )
 
 ToolbarDropdown.displayName = 'ToolbarDropdown'
+
+export interface ToolbarSelect extends Select {
+  title?: React.ReactNode
+}
+
+export const ToolbarSelect = React.forwardRef<HTMLInputElement, ToolbarSelect>(
+  ({ title, ...props }, ref) => {
+    const { side } = useToolbarContext()
+
+    const renderSelect = () => (
+      <Select tw="h-7 border-none hover:bg-gray-100" {...props} ref={ref} />
+    )
+
+    return title ? (
+      <Tooltip content={title} side={side}>
+        {renderSelect()}
+      </Tooltip>
+    ) : (
+      renderSelect()
+    )
+  },
+)
+
+ToolbarSelect.displayName = 'ToolbarSelect'
 
 export interface ToolbarColorPicker extends Omit<ColorPickerProps, 'renderButton' | 'side'> {
   title?: React.ReactNode

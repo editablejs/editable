@@ -18,8 +18,11 @@
   "dependencies": {
     "@codemirror/highlight": "0.19.8",
     "@codemirror/lang-css": "0.19.3",
+    "@codemirror/lang-css-next": "npm:@codemirror/lang-css@6.0.1",
     "@codemirror/lang-html": "0.19.4",
+    "@codemirror/lang-html-next": "npm:@codemirror/lang-html@6.4.1",
     "@codemirror/lang-javascript": "0.19.7",
+    "@codemirror/lang-javascript-next": "npm:@codemirror/lang-javascript@6.1.2",
     "@codesandbox/sandpack-client": "1.17.1",
     "@codesandbox/sandpack-react": "1.17.1",
     "@docsearch/css": "3.3.0",

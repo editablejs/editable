@@ -1,3 +1,4 @@
+import { LanguageSupport } from '@codemirror/language'
 import { Extension } from '@codemirror/state'
 import { Editable } from '@editablejs/editor'
 import { CodeBlockLocale } from './locale/types'
@@ -8,6 +9,11 @@ export interface CodeBlockOptions {
   locale?: Record<string, CodeBlockLocale>
   hotkey?: CodeBlockHotkey
   plugins?: Extension[]
+  languages?: {
+    value: string
+    content?: string
+    plugin?: LanguageSupport
+  }[]
 }
 
 const CODEBLOCK_OPTIONS = new WeakMap<Editable, CodeBlockOptions>()

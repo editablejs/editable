@@ -15,6 +15,7 @@ import {
 
 export interface DropdownItemProps extends Omit<MenuItem, 'onSelect' | 'textValue'> {
   value: string
+  icon?: React.ReactNode
   content?: React.ReactNode
   disabled?: boolean
 }
@@ -33,10 +34,10 @@ export interface Dropdown extends Menu {
 
 type DropdownItem = DropdownItemProps | 'separator'
 
-const sizeCls = (size: DropdownSize = 'default') => [
+const sizeCls = (size: DropdownSize = 'default', align: 'left' | 'right' = 'left') => [
   tw`py-2`,
-  size === 'small' && tw`py-1 pr-2 pl-5`,
-  size === 'large' && tw`py-3 pr-5 pl-12`,
+  size === 'small' && (align === 'left' ? tw`py-1 pr-2 pl-5` : tw`py-1 pr-5 pl-2`),
+  size === 'large' && (align === 'left' ? tw`py-3 pr-5 pl-12` : tw`py-3 pr-12 pl-5`),
 ]
 
 export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
@@ -77,7 +78,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
         if (item === 'separator') {
           return <MenuSeparator key={index} />
         } else {
-          const { value, content, disabled, ...props } = item
+          const { value, content, icon, disabled, ...props } = item
           return (
             <MenuRadioItem
               disabled={disabled}
@@ -85,7 +86,8 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
               value={value}
               css={[
                 tw`relative flex cursor-pointer items-center pl-9 pr-4 hover:bg-gray-100`,
-                sizeCls(size),
+                sizeCls(size, icon ? 'right' : 'left'),
+                icon && tw`pl-4 pr-9`,
               ]}
               onSelect={e => handleSelect(e, value)}
               onMouseDown={e => e.preventDefault()}
@@ -96,10 +98,12 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
                   tw`absolute left-3 top-0 flex items-center h-full text-gray-400`,
                   size === 'small' && tw`left-2`,
                   size === 'large' && tw`left-4`,
+                  icon && tw`right-4 left-auto`,
                 ]}
               >
                 <Icon name="check" />
               </MenuItemIndicator>
+              {icon && <span tw="mr-2 text-xl">{icon}</span>}
               {content ?? value}
             </MenuRadioItem>
           )
@@ -159,7 +163,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, Dropdown>(
             {children ?? activeItem?.content ?? value}
             <Icon
               name="arrowCaretDown"
-              css={[tw`text-xxs text-gray-400`, open && tw`rotate-180 mt-1`]}
+              css={[tw`text-xxs text-gray-400 transition-all`, open && tw`rotate-180 mt-1`]}
             />
           </Button>
         </MenuAnchor>

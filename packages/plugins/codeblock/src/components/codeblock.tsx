@@ -5,7 +5,7 @@ import {
   useIsomorphicLayoutEffect,
   useNodeFocused,
 } from '@editablejs/editor'
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useRef } from 'react'
 import tw from 'twin.macro'
 
 import { indentWithTab } from '@codemirror/commands'
@@ -19,15 +19,8 @@ import {
   crosshairCursor,
   keymap,
 } from '@codemirror/view'
-import { Compartment, EditorSelection, EditorState } from '@codemirror/state'
-import {
-  foldGutter,
-  indentOnInput,
-  syntaxHighlighting,
-  defaultHighlightStyle,
-  bracketMatching,
-  foldKeymap,
-} from '@codemirror/language'
+import { EditorState } from '@codemirror/state'
+import { foldGutter, indentOnInput, bracketMatching, foldKeymap } from '@codemirror/language'
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
 import { CodeBlock } from '../interfaces/codeblock'
 import { CodeBlockEditor } from '../plugin/editor'
@@ -36,6 +29,11 @@ import { createRoot } from 'react-dom/client'
 import { Icon } from '@editablejs/ui'
 import { getOptions } from '../options'
 import { getCodeBlockPlugins, IS_YJS, YJS_DEFAULT_VALUE } from '../weak-map'
+import { useIndent } from '../hooks/use-indent'
+import { useLineWrapping } from '../hooks/use-line-wrapping'
+import { useLanguage } from '../hooks/use-language'
+import { useEditorView } from '../hooks/use-editor-view'
+import { useTheme } from '../hooks/use-theme'
 
 const basicSetup = (() => [
   lineNumbers(),
@@ -54,7 +52,6 @@ const basicSetup = (() => [
   dropCursor(),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
-  syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
   bracketMatching(),
   rectangularSelection(),
   crosshairCursor(),
@@ -62,18 +59,11 @@ const basicSetup = (() => [
 ])()
 
 const baseTheme = EditorView.baseTheme({
-  '&.cm-editor': {
-    background: '#fafafa',
-    ...tw`rounded-md`,
-  },
   '&.cm-focused': tw`outline-none`,
   '.cm-scroller': tw`font-mono leading-normal text-base py-1`,
   '.cm-gutters': tw`bg-transparent border-none`,
   '.cm-lineNumbers .cm-gutterElement': tw`pl-4 pr-1`,
 })
-
-const tabSize = new Compartment()
-
 export interface CodeBlockProps extends RenderElementProps<CodeBlock> {
   editor: CodeBlockEditor
 }
@@ -84,51 +74,15 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
   attributes,
   element,
 }) => {
-  const ref = useRef<HTMLDivElement>(null)
-
   const focused = useNodeFocused()
 
-  const [plugins, setPlugins] = useState(() => {
-    return getOptions(editor).plugins ?? []
-  })
-
   const elementRef = useRef(element)
-  const viewRef = useRef<EditorView | null>(null)
-
-  useIsomorphicLayoutEffect(() => {
-    elementRef.current = element
-  }, [element])
-
-  useIsomorphicLayoutEffect(() => {
-    setPlugins(prev => {
-      const plugins = getCodeBlockPlugins(editor, elementRef.current)
-      return prev.concat(plugins)
-    })
-  }, [editor])
-
-  useIsomorphicLayoutEffect(() => {
-    if (!ref.current) return
-
-    const view = new EditorView({
-      parent: ref.current,
-    })
-
-    viewRef.current = view
-
-    view.focus()
-
-    return () => {
-      view.destroy()
-    }
-  }, [editor])
-
-  useEffect(() => {
-    if (!viewRef.current) return
-
+  const [view, ref] = useEditorView(() => {
+    const plugins = getOptions(editor).plugins ?? []
+    plugins.push(getCodeBlockPlugins(editor, element))
     const extensions = [
       basicSetup,
       baseTheme,
-      tabSize.of(EditorState.tabSize.of(2)),
       keymap.of([indentWithTab]),
       EditorView.domEventHandlers({
         focus: () => {
@@ -136,34 +90,39 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
         },
       }),
       EditorView.updateListener.of(update => {
-        console.log(
-          update.state.selection.main,
-          update.view.domAtPos(update.state.selection.main.anchor),
-        )
         if (update.docChanged) {
           const code = update.state.doc.toString()
           CodeBlockEditor.updateCodeBlock(editor, elementRef.current, { code })
-          // console.log(viewRef.current?.state.selection, viewRef.current?.coordsAtPos)
         }
       }),
       ...plugins,
     ]
 
-    const state = EditorState.create({
+    return {
       doc: IS_YJS.get(editor) ? YJS_DEFAULT_VALUE.get(editor) : elementRef.current.code,
       extensions,
-    })
-    viewRef.current.setState(state)
-  }, [editor, plugins])
+    }
+  })
+
+  useIsomorphicLayoutEffect(() => {
+    elementRef.current = element
+  }, [element])
+  useTheme(view, element.theme)
+  useLanguage(view, editor, element.language)
+  useIndent(view, element.tabSize ?? 2)
+  useLineWrapping(view, element.lineWrapping ?? false)
 
   return (
-    <CodeBlockPopover editor={editor} element={element}>
+    <CodeBlockPopover editor={editor} element={element} viewRef={view}>
       <div {...attributes}>
         <div tw="hidden absolute">{children}</div>
         <div
           ref={ref}
-          css={[tw`rounded-md border border-[#e5e7eb]`, focused && tw`border-primary`]}
-        ></div>
+          css={[
+            tw`rounded-md border border-[#e5e7eb] overflow-hidden`,
+            focused && tw`border-primary`,
+          ]}
+        />
       </div>
     </CodeBlockPopover>
   )

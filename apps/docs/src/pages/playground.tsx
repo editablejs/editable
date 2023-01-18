@@ -33,7 +33,9 @@ import * as Y from 'yjs'
 import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
 import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
 import { withHistory } from '@editablejs/plugin-history'
-
+import { javascript as codemirrorJavascript } from '@codemirror/lang-javascript-next'
+import { html as codemirrorHtml } from '@codemirror/lang-html-next'
+import { css as codemirrorCss } from '@codemirror/lang-css-next'
 import { withYCodeBlock } from '@editablejs/plugin-codeblock/yjs'
 import {
   ToolbarComponent,
@@ -208,6 +210,29 @@ export default function Playground() {
             resolve(users)
           })
         },
+      },
+      codeBlock: {
+        languages: [
+          {
+            value: 'plain',
+            content: 'Plain text',
+          },
+          {
+            value: 'javascript',
+            content: 'JavaScript',
+            plugin: codemirrorJavascript(),
+          },
+          {
+            value: 'html',
+            content: 'HTML',
+            plugin: codemirrorHtml(),
+          },
+          {
+            value: 'css',
+            content: 'CSS',
+            plugin: codemirrorCss(),
+          },
+        ],
       },
     })
     if (provider) editor = withYCodeBlock(editor, document, provider.awareness)

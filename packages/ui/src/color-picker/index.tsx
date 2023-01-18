@@ -125,7 +125,7 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
             <Icon
               name="arrowCaretDown"
               css={[
-                tw`text-xxs text-gray-400 align-[unset] transform-none`,
+                tw`text-xxs text-gray-400 align-[unset] transform-none transition-all`,
                 open && tw`rotate-180`,
               ]}
             />

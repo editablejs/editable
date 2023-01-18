@@ -1,6 +1,10 @@
-import { ChangeSpec } from '@codemirror/state'
 import { Element, generateRandomKey } from '@editablejs/editor'
 import { CODEBLOCK_KEY } from '../constants'
+
+export interface CodeBlockTheme {
+  backgroundColor: string
+  color: string
+}
 
 export interface CodeBlock extends Element {
   id: string
@@ -8,7 +12,8 @@ export interface CodeBlock extends Element {
   code: string
   language?: string
   tabSize?: number
-  changes?: string
+  lineWrapping?: boolean
+  theme?: 'light' | 'dark'
 }
 
 export const CodeBlock = {
@@ -18,6 +23,9 @@ export const CodeBlock = {
 
   create: (options: Partial<Omit<CodeBlock, 'type' | 'children'>> = {}): CodeBlock => {
     return {
+      lineWrapping: false,
+      theme: 'light',
+      tabSize: 2,
       ...options,
       id: generateRandomKey(),
       type: CODEBLOCK_KEY,

@@ -4,22 +4,33 @@ import {
   PopoverContent,
   PopoverTrigger,
   Toolbar,
-  ToolbarDropdown,
   Tooltip,
+  ToolbarSelect,
+  ToolbarDropdown,
 } from '@editablejs/ui'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { CodeBlockEditor } from '../plugin/editor'
 import { CodeBlockLocale } from '../locale/types'
-import { StyleIcon, ThicknessIcon } from './icons'
-import { CodeBlock } from '../interfaces/codeblock'
+import { CodeBlock, CodeBlockTheme } from '../interfaces/codeblock'
+import { getOptions } from '../options'
+import { EditorView } from '@codemirror/view'
+import { AutoWrapIcon, OverflowIcon, ThemeIcon } from './icons'
+import { colors as baseLightColors } from '../themes/base-light'
+import { colors as oneDarkColors } from '../themes/one-dark'
 
 export interface CodeBlockPopoverProps {
   editor: CodeBlockEditor
   element: CodeBlock
   children?: React.ReactNode
+  viewRef: React.MutableRefObject<EditorView | null>
 }
 
-export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({ editor, element, children }) => {
+export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
+  editor,
+  element,
+  children,
+  viewRef,
+}) => {
   const focused = useNodeFocused()
 
   const [popoverOpen, setPopoverOpen] = useState(false)
@@ -36,53 +47,122 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({ editor, element, c
     setPopoverOpen(focused)
   }, [focused])
 
+  const languages = useMemo(() => {
+    const { languages } = getOptions(editor)
+    if (!languages)
+      return [
+        {
+          value: 'plain',
+          content: 'Plain text',
+        },
+      ]
+    return languages.map(({ value, content }) => ({
+      value,
+      content,
+    }))
+  }, [editor])
+
   const { toolbar } = useLocale<CodeBlockLocale>('codeblock')
 
   return (
-    <Popover open={false} onOpenChange={handlePopoverOpenChange} trigger="hover">
+    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
         <Toolbar mode="inline">
-          <Tooltip content={'sdfdf'} side="top" sideOffset={5} arrow={false}>
+          <Tooltip content={toolbar.theme.title} side="top" sideOffset={5} arrow={false}>
             <ToolbarDropdown
-              // onSelect={value => editor.setStyleCodeBlock(value as CodeBlockStyle, element)}
-              // value={element.style || DEFAULT_HR_STYLE}
+              value={element.theme}
+              onSelect={value => {
+                CodeBlockEditor.updateCodeBlock(editor, element, {
+                  theme: value as 'light' | 'dark',
+                })
+              }}
               items={[
                 {
-                  value: 'dashed',
-                  content: (
-                    <div tw="min-h-[24px] flex items-center">
-                      <div tw="border-t-2 border-dashed leading-[2px] w-16 border-black" />
-                    </div>
+                  value: 'light',
+                  icon: (
+                    <span
+                      tw="w-4 h-4 flex border border-zinc-200 rounded"
+                      style={{ backgroundColor: baseLightColors.background }}
+                    ></span>
                   ),
+                  content: toolbar.theme.light,
                 },
                 {
-                  value: 'solid',
-                  content: (
-                    <div tw="min-h-[24px] flex items-center">
-                      <div tw="border-t-2 border-solid leading-[2px] w-16 border-black" />
-                    </div>
+                  value: 'dark',
+                  icon: (
+                    <span
+                      tw="w-4 h-4 flex border border-zinc-200 rounded"
+                      style={{ backgroundColor: oneDarkColors.background }}
+                    ></span>
                   ),
-                },
-                {
-                  value: 'dotted',
-                  content: (
-                    <div tw="min-h-[24px] flex items-center">
-                      <div tw="border-t-2 border-dotted leading-[2px] w-16 border-black" />
-                    </div>
-                  ),
-                },
-                {
-                  value: 'double',
-                  content: (
-                    <div tw="min-h-[24px] flex items-center">
-                      <div tw="border-t-2 border-double leading-[2px] w-16 border-black" />
-                    </div>
-                  ),
+                  content: toolbar.theme.dark,
                 },
               ]}
             >
-              <StyleIcon />
+              <span tw="text-xl">
+                <ThemeIcon />
+              </span>
+            </ToolbarDropdown>
+          </Tooltip>
+          <Tooltip content={toolbar.language.title} side="top" sideOffset={5} arrow={false}>
+            <ToolbarSelect
+              onSelect={value => {
+                CodeBlockEditor.updateCodeBlock(editor, element, { language: value })
+                viewRef.current?.focus()
+              }}
+              defaultValue={element.language}
+              value={element.language}
+              items={languages}
+              renderEmpty={() => <div tw="p-4 text-center">{toolbar.language.searchEmpty}</div>}
+            />
+          </Tooltip>
+          <Tooltip content={toolbar.lineWrapping.title} side="top" sideOffset={5} arrow={false}>
+            <ToolbarDropdown
+              value={element.lineWrapping ? 'autoWrap' : 'overflow'}
+              onSelect={value => {
+                CodeBlockEditor.updateCodeBlock(editor, element, {
+                  lineWrapping: value === 'autoWrap',
+                })
+              }}
+              items={[
+                {
+                  value: 'autoWrap',
+                  icon: <AutoWrapIcon />,
+                  content: toolbar.lineWrapping.autoWrap,
+                },
+                {
+                  value: 'overflow',
+                  icon: <OverflowIcon />,
+                  content: toolbar.lineWrapping.overflow,
+                },
+              ]}
+            >
+              <span tw="text-xl">{element.lineWrapping ? <AutoWrapIcon /> : <OverflowIcon />}</span>
+            </ToolbarDropdown>
+          </Tooltip>
+          <Tooltip content={toolbar.tabSize} side="top" sideOffset={5} arrow={false}>
+            <ToolbarDropdown
+              value={String(element.tabSize ?? 2)}
+              onSelect={value => {
+                CodeBlockEditor.updateCodeBlock(editor, element, { tabSize: Number(value) })
+              }}
+              items={[
+                {
+                  value: '2',
+                  content: '2',
+                },
+                {
+                  value: '4',
+                  content: '4',
+                },
+                {
+                  value: '8',
+                  content: '8',
+                },
+              ]}
+            >
+              {toolbar.tabSize}
             </ToolbarDropdown>
           </Tooltip>
         </Toolbar>

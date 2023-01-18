@@ -1,6 +1,6 @@
 import * as React from 'react'
-import tw, { css } from 'twin.macro'
-import { Button } from './button'
+import tw, { css, styled } from 'twin.macro'
+import { composeRefs } from './compose-refs'
 import { Icon } from './icon'
 import {
   MenuAnchor,
@@ -15,23 +15,25 @@ import {
 
 export interface SelectItemProps extends Omit<MenuItem, 'onSelect' | 'textValue'> {
   value: string
-  content?: React.ReactNode
+  content?: string
   disabled?: boolean
 }
 
 type SelectSize = 'small' | 'default' | 'large'
 
-export interface Select extends Menu {
+export interface Select extends Omit<Menu, 'children'> {
   size?: SelectSize
   value?: string
   defaultValue?: string
+  placeholder?: string
   defaultActiveFirstItem?: boolean
   disabled?: boolean
   items: SelectItem[]
   onSelect?: (value: string) => void
+  renderEmpty?: () => React.ReactNode
 }
 
-type SelectItem = SelectItemProps | 'separator'
+export type SelectItem = SelectItemProps | 'separator'
 
 const sizeCls = (size: SelectSize = 'default') => [
   tw`py-2`,
@@ -39,31 +41,70 @@ const sizeCls = (size: SelectSize = 'default') => [
   size === 'large' && tw`py-3 pr-5 pl-12`,
 ]
 
-export const Select = React.forwardRef<HTMLButtonElement, Select>(
+const StyledInput = styled.input<{ size: SelectSize }>(({ size }) => [
+  tw`px-1.5 bg-transparent text-base outline-0 absolute top-0 bottom-0 w-full`,
+  size === 'small' && tw`px-0.5 gap-1`,
+  size === 'large' && tw`px-2.5 gap-3`,
+]) as React.FC<
+  React.HTMLAttributes<HTMLInputElement> & {
+    size: SelectSize
+    value?: string
+    type: React.HTMLInputTypeAttribute
+    disabled?: boolean
+    ref: React.Ref<HTMLInputElement>
+  }
+>
+
+export const Select = React.forwardRef<HTMLInputElement, Select>(
   (
     {
-      children,
       disabled,
       items,
       defaultActiveFirstItem = true,
       onSelect,
       defaultValue: defaultValueProps,
       value: valueProps,
+      placeholder,
       size = 'default',
+      renderEmpty,
       ...props
     },
     ref,
   ) => {
+    const inputRef = React.useRef<HTMLInputElement | null>(null)
     const defaultValue = React.useMemo(() => {
       if (defaultValueProps) return defaultValueProps
       const firstItem = items.find(item => item !== 'separator')
       return defaultActiveFirstItem && typeof firstItem === 'object' ? firstItem.value : ''
     }, [defaultActiveFirstItem, items, defaultValueProps])
 
+    const [filterItems, setFilterItems] = React.useState(items)
     const [value, setValue] = React.useState(defaultValue)
+
+    const activeItem = React.useMemo(() => {
+      const findItem = (items: SelectItem[]): SelectItemProps | null => {
+        for (const item of items) {
+          if (item !== 'separator' && item.value === value) return item
+        }
+        return null
+      }
+      return findItem(items)
+    }, [items, value])
+
+    const [search, setSearch] = React.useState('')
+
+    React.useEffect(() => {
+      setFilterItems(
+        items.filter(
+          item =>
+            item === 'separator' || item.value.includes(search) || item.content?.includes(search),
+        ),
+      )
+    }, [items, search])
 
     const handleSelect = (e: Event, v: string) => {
       setValue(v)
+      setSearch('')
       if (onSelect) onSelect(value)
       setOpen(false)
     }
@@ -77,7 +118,7 @@ export const Select = React.forwardRef<HTMLButtonElement, Select>(
         if (item === 'separator') {
           return <MenuSeparator key={index} />
         } else {
-          const { value, content, disabled, ...props } = item
+          const { value, disabled, content, ...props } = item
           return (
             <MenuRadioItem
               disabled={disabled}
@@ -111,39 +152,26 @@ export const Select = React.forwardRef<HTMLButtonElement, Select>(
 
     const [open, setOpen] = React.useState(openProp)
 
-    const activeItem = React.useMemo(() => {
-      const findItem = (items: SelectItem[]): SelectItemProps | null => {
-        for (const item of items) {
-          if (item !== 'separator' && item.value === value) return item
-        }
-        return null
-      }
-      return findItem(items)
-    }, [items, value])
-
     return (
       <Menu open={open} onOpenChange={onOpenChange} dir={dir}>
         <MenuAnchor>
-          <Button
-            type="text"
-            size={size}
-            disabled={disabled}
+          <span
+            data-open={open || undefined}
             css={[
-              tw`inline-flex content-center items-center gap-2 px-1.5`,
-              size === 'small' && tw`px-0.5 gap-1`,
-              size === 'large' && tw`px-2.5 gap-3`,
+              tw`relative inline-flex items-center justify-between border border-gray-300 rounded hover:border-primary focus-within:border-primary`,
               css`
                 &[data-open='true'] {
                   ${tw`bg-gray-100`}
                 }
               `,
             ]}
-            data-open={open || undefined}
-            {...triggerProps}
             onPointerDown={event => {
               if (!disabled && event.button === 0 && event.ctrlKey === false) {
+                if (event.target !== inputRef.current) {
+                  event.preventDefault()
+                  inputRef.current?.focus()
+                }
                 setOpen(!open)
-                event.preventDefault()
               }
             }}
             onKeyDown={event => {
@@ -154,14 +182,38 @@ export const Select = React.forwardRef<HTMLButtonElement, Select>(
               // that keydown (inadvertently closing the menu)
               if (['Enter', ' ', 'ArrowDown'].includes(event.key)) event.preventDefault()
             }}
-            ref={ref}
+            {...triggerProps}
           >
-            {children ?? activeItem?.content ?? value}
+            <StyledInput
+              type="text"
+              size={size}
+              value={search}
+              onChange={event => {
+                if (event.target instanceof HTMLInputElement) setSearch(event.target.value)
+              }}
+              disabled={disabled}
+              placeholder={open && !activeItem?.value ? placeholder : undefined}
+              ref={composeRefs(inputRef, ref)}
+            />
+            <span
+              css={[
+                tw`w-full px-1.5 relative inline-block select-none overflow-hidden whitespace-nowrap text-ellipsis cursor-text`,
+                size === 'small' && tw`px-0.5`,
+                size === 'large' && tw`px-2.5`,
+                ((open && !search) || (!open && !value)) && tw`text-gray-400`,
+                open && !!search && tw`text-transparent`,
+              ]}
+            >
+              {activeItem?.content ?? activeItem?.value ?? placeholder}
+            </span>
             <Icon
               name="arrowCaretDown"
-              css={[tw`text-xxs text-gray-400`, open && tw`rotate-180 mt-1`]}
+              css={[
+                tw`text-xxs text-gray-400 mr-2 ml-1 transition-all`,
+                open && tw`rotate-180 mt-1`,
+              ]}
             />
-          </Button>
+          </span>
         </MenuAnchor>
         <MenuContent
           align="start"
@@ -169,13 +221,14 @@ export const Select = React.forwardRef<HTMLButtonElement, Select>(
           onEscapeKeyDown={() => setOpen(false)}
           onPointerDownOutside={() => setOpen(false)}
           css={[
-            tw`overflow-hidden text-base py-1 rounded-md border border-zinc-200 bg-white shadow-md z-50`,
+            tw`overflow-hidden text-base py-1 w-full rounded-md border border-zinc-200 bg-white shadow-md z-50`,
             size === 'small' && tw`text-sm`,
             size === 'large' && tw`text-lg`,
           ]}
         >
           <MenuRadioGroup value={value} onValueChange={onSelect}>
-            {renderItems(items)}
+            {filterItems.length === 0 && renderEmpty?.()}
+            {filterItems.length > 0 && renderItems(filterItems)}
           </MenuRadioGroup>
         </MenuContent>
       </Menu>

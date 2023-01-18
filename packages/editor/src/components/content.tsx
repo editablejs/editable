@@ -310,7 +310,12 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleRootTouchStart = (event: React.TouchEvent) => {
     if (event.defaultPrevented) return
-    if (!event.target || !ref.current?.contains(event.target as DOMNode)) return
+    if (
+      !event.target ||
+      !ref.current?.contains(event.target as DOMNode) ||
+      isEditableDOMElement(event.target)
+    )
+      return
     IS_TOUCHING.set(editor, true)
     IS_TOUCH_HOLD.set(editor, false)
     clearTouchHoldTimer()
@@ -324,7 +329,12 @@ export const ContentEditable = (props: EditableProps) => {
   const handleRootMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     const event = getNativeEvent(e)
     if (e.defaultPrevented && isMouseEvent(event) && event.button !== 2) return
-    if (!event.target || !ref.current?.contains(event.target as DOMNode)) return
+    if (
+      !event.target ||
+      !ref.current?.contains(event.target as DOMNode) ||
+      isEditableDOMElement(event.target)
+    )
+      return
 
     IS_MOUSEDOWN.set(editor, true)
     if (isDoubleClickRef.current) {
