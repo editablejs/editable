@@ -1,5 +1,14 @@
 # @editablejs/plugin-hr
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [`1c1dc88`](https://github.com/editablejs/editable/commit/1c1dc880caf1b096da96c79cfcb0f654033f7d25) Thanks [@big-camel](https://github.com/big-camel)! - feat: add color toolbar to hr
+
+- Updated dependencies [[`1c1dc88`](https://github.com/editablejs/editable/commit/1c1dc880caf1b096da96c79cfcb0f654033f7d25)]:
+  - @editablejs/editor@1.0.0-beta.19
+
 ## 1.0.0-beta.9
 
 ### Patch Changes

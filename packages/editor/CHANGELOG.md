@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.19
+
+### Patch Changes
+
+- [`1c1dc88`](https://github.com/editablejs/editable/commit/1c1dc880caf1b096da96c79cfcb0f654033f7d25) Thanks [@big-camel](https://github.com/big-camel)! - feat: add color toolbar to hr
+
 ## 1.0.0-beta.18
 
 ### Patch Changes

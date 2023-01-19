@@ -1,5 +1,12 @@
 # @editablejs/plugin-list
 
+## 1.0.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [[`1c1dc88`](https://github.com/editablejs/editable/commit/1c1dc880caf1b096da96c79cfcb0f654033f7d25)]:
+  - @editablejs/editor@1.0.0-beta.19
+
 ## 1.0.0-beta.18
 
 ### Patch Changes
