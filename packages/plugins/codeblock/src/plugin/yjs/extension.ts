@@ -59,7 +59,6 @@ export class YExtension {
     if (!doc) return
     const yText = doc.getText(CODEBLOCK_YJS_FIELD)
     this.yText = yText
-    doc.on('synced', this.docSynced)
     doc.load()
     const ySyncConfig = new YSyncConfig(id, yText, awareness, editor)
     const undoManager = new Y.UndoManager(yText)
@@ -81,17 +80,12 @@ export class YExtension {
     this.dispatchEffects()
   }
 
-  docSynced = () => {
-    console.log('docSynced', this.yText?.toString())
-  }
-
   destroyDoc = () => {
-    const { doc: document, id } = this.config
-    if (!document) return
-    const doc = document.getMap<Y.Doc>(CODEBLOCK_YJS_KEY).get(id)
-    if (!doc) return
-    doc.off('synced', this.docSynced)
-    doc.destroy()
+    // const { doc: document, id } = this.config
+    // if (!document) return
+    // const doc = document.getMap<Y.Doc>(CODEBLOCK_YJS_KEY).get(id)
+    // if (!doc) return
+    // doc.destroy()
     this.extension = []
     this.dispatchEffects()
   }
