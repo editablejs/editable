@@ -369,17 +369,3 @@ export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4
   }
   return lineRects
 }
-
-export const isEditableDOMElement = (value: any): boolean => {
-  if (isDOMHTMLElement(value)) {
-    return ['INPUT', 'TEXTAREA'].indexOf(value.nodeName) > -1 || value.isContentEditable
-  }
-  return false
-}
-
-export const canForceTakeFocus = () => {
-  if (!CAN_USE_DOM) return true
-  const activeElement = document.activeElement
-  if (isEditableDOMElement(activeElement)) return false
-  return true
-}

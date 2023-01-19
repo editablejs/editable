@@ -43,9 +43,7 @@ import { CompositionText } from '../interfaces/composition-text'
 import { EventEmitter } from './event'
 import { Placeholder } from './placeholder'
 import { Focused } from '../hooks/use-focused'
-import { CAN_USE_DOM } from '../utils/environment'
-import { DOMElement, isDOMHTMLElement } from '../utils/dom'
-import { canForceTakeFocus } from '../utils/selection'
+import { canForceTakeFocus } from '../utils/dom'
 
 const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
 

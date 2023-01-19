@@ -1,14 +1,16 @@
 import { useIsomorphicLayoutEffect, useLocale, useNodeFocused } from '@editablejs/editor'
 import {
+  Icon,
   Popover,
   PopoverContent,
   PopoverTrigger,
   Toolbar,
+  ToolbarColorPicker,
   ToolbarDropdown,
   Tooltip,
 } from '@editablejs/ui'
 import { FC, useState } from 'react'
-import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH } from '../constants'
+import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH, DEFUALT_HR_COLOR } from '../constants'
 import { HrEditor } from '../editor'
 import { Hr, HrStyle } from '../interfaces/hr'
 import { HrLocale } from '../locale/types'
@@ -44,6 +46,18 @@ export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => 
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
         <Toolbar mode="inline">
+          <Tooltip content={toolbar.color} side="top" sideOffset={5} arrow={false}>
+            <ToolbarColorPicker
+              defaultValue={DEFUALT_HR_COLOR}
+              defaultColor={{
+                color: DEFUALT_HR_COLOR,
+                title: toolbar.defaultColor,
+              }}
+              onSelect={color => editor.setColorHr(color, element)}
+            >
+              <Icon name="fontColor" />
+            </ToolbarColorPicker>
+          </Tooltip>
           <Tooltip content={toolbar.style} side="top" sideOffset={5} arrow={false}>
             <ToolbarDropdown
               onSelect={value => editor.setStyleHr(value as HrStyle, element)}

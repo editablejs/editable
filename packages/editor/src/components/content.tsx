@@ -7,7 +7,7 @@ import { useEditable, useEditableStatic } from '../hooks/use-editable'
 import { Editable } from '../plugin/editable'
 import { useReadOnly } from '../hooks/use-read-only'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { DOMNode, DOMRange, getDefaultView, isDOMNode } from '../utils/dom'
+import { DOMNode, DOMRange, getDefaultView, inAbsoluteDOMElement, isDOMNode } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
@@ -40,7 +40,7 @@ import { usePlaceholder } from '../hooks/use-placeholder'
 import { isTouchDevice } from '../utils/environment'
 import { TouchPointComponent } from './touch-point'
 import { getNativeEvent, isMouseEvent, isTouchEvent } from '../utils/event'
-import { canForceTakeFocus, isEditableDOMElement } from '../utils/selection'
+import { canForceTakeFocus, isEditableDOMElement } from '../utils/dom'
 
 const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>) => {
   const editor = useEditable()
@@ -313,7 +313,8 @@ export const ContentEditable = (props: EditableProps) => {
     if (
       !event.target ||
       !ref.current?.contains(event.target as DOMNode) ||
-      isEditableDOMElement(event.target)
+      isEditableDOMElement(event.target) ||
+      inAbsoluteDOMElement(event.target)
     )
       return
     IS_TOUCHING.set(editor, true)
@@ -332,7 +333,8 @@ export const ContentEditable = (props: EditableProps) => {
     if (
       !event.target ||
       !ref.current?.contains(event.target as DOMNode) ||
-      isEditableDOMElement(event.target)
+      isEditableDOMElement(event.target) ||
+      inAbsoluteDOMElement(event.target)
     )
       return
 

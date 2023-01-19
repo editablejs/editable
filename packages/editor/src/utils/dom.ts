@@ -1,5 +1,9 @@
 // COMPAT: This is required to prevent TypeScript aliases from doing some very
 // weird things for Slate's types with the same name as globals. (2019/11/27)
+
+import { Constants } from './constants'
+import { CAN_USE_DOM } from './environment'
+
 // https://github.com/microsoft/TypeScript/issues/35002
 type DOMNode = globalThis.Node
 type DOMComment = globalThis.Comment
@@ -14,9 +18,9 @@ export type { DOMNode, DOMComment, DOMElement, DOMText, DOMRange, DOMSelection, 
 
 declare global {
   interface Window {
-    Selection: typeof Selection['constructor']
-    DataTransfer: typeof DataTransfer['constructor']
-    Node: typeof Node['constructor']
+    Selection: (typeof Selection)['constructor']
+    DataTransfer: (typeof DataTransfer)['constructor']
+    Node: (typeof Node)['constructor']
   }
 }
 
@@ -206,4 +210,34 @@ export const htmlAttributesToString = (attributes: Record<string, any>): string 
     // you can break the line, add indent for it if you need
     return `${accumulator}${attrKey}="${attrValue}" `
   }, '')
+}
+
+export const isEditableDOMElement = (value: any): boolean => {
+  if (isDOMHTMLElement(value)) {
+    return ['INPUT', 'TEXTAREA'].indexOf(value.nodeName) > -1 || value.isContentEditable
+  }
+  return false
+}
+
+export const canForceTakeFocus = () => {
+  if (!CAN_USE_DOM) return true
+  const activeElement = document.activeElement
+  if (isEditableDOMElement(activeElement)) return false
+  return true
+}
+
+export const inAbsoluteDOMElement = (value: any): boolean => {
+  if (isDOMHTMLElement(value)) {
+    let node: HTMLElement | null = value
+    while (node) {
+      const attributeNames = node.getAttributeNames()
+      if (attributeNames.some(name => Constants.dataNode === name)) return false
+      const styles = getComputedStyle(node)
+      if (~['absolute', 'fixed'].indexOf(styles.position)) {
+        return true
+      }
+      node = node.parentElement
+    }
+  }
+  return false
 }
