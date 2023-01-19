@@ -19,8 +19,6 @@ export const Seo = withRouter(
     <Head>
       {/* DEFAULT */}
 
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-
       {title != null && <title key="title">{title}</title>}
       {description != null && <meta name="description" key="description" content={description} />}
       {/* OPEN GRAPH */}

@@ -27,7 +27,7 @@ type ComponentPropsWithoutRef<T extends React.ElementType> = PropsWithoutRef<
   React.ComponentProps<T>
 >
 
-type Primitives = { [E in typeof NODES[number]]: PrimitiveForwardRefComponent<E> }
+type Primitives = { [E in (typeof NODES)[number]]: PrimitiveForwardRefComponent<E> }
 type PrimitivePropsWithRef<E extends React.ElementType> = React.ComponentPropsWithRef<E> & {
   asChild?: boolean
 }
