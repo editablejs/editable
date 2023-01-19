@@ -1,5 +1,11 @@
 # @editablejs/plugin-codeblock
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [`059fb41`](https://github.com/editablejs/editable/commit/059fb41a3f170f1c87d412c62586e657336cb926) Thanks [@big-camel](https://github.com/big-camel)! - disable doc.destory
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
