@@ -76,6 +76,7 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
           width,
           height,
           state: 'uploading',
+          name: file.name,
         })
         uploadImage(editor, path, file).then(() => {
           URL.revokeObjectURL(url)
@@ -118,18 +119,14 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
   }
 
   newEditor.rotateImage = async (rotate, image) => {
+    debugger
     let imageDom = Editable.toDOMNode(editor, image).querySelector('img')
     if (!imageDom) return;
     let blob = await drawRotated(imageDom, rotate)
-    Transforms.setNodes<Image>(
-      editor,
-      {
-        url: URL.createObjectURL(blob),
-      },
-      {
-        at: Editable.findPath(editor, image),
-      },
-    )
+    let file = new File([blob], image.name || 'filename.jpeg', {
+      type: "image/jpeg",
+    });
+    uploadImage(editor, Editable.findPath(editor, image), file)
   }
 
   newEditor.setStyleImage = (style, image) => {
