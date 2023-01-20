@@ -26,7 +26,7 @@ import { useViewer } from '../hooks/use-viewer'
 import { Image, ImageStyle } from '../interfaces/image'
 import { ImageLocale } from '../locale'
 import { getOptions } from '../options'
-import { readImageInfo, uploadImage } from '../utils'
+import { readImageElement, rotateImgWithCanvas, uploadImage } from '../utils'
 
 export interface ImageComponentProps extends ElementAttributes {
   element: Image
@@ -36,11 +36,13 @@ export interface ImageComponentProps extends ElementAttributes {
 
 export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
   ({ children, element, editor, ...props }, ref) => {
-    const { url, state, errorMessage, percentage, width, height } = element
+    const { url, state, rotate, errorMessage, percentage, width, height } = element
     const [error, setError] = useState(errorMessage)
     const [loading, setLoading] = useState(true)
     const [loaded, setLoaded] = useState(false)
     const [src, setSrc] = useState('')
+    const [rotatedUrl, setRotatedUrl] = useState('')
+    const [imageDOMElemennt, setImageDOMElement] = useState<HTMLImageElement | null>(null)
 
     const options = useMemo(() => {
       return getOptions(editor)
@@ -71,15 +73,35 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
 
     useIsomorphicLayoutEffect(() => {
       if (src) {
-        readImageInfo(src)
-          .then(() => {
+        readImageElement(src)
+          .then(image => {
             setLoaded(true)
+            setImageDOMElement(image)
           })
           .catch(err => {
             if (state === 'done') setError(err.message)
           })
       }
     }, [src, state])
+
+    useEffect(() => {
+      if (!imageDOMElemennt) {
+        return setRotatedUrl('')
+      }
+      if (rotate && Math.abs(rotate % 360) > 0 && loaded && state === 'done') {
+        rotateImgWithCanvas(imageDOMElemennt, rotate).then(blob => {
+          setRotatedUrl(URL.createObjectURL(blob))
+        })
+      }
+    }, [imageDOMElemennt, rotate, state])
+
+    useEffect(() => {
+      return () => {
+        if (rotatedUrl) {
+          URL.revokeObjectURL(rotatedUrl)
+        }
+      }
+    }, [rotatedUrl])
 
     const [maxWidth, setMaxWidth] = useState(0)
 
@@ -156,7 +178,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
           alt=""
           draggable={false}
           css={[tw`inline-block align-baseline w-full h-full`, isUploading && tw`opacity-30`]}
-          src={src}
+          src={rotatedUrl || src}
         />
       )
     }
@@ -193,7 +215,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     }
 
     const changeRotate = (rotate: number) => {
-      editor.rotateImage(rotate % -360, element)
+      editor.rotateImage(rotate, element)
     }
 
     const isDone = state === 'done'
