@@ -18,7 +18,7 @@ export const createContextMenuItems = (editor: Editable) => {
       },
     },
     {
-      key: 'copu',
+      key: 'copy',
       icon: <Icon name="copy" />,
       title: '复制',
       rightText: Hotkey.format('mod+c'),
@@ -38,7 +38,7 @@ export const createContextMenuItems = (editor: Editable) => {
       },
     },
     {
-      key: 'paste-text',
+      key: 'pasteText',
       icon: <Icon name="pasteText" />,
       title: '粘贴为纯文本',
       rightText: Hotkey.format('mod+shift+v'),
@@ -55,7 +55,7 @@ export const createContextMenuItems = (editor: Editable) => {
         type: 'separator',
       },
       {
-        key: 'merge_cells',
+        key: 'tableMerge',
         icon: <Icon name="tableMerge" />,
         title: '合并单元格',
         disabled: !Grid.canMerge(editor, grid),
@@ -64,7 +64,7 @@ export const createContextMenuItems = (editor: Editable) => {
         },
       },
       {
-        key: 'split_cells',
+        key: 'tableSplit',
         icon: <Icon name="tableSplit" />,
         title: '拆分单元格',
         disabled: !Grid.canSplit(editor, grid),

@@ -3,9 +3,10 @@ import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
+import {ContextMenuItems} from './locale';
 
 interface BaseContextMenuItem extends Omit<UIContextMenuItem, 'children'> {
-  key: string
+  key: keyof ContextMenuItems['contextMenuItems']
   title: React.ReactElement | string
   children?: ContextMenuItem[]
 }

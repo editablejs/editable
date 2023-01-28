@@ -4,6 +4,8 @@ import {
   useEditableStatic,
   useIsomorphicLayoutEffect,
   useSlotActive,
+  Locale,
+  useLocale,
 } from '@editablejs/editor'
 import * as React from 'react'
 import {
@@ -16,6 +18,7 @@ import {
   ContextMenuLabel,
 } from '@editablejs/ui'
 import { ContextMenuItem, useContextMenuItems, useContextMenuOpen } from './store'
+import locale, {ContextMenuItems} from './locale';
 
 export interface ContextMenuOptions {}
 
@@ -39,6 +42,7 @@ const ContextMenu: React.FC<ContextMenu> = ({
   onSelect: onSelectProps,
   ...props
 }) => {
+  const ItemsLocale = useLocale<ContextMenuItems>('contextMenuItems')
   const renderItem = (item: ContextMenuItem, index: number) => {
     if ('type' in item) {
       if (index === 0) return null
@@ -55,17 +59,17 @@ const ContextMenu: React.FC<ContextMenu> = ({
       }
       return <ContextMenuLabel key={`label-${index}`}>{item.content}</ContextMenuLabel>
     }
-    const { children, title, onSelect, href, ...rest } = item
+    const { key, children, title, onSelect, href, ...rest } = item
     if (children && children.length > 0) {
       return (
-        <ContextMenuSub title={title} {...rest}>
+        <ContextMenuSub title={ItemsLocale[key] || title} {...rest} key={key}>
           {renderItems(children)}
         </ContextMenuSub>
       )
     }
     return (
       <UIContextMenuItem onSelect={onSelect} href={href} {...rest}>
-        {title}
+        {ItemsLocale[key] || title}
       </UIContextMenuItem>
     )
   }
@@ -108,6 +112,8 @@ const ContextMenuPortal = () => {
       rootRef.current = null
     }
   }, [editor, setOpen])
+
+  Locale.setLocale(editor, locale)
 
   const [active] = useSlotActive(ContextMenuPortal)
 
