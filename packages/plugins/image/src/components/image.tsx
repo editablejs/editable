@@ -88,7 +88,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
       if (!imageDOMElemennt) {
         return setRotatedUrl('')
       }
-      if (rotate && Math.abs(rotate % 360) > 0 && loaded && state === 'done') {
+      if (rotate !== undefined && loaded && state === 'done') {
         rotateImgWithCanvas(imageDOMElemennt, rotate).then(blob => {
           setRotatedUrl(URL.createObjectURL(blob))
         })
@@ -177,7 +177,10 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
           {...atts}
           alt=""
           draggable={false}
-          css={[tw`inline-block align-baseline w-full h-full`, isUploading && tw`opacity-30`]}
+          css={[
+            tw`inline-block align-baseline rounded w-full h-full`,
+            isUploading && tw`opacity-30`,
+          ]}
           src={rotatedUrl || src}
         />
       )
@@ -215,6 +218,9 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     }
 
     const changeRotate = (rotate: number) => {
+      if (Math.abs(rotate) === 360) {
+        rotate = 0
+      }
       editor.rotateImage(rotate, element)
     }
 
@@ -253,11 +259,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
             {...props}
             ref={ref}
             css={[
-              tw`relative inline-block max-w-full cursor-default rounded border border-transparent`,
-              css`
-                line-height: 0;
-                transform: rotate(${element.rotate ?? 0}deg);
-              `,
+              tw`relative inline-block max-w-full cursor-default rounded border border-transparent leading-[0]`,
               element.style === 'shadow' && tw`shadow-outer`,
               focused && isDone && tw`cursor-zoom-in`,
               !loaded && tw`bg-gray-100`,
@@ -279,7 +281,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
               {focused && (
                 <Resizer
                   onChange={handleResizeChange}
-                  previewImage={isDone && loaded ? src : undefined}
+                  previewImage={isDone && loaded ? rotatedUrl || src : undefined}
                   holders={isDone ? undefined : []}
                   tw="rounded"
                 />
@@ -289,16 +291,16 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
         </PopoverTrigger>
         <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
           <Toolbar mode="inline">
-            <Tooltip content={viewerLocale.rotateRight} side="top" sideOffset={5} arrow={false}>
-              <ToolbarButton
-                icon={<Icon name="rotateRight" />}
-                onToggle={() => changeRotate((element.rotate ?? 0) + 90)}
-              />
-            </Tooltip>
             <Tooltip content={viewerLocale.rotateLeft} side="top" sideOffset={5} arrow={false}>
               <ToolbarButton
                 icon={<Icon name="rotateLeft" />}
-                onToggle={() => changeRotate((element.rotate ?? 0) - 90)}
+                onToggle={() => changeRotate((rotate ?? 0) - 90)}
+              />
+            </Tooltip>
+            <Tooltip content={viewerLocale.rotateRight} side="top" sideOffset={5} arrow={false}>
+              <ToolbarButton
+                icon={<Icon name="rotateRight" />}
+                onToggle={() => changeRotate((rotate ?? 0) + 90)}
               />
             </Tooltip>
             <Tooltip content={styleLocale.tooltip} side="top" sideOffset={5} arrow={false}>
