@@ -266,6 +266,7 @@ export default function Playground() {
   }, [provider, enableCollaborative])
 
   React.useEffect(() => {
+    window.__setPreferredTheme('light')
     if (connected) {
       YjsEditor.connect(editor)
     }
