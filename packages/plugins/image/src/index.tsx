@@ -6,7 +6,13 @@ import { Image } from './interfaces/image'
 import { ImageComponent } from './components/image'
 import { ImageEditor } from './editor'
 import locale, { ImageLocale } from './locale'
-import { insertImage, readImageFileInfo, uploadImage } from './utils'
+import {
+  insertImage,
+  readImageFileInfo,
+  uploadImage,
+  rotateImgWithCanvas,
+  readImageElement,
+} from './utils'
 import { ImageViewer } from './components/viewer'
 
 const defaultHotkey: ImageHotkey = ''
@@ -67,6 +73,7 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
           url,
           width,
           height,
+          name: file.name,
           state: 'uploading',
         })
         uploadImage(editor, path, file).then(() => {
@@ -110,6 +117,32 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
   }
 
   newEditor.rotateImage = (rotate, image) => {
+    const { onRotate } = options
+    const { url, state } = image
+    if (state !== 'done') return
+    const degrees = rotate % -360
+    if (onRotate && url) {
+      readImageElement(url).then(img => {
+        rotateImgWithCanvas(img, degrees).then(blob => {
+          const file = new File([blob], image.name ?? 'rotate.png', { type: 'image/png' })
+          onRotate(file).then(res => {
+            if (res) {
+              const info = typeof res === 'string' ? { url: res, rotate: 0 } : res
+              Transforms.setNodes<Image>(
+                editor,
+                {
+                  rotate: info.rotate,
+                  url: info.url,
+                },
+                {
+                  at: Editable.findPath(editor, image),
+                },
+              )
+            }
+          })
+        })
+      })
+    }
     Transforms.setNodes<Image>(
       editor,
       {

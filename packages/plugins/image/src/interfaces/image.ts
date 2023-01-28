@@ -15,6 +15,7 @@ export interface Image extends Element {
   errorMessage?: string
   rotate?: number
   style?: ImageStyle
+  name?: string
 }
 
 export const Image = {

@@ -16,17 +16,14 @@ export const readBase64 = (file: File) => {
   })
 }
 
-export const readImageInfo = (url: string) => {
-  return new Promise<Record<'width' | 'height', number>>((resolve, reject) => {
+export const readImageElement = (url: string) => {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new window.Image()
     image.onload = () => {
-      resolve({
-        width: image.width,
-        height: image.height,
-      })
+      resolve(image)
     }
     image.onerror = () => {
-      reject('读取图片识别')
+      reject('image load error')
     }
     image.src = url
   })
@@ -42,10 +39,11 @@ interface ReadImageFileInfo {
 export const readImageFileInfo = (file: File) => {
   return new Promise<ReadImageFileInfo | null>(resolve => {
     const url = URL.createObjectURL(file)
-    readImageInfo(url)
-      .then(info => {
+    readImageElement(url)
+      .then(image => {
         resolve({
-          ...info,
+          width: image.naturalWidth,
+          height: image.naturalHeight,
           url,
           file,
         })
@@ -117,4 +115,27 @@ export const uploadImage = (editor: Editable, path: Path, file: File | string) =
       })
   })
   return promise
+}
+
+export function rotateImgWithCanvas(image: HTMLImageElement, degrees: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx || !image.height || !image.width) return
+    const horizontal = [-270, -90, 90, 270]
+    if (horizontal.includes(degrees)) {
+      canvas.width = image.naturalHeight || 0
+      canvas.height = image.naturalWidth || 0
+    } else {
+      canvas.width = image.naturalWidth || 0
+      canvas.height = image.naturalHeight || 0
+    }
+    ctx.translate(canvas.width / 2, canvas.height / 2)
+    ctx.rotate((degrees * Math.PI) / 180)
+    ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2)
+    canvas.toBlob(blob => {
+      blob ? resolve(blob) : reject('blob is null')
+    }, 'image/jpeg')
+  })
 }
