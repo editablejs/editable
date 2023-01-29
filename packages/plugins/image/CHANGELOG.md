@@ -1,5 +1,11 @@
 # @editablejs/plugin-image
 
+## 1.0.0-beta.12
+
+### Patch Changes
+
+- [#50](https://github.com/editablejs/editable/pull/50) [`3ea65d7`](https://github.com/editablejs/editable/commit/3ea65d74744a891c013f9e2402e691b5b39f6c5d) Thanks [@claviering](https://github.com/claviering)! - Generate a blob URL based on the rotate value
+
 ## 1.0.0-beta.11
 
 ### Patch Changes

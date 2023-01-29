@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.32
+
+### Patch Changes
+
+- Updated dependencies [[`3ea65d7`](https://github.com/editablejs/editable/commit/3ea65d74744a891c013f9e2402e691b5b39f6c5d)]:
+  - @editablejs/plugin-image@1.0.0-beta.12
+
 ## 1.0.0-beta.31
 
 ### Patch Changes
