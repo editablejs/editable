@@ -1,5 +1,18 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.35
+
+### Patch Changes
+
+- Updated dependencies [[`ccc95d2`](https://github.com/editablejs/editable/commit/ccc95d24072285824d2d93d443374175085457e9)]:
+  - @editablejs/plugin-context-menu@1.0.0-beta.29
+  - @editablejs/plugin-codeblock@1.0.0-beta.6
+  - @editablejs/plugin-hr@1.0.0-beta.11
+  - @editablejs/plugin-image@1.0.0-beta.14
+  - @editablejs/plugin-link@1.0.0-beta.12
+  - @editablejs/plugin-mention@1.0.0-beta.8
+  - @editablejs/plugin-table@1.0.0-beta.28
+
 ## 1.0.0-beta.34
 
 ### Patch Changes

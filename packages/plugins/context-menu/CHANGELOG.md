@@ -1,5 +1,14 @@
 # @editablejs/plugin-context-menu
 
+## 1.0.0-beta.29
+
+### Patch Changes
+
+- [`ccc95d2`](https://github.com/editablejs/editable/commit/ccc95d24072285824d2d93d443374175085457e9) Thanks [@big-camel](https://github.com/big-camel)! - Fix the issue of context-menu not displaying in Mac.
+
+- Updated dependencies [[`ccc95d2`](https://github.com/editablejs/editable/commit/ccc95d24072285824d2d93d443374175085457e9)]:
+  - @editablejs/ui@1.0.0-beta.5
+
 ## 1.0.0-beta.28
 
 ### Patch Changes
