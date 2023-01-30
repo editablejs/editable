@@ -52,7 +52,7 @@ export const withHTMLSerializer = (editor: Editable) => {
   HTMLSerializer.with(withAlignHTMLTransform, {})
   HTMLSerializer.with(withLeadingHTMLTransform, {})
   HTMLSerializer.with(withMentionHTMLTransform, { editor })
-  HTMLSerializer.with(withCodeBlockHTMLTransform, {})
+  HTMLSerializer.with(withCodeBlockHTMLTransform, { editor })
 }
 
 export const withTextSerializer = (editor: Editable) => {
