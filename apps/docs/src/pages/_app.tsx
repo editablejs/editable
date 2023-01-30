@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import GlobalStyles from '../styles/global'
 import '../styles/index.css'
 import '../styles/sandpack.css'
@@ -36,6 +37,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <Head>
+        <meta
+          name="viewport"
+          content="viewport-fit=cover,width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+        />
+      </Head>
       <GlobalStyles />
       <Component {...pageProps} />
     </>

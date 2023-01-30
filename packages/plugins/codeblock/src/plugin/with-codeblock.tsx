@@ -16,6 +16,10 @@ export const withCodeBlock = <T extends Editable>(editor: T, options: CodeBlockO
 
   const { renderElement, isVoid } = newEditor
 
+  newEditor.getCodeMirrorExtensions = () => {
+    return []
+  }
+
   newEditor.isVoid = element => {
     return CodeBlockEditor.isCodeBlock(newEditor, element) || isVoid(element)
   }

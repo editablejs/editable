@@ -6,10 +6,6 @@ const MyDocument = () => {
     <Html lang="en">
       <Head>
         <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="viewport-fit=cover,width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-        />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="renderer" content="webkit" />

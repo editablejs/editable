@@ -9,6 +9,8 @@ export interface CodeBlockEditor extends Editable {
   insertCodeBlock: (options?: InsertCodeBlockOptions) => void
 
   updateCodeBlock: (element: CodeBlock, options: InsertCodeBlockOptions) => void
+
+  getCodeMirrorExtensions: (id: string) => any[]
 }
 
 export const CodeBlockEditor = {

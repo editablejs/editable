@@ -1,12 +1,13 @@
 import * as Y from 'yjs'
 import { Editable } from '@editablejs/editor'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
-import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import { YRange } from './range'
 import { ySync, ySyncFacet, YSyncConfig } from './sync'
 import { CodeBlockEditor } from '../editor'
 import { CODEBLOCK_YJS_FIELD, CODEBLOCK_YJS_KEY } from '../../constants'
 import { YJS_AWARENESS_WEAK_MAP, YJS_DOC_WEAK_MAP } from '../../weak-map'
+import { yExtension, YExtensionConfig, yExtensionnFacet } from './extension'
 
 export { YRange, ySync, ySyncFacet, YSyncConfig }
 
@@ -15,9 +16,18 @@ export const withYCodeBlock = <T extends Editable>(
   document: Y.Doc,
   awareness: Awareness,
 ) => {
-  const { normalizeNode, apply } = editor
+  if (!CodeBlockEditor.isCodeBlockEditor(editor)) {
+    throw new Error('withYCodeBlock only support CodeBlockEditor')
+  }
 
-  const providerProtocol = useProviderProtocol(editor)
+  const { normalizeNode, apply, getCodeMirrorExtensions } = editor
+
+  const providerProtocol = getProviderProtocol(editor)
+
+  editor.getCodeMirrorExtensions = (id: string) => {
+    const yExtensionConfig = new YExtensionConfig(id, editor)
+    return [...getCodeMirrorExtensions(id), yExtensionnFacet.of(yExtensionConfig), yExtension]
+  }
 
   editor.apply = op => {
     if (!providerProtocol.connected()) return apply(op)

@@ -33,7 +33,7 @@ import { useLineWrapping } from '../hooks/use-line-wrapping'
 import { useLanguage } from '../hooks/use-language'
 import { useEditorView } from '../hooks/use-editor-view'
 import { useTheme } from '../hooks/use-theme'
-import { yExtension, YExtensionConfig, yExtensionnFacet } from '../plugin/yjs/extension'
+import { baseTheme } from '../themes/base'
 
 const basicSetup = (() => [
   lineNumbers(),
@@ -58,12 +58,6 @@ const basicSetup = (() => [
   keymap.of([...defaultKeymap, ...historyKeymap, ...foldKeymap]),
 ])()
 
-const baseTheme = EditorView.baseTheme({
-  '&.cm-focused': tw`outline-none`,
-  '.cm-scroller': tw`font-mono leading-normal text-base py-1`,
-  '.cm-gutters': tw`bg-transparent border-none`,
-  '.cm-lineNumbers .cm-gutterElement': tw`pl-4 pr-1`,
-})
 export interface CodeBlockProps extends RenderElementProps<CodeBlock> {
   editor: CodeBlockEditor
 }
@@ -80,12 +74,11 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
   const { view, ref } = useEditorView(
     () => {
       const plugins = getOptions(editor).plugins ?? []
-      const yExtensionConfig = new YExtensionConfig(element.id, editor)
+
       const extensions = [
         basicSetup,
         baseTheme,
-        yExtensionnFacet.of(yExtensionConfig),
-        yExtension,
+        ...editor.getCodeMirrorExtensions(element.id),
         keymap.of([indentWithTab]),
         EditorView.domEventHandlers({
           focus: () => {

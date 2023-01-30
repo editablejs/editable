@@ -1,9 +1,9 @@
 import { Editable, Range, SelectionDrawing, Slot } from '@editablejs/editor'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
 
-import { useAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
+import { getAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
 
-import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import {
   editorRangeToRelativeRange,
   relativeRangeToEditorRange,
@@ -44,7 +44,7 @@ export function withYCursors<TCursorData extends CursorData, T extends Editable>
   }: WithCursorsOptions<TCursorData> = {},
 ): T & YCursorEditor<TCursorData> {
   const e = editor as Editable & T & YCursorEditor<TCursorData>
-  const awarenessSelection = useAwarenessSelection(awareness, selectionStateField)
+  const awarenessSelection = getAwarenessSelection(awareness, selectionStateField)
 
   awarenessSelection.relativeSelectionToNativeSelection = selection => {
     if (Object.keys(selection).length !== 2) return null
@@ -99,7 +99,7 @@ export function withYCursors<TCursorData extends CursorData, T extends Editable>
     }
   }
 
-  const providerProtocol = useProviderProtocol(e)
+  const providerProtocol = getProviderProtocol(e)
 
   const { connect, disconnect } = providerProtocol
   providerProtocol.connect = () => {

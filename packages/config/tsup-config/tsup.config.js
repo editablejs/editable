@@ -4,7 +4,7 @@ module.exports = options => {
   const isDev = !!options.watch
   return {
     bundle: true,
-    target: ['es2015'],
+    target: ['es2020'],
     entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
     dts: true,

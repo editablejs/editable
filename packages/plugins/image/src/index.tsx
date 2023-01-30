@@ -1,5 +1,5 @@
 import { Editable, Hotkey, Transforms, Locale, Editor, Operation, Slot } from '@editablejs/editor'
-import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
+import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
 import { openFileDialog } from '@editablejs/ui'
 import { setOptions, ImageHotkey, ImageOptions } from './options'
 import { Image } from './interfaces/image'
@@ -27,7 +27,7 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
   setOptions(newEditor, options)
 
   const { isInline, isVoid } = newEditor
-  const historyProtocol = useHistoryProtocol(newEditor)
+  const historyProtocol = getHistoryProtocol(newEditor)
   const { capture } = historyProtocol
 
   historyProtocol.capture = (op: Operation) => {

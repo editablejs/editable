@@ -1,5 +1,11 @@
 import { HTMLDeserializerWithTransform, isDOMHTMLElement } from '@editablejs/editor'
-import { CODEBLOCK_DATA_SYNTAX, CODEBLOCK_LANGUAGE } from './constants'
+import {
+  CODEBLOCK_DATA_LINE_WRAPPING,
+  CODEBLOCK_DATA_SYNTAX,
+  CODEBLOCK_DATA_TABSIZE,
+  CODEBLOCK_DATA_THEME,
+  CODEBLOCK_LANGUAGE,
+} from './constants'
 import { CodeBlock } from './interfaces/codeblock'
 
 const isPreElement = (node: HTMLElement) => {
@@ -44,11 +50,20 @@ export const withCodeBlockDescendantTransform: HTMLDeserializerWithTransform = n
           }
         }
       }
+      const tabSize = node.getAttribute(CODEBLOCK_DATA_TABSIZE)
+      let theme = node.getAttribute(CODEBLOCK_DATA_THEME)
+      if (!theme || ~['dark', 'light'].indexOf(theme)) {
+        theme = 'light'
+      }
+      const lineWrapping = node.getAttribute(CODEBLOCK_DATA_LINE_WRAPPING)
       const codeText = node.innerText.replace(/\u200b/g, '')
       const codeblock = CodeBlock.create({
         ...element,
         language: syntax ?? undefined,
         code: codeText,
+        tabSize: tabSize ? parseInt(tabSize, 10) : undefined,
+        theme: theme as 'light' | 'dark',
+        lineWrapping: lineWrapping === 'true',
       })
       return [codeblock]
     }

@@ -10,7 +10,7 @@ import {
   yTextToEditorElement,
 } from '@editablejs/plugin-yjs-transform'
 
-import { useProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-editor'
 import { applyEditorOp } from '../apply-to-yjs'
@@ -73,15 +73,15 @@ export const YjsEditor = {
   },
 
   connected(editor: YjsEditor): boolean {
-    return useProviderProtocol(editor).connected()
+    return getProviderProtocol(editor).connected()
   },
 
   connect(editor: YjsEditor): void {
-    useProviderProtocol(editor).connect()
+    getProviderProtocol(editor).connect()
   },
 
   disconnect(editor: YjsEditor): void {
-    useProviderProtocol(editor).disconnect()
+    getProviderProtocol(editor).disconnect()
   },
 
   isLocal(editor: YjsEditor): boolean {
@@ -184,7 +184,7 @@ export function withYjs<T extends Editor>(
     })
   }
 
-  const providerProtocol = useProviderProtocol(e)
+  const providerProtocol = getProviderProtocol(e)
   const { connect, disconnect } = providerProtocol
   providerProtocol.connect = () => {
     e.sharedRoot.observeDeep(handleYEvents)

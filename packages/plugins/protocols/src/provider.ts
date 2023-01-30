@@ -52,7 +52,7 @@ export const createProviderProtocol = (editor: Editable): ProviderProtocol => {
   return providerProtocol
 }
 
-export const useProviderProtocol = (editor: Editable) => {
+export const getProviderProtocol = (editor: Editable) => {
   let providerProtocol = PROVIDERS.get(editor)
   if (!providerProtocol) {
     providerProtocol = createProviderProtocol(editor)

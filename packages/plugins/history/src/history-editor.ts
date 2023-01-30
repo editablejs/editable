@@ -1,5 +1,5 @@
 import { Editable, Editor } from '@editablejs/editor'
-import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
+import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
 import { HistoryStack } from './history-stack'
 
 /**
@@ -45,22 +45,22 @@ export const HistoryEditor = {
    */
 
   redo(editor: Editable): void {
-    useHistoryProtocol(editor).redo()
+    getHistoryProtocol(editor).redo()
   },
 
   /**
    * Undo to the previous saved state.
    */
   undo(editor: Editable): void {
-    useHistoryProtocol(editor).undo()
+    getHistoryProtocol(editor).undo()
   },
 
   canRedo(editor: Editable): boolean {
-    return useHistoryProtocol(editor).canRedo()
+    return getHistoryProtocol(editor).canRedo()
   },
 
   canUndo(editor: Editable): boolean {
-    return useHistoryProtocol(editor).canUndo()
+    return getHistoryProtocol(editor).canUndo()
   },
 
   /**

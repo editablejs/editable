@@ -8,7 +8,7 @@ import {
   Node,
   Transforms,
 } from '@editablejs/editor'
-import { useHistoryProtocol } from '@editablejs/plugin-protocols/history'
+import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
 
 import { HistoryEditor } from './history-editor'
 import { HistoryStack } from './history-stack'
@@ -34,7 +34,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
   const { apply } = e
 
   HistoryStack.set(e)
-  const historyProtocol = useHistoryProtocol(e)
+  const historyProtocol = getHistoryProtocol(e)
   const { redo, undo, canRedo, canUndo, capture } = historyProtocol
 
   historyProtocol.redo = () => {

@@ -49,7 +49,7 @@ export const createHistoryProtocol = (editor: Editable): HistoryProtocol => {
   return historyProtocol
 }
 
-export const useHistoryProtocol = (editor: Editable): HistoryProtocol => {
+export const getHistoryProtocol = (editor: Editable): HistoryProtocol => {
   let historyProtocol = HISTORY_PROTOCOL_WEAK_MAP.get(editor)
   if (!historyProtocol) {
     historyProtocol = createHistoryProtocol(editor)
