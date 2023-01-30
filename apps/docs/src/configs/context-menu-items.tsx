@@ -10,7 +10,7 @@ export const createContextMenuItems = (editor: Editable) => {
     {
       key: 'cut',
       icon: <Icon name="cut" />,
-      title: '剪切',
+      title: 'Cut',
       rightText: Hotkey.format('mod+x'),
       disabled: isDisabled,
       onSelect() {
@@ -18,9 +18,9 @@ export const createContextMenuItems = (editor: Editable) => {
       },
     },
     {
-      key: 'copu',
+      key: 'copy',
       icon: <Icon name="copy" />,
-      title: '复制',
+      title: 'Copy',
       rightText: Hotkey.format('mod+c'),
       disabled: isDisabled,
       onSelect() {
@@ -30,7 +30,7 @@ export const createContextMenuItems = (editor: Editable) => {
     {
       key: 'paste',
       icon: <Icon name="paste" />,
-      title: '粘贴',
+      title: 'Paste',
       rightText: Hotkey.format('mod+v'),
       disabled: !selection,
       onSelect() {
@@ -40,7 +40,7 @@ export const createContextMenuItems = (editor: Editable) => {
     {
       key: 'paste-text',
       icon: <Icon name="pasteText" />,
-      title: '粘贴为纯文本',
+      title: 'Paste as plain text',
       rightText: Hotkey.format('mod+shift+v'),
       disabled: !selection,
       onSelect() {
@@ -57,7 +57,7 @@ export const createContextMenuItems = (editor: Editable) => {
       {
         key: 'merge_cells',
         icon: <Icon name="tableMerge" />,
-        title: '合并单元格',
+        title: 'Merge cells',
         disabled: !Grid.canMerge(editor, grid),
         onSelect: () => {
           Grid.mergeCell(editor, grid)
@@ -66,7 +66,7 @@ export const createContextMenuItems = (editor: Editable) => {
       {
         key: 'split_cells',
         icon: <Icon name="tableSplit" />,
-        title: '拆分单元格',
+        title: 'Split cells',
         disabled: !Grid.canSplit(editor, grid),
         onSelect: () => {
           Grid.splitCell(editor, grid)

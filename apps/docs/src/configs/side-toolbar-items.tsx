@@ -17,7 +17,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'table',
         icon: <Icon name="table" />,
-        title: '表格',
+        title: 'Table',
         disabled: !!TableEditor.isActive(editor),
         onSelect: () => {
           TableEditor.toggle(editor)
@@ -26,7 +26,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'blockquote',
         icon: <Icon name="blockquote" />,
-        title: '引用',
+        title: 'Blockquote',
         onSelect: () => {
           BlockquoteEditor.toggle(editor)
         },
@@ -34,7 +34,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'unorderedList',
         icon: <Icon name="unorderedList" />,
-        title: '无序列表',
+        title: 'Unordered List',
         onSelect: () => {
           UnOrderedListEditor.toggle(editor)
         },
@@ -42,7 +42,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'orderedList',
         icon: <Icon name="orderedList" />,
-        title: '有序列表',
+        title: 'Ordered List',
         onSelect: () => {
           OrderedListEditor.toggle(editor)
         },
@@ -50,7 +50,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'taskList',
         icon: <Icon name="taskList" />,
-        title: '任务列表',
+        title: 'Task List',
         onSelect: () => {
           TaskListEditor.toggle(editor)
         },
@@ -61,15 +61,15 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'cut',
         icon: <Icon name="cut" />,
-        title: '剪切',
+        title: 'Cut',
         onSelect() {
           editor.cut(range)
         },
       },
       {
-        key: 'copu',
+        key: 'copy',
         icon: <Icon name="copy" />,
-        title: '复制',
+        title: 'Copy',
         onSelect() {
           editor.copy(range)
         },
