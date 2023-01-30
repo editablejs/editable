@@ -45,28 +45,32 @@ export const withCodeBlockHTMLTransform: HTMLSerializerWithTransform<
     if (CodeBlock.isCodeBlock(node)) {
       const { languages } = getOptions(editor)
       const { language, code, theme = 'light', lineWrapping, tabSize = 2 } = node
-      const l = languages?.find(l => l.value === language)
-      if (!l?.plugin) return next(node, options)
       const highlightStyle = theme === 'dark' ? oneDarkHighlightStyle : defaultHighlightStyle
       const styleMap = new Map<string, string>()
       // @ts-ignore
-      const rules = defaultHighlightStyle.module?.['rules'] ?? []
+      const rules = highlightStyle.module?.['rules'] ?? []
       for (const rule of rules) {
         const matchArray = (rule as string).match(/^\.(.*?)\s\{(.*?)\}$/)
         if (matchArray && matchArray.length > 2) {
           styleMap.set(matchArray[1], matchArray[2])
         }
       }
+
+      const l = languages?.find(l => l.value === language)
       let html = ''
-      runmode(code, l.plugin.language, highlightStyle, (text, style, from, to) => {
-        if (style && styleMap.has(style)) {
-          console.log(style)
-          html += `<span style="${styleMap.get(style)}">${text}</span>`
-        } else {
-          html += text
-        }
-        console.log(text, style, from, to)
-      })
+      if (l?.plugin) {
+        runmode(code, l.plugin.language, highlightStyle, (text, style, from, to) => {
+          if (style && styleMap.has(style)) {
+            console.log(style)
+            html += `<span style="${styleMap.get(style)}">${text}</span>`
+          } else {
+            html += text
+          }
+          console.log(text, style, from, to)
+        })
+      } else {
+        html = code
+      }
       html = html.replace(/\n/g, '<br />')
       return serializer.create(
         'pre',
