@@ -1,5 +1,11 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.34
+
+### Patch Changes
+
+- [`ba25ed3`](https://github.com/editablejs/editable/commit/ba25ed3d7e37b48041a415344bb302e549c07720) Thanks [@big-camel](https://github.com/big-camel)! - fix serializer for the codeblock
+
 ## 1.0.0-beta.33
 
 ### Patch Changes
