@@ -101,6 +101,7 @@ const ContextMenuPortal = () => {
       setPoint({ x: e.clientX, y: e.clientY })
       setOpen(true)
     }
+
     editor.on('contextmenu', handleContextMenu)
     return () => {
       editor.off('contextmenu', handleContextMenu)
@@ -108,6 +109,16 @@ const ContextMenuPortal = () => {
       rootRef.current = null
     }
   }, [editor, setOpen])
+
+  React.useEffect(() => {
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (open) event.preventDefault()
+    }
+    editor.on('keydown', handleKeydown)
+    return () => {
+      editor.off('keydown', handleKeydown)
+    }
+  }, [open])
 
   const [active] = useSlotActive(ContextMenuPortal)
 

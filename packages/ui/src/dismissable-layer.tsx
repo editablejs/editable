@@ -296,18 +296,18 @@ function useFocusOutside(onFocusOutside?: (event: FocusOutsideEvent) => void) {
   const handleFocusOutside = useCallbackRef(onFocusOutside) as EventListener
   const isFocusInsideReactTreeRef = React.useRef(false)
 
-  React.useEffect(() => {
-    const handleFocus = (event: FocusEvent) => {
-      if (event.target && !isFocusInsideReactTreeRef.current) {
-        const eventDetail = { originalEvent: event }
-        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
-          discrete: false,
-        })
-      }
-    }
-    document.addEventListener('focusin', handleFocus)
-    return () => document.removeEventListener('focusin', handleFocus)
-  }, [handleFocusOutside])
+  // React.useEffect(() => {
+  //   const handleFocus = (event: FocusEvent) => {
+  //     if (event.target && !isFocusInsideReactTreeRef.current) {
+  //       const eventDetail = { originalEvent: event }
+  //       handleAndDispatchCustomEvent(FOCUS_OUTSIDE, handleFocusOutside, eventDetail, {
+  //         discrete: false,
+  //       })
+  //     }
+  //   }
+  //   document.addEventListener('focusin', handleFocus)
+  //   return () => document.removeEventListener('focusin', handleFocus)
+  // }, [handleFocusOutside])
 
   return {
     onFocusCapture: () => (isFocusInsideReactTreeRef.current = true),
