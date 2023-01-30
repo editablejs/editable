@@ -1,5 +1,14 @@
 # @editablejs/plugin-history
 
+## 1.0.0-beta.20
+
+### Patch Changes
+
+- [`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad) Thanks [@big-camel](https://github.com/big-camel)! - useProviderProtocol -> getProviderProtocol
+
+- Updated dependencies [[`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad)]:
+  - @editablejs/plugin-protocols@1.0.0-beta.4
+
 ## 1.0.0-beta.19
 
 ### Patch Changes
