@@ -648,7 +648,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           Editor.deleteFragment(editor)
         }
         const composition = CompositionText.isCompositionText(node) ? node.composition : null
-        const offset = composition?.offset ?? selection.anchor.offset
+        const offset = composition?.offset ?? Range.start(selection).offset
 
         Transforms.setNodes<CompositionText>(
           editor,
