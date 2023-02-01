@@ -114,7 +114,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     if (save == null) {
       save = historyProtocol.capture(op)
     }
-    if (save && !Editable.isComposing(e)) {
+    if (save && (!Editable.isComposing(e) || op.type === 'remove_text' || op.type === 'remove_node')) {
       if (merge == null) {
         if (lastBatch == null) {
           merge = false

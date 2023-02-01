@@ -629,7 +629,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     const { selection, marks } = editor
     if (!selection) return
     if (IS_COMPOSING.get(e)) {
-      let [node, path] = Editor.node(editor, selection)
+      let [node, path] = Editor.node(editor, Range.start(selection))
       if (marks) {
         // 使用零宽字符绕过slate里面不能插入空字符的问题。组合输入法完成后会删除掉
         const compositionText: CompositionText = {
@@ -643,7 +643,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
         }
         Transforms.insertNodes(editor, compositionText)
         e.marks = null
-      } else if (Text.isText(node)) {
+      } else if (Text.isText(node) || node.type === 'paragraph') {
         if (Range.isExpanded(selection)) {
           Editor.deleteFragment(editor)
         }
