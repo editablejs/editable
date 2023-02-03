@@ -29,9 +29,13 @@
     "@editablejs/yjs-websocket": "1.0.0-beta.0",
     "@editablejs/plugin-codeblock": "1.0.0-beta.0",
     "@editablejs/protocols": "1.0.0-beta.0",
-    "@editablejs/yjs-protocols": "1.0.0-beta.0"
+    "@editablejs/yjs-protocols": "1.0.0-beta.0",
+    "@editablejs/deserializer": "1.0.0-beta.0",
+    "@editablejs/models": "1.0.0-beta.0",
+    "@editablejs/serializer": "1.0.0-beta.0"
   },
   "changesets": [
+    "afraid-roses-yawn",
     "beige-needles-decide",
     "blue-boxes-flash",
     "brave-mangos-worry",
@@ -62,6 +66,7 @@
     "nine-eyes-remember",
     "perfect-kids-rule",
     "pink-queens-cheat",
+    "popular-turkeys-crash",
     "purple-moose-nail",
     "rare-oranges-provide",
     "rich-sloths-shout",
