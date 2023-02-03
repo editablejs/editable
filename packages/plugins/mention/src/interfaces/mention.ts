@@ -1,4 +1,4 @@
-import { Element } from '@editablejs/editor'
+import { Element } from '@editablejs/models'
 import { MENTION_KEY } from '../constants'
 
 export interface MentionUser {

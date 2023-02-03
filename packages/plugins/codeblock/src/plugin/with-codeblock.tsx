@@ -1,4 +1,5 @@
-import { Editable, Hotkey, Locale, Transforms } from '@editablejs/editor'
+import { Editable, Hotkey, Locale } from '@editablejs/editor'
+import { Transforms } from '@editablejs/models'
 import { CodeBlockComponent } from '../components/codeblock'
 import { CodeBlockEditor } from './editor'
 import { CodeBlock } from '../interfaces/codeblock'

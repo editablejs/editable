@@ -4,13 +4,13 @@ import tw, { css, styled } from 'twin.macro'
 import {
   EditableProvider,
   ContentEditable,
-  createEditor,
   useIsomorphicLayoutEffect,
   Placeholder,
-  Editor,
   isTouchDevice,
   Editable,
+  withEditable,
 } from '@editablejs/editor'
+import { Editor, createEditor } from '@editablejs/models'
 import {
   withPlugins,
   useContextMenuEffect,
@@ -28,10 +28,19 @@ import {
 
 import randomColor from 'randomcolor'
 import { faker } from '@faker-js/faker'
-import { WebsocketProvider } from '@editablejs/plugin-yjs-websocket'
+import { WebsocketProvider } from '@editablejs/yjs-websocket'
 import * as Y from 'yjs'
-import { withHTMLSerializer, withTextSerializer } from '@editablejs/plugins/serializer'
-import { withHTMLDeserializer } from '@editablejs/plugins/deserializer'
+import { withHTMLSerializerTransform } from '@editablejs/plugins/serializer/html'
+import { withTextSerializerTransform } from '@editablejs/plugins/serializer/text'
+import {
+  withMarkdownSerializerTransform,
+  withMarkdownSerializerPlugin,
+} from '@editablejs/plugins/serializer/markdown'
+import { withHTMLDeserializerTransform } from '@editablejs/plugins/deserializer/html'
+import {
+  withMarkdownDeserializerTransform,
+  withMarkdownDeserializerPlugin,
+} from '@editablejs/plugins/deserializer/markdown'
 import { withHistory } from '@editablejs/plugin-history'
 import { javascript as codemirrorJavascript } from '@codemirror/lang-javascript-next'
 import { html as codemirrorHtml } from '@codemirror/lang-html-next'
@@ -181,7 +190,7 @@ export default function Playground() {
 
     const sharedType = document.get('content', Y.XmlText) as Y.XmlText
 
-    let editor = withYjs(createEditor(), sharedType, { autoConnect: false })
+    let editor = withYjs(withEditable(createEditor()), sharedType, { autoConnect: false })
     if (provider) {
       editor = withYCursors(editor, provider.awareness, {
         data: cursorData,
@@ -274,9 +283,13 @@ export default function Playground() {
   }, [editor, connected])
 
   useIsomorphicLayoutEffect(() => {
-    withHTMLSerializer(editor)
-    withHTMLDeserializer(editor)
-    withTextSerializer(editor)
+    withMarkdownDeserializerPlugin(editor)
+    withMarkdownSerializerPlugin(editor)
+    withTextSerializerTransform(editor)
+    withHTMLSerializerTransform(editor)
+    withMarkdownSerializerTransform(editor)
+    withHTMLDeserializerTransform(editor)
+    withMarkdownDeserializerTransform(editor)
   }, [editor])
 
   useContextMenuEffect(() => {

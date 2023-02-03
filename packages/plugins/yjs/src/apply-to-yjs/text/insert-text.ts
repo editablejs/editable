@@ -1,5 +1,5 @@
-import { InsertTextOperation, Node, Text } from '@editablejs/editor'
-import { getProperties, getYTarget } from '@editablejs/plugin-yjs-transform'
+import { InsertTextOperation, Node, Text } from '@editablejs/models'
+import { getProperties, getYTarget } from '@editablejs/yjs-transform'
 import type Y from 'yjs'
 
 export function insertText(sharedRoot: Y.XmlText, editorRoot: Node, op: InsertTextOperation): void {

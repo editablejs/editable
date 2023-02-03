@@ -1,7 +1,7 @@
 import { RenderElementProps, useNodeFocused } from '@editablejs/editor'
 import { FC } from 'react'
 import tw, { css } from 'twin.macro'
-import { HrEditor } from '../editor'
+import { HrEditor } from '../plugin/hr-editor'
 import { Hr } from '../interfaces/hr'
 import { HrPopover } from './hr-popover'
 

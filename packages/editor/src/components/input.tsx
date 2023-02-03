@@ -1,4 +1,4 @@
-import { Range } from 'slate'
+import { Range } from '@editablejs/models'
 import * as React from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'

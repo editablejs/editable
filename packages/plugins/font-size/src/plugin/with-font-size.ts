@@ -1,8 +1,9 @@
-import { Editable, RenderLeafProps, Editor, Hotkey } from '@editablejs/editor'
+import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { FONTSIZE_KEY } from '../constants'
 import { FontSize } from '../interfaces/font-size'
 import { FontSizeHotkey, FontSizeOptions, setOptions } from '../options'
-import { FontSizeEditor } from './editor'
+import { FontSizeEditor } from './font-size-editor'
 
 const defaultHotkeys: FontSizeHotkey = {}
 
@@ -35,7 +36,7 @@ export const withFontSize = <T extends Editable>(editor: T, options: FontSizeOpt
 
   const { onKeydown } = newEditor
 
-  const hotkeys: FontSizeHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
+  const hotkeys: FontSizeHotkey = Object.assign({}, defaultHotkeys, options.hotkey)
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const value = Hotkey.match(hotkeys, e)
     if (value) {

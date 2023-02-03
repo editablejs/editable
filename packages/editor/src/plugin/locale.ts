@@ -1,6 +1,6 @@
 import merge from 'lodash.merge'
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editable } from '../plugin/editable'
+import { Editor } from '@editablejs/models'
 export interface Locale {
   locale: string
 }
@@ -10,12 +10,9 @@ export interface LocaleState {
   locales: Record<string, Locale>
 }
 
-const EDITOR_TO_LOCALE_STORE: WeakMap<
-  Editable,
-  UseBoundStore<StoreApi<LocaleState>>
-> = new WeakMap()
+const EDITOR_TO_LOCALE_STORE: WeakMap<Editor, UseBoundStore<StoreApi<LocaleState>>> = new WeakMap()
 
-const getStore = (editor: Editable) => {
+const getStore = (editor: Editor) => {
   let store = EDITOR_TO_LOCALE_STORE.get(editor)
   if (!store) {
     store = create<LocaleState>(() => ({
@@ -30,7 +27,7 @@ const getStore = (editor: Editable) => {
 export const Locale = {
   getStore,
 
-  setLocale: <T extends Locale>(editor: Editable, ...locales: Record<string, T>[]) => {
+  setLocale: <T extends Locale>(editor: Editor, ...locales: Record<string, T>[]) => {
     const store = getStore(editor)
     store.setState(state => {
       const { lang, locales: prevLocales } = state
@@ -47,12 +44,12 @@ export const Locale = {
     })
   },
 
-  getLang: (editor: Editable) => {
+  getLang: (editor: Editor) => {
     const state = getStore(editor).getState()
     return state.lang
   },
 
-  setLang: (editor: Editable, lang: string) => {
+  setLang: (editor: Editor, lang: string) => {
     const store = getStore(editor)
     store.setState(state => {
       return {
@@ -62,13 +59,13 @@ export const Locale = {
     })
   },
 
-  getLocale: <T extends Locale>(editor: Editable): T => {
+  getLocale: <T extends Locale>(editor: Editor): T => {
     const lang = Locale.getLang(editor)
     const locales = Locale.getLocales(editor)
     return (locales[lang] ?? locales['en-US']) as any
   },
 
-  getLocales: (editor: Editable): Record<string, Locale> => {
+  getLocales: (editor: Editor): Record<string, Locale> => {
     const state = getStore(editor).getState()
     return state.locales
   },

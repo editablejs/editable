@@ -1,4 +1,4 @@
-import { CursorRect } from '@editablejs/yjs-protocols/awareness-cursors'
+import { CursorRect } from '@editablejs/yjs-protocols/awareness-selection'
 import { CaretPosition } from '../types'
 
 export function getCaretPosition(

@@ -1,4 +1,4 @@
-import { Element } from '@editablejs/editor'
+import { Element } from '@editablejs/models'
 import { ALIGN_ATTR_KEY } from '../constants'
 
 type ValueOf<T> = T[keyof T]

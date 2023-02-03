@@ -1,14 +1,14 @@
 import {
-  Editable,
   Editor,
-  Hotkey,
   InsertNodeOperation,
   Operation,
   Path,
   Node,
   Transforms,
-} from '@editablejs/editor'
-import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
+  CompositionText,
+} from '@editablejs/models'
+import { Editable, Hotkey } from '@editablejs/editor'
+import { withHistoryProtocol } from '@editablejs/protocols/history'
 
 import { HistoryEditor } from './history-editor'
 import { HistoryStack } from './history-stack'
@@ -26,7 +26,7 @@ const defaultHotkeys: Hotkeys = {
 }
 
 export interface HistoryOptions {
-  hotkeys?: Hotkeys
+  hotkey?: Hotkeys
 }
 
 export const withHistory = <T extends Editable>(editor: T, options: HistoryOptions = {}) => {
@@ -34,7 +34,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
   const { apply } = e
 
   HistoryStack.set(e)
-  const historyProtocol = getHistoryProtocol(e)
+  const historyProtocol = withHistoryProtocol(e)
   const { redo, undo, canRedo, canUndo, capture } = historyProtocol
 
   historyProtocol.redo = () => {
@@ -118,7 +118,10 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
       if (merge == null) {
         if (lastBatch == null) {
           merge = false
-        } else if (operations.length !== 0) {
+        } else if (
+          operations.length !== 0 &&
+          !operations.some(o => o.type === 'set_node' && 'composition' in o.properties)
+        ) {
           merge = true
         } else {
           merge = shouldMerge(op, lastOp)
@@ -164,7 +167,7 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     apply(op)
   }
 
-  const hotkeys = Object.assign({}, defaultHotkeys, options.hotkeys)
+  const hotkeys = Object.assign({}, defaultHotkeys, options.hotkey)
   const { onKeydown } = e
   e.onKeydown = (event: KeyboardEvent) => {
     const value = Hotkey.match(hotkeys, event)

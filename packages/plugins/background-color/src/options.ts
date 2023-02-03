@@ -1,18 +1,18 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 
 export type BackgroundColorHotkey = Record<string, string | ((e: KeyboardEvent) => boolean)>
 
 export interface BackgroundColorOptions {
-  hotkeys?: BackgroundColorHotkey
+  hotkey?: BackgroundColorHotkey
   defaultColor?: string
 }
 
-const BACKGROUNDCOLOR_OPTIONS = new WeakMap<Editable, BackgroundColorOptions>()
+const BACKGROUNDCOLOR_OPTIONS = new WeakMap<Editor, BackgroundColorOptions>()
 
-export const getOptions = (editor: Editable): BackgroundColorOptions => {
+export const getOptions = (editor: Editor): BackgroundColorOptions => {
   return BACKGROUNDCOLOR_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: BackgroundColorOptions) => {
+export const setOptions = (editor: Editor, options: BackgroundColorOptions) => {
   BACKGROUNDCOLOR_OPTIONS.set(editor, options)
 }

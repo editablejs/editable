@@ -1,4 +1,4 @@
-import { Element } from '@editablejs/editor'
+import { Element } from '@editablejs/models'
 import { IMAGE_KEY } from '../constants'
 
 export type ImageState = 'uploading' | 'waitingUpload' | 'done' | 'error'
@@ -21,5 +21,13 @@ export interface Image extends Element {
 export const Image = {
   isImage: (value: any): value is Image => {
     return Element.isElement(value) && value.type === IMAGE_KEY
+  },
+
+  create: (image: Omit<Image, 'type' | 'children'> = {}): Image => {
+    return {
+      ...image,
+      type: IMAGE_KEY,
+      children: [{ text: '' }],
+    }
   },
 }

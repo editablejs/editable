@@ -1,5 +1,5 @@
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editor, Range, Element, Path, Selection } from 'slate'
+import { Editor, Range, Element, Path, Selection } from '@editablejs/models'
 import { Editable } from './editable'
 
 export interface DragStore {
@@ -24,9 +24,9 @@ export interface DragStore {
   } | null
 }
 
-const EDITOR_TO_DRAG_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<DragStore>>>()
+const EDITOR_TO_DRAG_STORE = new WeakMap<Editor, UseBoundStore<StoreApi<DragStore>>>()
 
-const getDragStore = (editor: Editable) => {
+const getDragStore = (editor: Editor) => {
   let store = EDITOR_TO_DRAG_STORE.get(editor)
   if (!store) {
     store = create<DragStore>(() => ({
@@ -43,13 +43,13 @@ const getDragStore = (editor: Editable) => {
 export const Drag = {
   getStore: getDragStore,
 
-  getDrag: (editor: Editable) => {
+  getDrag: (editor: Editor) => {
     const store = getDragStore(editor)
     const { drag } = store.getState()
     return drag
   },
 
-  setDrag: (editor: Editable, drag: Partial<DragStore['drag']>) => {
+  setDrag: (editor: Editor, drag: Partial<DragStore['drag']>) => {
     const store = getDragStore(editor)
     store.setState(state => {
       return {
@@ -58,12 +58,12 @@ export const Drag = {
     })
   },
 
-  clear: (editor: Editable) => {
+  clear: (editor: Editor) => {
     const store = getDragStore(editor)
     store.setState({ drag: null })
   },
 
-  toBlockPath: (editor: Editable) => {
+  toBlockPath: (editor: Editor) => {
     const drag = Drag.getDrag(editor)
     if (!drag || drag.type !== 'block') return
     const { to, position } = drag

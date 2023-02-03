@@ -1,4 +1,4 @@
-import { Text } from '@editablejs/editor'
+import { Text } from '@editablejs/models'
 import { FONTSIZE_KEY } from '../constants'
 
 export interface FontSize extends Text {

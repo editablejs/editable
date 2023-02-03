@@ -1,5 +1,4 @@
 import {
-  BaseEditor,
   Editor,
   Node,
   Text,
@@ -9,13 +8,20 @@ import {
   Range,
   Scrubber,
   Transforms,
-  NodeEntry,
-  Selection,
-  Descendant,
-} from 'slate'
-import { SelectionEdge } from 'slate/dist/interfaces/types'
+  SelectionEdge,
+  Key,
+  DOMElement,
+  DOMNode,
+  DOMPoint,
+  DOMRange,
+  DOMSelection,
+  DOMStaticRange,
+  isDOMElement,
+  isDOMSelection,
+  isDOMNode,
+  isDOMText,
+} from '@editablejs/models'
 
-import { Key } from '../utils/key'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
@@ -28,28 +34,11 @@ import {
   IS_COMPOSING,
   NODE_TO_ELEMENT,
 } from '../utils/weak-maps'
-import {
-  DOMElement,
-  DOMNode,
-  DOMPoint,
-  DOMRange,
-  DOMSelection,
-  DOMStaticRange,
-  isDOMElement,
-  isDOMSelection,
-  normalizeDOMPoint,
-  hasShadowRoot,
-  isDOMNode,
-  isDOMText,
-} from '../utils/dom'
+import { normalizeDOMPoint, hasShadowRoot } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
 import findNearbyNodes, { isAlignY } from '../utils/nearby'
 import { getTextOffset } from '../utils/text'
 import { getLineRectsByNode, getLineRectsByRange } from '../utils/selection'
-import { GridCell } from '../interfaces/cell'
-import { GridRow } from '../interfaces/row'
-import { Grid } from '../interfaces/grid'
-import { List } from '../interfaces/list'
 import { Focused } from '../hooks/use-focused'
 import { EventHandler, EventType } from './event'
 import {
@@ -119,10 +108,6 @@ export interface RenderPlaceholderProps<T extends Node = Node> {
   node: T
 }
 
-export interface EditorElements {
-  [key: string]: NodeEntry<Element>[]
-}
-
 export interface SerializeHtmlOptions {
   node: Node
   attributes?: Record<string, any>
@@ -139,14 +124,7 @@ export interface DeserializeHtmlOptions {
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
-export interface Editable extends BaseEditor {
-  isSolidVoid: (element: Element) => boolean
-  isGrid: (value: any) => value is Grid
-  isGridRow: (value: any) => value is GridRow
-  isGridCell: (value: any) => value is GridCell
-  isList: (value: any) => value is List
-  hasRange: (editor: Editable, range: Range) => boolean
-  getFragment: (range?: Range) => Descendant[]
+export interface Editable extends Editor {
   blur(): void
   focus(start?: boolean): void
   copy(range?: Range): void
@@ -154,8 +132,6 @@ export interface Editable extends BaseEditor {
   insertFromClipboard(at?: Range): void
   insertTextFromClipboard(at?: Range): void
   insertFile(file: File, at?: Range): void
-  queryActiveMarks: <T extends Text>() => Omit<T, 'text'>
-  queryActiveElements: () => EditorElements
   on: <T extends EventType>(type: T, handler: EventHandler<T>, prepend?: boolean) => void
   once: <T extends EventType>(type: T, handler: EventHandler<T>, prepend?: boolean) => void
   off: <T extends EventType>(type: T, handler: EventHandler<T>) => void
@@ -182,27 +158,21 @@ export interface Editable extends BaseEditor {
   renderElement: (props: RenderElementProps) => JSX.Element
   renderLeaf: (props: RenderLeafProps) => JSX.Element
   renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
-  normalizeSelection: (
-    fn: (
-      selection: Selection,
-      options?: { grid: NodeEntry<Grid>; row: number; col: number },
-    ) => void,
-  ) => void
-  getDataTransfer: (range?: Range) => DataTransfer | null
+  toDataTransfer: (range?: Range) => DataTransfer | null
 }
 
 export const Editable = {
   isEditor(value: any): value is Editable {
-    return !!value && Editor.isEditor(value) && !!(value as Editable).onSelectionChange
+    return !!value && Editor.isEditor(value) && 'onSelectionChange' in value
   },
   /**
    * Check if the user is currently composing inside the editor.
    */
-  isComposing(editor: Editable): boolean {
+  isComposing(editor: Editor): boolean {
     return !!IS_COMPOSING.get(editor)
   },
 
-  isEmpty(editor: Editable, node: Node): boolean {
+  isEmpty(editor: Editor, node: Node): boolean {
     if (Text.isText(node)) {
       return node.text === '' && !IS_COMPOSING.get(editor)
     } else {
@@ -215,22 +185,6 @@ export const Editable = {
     }
   },
 
-  isGrid(editor: Editable, value: any): value is Grid {
-    return editor.isGrid(value)
-  },
-
-  isGridRow(editor: Editable, value: any): value is GridRow {
-    return editor.isGridRow(value)
-  },
-
-  isGridCell(editor: Editable, value: any): value is GridCell {
-    return editor.isGridCell(value)
-  },
-
-  isList(editor: Editable, value: any): value is List {
-    return editor.isList(value)
-  },
-
   /**
    * 获取在选区内选中一行内容的节点以及所在行的索引
    * @param editor
@@ -238,7 +192,7 @@ export const Editable = {
    * @returns
    */
   getSelectLine(
-    editor: Editable,
+    editor: Editor,
     options: { range?: Range; match?: (element: Element) => boolean } = {},
   ): [Element, number] | undefined {
     const { range = editor.selection, match = () => true } = options
@@ -277,10 +231,7 @@ export const Editable = {
    * @param options
    * @returns
    */
-  isSelectLineEdge(
-    editor: Editable,
-    options: { point?: Point; edge?: SelectionEdge } = {},
-  ): boolean {
+  isSelectLineEdge(editor: Editor, options: { point?: Point; edge?: SelectionEdge } = {}): boolean {
     const { point = editor.selection?.focus, edge = 'start' } = options
     if (!point) return false
     const entry = Editor.above(editor, { at: point, match: n => Editor.isBlock(editor, n) })
@@ -311,7 +262,7 @@ export const Editable = {
   /**
    * Return the host window of the current editor.
    */
-  getWindow(editor: Editable): Window {
+  getWindow(editor: Editor): Window {
     const window = EDITOR_TO_WINDOW.get(editor)
     if (!window) {
       throw new Error('Unable to find a host window element for this editor')
@@ -323,7 +274,7 @@ export const Editable = {
    * Find a key for a Slate node.
    */
 
-  findKey(editor: Editable, node: Node): Key {
+  findKey(editor: Editor, node: Node): Key {
     let key = NODE_TO_KEY.get(node)
 
     if (!key) {
@@ -338,7 +289,7 @@ export const Editable = {
    * Find the path of Slate node.
    */
 
-  findPath(editor: Editable, node: Node): Path {
+  findPath(editor: Editor, node: Node): Path {
     const path: Path = []
     let child = node
 
@@ -370,7 +321,7 @@ export const Editable = {
    * Find the DOM node that implements DocumentOrShadowRoot for the editor.
    */
 
-  findDocumentOrShadowRoot(editor: Editable): Document | ShadowRoot {
+  findDocumentOrShadowRoot(editor: Editor): Document | ShadowRoot {
     const el = Editable.toDOMNode(editor, editor)
     const root = el.getRootNode()
 
@@ -395,7 +346,7 @@ export const Editable = {
    * Check if the editor is in read-only mode.
    */
 
-  isReadOnly(editor: Editable): boolean {
+  isReadOnly(editor: Editor): boolean {
     return !!IS_READ_ONLY.get(editor)
   },
 
@@ -414,7 +365,7 @@ export const Editable = {
     editor.focus()
   },
 
-  deselect(editor: Editable): void {
+  deselect(editor: Editor): void {
     const { selection } = editor
     if (selection) {
       Transforms.deselect(editor)
@@ -424,7 +375,7 @@ export const Editable = {
   /**
    * Check if a DOM node is within the editor.
    */
-  hasDOMNode(editor: Editable, target: DOMNode): boolean {
+  hasDOMNode(editor: Editor, target: DOMNode): boolean {
     const editorEl = Editable.toDOMNode(editor, editor)
     let targetEl
 
@@ -451,7 +402,7 @@ export const Editable = {
    * Find the native DOM element from a Slate node.
    */
 
-  toDOMNode(editor: Editable, node: Node): HTMLElement {
+  toDOMNode(editor: Editor, node: Node): HTMLElement {
     const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
     const offsetNode = Editor.isEditor(node)
       ? EDITOR_TO_ELEMENT.get(editor)
@@ -467,7 +418,7 @@ export const Editable = {
   /**
    * Find a native DOM selection point from a Slate point.
    */
-  toDOMPoint(editor: Editable, point: Point): DOMPoint {
+  toDOMPoint(editor: Editor, point: Point): DOMPoint {
     const [node] = Editor.node(editor, point.path)
     const el = Editable.toDOMNode(editor, node)
     let domPoint: DOMPoint | undefined
@@ -522,7 +473,7 @@ export const Editable = {
    * according to https://dom.spec.whatwg.org/#concept-range-bp-set.
    */
 
-  toDOMRange(editor: Editable, range: Range): DOMRange {
+  toDOMRange(editor: Editor, range: Range): DOMRange {
     const { anchor, focus } = range
     const isBackward = Range.isBackward(range)
     const domAnchor = Editable.toDOMPoint(editor, anchor)
@@ -550,7 +501,7 @@ export const Editable = {
    * Find a Slate node from a native DOM `element`.
    */
 
-  toSlateNode(editor: Editable, offsetNode: DOMNode): Node {
+  toSlateNode(editor: Editor, offsetNode: DOMNode): Node {
     let domEl = isDOMElement(offsetNode) ? offsetNode : offsetNode.parentElement
 
     if (domEl && !domEl.hasAttribute(DATA_EDITABLE_NODE)) {
@@ -566,7 +517,7 @@ export const Editable = {
     return node
   },
 
-  findLowestDOMElements(editor: Editable, node: Node) {
+  findLowestDOMElements(editor: Editor, node: Node) {
     const domNode = Editable.toDOMNode(editor, node)
     if (Editor.isVoid(editor, node)) return [domNode]
     const nodes = domNode.querySelectorAll(
@@ -575,7 +526,7 @@ export const Editable = {
     return Array.from(nodes)
   },
 
-  findClosestPoint(editor: Editable, domNode: DOMNode, x: number, y: number): Point | null {
+  findClosestPoint(editor: Editor, domNode: DOMNode, x: number, y: number): Point | null {
     const domEl = isDOMElement(domNode) ? domNode : domNode.parentElement
     if (!domEl) return null
     const elements: DOMElement[] = []
@@ -602,7 +553,7 @@ export const Editable = {
       if (Text.isText(node) || Editor.isVoid(editor, node)) {
         addToElements(node)
       } else {
-        if (!editor.isSolidVoid(node)) {
+        if (!Editor.isSolidVoid(editor, node)) {
           const rect = element.getBoundingClientRect()
           const reverse = x < rect.left + rect.width / 2
           const adjacent = (reverse ? Editor.previous : Editor.next)(editor, {
@@ -612,10 +563,10 @@ export const Editable = {
             addToElements(adjacent[0])
           }
         } else {
-          const isGrid = Editable.isGrid(editor, node)
+          const isGrid = Editor.isGrid(editor, node)
           const nodes = Editor.nodes(editor, {
             at: Editable.findPath(editor, node),
-            match: n => (isGrid && Editable.isGridCell(editor, n)) || Text.isText(n),
+            match: n => (isGrid && Editor.isGridCell(editor, n)) || Text.isText(n),
             mode: 'highest',
           })
           for (const [child] of nodes) {
@@ -722,7 +673,7 @@ export const Editable = {
   /**
    * Get the target point from a DOM `event`.
    */
-  findEventPoint(editor: Editable, event: any): Point | null {
+  findEventPoint(editor: Editor, event: any): Point | null {
     event = getNativeEvent(event)
     const { clientX: x, clientY: y } = event
 
@@ -736,7 +687,7 @@ export const Editable = {
     return Editable.findClosestPoint(editor, target, x, y)
   },
 
-  findPreviousLinePoint(editor: Editable, at?: Range): Point | null {
+  findPreviousLinePoint(editor: Editor, at?: Range): Point | null {
     const { selection } = editor
     if (!at && selection) at = selection
     if (!at) return null
@@ -784,7 +735,7 @@ export const Editable = {
     return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 0, top)
   },
 
-  findNextLinePoint(editor: Editable, at?: Range): Point | null {
+  findNextLinePoint(editor: Editor, at?: Range): Point | null {
     const { selection } = editor
     if (!at && selection) at = selection
     if (!at) return null
@@ -833,7 +784,7 @@ export const Editable = {
     return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 99999, bottom)
   },
 
-  findTextOffsetOnLine(editor: Editable, point: Point) {
+  findTextOffsetOnLine(editor: Editor, point: Point) {
     const blockEntry = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
       at: point,
@@ -865,7 +816,7 @@ export const Editable = {
     return data
   },
 
-  findPointOnLine(editor: Editable, path: Path, offset: number, moveNext: boolean = false) {
+  findPointOnLine(editor: Editor, path: Path, offset: number, moveNext: boolean = false) {
     const blockEntry = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
       at: path,
@@ -910,7 +861,7 @@ export const Editable = {
    */
 
   toSlatePoint<T extends boolean>(
-    editor: Editable,
+    editor: Editor,
     domPoint: DOMPoint,
     options: {
       exactMatch: T
@@ -1021,7 +972,7 @@ export const Editable = {
    */
 
   toSlateRange<T extends boolean>(
-    editor: Editable,
+    editor: Editor,
     domRange: DOMRange | DOMStaticRange | DOMSelection,
     options: {
       exactMatch: T
@@ -1101,19 +1052,14 @@ export const Editable = {
     return range as unknown as T extends true ? Range | null : Range
   },
 
-  hasRange(editor: Editable, range: Range): boolean {
-    const { anchor, focus } = range
-    return Editor.hasPath(editor, anchor.path) && Editor.hasPath(editor, focus.path)
-  },
-
-  toRelativePosition(editor: Editable, x: number, y: number): [number, number] {
+  toRelativePosition(editor: Editor, x: number, y: number): [number, number] {
     const container = Editable.toDOMNode(editor, editor)
     const rootRect = container.getBoundingClientRect()
 
     return [x - rootRect.left, y - rootRect.top]
   },
 
-  reverseRelativePosition(editor: Editable, x: number, y: number): [number, number] {
+  reverseRelativePosition(editor: Editor, x: number, y: number): [number, number] {
     const container = Editable.toDOMNode(editor, editor)
     const rootRect = container.getBoundingClientRect()
     return [x + rootRect.left, y + rootRect.top]

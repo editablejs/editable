@@ -1,4 +1,4 @@
-import { ListTemplate } from '@editablejs/editor'
+import { ListTemplate } from '@editablejs/models'
 
 const toABC = (num: number): string => {
   return num <= 26

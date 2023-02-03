@@ -1,5 +1,17 @@
 import * as React from 'react'
-import { Editor, Node, Range, Transforms, Point, Path, Element } from 'slate'
+import {
+  Editor,
+  Node,
+  Range,
+  Transforms,
+  Point,
+  Path,
+  Element,
+  DOMNode,
+  DOMRange,
+  getDefaultView,
+  isDOMNode,
+} from '@editablejs/models'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
@@ -7,7 +19,7 @@ import { useEditable, useEditableStatic } from '../hooks/use-editable'
 import { Editable } from '../plugin/editable'
 import { useReadOnly } from '../hooks/use-read-only'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { DOMNode, DOMRange, getDefaultView, inAbsoluteDOMElement, isDOMNode } from '../utils/dom'
+import { inAbsoluteDOMElement } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,

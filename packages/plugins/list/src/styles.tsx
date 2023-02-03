@@ -1,4 +1,5 @@
-import { Editable, List, ListTemplate, RenderElementProps } from '@editablejs/editor'
+import { Editable, RenderElementProps } from '@editablejs/editor'
+import { List, ListTemplate } from '@editablejs/models'
 import { StyledComponent } from 'styled-components'
 import tw, { styled } from 'twin.macro'
 

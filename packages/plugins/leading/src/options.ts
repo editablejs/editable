@@ -1,17 +1,17 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 
 export type LeadingHotkey = Record<string, string | ((e: KeyboardEvent) => boolean)>
 
 export interface LeadingOptions {
-  hotkeys?: LeadingHotkey
+  hotkey?: LeadingHotkey
 }
 
-const LEADING_OPTIONS = new WeakMap<Editable, LeadingOptions>()
+const LEADING_OPTIONS = new WeakMap<Editor, LeadingOptions>()
 
-export const getOptions = (editor: Editable): LeadingOptions => {
+export const getOptions = (editor: Editor): LeadingOptions => {
   return LEADING_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: LeadingOptions) => {
+export const setOptions = (editor: Editor, options: LeadingOptions) => {
   LEADING_OPTIONS.set(editor, options)
 }

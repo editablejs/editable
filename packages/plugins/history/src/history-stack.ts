@@ -1,5 +1,5 @@
 import { isPlainObject } from 'is-plain-object'
-import { Editable, Editor, Operation, Range } from '@editablejs/editor'
+import { Editor, Operation, Range } from '@editablejs/models'
 
 interface Batch {
   operations: Operation[]
@@ -43,13 +43,13 @@ export const HistoryStack = {
     return stack
   },
 
-  hasUndos(editor: Editable): boolean {
+  hasUndos(editor: Editor): boolean {
     const stack = HistoryStack.get(editor)
     const { undos } = stack
     return undos.length > 0
   },
 
-  hasRedos(editor: Editable): boolean {
+  hasRedos(editor: Editor): boolean {
     const stack = HistoryStack.get(editor)
     const { redos } = stack
     return redos.length > 0

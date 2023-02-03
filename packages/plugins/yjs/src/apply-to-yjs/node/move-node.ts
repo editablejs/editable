@@ -1,16 +1,16 @@
-import { MoveNodeOperation, Node, Path, Text } from '@editablejs/editor'
+import { MoveNodeOperation, Node, Path, Text } from '@editablejs/models'
 import {
   cloneInsertDeltaDeep,
   getInsertDeltaLength,
   yTextToInsertDelta,
-} from '@editablejs/plugin-yjs-transform'
+} from '@editablejs/yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../../types'
-import { getYTarget } from '@editablejs/plugin-yjs-transform'
+import { getYTarget } from '@editablejs/yjs-transform'
 import {
   getStoredPositionsInDeltaAbsolute,
   restoreStoredPositionsWithDeltaAbsolute,
-} from '@editablejs/plugin-yjs-transform'
+} from '@editablejs/yjs-transform'
 
 export function moveNode(sharedRoot: Y.XmlText, editorRoot: Node, op: MoveNodeOperation): void {
   const newParentPath = Path.parent(op.newPath)

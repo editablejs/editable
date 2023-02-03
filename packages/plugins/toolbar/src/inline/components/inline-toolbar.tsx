@@ -1,13 +1,13 @@
 import {
   Editable,
   useEditableStatic,
-  Range,
   Slot,
   SelectionDrawing,
   useSlotActive,
   useIsomorphicLayoutEffect,
   useLocale,
 } from '@editablejs/editor'
+import { Range } from '@editablejs/models'
 import { Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'
 import * as React from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from '../store'

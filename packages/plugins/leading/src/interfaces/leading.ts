@@ -1,4 +1,4 @@
-import { Element } from '@editablejs/editor'
+import { Element } from '@editablejs/models'
 import { LEADING_ATTR_KEY } from '../constants'
 
 export interface Leading extends Element {

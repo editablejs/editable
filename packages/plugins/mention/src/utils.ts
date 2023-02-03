@@ -1,8 +1,8 @@
-import { MentionEditor } from './plugin/editor'
+import { Editor } from '@editablejs/models'
 import { MentionStore } from './store'
 import { getMentionTriggerData, clearMentionTriggerData } from './weak-map'
 
-export const closeMentionDecorate = (editor: MentionEditor) => {
+export const closeMentionDecorate = (editor: Editor) => {
   MentionStore.setOpen(editor, false)
   const triggerData = getMentionTriggerData(editor)
   if (triggerData) {

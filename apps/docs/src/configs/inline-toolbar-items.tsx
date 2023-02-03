@@ -1,9 +1,10 @@
-import { Editable, Grid } from '@editablejs/editor'
+import { Editable } from '@editablejs/editor'
+import { Grid } from '@editablejs/models'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
 import {
   HeadingEditor,
   OrderedListEditor,
-  UnOrderedListEditor,
+  UnorderedListEditor,
   MarkFormat,
   MarkEditor,
   TaskListEditor,
@@ -64,9 +65,9 @@ export const createInlineToolbarItems = (editor: Editable) => {
     },
     {
       type: 'button',
-      active: !!UnOrderedListEditor.queryActive(editor),
+      active: !!UnorderedListEditor.queryActive(editor),
       onToggle: () => {
-        UnOrderedListEditor.toggle(editor)
+        UnorderedListEditor.toggle(editor)
       },
       icon: <Icon name="unorderedList" />,
     },
@@ -96,7 +97,7 @@ export const createInlineToolbarItems = (editor: Editable) => {
     },
   )
 
-  const grid = Grid.find(editor)
+  const grid = Grid.above(editor)
   if (grid) {
     items.push(
       'separator',

@@ -1,4 +1,4 @@
-import { Editor, Operation, PathRef, PointRef, RangeRef } from '@editablejs/editor'
+import { Editor, Operation, PathRef, PointRef, RangeRef } from '@editablejs/models'
 import * as Y from 'yjs'
 import { UniqueOperations } from '../constants'
 import { YjsEditor } from '../plugin'

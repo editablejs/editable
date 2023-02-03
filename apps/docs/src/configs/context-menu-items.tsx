@@ -1,4 +1,5 @@
-import { Editable, Grid, Hotkey, Range } from '@editablejs/editor'
+import { Editable, Hotkey } from '@editablejs/editor'
+import { Grid, Range } from '@editablejs/models'
 import { ContextMenuItem } from '@editablejs/plugins'
 import { Icon } from '@editablejs/ui'
 
@@ -48,7 +49,7 @@ export const createContextMenuItems = (editor: Editable) => {
       },
     },
   ]
-  const grid = Grid.find(editor)
+  const grid = Grid.above(editor)
   if (grid) {
     items.push(
       {

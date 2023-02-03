@@ -19,10 +19,10 @@
 
 - [`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad) Thanks [@big-camel](https://github.com/big-camel)! - Add serialization for the CodeBlock plugin.
 
-* [`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad) Thanks [@big-camel](https://github.com/big-camel)! - useProviderProtocol -> getProviderProtocol
+* [`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad) Thanks [@big-camel](https://github.com/big-camel)! - useProviderProtocol -> withProviderProtocol
 
 * Updated dependencies [[`34d0901`](https://github.com/editablejs/editable/commit/34d0901800730a5c5da9773eb8aa6d6c3f3829ad)]:
-  - @editablejs/plugin-protocols@1.0.0-beta.4
+  - @editablejs/protocols@1.0.0-beta.4
 
 ## 1.0.0-beta.4
 
@@ -30,7 +30,7 @@
 
 - Updated dependencies [[`1c1dc88`](https://github.com/editablejs/editable/commit/1c1dc880caf1b096da96c79cfcb0f654033f7d25)]:
   - @editablejs/editor@1.0.0-beta.19
-  - @editablejs/plugin-protocols@1.0.0-beta.3
+  - @editablejs/protocols@1.0.0-beta.3
 
 ## 1.0.0-beta.3
 
@@ -46,7 +46,7 @@
 
 - Updated dependencies [[`94cbf51`](https://github.com/editablejs/editable/commit/94cbf5117612174c0ecb2b536ac6695d1bfcf360)]:
   - @editablejs/editor@1.0.0-beta.18
-  - @editablejs/plugin-protocols@1.0.0-beta.2
+  - @editablejs/protocols@1.0.0-beta.2
   - @editablejs/ui@1.0.0-beta.4
   - @editablejs/yjs-protocols@1.0.0-beta.2
 
@@ -64,4 +64,4 @@
   - @editablejs/editor@1.0.0-beta.17
   - @editablejs/ui@1.0.0-beta.3
   - @editablejs/yjs-protocols@1.0.0-beta.1
-  - @editablejs/plugin-protocols@1.0.0-beta.1
+  - @editablejs/protocols@1.0.0-beta.1

@@ -1,4 +1,5 @@
-import { Descendant, Editable, Editor, Operation, Point } from '@editablejs/editor'
+import { Descendant, Editor, Operation, Point } from '@editablejs/models'
+import { Editable } from '@editablejs/editor'
 import {
   assertDocumentAttachment,
   editorPointToRelativePosition,
@@ -8,9 +9,9 @@ import {
   removeStoredPosition,
   setStoredPosition,
   yTextToEditorElement,
-} from '@editablejs/plugin-yjs-transform'
+} from '@editablejs/yjs-transform'
 
-import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { withProviderProtocol } from '@editablejs/protocols/provider'
 import * as Y from 'yjs'
 import { applyYjsEvents } from '../apply-to-editor'
 import { applyEditorOp } from '../apply-to-yjs'
@@ -28,7 +29,7 @@ const DEFAULT_POSITION_STORAGE_ORIGIN = Symbol('editable-yjs-position-storage')
 const ORIGIN: WeakMap<Editor, unknown> = new WeakMap()
 const LOCAL_CHANGES: WeakMap<Editor, LocalChange[]> = new WeakMap()
 
-export type YjsEditor = Editable & {
+export type YjsEditor = Editor & {
   sharedRoot: Y.XmlText
   undoManager: Y.UndoManager
   localOrigin: unknown
@@ -73,15 +74,15 @@ export const YjsEditor = {
   },
 
   connected(editor: YjsEditor): boolean {
-    return getProviderProtocol(editor).connected()
+    return withProviderProtocol(editor).connected()
   },
 
   connect(editor: YjsEditor): void {
-    getProviderProtocol(editor).connect()
+    withProviderProtocol(editor).connect()
   },
 
   disconnect(editor: YjsEditor): void {
-    getProviderProtocol(editor).disconnect()
+    withProviderProtocol(editor).disconnect()
   },
 
   isLocal(editor: YjsEditor): boolean {
@@ -184,7 +185,7 @@ export function withYjs<T extends Editor>(
     })
   }
 
-  const providerProtocol = getProviderProtocol(e)
+  const providerProtocol = withProviderProtocol(e)
   const { connect, disconnect } = providerProtocol
   providerProtocol.connect = () => {
     e.sharedRoot.observeDeep(handleYEvents)
@@ -248,7 +249,7 @@ export function withYjs<T extends Editor>(
       e.sharedRoot.doc.transact(t => {
         txGroup.forEach(change => {
           assertDocumentAttachment(e.sharedRoot)
-          // 设置 origin ops 到 meta 中，在 applyRemoteEvents 中，可以使用 origin.meta.ops 来获取操作。前提需要使用 @editablejs/plugin-yjs-websocket 插件
+          // 设置 origin ops 到 meta 中，在 applyRemoteEvents 中，可以使用 origin.meta.ops 来获取操作。前提需要使用 @editablejs/yjs-websocket 插件
           const ops = t.meta.get('ops')
           if (!ops) {
             t.meta.set('ops', [{ ...change.op }])

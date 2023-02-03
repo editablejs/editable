@@ -1,6 +1,6 @@
 import { APPLICATION_FRAGMENT_TYPE, TEXT_HTML, TEXT_PLAIN } from './constants'
 import { matchFragmentStringFromHTML, parseDataTransferFiles } from './data-transfer'
-import { isDOMHTMLElement } from './dom'
+import { isDOMHTMLElement } from '@editablejs/models'
 
 const deselectCurrent = () => {
   const selection = document.getSelection()

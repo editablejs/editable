@@ -14,9 +14,9 @@ import {
   OrderedListOptions,
   withOrderedList,
   OrderedListEditor,
-  UnOrderedListOptions,
-  withUnOrderedList,
-  UnOrderedListEditor,
+  UnorderedListOptions,
+  withUnorderedList,
+  UnorderedListEditor,
   TaskListOptions,
   withTaskList,
   TaskListEditor,
@@ -44,7 +44,7 @@ export interface PluginOptions {
   heading?: HeadingOptions
   blockquote?: BlockquoteOptions
   orderedList?: OrderedListOptions
-  unorderedList?: UnOrderedListOptions
+  unorderedList?: UnorderedListOptions
   taskList?: TaskListOptions
   indent?: IndentOptions
   table?: TableOptions
@@ -67,7 +67,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withHeading(newEditor, options.heading)
   newEditor = withBlockquote(newEditor, options.blockquote)
   newEditor = withOrderedList(newEditor, options.orderedList)
-  newEditor = withUnOrderedList(newEditor, options.unorderedList)
+  newEditor = withUnorderedList(newEditor, options.unorderedList)
   newEditor = withTaskList(newEditor, options.taskList)
   newEditor = withTable(newEditor, options.table)
   newEditor = withLink(newEditor, options.link)
@@ -85,7 +85,7 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     BlockquoteEditor &
     OrderedListEditor &
     IndentEditor &
-    UnOrderedListEditor &
+    UnorderedListEditor &
     TaskListEditor &
     TableEditor &
     LinkEditor &

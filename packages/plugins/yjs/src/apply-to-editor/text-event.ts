@@ -1,4 +1,4 @@
-import { Editor, Element, Node, Operation, Path, Text } from '@editablejs/editor'
+import { Editor, Element, Node, Operation, Path, Text } from '@editablejs/models'
 import {
   deepEquals,
   deltaInsertToEditorNode,
@@ -8,7 +8,7 @@ import {
   getEditorNodeYLength,
   getEditorPath,
   yOffsetToEditorOffsets,
-} from '@editablejs/plugin-yjs-transform'
+} from '@editablejs/yjs-transform'
 import * as Y from 'yjs'
 import { Delta } from '../types'
 

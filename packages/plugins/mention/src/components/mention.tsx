@@ -1,11 +1,11 @@
-import { RenderElementProps, Text } from '@editablejs/editor'
+import { Editable, RenderElementProps } from '@editablejs/editor'
+import { Text } from '@editablejs/models'
 import { FC } from 'react'
 import { getTriggerChar } from '../get-trigger-char'
 import { Mention } from '../interfaces/mention'
-import { MentionEditor } from '../plugin/editor'
 
 export interface MentionComponentProps extends RenderElementProps<Mention> {
-  editor: MentionEditor
+  editor: Editable
 }
 
 export const MentionComponent: FC<MentionComponentProps> = ({

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Text, Path, Range, Element } from 'slate'
+import { Text, Path, Range, Element } from '@editablejs/models'
 import { useStore } from 'zustand'
 import { Decorate, ElementDecorate, getDecorateStore, TextDecorate } from '../plugin/decorate'
 import { useEditableStatic } from './use-editable'

@@ -1,4 +1,4 @@
-import { Text } from '@editablejs/editor'
+import { Text } from '@editablejs/models'
 import { BACKGROUND_COLOR_KEY } from '../constants'
 
 export interface BackgroundColor extends Text {

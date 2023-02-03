@@ -1,14 +1,11 @@
 import {
   Editable,
-  Editor,
   ElementAttributes,
-  Range,
-  TextSerializer,
-  Transforms,
   useIsomorphicLayoutEffect,
   useLocale,
   useNodeFocused,
 } from '@editablejs/editor'
+import { Editor, Range, Transforms } from '@editablejs/models'
 import {
   Popover,
   PopoverContent,
@@ -17,8 +14,9 @@ import {
   Icon,
   Button,
 } from '@editablejs/ui'
+import { TextSerializer } from '@editablejs/serializer/text'
 import React, { forwardRef, useState } from 'react'
-import { LinkEditor } from '../editor'
+import { LinkEditor } from '../plugin/link-editor'
 import { Link } from '../interfaces/link'
 import { LinkLocale } from '../locale'
 import { StyledInput } from './styled'

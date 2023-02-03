@@ -1,13 +1,11 @@
-import { Editable, Range, SelectionDrawing, Slot } from '@editablejs/editor'
+import { Editable, SelectionDrawing, Slot } from '@editablejs/editor'
+import { Editor, Range } from '@editablejs/models'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
 
 import { getAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
 
-import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
-import {
-  editorRangeToRelativeRange,
-  relativeRangeToEditorRange,
-} from '@editablejs/plugin-yjs-transform'
+import { withProviderProtocol } from '@editablejs/protocols/provider'
+import { editorRangeToRelativeRange, relativeRangeToEditorRange } from '@editablejs/yjs-transform'
 import { YCursorEditor } from './cursors-editor'
 import { getCursorsStore } from '../store'
 import { RemoteCursors as CursorsComponent } from '../components/selection'
@@ -33,7 +31,7 @@ export type WithCursorsOptions<T extends CursorData = CursorData> = {
   autoSend?: boolean
 }
 
-export function withYCursors<TCursorData extends CursorData, T extends Editable>(
+export function withYCursors<TCursorData extends CursorData, T extends Editor>(
   editor: T,
   awareness: Awareness,
   {
@@ -43,7 +41,7 @@ export function withYCursors<TCursorData extends CursorData, T extends Editable>
     data,
   }: WithCursorsOptions<TCursorData> = {},
 ): T & YCursorEditor<TCursorData> {
-  const e = editor as Editable & T & YCursorEditor<TCursorData>
+  const e = editor as Editor & T & YCursorEditor<TCursorData>
   const awarenessSelection = getAwarenessSelection(awareness, selectionStateField)
 
   awarenessSelection.relativeSelectionToNativeSelection = selection => {
@@ -99,7 +97,7 @@ export function withYCursors<TCursorData extends CursorData, T extends Editable>
     }
   }
 
-  const providerProtocol = getProviderProtocol(e)
+  const providerProtocol = withProviderProtocol(e)
 
   const { connect, disconnect } = providerProtocol
   providerProtocol.connect = () => {

@@ -17,7 +17,7 @@
     "@editablejs/plugin-toolbar": "0.0.0",
     "@editablejs/ui": "0.0.0",
     "@editablejs/plugin-yjs": "0.0.0",
-    "@editablejs/plugin-yjs-transform": "0.0.0",
+    "@editablejs/yjs-transform": "0.0.0",
     "@editablejs/plugin-link": "0.0.0",
     "@editablejs/plugin-image": "1.0.0-beta.0",
     "@editablejs/plugin-hr": "1.0.0-beta.0",
@@ -26,9 +26,9 @@
     "@editablejs/plugin-background-color": "1.0.0-beta.0",
     "@editablejs/plugin-font-color": "1.0.0-beta.0",
     "@editablejs/plugin-mention": "1.0.0-beta.0",
-    "@editablejs/plugin-yjs-websocket": "1.0.0-beta.0",
+    "@editablejs/yjs-websocket": "1.0.0-beta.0",
     "@editablejs/plugin-codeblock": "1.0.0-beta.0",
-    "@editablejs/plugin-protocols": "1.0.0-beta.0",
+    "@editablejs/protocols": "1.0.0-beta.0",
     "@editablejs/yjs-protocols": "1.0.0-beta.0"
   },
   "changesets": [

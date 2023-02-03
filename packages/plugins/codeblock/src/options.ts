@@ -1,6 +1,6 @@
 import { LanguageSupport } from '@codemirror/language'
 import { Extension } from '@codemirror/state'
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { CodeBlockLocale } from './locale/types'
 
 export type CodeBlockHotkey = string | ((e: KeyboardEvent) => boolean)
@@ -16,12 +16,12 @@ export interface CodeBlockOptions {
   }[]
 }
 
-const CODEBLOCK_OPTIONS = new WeakMap<Editable, CodeBlockOptions>()
+const CODEBLOCK_OPTIONS = new WeakMap<Editor, CodeBlockOptions>()
 
-export const getOptions = (editor: Editable): CodeBlockOptions => {
+export const getOptions = (editor: Editor): CodeBlockOptions => {
   return CODEBLOCK_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: CodeBlockOptions) => {
+export const setOptions = (editor: Editor, options: CodeBlockOptions) => {
   CODEBLOCK_OPTIONS.set(editor, options)
 }

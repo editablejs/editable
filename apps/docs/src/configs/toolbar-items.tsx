@@ -1,5 +1,6 @@
 import { FC, useCallback } from 'react'
-import { Editable, Grid, useEditable } from '@editablejs/editor'
+import { Editable, useEditable } from '@editablejs/editor'
+import { Grid } from '@editablejs/models'
 import {
   FontSizeEditor,
   FontColorEditor,
@@ -7,7 +8,7 @@ import {
   HeadingEditor,
   BlockquoteEditor,
   OrderedListEditor,
-  UnOrderedListEditor,
+  UnorderedListEditor,
   HeadingType,
   MarkFormat,
   MarkEditor,
@@ -197,9 +198,9 @@ export const createToolbarItems = (editor: Editable) => {
     },
     {
       type: 'button',
-      active: !!UnOrderedListEditor.queryActive(editor),
+      active: !!UnorderedListEditor.queryActive(editor),
       onToggle: () => {
-        UnOrderedListEditor.toggle(editor)
+        UnorderedListEditor.toggle(editor)
       },
       icon: <Icon name="unorderedList" />,
     },
@@ -321,7 +322,7 @@ export const createToolbarItems = (editor: Editable) => {
     },
   )
 
-  const grid = Grid.find(editor)
+  const grid = Grid.above(editor)
   if (grid) {
     items.push(
       'separator',

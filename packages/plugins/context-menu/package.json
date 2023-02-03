@@ -33,6 +33,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
+    "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*",
     "@types/escape-html": "^1.0.2",
     "@types/react": "^18.x",
@@ -53,6 +54,7 @@
     "typescript": "latest"
   },
   "peerDependencies": {
+    "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*"
   },
   "lint-staged": {
@@ -65,6 +67,8 @@
     "preset": "jest-presets/jest/node"
   },
   "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*",
     "@editablejs/ui": "workspace:*",
     "styled-components": "5.3.5",
     "zustand": "4.1.4"

@@ -1,3 +1,3 @@
-import startServer from '@editablejs/plugin-yjs-websocket/server'
+import startServer from '@editablejs/yjs-websocket/server'
 
 startServer()

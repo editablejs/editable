@@ -1,19 +1,19 @@
-import { Editable, Editor } from '@editablejs/editor'
-import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
+import { Editor } from '@editablejs/models'
+import { withHistoryProtocol } from '@editablejs/protocols/history'
 import { HistoryStack } from './history-stack'
 
 /**
  * Weakmaps for attaching state to the editor.
  */
 
-export const SAVING = new WeakMap<Editable, boolean | undefined>()
-export const MERGING = new WeakMap<Editable, boolean | undefined>()
+export const SAVING = new WeakMap<Editor, boolean | undefined>()
+export const MERGING = new WeakMap<Editor, boolean | undefined>()
 
 /**
  * `HistoryEditor` contains helpers for history-enabled editors.
  */
 
-export interface HistoryEditor extends Editable {}
+export interface HistoryEditor extends Editor {}
 
 // eslint-disable-next-line no-redeclare
 export const HistoryEditor = {
@@ -28,7 +28,7 @@ export const HistoryEditor = {
    * Get the merge flag's current value.
    */
 
-  isMerging(editor: Editable): boolean | undefined {
+  isMerging(editor: Editor): boolean | undefined {
     return MERGING.get(editor)
   },
 
@@ -36,7 +36,7 @@ export const HistoryEditor = {
    * Get the saving flag's current value.
    */
 
-  isSaving(editor: Editable): boolean | undefined {
+  isSaving(editor: Editor): boolean | undefined {
     return SAVING.get(editor)
   },
 
@@ -44,30 +44,30 @@ export const HistoryEditor = {
    * Redo to the previous saved state.
    */
 
-  redo(editor: Editable): void {
-    getHistoryProtocol(editor).redo()
+  redo(editor: Editor): void {
+    withHistoryProtocol(editor).redo()
   },
 
   /**
    * Undo to the previous saved state.
    */
-  undo(editor: Editable): void {
-    getHistoryProtocol(editor).undo()
+  undo(editor: Editor): void {
+    withHistoryProtocol(editor).undo()
   },
 
-  canRedo(editor: Editable): boolean {
-    return getHistoryProtocol(editor).canRedo()
+  canRedo(editor: Editor): boolean {
+    return withHistoryProtocol(editor).canRedo()
   },
 
-  canUndo(editor: Editable): boolean {
-    return getHistoryProtocol(editor).canUndo()
+  canUndo(editor: Editor): boolean {
+    return withHistoryProtocol(editor).canUndo()
   },
 
   /**
    * Apply a series of changes inside a synchronous `fn`, without merging any of
    * the new operations into previous save point in the history.
    */
-  withoutMerging(editor: Editable, fn: () => void): void {
+  withoutMerging(editor: Editor, fn: () => void): void {
     const prev = HistoryEditor.isMerging(editor)
     MERGING.set(editor, false)
     fn()
@@ -79,7 +79,7 @@ export const HistoryEditor = {
    * their operations into the history.
    */
 
-  withoutSaving(editor: Editable, fn: () => void): void {
+  withoutSaving(editor: Editor, fn: () => void): void {
     const prev = HistoryEditor.isSaving(editor)
     SAVING.set(editor, false)
     fn()

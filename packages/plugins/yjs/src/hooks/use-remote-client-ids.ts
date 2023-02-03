@@ -1,9 +1,9 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { useCursorStore } from './use-cursor-store'
 
-export const useRemoteClientIds = (editor: Editable, isShallow = true) => {
+export const useRemoteClientIds = (editor: Editor, isShallow = true) => {
   const store = useCursorStore(editor)
   return useStore(
     store,

@@ -19,7 +19,7 @@
 '@editablejs/plugin-mark': patch
 '@editablejs/plugin-mention': patch
 '@editablejs/plugins': patch
-'@editablejs/plugin-protocols': patch
+'@editablejs/protocols': patch
 '@editablejs/plugin-table': patch
 '@editablejs/plugin-toolbar': patch
 '@editablejs/plugin-yjs': patch

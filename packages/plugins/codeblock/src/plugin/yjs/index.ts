@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import { Editable } from '@editablejs/editor'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
-import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { withProviderProtocol } from '@editablejs/protocols/provider'
 import { YRange } from './range'
 import { ySync, ySyncFacet, YSyncConfig } from './sync'
 import { CodeBlockEditor } from '../editor'
@@ -22,7 +22,7 @@ export const withYCodeBlock = <T extends Editable>(
 
   const { normalizeNode, apply, getCodeMirrorExtensions } = editor
 
-  const providerProtocol = getProviderProtocol(editor)
+  const providerProtocol = withProviderProtocol(editor)
 
   editor.getCodeMirrorExtensions = (id: string) => {
     const yExtensionConfig = new YExtensionConfig(id, editor)

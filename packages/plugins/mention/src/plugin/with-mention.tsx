@@ -1,13 +1,14 @@
-import { Editable, Editor, Range, Text, Point, Slot, Hotkey, Transforms } from '@editablejs/editor'
+import { Editor, Range, Text, Point, Transforms } from '@editablejs/models'
 import { MENTION_TRIGGER_KEY } from '../constants'
-import { MentionEditor } from './editor'
+import { MentionEditor } from './mention-editor'
 import { Mention } from '../interfaces/mention'
 import { MentionOptions, setOptions } from '../options'
 import { MentionComponent } from '../components/mention'
 import { MentionStore } from '../store'
-import { clearMentionTriggerData, getMentionTriggerData, setMentionTriggerData } from '../weak-map'
+import { getMentionTriggerData, setMentionTriggerData } from '../weak-map'
 import { MentionDecorate } from '../components/mention-decorate'
 import { closeMentionDecorate } from '../utils'
+import { Editable, Hotkey, Slot } from '@editablejs/editor'
 
 const defaultTriggerChar = MENTION_TRIGGER_KEY
 
@@ -137,7 +138,7 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
         })
       }
     }
-    // 获取 searchValue
+    // get searchValue
     else if (triggerData) {
       const start = triggerData.startRef.current
       if (!start) return

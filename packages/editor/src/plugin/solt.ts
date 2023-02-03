@@ -1,7 +1,7 @@
 import merge from 'lodash.merge'
 import * as React from 'react'
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editable } from '../plugin/editable'
+import { Editor } from '@editablejs/models'
 
 export interface SlotComponentProps {
   active?: boolean
@@ -17,11 +17,11 @@ export interface SlotStore<T extends SlotComponentProps> {
 }
 
 const EDITOR_TO_SLOTS_STORE = new WeakMap<
-  Editable,
+  Editor,
   UseBoundStore<StoreApi<SlotStore<SlotComponentProps>>>
 >()
 
-const getStore = (editor: Editable) => {
+const getStore = (editor: Editor) => {
   let store = EDITOR_TO_SLOTS_STORE.get(editor)
   if (!store) {
     store = create<SlotStore<SlotComponentProps>>(() => ({
@@ -35,11 +35,7 @@ const getStore = (editor: Editable) => {
 export const Slot = {
   getStore,
 
-  mount<T extends SlotComponentProps>(
-    editor: Editable,
-    component: React.FC<T>,
-    props: T = {} as T,
-  ) {
+  mount<T extends SlotComponentProps>(editor: Editor, component: React.FC<T>, props: T = {} as T) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -50,7 +46,7 @@ export const Slot = {
     })
   },
 
-  unmount(editor: Editable, component: React.FC) {
+  unmount(editor: Editor, component: React.FC) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -62,7 +58,7 @@ export const Slot = {
   },
 
   update: <T extends SlotComponentProps>(
-    editor: Editable,
+    editor: Editor,
     props: Partial<T>,
     predicate: (value: React.FC<T>, index: number) => boolean = () => true,
   ) => {

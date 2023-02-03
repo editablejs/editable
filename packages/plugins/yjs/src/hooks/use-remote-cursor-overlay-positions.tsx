@@ -1,11 +1,12 @@
 import * as React from 'react'
-import { Descendant, Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { Editable, useEditable, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { CursorRect, AwarenessNativeSelection } from '@editablejs/yjs-protocols/awareness-selection'
+import { Descendant } from '@editablejs/models'
 import { useRequestReRender } from './use-request-re-render'
 import { getCaretPosition } from '../utils/selection'
 import { CaretPosition, CursorData, CursorState, RelativeRange } from '../types'
 import { useRemoteStates } from './use-remote-states'
 import { YCursorEditor } from '../plugin/cursors-editor'
-import { CursorRect, AwarenessNativeSelection } from '@editablejs/yjs-protocols/awareness-selection'
 
 const RANGE_CACHE: WeakMap<
   Descendant[],

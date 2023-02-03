@@ -1,7 +1,7 @@
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Selection, Range } from 'slate'
-import { Editable } from './editable'
+import { Selection, Range, Editor } from '@editablejs/models'
 import { getLineRectsByRange } from '../utils/selection'
+import { Editable } from './editable'
 
 export interface SelectionDrawingStyle {
   /**
@@ -41,11 +41,11 @@ export interface SelectionDrawingStore {
 }
 
 const EDITOR_TO_SELECTION_DRAWING_STORE = new WeakMap<
-  Editable,
+  Editor,
   UseBoundStore<StoreApi<SelectionDrawingStore>>
 >()
 
-const getStore = (editor: Editable) => {
+const getStore = (editor: Editor) => {
   let store = EDITOR_TO_SELECTION_DRAWING_STORE.get(editor)
   if (!store) {
     store = create<SelectionDrawingStore>(() => ({
@@ -76,22 +76,22 @@ const getStore = (editor: Editable) => {
 export const SelectionDrawing = {
   getStore,
 
-  setStyle: (editor: Editable, style: Partial<SelectionDrawingStyle>) => {
+  setStyle: (editor: Editor, style: Partial<SelectionDrawingStyle>) => {
     const store = getStore(editor)
     store.setState(state => ({ ...state, style }))
   },
 
-  setSelection: (editor: Editable, selection: Selection | null) => {
+  setSelection: (editor: Editor, selection: Selection | null) => {
     const store = getStore(editor)
     store.setState(state => ({ ...state, selection }))
   },
 
-  setEnabled: (editor: Editable, enabled: boolean) => {
+  setEnabled: (editor: Editor, enabled: boolean) => {
     const store = getStore(editor)
     store.setState(state => ({ ...state, enabled }))
   },
 
-  toRects(editor: Editable, range: Range, relative = true) {
+  toRects(editor: Editor, range: Range, relative = true) {
     let rects: DOMRect[] = []
     if (Range.isCollapsed(range)) {
       const domRange = Editable.toDOMRange(editor, range)

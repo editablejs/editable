@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Descendant, Node, Editor, Scrubber } from 'slate'
+import { Descendant, Node, Editor, Scrubber } from '@editablejs/models'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'

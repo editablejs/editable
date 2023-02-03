@@ -1,4 +1,4 @@
-import { NodeOperation } from '@editablejs/editor'
+import { NodeOperation } from '@editablejs/models'
 import { OpMapper } from '../types'
 import { insertNode } from './insert-node'
 import { mergeNode } from './merge-node'

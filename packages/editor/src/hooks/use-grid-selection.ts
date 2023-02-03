@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Path } from 'slate'
-import { Grid, GridSelection } from '../interfaces/grid'
+import { Path, Grid, GridSelection } from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
 import { useGrid } from './use-grid'

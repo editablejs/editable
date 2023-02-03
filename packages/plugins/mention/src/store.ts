@@ -1,14 +1,14 @@
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 
 export interface MentionStore {
   open: boolean
   searchValue: string
 }
 
-const EDITOR_TO_MENTION_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<MentionStore>>>()
+const EDITOR_TO_MENTION_STORE = new WeakMap<Editor, UseBoundStore<StoreApi<MentionStore>>>()
 
-export const getMentionStore = (editor: Editable) => {
+export const getMentionStore = (editor: Editor) => {
   let store = EDITOR_TO_MENTION_STORE.get(editor)
   if (!store) {
     store = create<MentionStore>(() => ({
@@ -21,12 +21,12 @@ export const getMentionStore = (editor: Editable) => {
 }
 
 export const MentionStore = {
-  setSearchValue(editor: Editable, searchValue: string) {
+  setSearchValue(editor: Editor, searchValue: string) {
     const store = getMentionStore(editor)
     store.setState({ searchValue })
   },
 
-  setOpen(editor: Editable, open: boolean) {
+  setOpen(editor: Editor, open: boolean) {
     const store = getMentionStore(editor)
     store.setState({ open })
   },

@@ -1,4 +1,4 @@
-import type { Editor, Element, Node } from '@editablejs/editor'
+import type { Editor, Element, Node } from '@editablejs/models'
 import type Y from 'yjs'
 
 export interface CursorData extends Record<string, unknown> {

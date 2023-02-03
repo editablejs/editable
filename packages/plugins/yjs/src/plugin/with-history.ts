@@ -1,10 +1,7 @@
-import { Editable, Editor, Operation, Transforms } from '@editablejs/editor'
-import {
-  editorRangeToRelativeRange,
-  relativeRangeToEditorRange,
-} from '@editablejs/plugin-yjs-transform'
-import { getHistoryProtocol } from '@editablejs/plugin-protocols/history'
-import { getProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { Editor, Operation, Transforms } from '@editablejs/models'
+import { editorRangeToRelativeRange, relativeRangeToEditorRange } from '@editablejs/yjs-transform'
+import { withHistoryProtocol } from '@editablejs/protocols/history'
+import { withProviderProtocol } from '@editablejs/protocols/provider'
 import * as Y from 'yjs'
 import { HistoryStackItem, RelativeRange } from '../types'
 import { YjsEditor } from './with-yjs'
@@ -27,29 +24,29 @@ export const YHistoryEditor = {
     )
   },
 
-  canUndo(editor: Editable) {
-    return getHistoryProtocol(editor).canUndo()
+  canUndo(editor: Editor) {
+    return withHistoryProtocol(editor).canUndo()
   },
 
-  canRedo(editor: Editable) {
-    return getHistoryProtocol(editor).canRedo()
+  canRedo(editor: Editor) {
+    return withHistoryProtocol(editor).canRedo()
   },
 
-  undo(editor: Editable) {
-    getHistoryProtocol(editor).undo()
+  undo(editor: Editor) {
+    withHistoryProtocol(editor).undo()
   },
 
-  redo(editor: Editable) {
-    getHistoryProtocol(editor).redo()
+  redo(editor: Editor) {
+    withHistoryProtocol(editor).redo()
   },
 
-  isSaving(editor: Editable): boolean {
+  isSaving(editor: Editor): boolean {
     if (YHistoryEditor.isYHistoryEditor(editor))
       return editor.undoManager.trackedOrigins.has(YjsEditor.origin(editor))
     return false
   },
 
-  withoutSaving(editor: Editable, fn: () => void) {
+  withoutSaving(editor: Editor, fn: () => void) {
     if (YHistoryEditor.isYHistoryEditor(editor))
       YjsEditor.withOrigin(editor, editor.withoutSavingOrigin, fn)
   },
@@ -69,7 +66,7 @@ export function withYHistory<T extends YjsEditor>(
 ): T & YHistoryEditor {
   const e = editor as T & YHistoryEditor
 
-  const providerProtocol = getProviderProtocol(e)
+  const providerProtocol = withProviderProtocol(e)
 
   const { connect, disconnect } = providerProtocol
   providerProtocol.connect = () => {
@@ -87,7 +84,7 @@ export function withYHistory<T extends YjsEditor>(
     disconnect()
   }
 
-  const historyProtocol = getHistoryProtocol(e)
+  const historyProtocol = withHistoryProtocol(e)
 
   const HistoryTransactionMeta = new Map<any, Map<any, any>>()
   const undoManager = new Y.UndoManager(e.sharedRoot, {

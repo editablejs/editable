@@ -28,20 +28,20 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*",
     "@editablejs/breaker": "workspace:*",
     "direction": "^1.0.3",
-    "escape-html": "^1.0.3",
     "is-hotkey": "^0.1.6",
     "lodash.merge": "^4.6.2",
     "scroll-into-view-if-needed": "^2.2.20",
-    "slate": "^0.88.1",
     "zustand": "4.1.4"
   },
   "devDependencies": {
-    "@types/escape-html": "^1.0.2",
+    "@editablejs/models": "workspace:*",
+    "@types/lodash.merge": "^4.6.7",
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "@types/lodash.merge": "^4.6.7",
     "@types/react": "^18.x",
     "@types/react-dom": "^18.x",
     "eslint-config-editable": "workspace:*",
@@ -56,6 +56,7 @@
     "typescript": "latest"
   },
   "peerDependencies": {
+    "@editablejs/models": "workspace:*",
     "react": "^18.x",
     "react-dom": "^18.x"
   },

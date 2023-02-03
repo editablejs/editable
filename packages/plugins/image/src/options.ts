@@ -1,4 +1,4 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { ImageLocale } from './locale'
 
 export type ImageHotkey = string | ((e: KeyboardEvent) => boolean)
@@ -14,12 +14,12 @@ export interface ImageOptions {
   ) => Promise<string>
   onRotate?: (file: File) => Promise<string | { url: string; rotate?: number }>
 }
-const IMAGE_OPTIONS = new WeakMap<Editable, ImageOptions>()
+const IMAGE_OPTIONS = new WeakMap<Editor, ImageOptions>()
 
-export const getOptions = (editor: Editable): ImageOptions => {
+export const getOptions = (editor: Editor): ImageOptions => {
   return IMAGE_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: ImageOptions) => {
+export const setOptions = (editor: Editor, options: ImageOptions) => {
   IMAGE_OPTIONS.set(editor, options)
 }

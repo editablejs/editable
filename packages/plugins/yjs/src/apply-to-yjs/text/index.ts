@@ -1,4 +1,4 @@
-import { TextOperation } from '@editablejs/editor'
+import { TextOperation } from '@editablejs/models'
 import { OpMapper } from '../types'
 import { insertText } from './insert-text'
 import { removeText } from './remove-text'

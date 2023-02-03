@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Descendant } from 'slate'
+import { Descendant } from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import { useEditableStoreProvider, EditableStoreContext } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'

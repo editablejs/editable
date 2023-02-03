@@ -22,15 +22,35 @@
         "types": "./dist/*.d.ts",
         "default": "./dist/*.js"
       }
+    },
+    "./serializer/*": {
+      "import": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.js"
+      }
+    },
+    "./deserializer/*": {
+      "import": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.js"
+      }
     }
   },
   "typesVersions": {
     "*": {
-      "serializer": [
-        "dist/serializer.d.ts"
+      "serializer/html": [
+        "dist/serializer/html.d.ts"
       ],
-      "deserializer": [
-        "dist/deserializer.d.ts"
+      "deserializer/html": [
+        "dist/deserializer/html.d.ts"
       ]
     }
   },
@@ -52,7 +72,12 @@
     "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*"
+  },
   "devDependencies": {
+    "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
@@ -67,6 +92,7 @@
     "typescript": "latest"
   },
   "peerDependencies": {
+    "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*"
   },
   "lint-staged": {

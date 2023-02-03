@@ -1,7 +1,8 @@
 import * as React from 'react'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import shallow from 'zustand/shallow'
-import { Editable, useIsomorphicLayoutEffect, Range, Element } from '@editablejs/editor'
+import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { Range, Element } from '@editablejs/models'
 import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
 import { getCapturedData } from './weak-map'
 

@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*",
     "@types/react": "^18.x",
     "@types/react-dom": "^18.x",
     "eslint-config-editable": "workspace:*",
@@ -48,10 +49,11 @@
     "typescript": "latest"
   },
   "peerDependencies": {
-    "@editablejs/editor": "workspace:*"
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/plugin-protocols": "workspace:*",
+    "@editablejs/protocols": "workspace:*",
     "is-plain-object": "^5.0.0"
   },
   "lint-staged": {

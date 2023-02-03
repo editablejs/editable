@@ -1,8 +1,9 @@
-import { Editable, Range, Element } from '@editablejs/editor'
+import { Editable } from '@editablejs/editor'
+import { Range, Element } from '@editablejs/models'
 import {
   TableEditor,
   BlockquoteEditor,
-  UnOrderedListEditor,
+  UnorderedListEditor,
   OrderedListEditor,
   TaskListEditor,
 } from '@editablejs/plugins'
@@ -36,7 +37,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
         icon: <Icon name="unorderedList" />,
         title: 'Unordered List',
         onSelect: () => {
-          UnOrderedListEditor.toggle(editor)
+          UnorderedListEditor.toggle(editor)
         },
       },
       {

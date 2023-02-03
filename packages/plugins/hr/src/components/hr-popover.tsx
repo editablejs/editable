@@ -11,7 +11,7 @@ import {
 } from '@editablejs/ui'
 import { FC, useState } from 'react'
 import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH, DEFUALT_HR_COLOR } from '../constants'
-import { HrEditor } from '../editor'
+import { HrEditor } from '../plugin/hr-editor'
 import { Hr, HrStyle } from '../interfaces/hr'
 import { HrLocale } from '../locale/types'
 import { StyleIcon, ThicknessIcon } from './icons'

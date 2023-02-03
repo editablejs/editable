@@ -1,4 +1,4 @@
-import { Hotkey, isTouchDevice, useIsomorphicLayoutEffect } from '@editablejs/editor'
+import { Editable, Hotkey, isTouchDevice, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import {
   Avatar,
   AvatarFallback,
@@ -19,12 +19,13 @@ import tw from 'twin.macro'
 import { useMentionSearchValue } from '../hooks/use-mention-search'
 import { MentionUser } from '../interfaces/mention'
 import { getOptions } from '../options'
-import { MentionEditor } from '../plugin/editor'
 import { closeMentionDecorate } from '../utils'
+import { MentionEditor } from '../plugin/mention-editor'
 
 export interface MentionSearchProps {
-  editor: MentionEditor
+  editor: Editable
   container?: HTMLElement
+  children?: React.ReactNode
 }
 
 const defaultSearch = () => Promise.resolve([])
@@ -95,7 +96,7 @@ export const MentionSearch: FC<MentionSearchProps> = ({ editor, container, child
       const user = users[active]
       if (user) {
         if (e) e.preventDefault()
-        editor.insertMention(user)
+        MentionEditor.insert(editor, user)
       } else {
         closeMentionDecorate(editor)
       }

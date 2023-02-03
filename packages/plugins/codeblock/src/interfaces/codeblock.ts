@@ -1,4 +1,4 @@
-import { Element, generateRandomKey } from '@editablejs/editor'
+import { Element, generateRandomKey } from '@editablejs/models'
 import { CODEBLOCK_KEY } from '../constants'
 
 export interface CodeBlockTheme {

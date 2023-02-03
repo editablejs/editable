@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { Node } from 'slate'
+import { Node } from '@editablejs/models'
 import { useStore } from 'zustand'
 import { Placeholder } from '../plugin/placeholder'
 import { useEditableStatic } from './use-editable'
-import { useFocused } from './use-focused'
 
 export const usePlaceholderStore = () => {
   const editor = useEditableStatic()

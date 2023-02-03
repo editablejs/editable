@@ -1,4 +1,4 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import React from 'react'
 import { MentionUser } from './interfaces/mention'
 
@@ -13,12 +13,12 @@ export interface MentionOptions {
   onSearchRenderEmpty?: () => React.ReactNode
 }
 
-const MENTION_OPTIONS = new WeakMap<Editable, MentionOptions>()
+const MENTION_OPTIONS = new WeakMap<Editor, MentionOptions>()
 
-export const getOptions = (editor: Editable): MentionOptions => {
+export const getOptions = (editor: Editor): MentionOptions => {
   return MENTION_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: MentionOptions) => {
+export const setOptions = (editor: Editor, options: MentionOptions) => {
   MENTION_OPTIONS.set(editor, options)
 }

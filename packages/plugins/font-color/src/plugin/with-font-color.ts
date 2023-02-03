@@ -1,7 +1,8 @@
 import { colord } from 'colord'
-import { Editable, RenderLeafProps, Editor, Hotkey } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
+import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editor'
 import { FONTCOLOR_KEY } from '../constants'
-import { FontColorEditor } from './editor'
+import { FontColorEditor } from './font-color-editor'
 import { FontColor } from '../interfaces/font-color'
 import { FontColorHotkey, FontColorOptions, setOptions } from '../options'
 
@@ -36,7 +37,7 @@ export const withFontColor = <T extends Editable>(editor: T, options: FontColorO
 
   const { onKeydown } = newEditor
 
-  const hotkeys: FontColorHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
+  const hotkeys: FontColorHotkey = Object.assign({}, defaultHotkeys, options.hotkey)
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const value = Hotkey.match(hotkeys, e)
     if (value) {

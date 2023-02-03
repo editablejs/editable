@@ -26,7 +26,7 @@ importers:
       prettier: 2.8.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.7.0
+      turbo: 1.7.2
 
   apps/docs:
     specifiers:
@@ -45,13 +45,14 @@ importers:
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
       '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-history': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
-      '@editablejs/plugin-yjs-websocket': workspace:*
       '@editablejs/plugins': workspace:*
       '@editablejs/ui': workspace:*
+      '@editablejs/yjs-websocket': workspace:*
       '@faker-js/faker': 7.5.0
       '@headlessui/react': 1.7.4
       '@mdx-js/mdx': 2.1.5
@@ -113,13 +114,14 @@ importers:
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0_bbqmvyebg44zjqjhzodbnnxkxa
       '@editablejs/editor': link:../../packages/editor
+      '@editablejs/models': link:../../packages/models
       '@editablejs/plugin-codeblock': link:../../packages/plugins/codeblock
       '@editablejs/plugin-history': link:../../packages/plugins/history
       '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
-      '@editablejs/plugin-yjs-websocket': link:../../packages/plugins/yjs-websocket
       '@editablejs/plugins': link:../../packages/plugins/plugins
       '@editablejs/ui': link:../../packages/ui
+      '@editablejs/yjs-websocket': link:../../packages/yjs-websocket
       '@faker-js/faker': 7.5.0
       '@headlessui/react': 1.7.4_biqbaboplfbrettd7655fr4n2y
       '@mdx-js/react': 2.1.5_react@18.2.0
@@ -170,13 +172,12 @@ importers:
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../packages/config/tsconfig
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
       unist-util-visit: 2.0.3
 
   apps/server:
     specifiers:
-      '@editablejs/editor': workspace:*
-      '@editablejs/plugin-yjs-websocket': workspace:*
+      '@editablejs/yjs-websocket': workspace:*
       eslint-config-editable: workspace:*
       nodemon: 2.0.20
       prettier-config: workspace:*
@@ -185,15 +186,14 @@ importers:
       typescript: latest
       yjs: ^13.5.43
     dependencies:
-      '@editablejs/editor': link:../../packages/editor
-      '@editablejs/plugin-yjs-websocket': link:../../packages/plugins/yjs-websocket
+      '@editablejs/yjs-websocket': link:../../packages/yjs-websocket
     devDependencies:
       eslint-config-editable: link:../../packages/config/eslint-config-editable
       nodemon: 2.0.20
       prettier-config: link:../../packages/config/prettier-config
-      ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
+      ts-node: 10.9.1_bdgp3l2zgaopogaavxusmetvge
       tsconfig: link:../../packages/config/tsconfig
-      typescript: 4.9.4
+      typescript: 4.9.5
       yjs: 13.5.43
 
   packages/breaker:
@@ -224,8 +224,8 @@ importers:
       node-fetch: 2.6.7
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
-      typescript: 4.9.4
+      tsup: 6.5.0_typescript@4.9.5
+      typescript: 4.9.5
 
   packages/config/esbuild-plugin-styled-components:
     specifiers:
@@ -250,7 +250,7 @@ importers:
       eslint-plugin-react: 7.31.0
     devDependencies:
       eslint: 7.32.0
-      eslint-config-next: 12.2.2_yfqovispp7u7jaktymfaqwl2py
+      eslint-config-next: 12.2.2_jofidmxrjzhj7l6vknpw5ecvfe
       eslint-config-prettier: 8.5.0_eslint@7.32.0
       eslint-config-turbo: 0.0.7_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
@@ -261,7 +261,7 @@ importers:
       ts-jest: 27.1.4
     dependencies:
       jest: 27.5.1
-      ts-jest: 27.1.4_xxxq4dkqlxeurm4ryzlgj7eai4
+      ts-jest: 27.1.4_47qtn2blr7oxq732k2glowa34y
 
   packages/config/prettier-config:
     specifiers:
@@ -286,17 +286,59 @@ importers:
     devDependencies:
       esbuild-plugin-styled-components: link:../esbuild-plugin-styled-components
 
+  packages/deserializer:
+    specifiers:
+      '@editablejs/models': workspace:*
+      '@types/escape-html': ^1.0.2
+      '@types/jest': ^26.0.22
+      '@types/lodash.merge': ^4.6.7
+      '@types/mdast': ^3.0.0
+      '@types/react': ^18.x
+      escape-html: ^1.0.3
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lodash.merge: ^4.6.2
+      mdast-util-from-markdown: ^1.3.0
+      micromark-util-types: 1.0.2
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      '@types/mdast': 3.0.10
+      escape-html: 1.0.3
+      lodash.merge: 4.6.2
+      mdast-util-from-markdown: 1.3.0
+      micromark-util-types: 1.0.2
+    devDependencies:
+      '@editablejs/models': link:../models
+      '@types/escape-html': 1.0.2
+      '@types/jest': 26.0.24
+      '@types/lodash.merge': 4.6.7
+      '@types/react': 18.0.25
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
+
   packages/editor:
     specifiers:
       '@editablejs/breaker': workspace:*
-      '@types/escape-html': ^1.0.2
+      '@editablejs/deserializer': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/lodash.merge': ^4.6.7
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       direction: ^1.0.3
-      escape-html: ^1.0.3
       eslint-config-editable: workspace:*
       is-hotkey: ^0.1.6
       jest: ^27.5.1
@@ -306,7 +348,6 @@ importers:
       react: ^18.x
       react-dom: ^18.x
       scroll-into-view-if-needed: ^2.2.20
-      slate: ^0.88.1
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
@@ -314,15 +355,15 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/breaker': link:../breaker
+      '@editablejs/deserializer': link:../deserializer
+      '@editablejs/serializer': link:../serializer
       direction: 1.0.4
-      escape-html: 1.0.3
       is-hotkey: 0.1.8
       lodash.merge: 4.6.2
       scroll-into-view-if-needed: 2.2.29
-      slate: 0.88.1
       zustand: 4.1.4_react@18.2.0
     devDependencies:
-      '@types/escape-html': 1.0.2
+      '@editablejs/models': link:../models
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
       '@types/lodash.merge': 4.6.7
@@ -335,13 +376,41 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
+
+  packages/models:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      slate: ^0.88.1
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      slate: 0.88.1
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
 
   packages/plugins/align:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
@@ -353,8 +422,12 @@ importers:
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
+    dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
@@ -362,14 +435,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/background-color:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       colord: 2.9.0
       eslint-config-editable: workspace:*
       jest: ^27.5.1
@@ -380,21 +456,28 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       colord: 2.9.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/blockquote:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
@@ -413,9 +496,13 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -428,10 +515,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/codeblock:
     specifiers:
@@ -439,14 +526,19 @@ importers:
       '@codemirror/language': ^6.4.0
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.7.2
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-protocols': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/protocols': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
       '@editablejs/yjs-protocols': workspace:*
       '@lezer/highlight': 1.1.3
+      '@types/escape-html': ^1.0.2
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
+      escape-html: ^1.0.3
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
@@ -468,15 +560,20 @@ importers:
       '@codemirror/language': 6.4.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@editablejs/plugin-protocols': link:../protocols
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/protocols': link:../../protocols
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       '@editablejs/yjs-protocols': link:../../yjs-protocols
       '@lezer/highlight': 1.1.3
+      escape-html: 1.0.3
       lib0: 0.2.52
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       yjs: 13.5.43
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/escape-html': 1.0.2
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -489,14 +586,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/context-menu:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
       '@types/escape-html': ^1.0.2
       '@types/react': ^18.x
@@ -518,11 +618,14 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/escape-html': 1.0.2
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -536,14 +639,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/font-color:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       colord: 2.9.0
       eslint-config-editable: workspace:*
       jest: ^27.5.1
@@ -554,21 +660,27 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       colord: 2.9.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/font-size:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
@@ -577,20 +689,28 @@ importers:
       tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
+    dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/heading:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
@@ -609,9 +729,13 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -624,15 +748,16 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/history:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-protocols': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/protocols': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
@@ -647,10 +772,11 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
-      '@editablejs/plugin-protocols': link:../protocols
+      '@editablejs/protocols': link:../../protocols
       is-plain-object: 5.0.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       eslint-config-editable: link:../../config/eslint-config-editable
@@ -660,13 +786,16 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/hr:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -686,10 +815,13 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -702,15 +834,18 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/image:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-protocols': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/protocols': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -732,13 +867,16 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
-      '@editablejs/plugin-protocols': link:../protocols
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/protocols': link:../../protocols
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       react-image-previewer: 1.1.6_pumtretovylab5lwhztzjp2kuy
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -751,14 +889,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/indent:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
@@ -777,9 +918,12 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -792,14 +936,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/leading:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
@@ -811,8 +958,12 @@ importers:
       tsup-config: workspace:*
       twin.macro: 3.1.0
       typescript: latest
+    dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
@@ -820,21 +971,27 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/link:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      mdast-util-gfm-autolink-literal: 1.0.3
+      micromark-extension-gfm-autolink-literal: 1.0.3
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
@@ -848,11 +1005,17 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
+      mdast-util-gfm-autolink-literal: 1.0.3
+      micromark-extension-gfm-autolink-literal: 1.0.3
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -865,20 +1028,26 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/list:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      mdast-util-gfm-task-list-item: 1.0.2
+      micromark-extension-gfm-task-list-item: 1.0.3
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
@@ -891,9 +1060,15 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
+      mdast-util-gfm-task-list-item: 1.0.2
+      micromark-extension-gfm-task-list-item: 1.0.3
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -906,20 +1081,26 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/mark:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      mdast-util-gfm-strikethrough: 1.0.3
+      micromark-extension-gfm-strikethrough: 1.0.4
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
@@ -932,9 +1113,15 @@ importers:
       twin.macro: 3.1.0
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
+      mdast-util-gfm-strikethrough: 1.0.3
+      micromark-extension-gfm-strikethrough: 1.0.4
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -947,14 +1134,17 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/mention:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
       '@types/lodash.debounce': 4.0.7
       '@types/react': ^18.x
@@ -976,12 +1166,15 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       lodash.debounce: 4.0.8
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/lodash.debounce': 4.0.7
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -994,14 +1187,16 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/plugins:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
       '@editablejs/plugin-align': workspace:*
       '@editablejs/plugin-background-color': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
@@ -1019,6 +1214,7 @@ importers:
       '@editablejs/plugin-mark': workspace:*
       '@editablejs/plugin-mention': workspace:*
       '@editablejs/plugin-table': workspace:*
+      '@editablejs/serializer': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       eslint-config-editable: workspace:*
@@ -1032,6 +1228,7 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
       '@editablejs/plugin-align': link:../align
       '@editablejs/plugin-background-color': link:../background-color
       '@editablejs/plugin-blockquote': link:../blockquote
@@ -1049,8 +1246,10 @@ importers:
       '@editablejs/plugin-mark': link:../mark
       '@editablejs/plugin-mention': link:../mention
       '@editablejs/plugin-table': link:../table
+      '@editablejs/serializer': link:../../serializer
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       eslint-config-editable: link:../../config/eslint-config-editable
@@ -1060,47 +1259,26 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
-
-  packages/plugins/protocols:
-    specifiers:
-      '@editablejs/editor': workspace:*
-      '@types/jest': ^26.0.22
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      lib0: ^0.2.52
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.5.0
-      tsup-config: workspace:*
-      typescript: latest
-    dependencies:
-      lib0: 0.2.52
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@types/jest': 26.0.24
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/table:
     specifiers:
+      '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
       '@editablejs/ui': workspace:*
+      '@types/mdast': 3.0.10
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      mdast-util-gfm-table: 1.0.7
+      micromark-extension-gfm-table: 1.0.5
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
@@ -1114,11 +1292,17 @@ importers:
       typescript: latest
       zustand: 4.1.4
     dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
+      mdast-util-gfm-table: 1.0.7
+      micromark-extension-gfm-table: 1.0.5
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -1131,14 +1315,15 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/toolbar:
     specifiers:
       '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
       '@editablejs/ui': workspace:*
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
@@ -1164,6 +1349,7 @@ importers:
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
@@ -1176,17 +1362,18 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/plugins/yjs:
     specifiers:
       '@editablejs/editor': workspace:*
-      '@editablejs/plugin-protocols': workspace:*
-      '@editablejs/plugin-yjs-transform': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/protocols': workspace:*
       '@editablejs/yjs-protocols': workspace:*
+      '@editablejs/yjs-transform': workspace:*
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
       '@types/react': ^18.x
@@ -1209,13 +1396,14 @@ importers:
       yjs: ^13.5.43
       zustand: 4.1.4
     dependencies:
-      '@editablejs/plugin-protocols': link:../protocols
-      '@editablejs/plugin-yjs-transform': link:../yjs-transform
+      '@editablejs/protocols': link:../../protocols
       '@editablejs/yjs-protocols': link:../../yjs-protocols
+      '@editablejs/yjs-transform': link:../../yjs-transform
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
       '@types/is-hotkey': 0.1.7
       '@types/jest': 26.0.24
       '@types/react': 18.0.25
@@ -1230,81 +1418,77 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
       yjs: 13.5.43
 
-  packages/plugins/yjs-transform:
+  packages/protocols:
     specifiers:
-      '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
       '@types/jest': ^26.0.22
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.5.0
-      tsup-config: workspace:*
-      typescript: latest
-      yjs: ^13.5.43
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@types/jest': 26.0.24
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
-      yjs: 13.5.43
-
-  packages/plugins/yjs-websocket:
-    specifiers:
-      '@editablejs/editor': workspace:*
-      '@editablejs/plugin-yjs-transform': workspace:*
-      '@editablejs/yjs-protocols': workspace:*
-      '@types/jest': ^26.0.22
-      '@types/lodash.debounce': 4.0.7
-      '@types/ws': 8.5.3
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       lib0: ^0.2.52
-      lodash.debounce: ^4.0.8
       prettier-config: workspace:*
       tsconfig: workspace:*
       tsup: ^6.5.0
       tsup-config: workspace:*
       typescript: latest
-      ws: ^6.2.1
-      y-leveldb: ^0.1.0
-      yjs: ^13.5.43
     dependencies:
-      '@editablejs/plugin-yjs-transform': link:../yjs-transform
-      '@editablejs/yjs-protocols': link:../../yjs-protocols
       lib0: 0.2.52
-      lodash.debounce: 4.0.8
-    optionalDependencies:
-      ws: 6.2.2
-      y-leveldb: 0.1.1_yjs@13.5.43
     devDependencies:
-      '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../models
       '@types/jest': 26.0.24
-      '@types/lodash.debounce': 4.0.7
-      '@types/ws': 8.5.3
-      eslint-config-editable: link:../../config/eslint-config-editable
+      eslint-config-editable: link:../config/eslint-config-editable
       jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.9.4
-      yjs: 13.5.43
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
+
+  packages/serializer:
+    specifiers:
+      '@editablejs/models': workspace:*
+      '@types/escape-html': ^1.0.2
+      '@types/jest': ^26.0.22
+      '@types/lodash.merge': ^4.6.7
+      '@types/mdast': 3.0.10
+      '@types/react': ^18.x
+      escape-html: ^1.0.3
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lodash.merge: ^4.6.2
+      mdast-util-to-markdown: 1.5.0
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+    dependencies:
+      '@types/mdast': 3.0.10
+      escape-html: 1.0.3
+      lodash.merge: 4.6.2
+      mdast-util-to-markdown: 1.5.0
+    devDependencies:
+      '@editablejs/models': link:../models
+      '@types/escape-html': 1.0.2
+      '@types/jest': 26.0.24
+      '@types/lodash.merge': 4.6.7
+      '@types/react': 18.0.25
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
 
   packages/ui:
     specifiers:
@@ -1346,10 +1530,10 @@ importers:
       tailwind-config: link:../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_bhwqdllmxuyazsjifedxrqprdq
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
       tsup-config: link:../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.4
+      typescript: 4.9.5
 
   packages/yjs-protocols:
     specifiers:
@@ -1373,9 +1557,79 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.4
+      tsup: 6.5.0_typescript@4.9.5
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.4
+      typescript: 4.9.5
+      yjs: 13.5.43
+
+  packages/yjs-transform:
+    specifiers:
+      '@editablejs/models': workspace:*
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+      yjs: ^13.5.43
+    devDependencies:
+      '@editablejs/models': link:../models
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
+      yjs: 13.5.43
+
+  packages/yjs-websocket:
+    specifiers:
+      '@editablejs/models': workspace:*
+      '@editablejs/yjs-protocols': workspace:*
+      '@editablejs/yjs-transform': workspace:*
+      '@types/jest': ^26.0.22
+      '@types/lodash.debounce': 4.0.7
+      '@types/ws': 8.5.3
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lib0: ^0.2.52
+      lodash.debounce: ^4.0.8
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: latest
+      ws: ^6.2.1
+      y-leveldb: ^0.1.0
+      yjs: ^13.5.43
+    dependencies:
+      '@editablejs/yjs-protocols': link:../yjs-protocols
+      '@editablejs/yjs-transform': link:../yjs-transform
+      lib0: 0.2.52
+      lodash.debounce: 4.0.8
+    optionalDependencies:
+      ws: 6.2.2
+      y-leveldb: 0.1.1_yjs@13.5.43
+    devDependencies:
+      '@editablejs/models': link:../models
+      '@types/jest': 26.0.24
+      '@types/lodash.debounce': 4.0.7
+      '@types/ws': 8.5.3
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
       yjs: 13.5.43
 
 packages:
@@ -2665,11 +2919,11 @@ packages:
       '@types/node': 14.18.28
       chalk: 4.1.2
       cosmiconfig: 7.0.1
-      cosmiconfig-typescript-loader: 4.0.0_ctmqlagpfxlnojfa5fjx622v2y
+      cosmiconfig-typescript-loader: 4.0.0_tooradtgok3mczm4sch6cy5cfi
       lodash: 4.17.21
       resolve-from: 5.0.0
-      ts-node: 10.9.1_4yryqebli4n4n6emd74gdor37i
-      typescript: 4.9.4
+      ts-node: 10.9.1_y5t56lzincotvey3bh2b3dpqle
+      typescript: 4.9.5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -3704,7 +3958,7 @@ packages:
     dependencies:
       '@types/yargs-parser': 21.0.0
 
-  /@typescript-eslint/parser/5.30.5_yfqovispp7u7jaktymfaqwl2py:
+  /@typescript-eslint/parser/5.30.5_jofidmxrjzhj7l6vknpw5ecvfe:
     resolution: {integrity: sha512-zj251pcPXI8GO9NDKWWmygP6+UjwWmrdf9qMW/L/uQJBM/0XbU2inxe5io/234y/RCvwpKEYjZ6c1YrXERkK4Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -3716,10 +3970,10 @@ packages:
     dependencies:
       '@typescript-eslint/scope-manager': 5.30.5
       '@typescript-eslint/types': 5.30.5
-      '@typescript-eslint/typescript-estree': 5.30.5_typescript@4.9.4
+      '@typescript-eslint/typescript-estree': 5.30.5_typescript@4.9.5
       debug: 4.3.4
       eslint: 7.32.0
-      typescript: 4.9.4
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -3737,7 +3991,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@typescript-eslint/typescript-estree/5.30.5_typescript@4.9.4:
+  /@typescript-eslint/typescript-estree/5.30.5_typescript@4.9.5:
     resolution: {integrity: sha512-qGTc7QZC801kbYjAr4AgdOfnokpwStqyhSbiQvqGBLixniAKyH+ib2qXIVo4P9NgGzwyfD9I0nlJN7D91E1VpQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -3752,8 +4006,8 @@ packages:
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.3.7
-      tsutils: 3.21.0_typescript@4.9.4
-      typescript: 4.9.4
+      tsutils: 3.21.0_typescript@4.9.5
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4642,7 +4896,7 @@ packages:
     requiresBuild: true
     dev: true
 
-  /cosmiconfig-typescript-loader/4.0.0_ctmqlagpfxlnojfa5fjx622v2y:
+  /cosmiconfig-typescript-loader/4.0.0_tooradtgok3mczm4sch6cy5cfi:
     resolution: {integrity: sha512-cVpucSc2Tf+VPwCCR7SZzmQTQkPbkk4O01yXsYqXBIbjE1bhwqSyAgYQkRK1un4i0OPziTleqFhdkmOc4RQ/9g==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -4653,8 +4907,8 @@ packages:
     dependencies:
       '@types/node': 14.18.28
       cosmiconfig: 7.0.1
-      ts-node: 10.9.1_4yryqebli4n4n6emd74gdor37i
-      typescript: 4.9.4
+      ts-node: 10.9.1_y5t56lzincotvey3bh2b3dpqle
+      typescript: 4.9.5
     dev: true
 
   /cosmiconfig/7.0.1:
@@ -5373,7 +5627,7 @@ packages:
     optionalDependencies:
       source-map: 0.6.1
 
-  /eslint-config-next/12.2.2_yfqovispp7u7jaktymfaqwl2py:
+  /eslint-config-next/12.2.2_jofidmxrjzhj7l6vknpw5ecvfe:
     resolution: {integrity: sha512-oJhWBLC4wDYYUFv/5APbjHUFd0QRFCojMdj/QnMoOEktmeTvwnnoA8F8uaXs0fQgsaTK0tbUxBRv9/Y4/rpxOA==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0
@@ -5384,7 +5638,7 @@ packages:
     dependencies:
       '@next/eslint-plugin-next': 12.2.2
       '@rushstack/eslint-patch': 1.1.4
-      '@typescript-eslint/parser': 5.30.5_yfqovispp7u7jaktymfaqwl2py
+      '@typescript-eslint/parser': 5.30.5_jofidmxrjzhj7l6vknpw5ecvfe
       eslint: 7.32.0
       eslint-import-resolver-node: 0.3.6
       eslint-import-resolver-typescript: 2.7.1_hpmu7kn6tcn2vnxpfzvv33bxmy
@@ -5392,7 +5646,7 @@ packages:
       eslint-plugin-jsx-a11y: 6.6.0_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
       eslint-plugin-react-hooks: 4.6.0_eslint@7.32.0
-      typescript: 4.9.4
+      typescript: 4.9.5
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
       - supports-color
@@ -7686,8 +7940,8 @@ packages:
       unist-util-visit-parents: 5.1.1
     dev: false
 
-  /mdast-util-from-markdown/1.2.0:
-    resolution: {integrity: sha512-iZJyyvKD1+K7QX1b5jXdE7Sc5dtoTry1vzV28UZZe8Z1xVnB/czKntJ7ZAkG0tANqRnBF6p3p7GpU1y19DTf2Q==}
+  /mdast-util-from-markdown/1.3.0:
+    resolution: {integrity: sha512-HN3W1gRIuN/ZW295c7zi7g9lVBllMgZE40RxCX37wrTPWXCWtpvOZdfnuK+1WNpvZje6XuJeI3Wnb4TJEUem+g==}
     dependencies:
       '@types/mdast': 3.0.10
       '@types/unist': 2.0.6
@@ -7699,7 +7953,7 @@ packages:
       micromark-util-normalize-identifier: 1.0.0
       micromark-util-symbol: 1.0.1
       micromark-util-types: 1.0.2
-      unist-util-stringify-position: 3.0.2
+      unist-util-stringify-position: 3.0.3
       uvu: 0.5.6
     transitivePeerDependencies:
       - supports-color
@@ -7712,6 +7966,15 @@ packages:
 
   /mdast-util-gfm-autolink-literal/1.0.2:
     resolution: {integrity: sha512-FzopkOd4xTTBeGXhXSBU0OCDDh5lUj2rd+HQqG92Ld+jL4lpUfgX2AT2OHAVP9aEeDKp7G92fuooSZcYJA3cRg==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      ccount: 2.0.1
+      mdast-util-find-and-replace: 2.2.1
+      micromark-util-character: 1.1.0
+    dev: false
+
+  /mdast-util-gfm-autolink-literal/1.0.3:
+    resolution: {integrity: sha512-My8KJ57FYEy2W2LyNom4n3E7hKTuQk/0SES0u16tjA9Z3oFkF4RrC/hPAPgjlSpezsOvI8ObcXcElo92wn5IGA==}
     dependencies:
       '@types/mdast': 3.0.10
       ccount: 2.0.1
@@ -7734,13 +7997,31 @@ packages:
       mdast-util-to-markdown: 1.3.0
     dev: false
 
+  /mdast-util-gfm-strikethrough/1.0.3:
+    resolution: {integrity: sha512-DAPhYzTYrRcXdMjUtUjKvW9z/FNAMTdU0ORyMcbmkwYNbKocDpdk+PX1L1dQgOID/+vVs1uBQ7ElrBQfZ0cuiQ==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      mdast-util-to-markdown: 1.3.0
+    dev: false
+
   /mdast-util-gfm-table/1.0.6:
     resolution: {integrity: sha512-uHR+fqFq3IvB3Rd4+kzXW8dmpxUhvgCQZep6KdjsLK4O6meK5dYZEayLtIxNus1XO3gfjfcIFe8a7L0HZRGgag==}
     dependencies:
       '@types/mdast': 3.0.10
       markdown-table: 3.0.3
-      mdast-util-from-markdown: 1.2.0
+      mdast-util-from-markdown: 1.3.0
       mdast-util-to-markdown: 1.3.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /mdast-util-gfm-table/1.0.7:
+    resolution: {integrity: sha512-jjcpmNnQvrmN5Vx7y7lEc2iIOEytYv7rTvu+MeyAsSHTASGCCRA79Igg2uKssgOs1i1po8s3plW0sTu1wkkLGg==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      markdown-table: 3.0.3
+      mdast-util-from-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -7752,10 +8033,17 @@ packages:
       mdast-util-to-markdown: 1.3.0
     dev: false
 
+  /mdast-util-gfm-task-list-item/1.0.2:
+    resolution: {integrity: sha512-PFTA1gzfp1B1UaiJVyhJZA1rm0+Tzn690frc/L8vNX1Jop4STZgOE6bxUhnzdVSB+vm2GU1tIsuQcA9bxTQpMQ==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      mdast-util-to-markdown: 1.5.0
+    dev: false
+
   /mdast-util-gfm/2.0.1:
     resolution: {integrity: sha512-42yHBbfWIFisaAfV1eixlabbsa6q7vHeSPY+cg+BBjX51M8xhgMacqH9g6TftB/9+YkcI0ooV4ncfrJslzm/RQ==}
     dependencies:
-      mdast-util-from-markdown: 1.2.0
+      mdast-util-from-markdown: 1.3.0
       mdast-util-gfm-autolink-literal: 1.0.2
       mdast-util-gfm-footnote: 1.0.1
       mdast-util-gfm-strikethrough: 1.0.2
@@ -7772,7 +8060,7 @@ packages:
       '@types/estree-jsx': 1.0.0
       '@types/hast': 2.3.4
       '@types/mdast': 3.0.10
-      mdast-util-from-markdown: 1.2.0
+      mdast-util-from-markdown: 1.3.0
       mdast-util-to-markdown: 1.3.0
     transitivePeerDependencies:
       - supports-color
@@ -7789,7 +8077,7 @@ packages:
       parse-entities: 4.0.0
       stringify-entities: 4.0.3
       unist-util-remove-position: 4.0.1
-      unist-util-stringify-position: 3.0.2
+      unist-util-stringify-position: 3.0.3
       vfile-message: 3.1.3
     dev: true
 
@@ -7809,11 +8097,18 @@ packages:
       '@types/estree-jsx': 1.0.0
       '@types/hast': 2.3.4
       '@types/mdast': 3.0.10
-      mdast-util-from-markdown: 1.2.0
+      mdast-util-from-markdown: 1.3.0
       mdast-util-to-markdown: 1.3.0
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /mdast-util-phrasing/3.0.1:
+    resolution: {integrity: sha512-WmI1gTXUBJo4/ZmSk79Wcb2HcjPJBzM1nlI/OUWA8yk2X9ik3ffNbBGsU+09BFmXaL1IBb9fiuvq6/KMiNycSg==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      unist-util-is: 5.1.1
+    dev: false
 
   /mdast-util-to-hast/12.2.4:
     resolution: {integrity: sha512-a21xoxSef1l8VhHxS1Dnyioz6grrJkoaCUgGzMD/7dWHvboYX3VW53esRUfB5tgTyz4Yos1n25SPcj35dJqmAg==}
@@ -7852,6 +8147,19 @@ packages:
       micromark-util-decode-string: 1.0.2
       unist-util-visit: 4.1.1
       zwitch: 2.0.4
+
+  /mdast-util-to-markdown/1.5.0:
+    resolution: {integrity: sha512-bbv7TPv/WC49thZPg3jXuqzuvI45IL2EVAr/KxF0BSdHsU0ceFHOmwQn6evxAh1GaoK/6GQ1wp4R4oW2+LFL/A==}
+    dependencies:
+      '@types/mdast': 3.0.10
+      '@types/unist': 2.0.6
+      longest-streak: 3.1.0
+      mdast-util-phrasing: 3.0.1
+      mdast-util-to-string: 3.1.0
+      micromark-util-decode-string: 1.0.2
+      unist-util-visit: 4.1.1
+      zwitch: 2.0.4
+    dev: false
 
   /mdast-util-to-string/1.1.0:
     resolution: {integrity: sha512-jVU0Nr2B9X3MU4tSK7JP1CMkSvOj7X5l/GboG1tKRw52lLF1x2Ju92Ms9tNetCcbfX3hzlM73zYo2NKkWSfF/A==}
@@ -9273,7 +9581,7 @@ packages:
     resolution: {integrity: sha512-1fUyHr2jLsVOkhbvPRBJ5zTKZZyD6yZzYaWCS6BPBdQ8vEMBCH+9zNCDA6tET/zHCi/jLqjCWtlJZUPk+DbnFw==}
     dependencies:
       '@types/mdast': 3.0.10
-      mdast-util-from-markdown: 1.2.0
+      mdast-util-from-markdown: 1.3.0
       unified: 10.1.2
     transitivePeerDependencies:
       - supports-color
@@ -10195,7 +10503,7 @@ packages:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
     dev: true
 
-  /ts-jest/27.1.4_xxxq4dkqlxeurm4ryzlgj7eai4:
+  /ts-jest/27.1.4_47qtn2blr7oxq732k2glowa34y:
     resolution: {integrity: sha512-qjkZlVPWVctAezwsOD1OPzbZ+k7zA5z3oxII4dGdZo5ggX/PL7kvwTM0pXTr10fAtbiVpJaL3bWd502zAhpgSQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     hasBin: true
@@ -10225,42 +10533,11 @@ packages:
       lodash.memoize: 4.1.2
       make-error: 1.3.6
       semver: 7.3.7
-      typescript: 4.9.4
+      typescript: 4.9.5
       yargs-parser: 20.2.9
     dev: false
 
-  /ts-node/10.9.1_4yryqebli4n4n6emd74gdor37i:
-    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': '>=1.2.50'
-      '@swc/wasm': '>=1.2.50'
-      '@types/node': '*'
-      typescript: '>=2.7'
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      '@swc/wasm':
-        optional: true
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.9
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.3
-      '@types/node': 14.18.28
-      acorn: 8.7.0
-      acorn-walk: 8.2.0
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 4.9.4
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    dev: true
-
-  /ts-node/10.9.1_awa2wsr5thmg3i7jqycphctjfq:
+  /ts-node/10.9.1_bdgp3l2zgaopogaavxusmetvge:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -10286,7 +10563,38 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 4.9.4
+      typescript: 4.9.5
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    dev: true
+
+  /ts-node/10.9.1_y5t56lzincotvey3bh2b3dpqle:
+    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.3
+      '@types/node': 14.18.28
+      acorn: 8.7.0
+      acorn-walk: 8.2.0
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
@@ -10307,7 +10615,7 @@ packages:
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
 
-  /tsup/6.5.0_bhwqdllmxuyazsjifedxrqprdq:
+  /tsup/6.5.0_pr4r723stfqz5eidoh2flacvd4:
     resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
     engines: {node: '>=14'}
     hasBin: true
@@ -10338,13 +10646,13 @@ packages:
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
-      typescript: 4.9.4
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node
     dev: true
 
-  /tsup/6.5.0_typescript@4.9.4:
+  /tsup/6.5.0_typescript@4.9.5:
     resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
     engines: {node: '>=14'}
     hasBin: true
@@ -10374,20 +10682,20 @@ packages:
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
-      typescript: 4.9.4
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node
     dev: true
 
-  /tsutils/3.21.0_typescript@4.9.4:
+  /tsutils/3.21.0_typescript@4.9.5:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
     peerDependencies:
       typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
     dependencies:
       tslib: 1.14.1
-      typescript: 4.9.4
+      typescript: 4.9.5
     dev: true
 
   /tty-table/2.8.13:
@@ -10403,65 +10711,65 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-darwin-64/1.7.0:
-    resolution: {integrity: sha512-hSGAueSf5Ko8J67mpqjpt9FsP6ePn1nMcl7IVPoJq5dHsgX3anCP/BPlexJ502bNK+87DDyhQhJ/LPSJXKrSYQ==}
+  /turbo-darwin-64/1.7.2:
+    resolution: {integrity: sha512-Sml3WR8MSu80W+gS8SnoKNImcDOlIX7zlvezzds65mW11yGniIFfZ18aKWGOm92Nj2SvXCQ2+UmyGghbFaHNmQ==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.7.0:
-    resolution: {integrity: sha512-BLLOW5W6VZxk5+0ZOj5AO1qjM0P5isIgjbEuyAl8lHZ4s9antUbY4CtFrspT32XxPTYoDl4UjviPMcSsbcl3WQ==}
+  /turbo-darwin-arm64/1.7.2:
+    resolution: {integrity: sha512-JnlgGLScboUJGJxvmSsF+5xkImEDTMPg2FHzX4n8AMB9az9ZlPQAMtc+xu4p6Xp9eaykKiV2RG81YS3H0fxDLA==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.7.0:
-    resolution: {integrity: sha512-aw2qxmfZa+kT87SB3GNUoFimqEPzTlzlRqhPgHuAAT6Uf0JHnmebPt4K+ZPtDNl5yfVmtB05bhHPqw+5QV97Yg==}
+  /turbo-linux-64/1.7.2:
+    resolution: {integrity: sha512-vbLJw6ovG+lpiPqxniscBjljKJ2jbsHuKp8uK4j/wqgp68wAVKeAZW77GGDAUgDb88XH6Kvhh2hcizL+iWduww==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.7.0:
-    resolution: {integrity: sha512-AJEx2jX+zO5fQtJpO3r6uhTabj4oSA5ZhB7zTs/rwu/XqoydsvStA4X8NDW4poTbOjF7DcSHizqwi04tSMzpJw==}
+  /turbo-linux-arm64/1.7.2:
+    resolution: {integrity: sha512-zLnuS8WdHonKL74KqOopOH/leBOWumlVGF8/8hldbDPq0mwY+6myRR5/5LdveB51rkG4UJh/sQ94xV67tjBoyw==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.7.0:
-    resolution: {integrity: sha512-ewj7PPv2uxqv0r31hgnBa3E5qwUu7eyVRP5M1gB/TJXfSHduU79gbxpKCyxIZv2fL/N2/3U7EPOQPSZxBAoljA==}
+  /turbo-windows-64/1.7.2:
+    resolution: {integrity: sha512-oE5PMoXjmR09okvVzteFb6FjA6yo+nMsacsgKH2yLNq4sOrVo9tG98JkRurOv5+L6ZQ3yGXPxWHiqeH7hLkAVQ==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.7.0:
-    resolution: {integrity: sha512-LzjOUzveWkvTD0jP8DBMYiAnYemmydsvqxdSmsUapHHJkl6wKZIOQNSO7pxsy+9XM/1/+0f9Y9F9ZNl5lePTEA==}
+  /turbo-windows-arm64/1.7.2:
+    resolution: {integrity: sha512-mdTUJk23acRv5qxA/yEstYhM1VFenVE3FDrssxGRFq7S80smtCGK1xUd4BEDDzDlVXOqBohmM5jRh9516rcjPQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.7.0:
-    resolution: {integrity: sha512-cwympNwQNnQZ/TffBd8yT0i0O10Cf/hlxccCYgUcwhcGEb9rDjE5thDbHoHw1hlJQUF/5ua7ERJe7Zr0lNE/ww==}
+  /turbo/1.7.2:
+    resolution: {integrity: sha512-YR/x3GZEx0C1RV6Yvuw/HB1Ixx3upM6ZTTa4WqKz9WtLWN8u2g+u2h5KpG5YtjCS3wl/8zVXgHf2WiMK6KIghg==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.7.0
-      turbo-darwin-arm64: 1.7.0
-      turbo-linux-64: 1.7.0
-      turbo-linux-arm64: 1.7.0
-      turbo-windows-64: 1.7.0
-      turbo-windows-arm64: 1.7.0
+      turbo-darwin-64: 1.7.2
+      turbo-darwin-arm64: 1.7.2
+      turbo-linux-64: 1.7.2
+      turbo-linux-arm64: 1.7.2
+      turbo-windows-64: 1.7.2
+      turbo-windows-arm64: 1.7.2
     dev: true
 
   /twin.macro/3.1.0_tailwindcss@3.2.4:
@@ -10546,8 +10854,8 @@ packages:
     dependencies:
       is-typedarray: 1.0.0
 
-  /typescript/4.9.4:
-    resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
+  /typescript/4.9.5:
+    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
 
@@ -10680,6 +10988,12 @@ packages:
 
   /unist-util-stringify-position/3.0.2:
     resolution: {integrity: sha512-7A6eiDCs9UtjcwZOcCpM4aPII3bAAGv13E96IkawkOAW0OhH+yRxtY0lzo8KiHpzEMfH7Q+FizUmwp8Iqy5EWg==}
+    dependencies:
+      '@types/unist': 2.0.6
+    dev: true
+
+  /unist-util-stringify-position/3.0.3:
+    resolution: {integrity: sha512-k5GzIBZ/QatR8N5X2y+drfpWG8IDBzdnVj6OInRNWm1oXrzydiaAT2OQiA8DPRRZyAKb9b6I2a6PxYklZD0gKg==}
     dependencies:
       '@types/unist': 2.0.6
 
@@ -10821,7 +11135,7 @@ packages:
     resolution: {integrity: sha512-0yaU+rj2gKAyEk12ffdSbBfjnnj+b1zqTBv3OQCTn8yEB02bsPizwdBPrLJjHnK+cU9EMMcUnNv938XcZIkmdA==}
     dependencies:
       '@types/unist': 2.0.6
-      unist-util-stringify-position: 3.0.2
+      unist-util-stringify-position: 3.0.3
 
   /vfile/4.2.1:
     resolution: {integrity: sha512-O6AE4OskCG5S1emQ/4gl8zK586RqA3srz3nfK/Viy0UPToBc5Trp9BVFb1u0CjsKrAWwnpr4ifM/KBXPWwJbCA==}
@@ -10837,7 +11151,7 @@ packages:
     dependencies:
       '@types/unist': 2.0.6
       is-buffer: 2.0.5
-      unist-util-stringify-position: 3.0.2
+      unist-util-stringify-position: 3.0.3
       vfile-message: 3.1.3
 
   /w3c-hr-time/1.0.2:

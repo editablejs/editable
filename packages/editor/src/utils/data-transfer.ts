@@ -1,4 +1,4 @@
-import { Descendant } from 'slate'
+import { Descendant } from '@editablejs/models'
 import {
   APPLICATION_FRAGMENT_TYPE,
   DATA_EDITABLE_FRAGMENT,

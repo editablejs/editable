@@ -1,4 +1,4 @@
-import { Range } from '@editablejs/editor'
+import { Range } from '@editablejs/models'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
 import { AwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
 import { CursorData, CursorState } from '../types'

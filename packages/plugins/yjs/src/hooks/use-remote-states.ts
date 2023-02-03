@@ -1,11 +1,11 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { useStore } from 'zustand'
 import shallow from 'zustand/shallow'
 import { YCursorEditor } from '../plugin/cursors-editor'
 import { CursorData, CursorState } from '../types'
 import { useCursorStore } from './use-cursor-store'
 
-export const useRemoteStates = <T extends CursorData>(editor: Editable) => {
+export const useRemoteStates = <T extends CursorData>(editor: Editor) => {
   const store = useCursorStore(editor)
   return useStore(
     store,

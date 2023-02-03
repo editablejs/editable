@@ -1,18 +1,18 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 
 export type FontColorHotkey = Record<string, string | ((e: KeyboardEvent) => boolean)>
 
 export interface FontColorOptions {
-  hotkeys?: FontColorHotkey
+  hotkey?: FontColorHotkey
   defaultColor?: string
 }
 
-const FONTCOLOR_OPTIONS = new WeakMap<Editable, FontColorOptions>()
+const FONTCOLOR_OPTIONS = new WeakMap<Editor, FontColorOptions>()
 
-export const getOptions = (editor: Editable): FontColorOptions => {
+export const getOptions = (editor: Editor): FontColorOptions => {
   return FONTCOLOR_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: FontColorOptions) => {
+export const setOptions = (editor: Editor, options: FontColorOptions) => {
   FONTCOLOR_OPTIONS.set(editor, options)
 }

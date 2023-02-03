@@ -1,4 +1,4 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import {
   HEADING_ONE_KEY,
   HEADING_TWO_KEY,
@@ -7,25 +7,25 @@ import {
   HEADING_FIVE_KEY,
   HEADING_SIX_KEY,
 } from './constants'
-import { HeadingFontStyleName, HeadingTextMark, HeadingType } from './types'
+import { HeadingFontStyleName, HeadingTextMark, HeadingType } from './interfaces/heading'
 
-export type Hotkeys = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
+export type HeadingHotkey = Record<HeadingType, string | ((e: KeyboardEvent) => boolean)>
 
 export interface HeadingOptions {
   enabled?: HeadingType[]
   disabled?: HeadingType[]
-  hotkeys?: Hotkeys
+  hotkey?: HeadingHotkey
   style?: Partial<Record<HeadingType, Record<HeadingFontStyleName, string>>>
   // 标题样式应用到text中的哪个属性
   textMark?: Partial<HeadingTextMark>
 }
-const HEADING_OPTIONS = new WeakMap<Editable, HeadingOptions>()
+const HEADING_OPTIONS = new WeakMap<Editor, HeadingOptions>()
 
-export const getOptions = (editor: Editable): HeadingOptions => {
+export const getOptions = (editor: Editor): HeadingOptions => {
   return HEADING_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: HeadingOptions) => {
+export const setOptions = (editor: Editor, options: HeadingOptions) => {
   HEADING_OPTIONS.set(editor, options)
 }
 
@@ -57,7 +57,7 @@ const defaultStyle = {
 }
 
 export const getStyle = (
-  editor: Editable,
+  editor: Editor,
   type: HeadingType,
 ): Record<HeadingFontStyleName, string> => {
   const { style = defaultStyle } = getOptions(editor)
@@ -69,7 +69,7 @@ const defaultTextMark: HeadingTextMark = {
   fontWeight: 'bold',
 }
 
-export const getTextMark = (editor: Editable): HeadingTextMark => {
+export const getTextMark = (editor: Editor): HeadingTextMark => {
   const { textMark = defaultTextMark } = getOptions(editor)
   return Object.assign(defaultTextMark, textMark)
 }

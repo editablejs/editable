@@ -1,4 +1,14 @@
-import { Editor, Node, Range, Element, NodeEntry, Path } from 'slate'
+import {
+  Editor,
+  Node,
+  Range,
+  Element,
+  NodeEntry,
+  Path,
+  DOMElement,
+  DOMRange,
+  isDOMElement,
+} from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import {
   DATA_EDITABLE_COMPOSITION,
@@ -6,8 +16,6 @@ import {
   DATA_EDITABLE_STRING,
   DATA_EDITABLE_ZERO_WIDTH,
 } from './constants'
-import { DOMElement, DOMRange, isDOMElement, isDOMHTMLElement } from './dom'
-import { CAN_USE_DOM } from './environment'
 
 interface LineRect {
   top: number
@@ -149,7 +157,7 @@ const inLine = (rect: DOMRect, line: Record<'top' | 'bottom' | 'height', number>
  * @param bottom
  * @returns
  */
-const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom: number) => {
+const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: number) => {
   const lineRect = {
     top: top,
     height: bottom - top,
@@ -222,7 +230,7 @@ const matchHighest = (editor: Editable, element: DOMElement, top: number, bottom
   return lineRect
 }
 
-export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) => {
+export const getLineRectsByNode = (editor: Editor, node: Node, minWidth = 4) => {
   const path = Editable.findPath(editor, node)
   const block: NodeEntry | undefined =
     Editor.isBlock(editor, node) && path.length === 1
@@ -260,7 +268,7 @@ export const getLineRectsByNode = (editor: Editable, node: Node, minWidth = 4) =
  * @param range
  * @returns
  */
-export const getLineRectsByRange = (editor: Editable, range: Range, minWidth = 4) => {
+export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) => {
   const anchor = Range.start(range)
   const focus = Range.end(range)
   // 开始位置的 block节点

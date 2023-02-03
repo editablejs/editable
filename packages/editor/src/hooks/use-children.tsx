@@ -1,8 +1,8 @@
-import { Editor, Range, Element, Ancestor, Descendant } from 'slate'
+import { Editor, Range, Element, Ancestor, Descendant } from '@editablejs/models'
 
 import ElementComponent from '../components/element'
 import TextComponent from '../components/text'
-import { Editable } from '..'
+import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
 import { NodeSelectedContext } from './use-node-selected'
@@ -47,7 +47,7 @@ const useChildren = (props: {
           </NodeFocusedContext.Provider>
         </NodeSelectedContext.Provider>
       )
-      if (Editable.isGrid(editor, n)) {
+      if (Editor.isGrid(editor, n)) {
         children.push(
           <GridContext.Provider key={`grid-provider-${key.id}`} value={n}>
             {element}

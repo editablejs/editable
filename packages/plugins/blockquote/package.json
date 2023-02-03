@@ -22,15 +22,44 @@
         "types": "./dist/*.d.ts",
         "default": "./dist/*.js"
       }
+    },
+    "./serializer/*": {
+      "import": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.js"
+      }
+    },
+    "./deserializer/*": {
+      "import": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.js"
+      }
     }
   },
   "typesVersions": {
     "*": {
-      "serializer": [
-        "dist/serializer.d.ts"
+      "serializer/html": [
+        "dist/serializer/html.d.ts"
       ],
-      "deserializer": [
-        "dist/deserializer.d.ts"
+      "serializer/markdown": [
+        "dist/serializer/markdown.d.ts"
+      ],
+      "serializer/text": [
+        "dist/serializer/text.d.ts"
+      ],
+      "deserializer/html": [
+        "dist/deserializer/html.d.ts"
+      ],
+      "deserializer/markdown": [
+        "dist/deserializer/markdown.d.ts"
       ]
     }
   },
@@ -54,6 +83,8 @@
   },
   "devDependencies": {
     "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*",
+    "@types/mdast": "3.0.10",
     "@types/react": "^18.x",
     "@types/react-dom": "^18.x",
     "@types/styled-components": "5.1.26",
@@ -66,15 +97,18 @@
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
+    "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "twin.macro": "3.1.0",
-    "tsup": "^6.5.0",
     "typescript": "latest"
   },
   "peerDependencies": {
-    "@editablejs/editor": "workspace:*"
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*"
   },
   "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*",
     "styled-components": "5.3.5"
   },
   "lint-staged": {

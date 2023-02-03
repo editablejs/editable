@@ -6,7 +6,7 @@ import { YJS_DOC_WEAK_MAP, YJS_AWARENESS_WEAK_MAP } from '../../weak-map'
 import { CODEBLOCK_YJS_FIELD, CODEBLOCK_YJS_KEY } from '../../constants'
 import { ySync, YSyncConfig, ySyncFacet } from './sync'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
-import { ProviderProtocol, getProviderProtocol } from '@editablejs/plugin-protocols/provider'
+import { ProviderProtocol, withProviderProtocol } from '@editablejs/protocols/provider'
 import { yRemoteSelections } from './remote-selecton'
 import { undo, redo } from '@codemirror/commands'
 import { yUndoManagerFacet, YUndoManagerConfig, yUndoManager } from './undomanager'
@@ -45,7 +45,7 @@ export class YExtension {
   constructor(view: EditorView) {
     this.view = view
     this.config = view.state.facet(yExtensionnFacet)
-    const providerProtocol = getProviderProtocol(this.config.editor)
+    const providerProtocol = withProviderProtocol(this.config.editor)
     providerProtocol.on('connected', this.loadDoc)
     providerProtocol.on('disconnected', this.destroyDoc)
     this.providerProtocol = providerProtocol

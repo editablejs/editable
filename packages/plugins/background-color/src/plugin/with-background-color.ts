@@ -1,7 +1,8 @@
 import { colord } from 'colord'
-import { Editable, RenderLeafProps, Editor, Hotkey } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
+import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editor'
 import { BACKGROUND_COLOR_KEY } from '../constants'
-import { BackgroundColorEditor } from './editor'
+import { BackgroundColorEditor } from './background-color-editor'
 import { BackgroundColor } from '../interfaces/background-color'
 import { BackgroundColorHotkey, BackgroundColorOptions, setOptions } from '../options'
 
@@ -39,7 +40,7 @@ export const withBackgroundColor = <T extends Editable>(
 
   const { onKeydown } = newEditor
 
-  const hotkeys: BackgroundColorHotkey = Object.assign({}, defaultHotkeys, options.hotkeys)
+  const hotkeys: BackgroundColorHotkey = Object.assign({}, defaultHotkeys, options.hotkey)
   newEditor.onKeydown = (e: KeyboardEvent) => {
     const value = Hotkey.match(hotkeys, e)
     if (value) {

@@ -1,4 +1,4 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { HrLocale } from './locale/types'
 
 export type HrHotkey = string | ((e: KeyboardEvent) => boolean)
@@ -8,12 +8,12 @@ export interface HrOptions {
   hotkey?: HrHotkey
 }
 
-const HR_OPTIONS = new WeakMap<Editable, HrOptions>()
+const HR_OPTIONS = new WeakMap<Editor, HrOptions>()
 
-export const getOptions = (editor: Editable): HrOptions => {
+export const getOptions = (editor: Editor): HrOptions => {
   return HR_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: HrOptions) => {
+export const setOptions = (editor: Editor, options: HrOptions) => {
   HR_OPTIONS.set(editor, options)
 }

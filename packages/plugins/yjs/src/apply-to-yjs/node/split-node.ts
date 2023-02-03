@@ -1,4 +1,4 @@
-import { Node, SplitNodeOperation, Text } from '@editablejs/editor'
+import { Node, SplitNodeOperation, Text } from '@editablejs/models'
 import {
   cloneInsertDeltaDeep,
   sliceInsertDelta,
@@ -7,7 +7,7 @@ import {
   restoreStoredPositionsWithDeltaAbsolute,
   getEditorNodeYLength,
   getYTarget,
-} from '@editablejs/plugin-yjs-transform'
+} from '@editablejs/yjs-transform'
 import * as Y from 'yjs'
 
 export function splitNode(sharedRoot: Y.XmlText, editorRoot: Node, op: SplitNodeOperation): void {

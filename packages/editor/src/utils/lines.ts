@@ -2,8 +2,8 @@
  * Utilities for single-line deletion
  */
 
-import { Range, Editor } from 'slate'
-import { Editable } from '..'
+import { Range, Editor } from '@editablejs/models'
+import { Editable } from '../plugin/editable'
 
 const doRectsIntersect = (rect: DOMRect, compareRect: DOMRect) => {
   const middle = (compareRect.top + compareRect.bottom) / 2

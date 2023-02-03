@@ -1,6 +1,6 @@
-import { ListTemplate } from '@editablejs/editor'
+import { ListTemplate } from '@editablejs/models'
 
-export const UnOrderedListTemplates: ListTemplate[] = [
+export const UnorderedListTemplates: ListTemplate[] = [
   {
     key: 'default',
     depth: 3,

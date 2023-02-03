@@ -1,8 +1,6 @@
 import * as React from 'react'
-import { Range, Node, Path, Text, Element } from 'slate'
+import { Editor, Range, Node, Path, Text, Element } from '@editablejs/models'
 import create, { StoreApi, UseBoundStore } from 'zustand'
-import { Editable } from './editable'
-
 export interface DecorateRenderProps<T = Node> {
   node: T
   path: Path
@@ -28,9 +26,9 @@ export interface DecorateStore {
   decorations: Decorate[]
 }
 
-const EDITOR_TO_DECORATE_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<DecorateStore>>>()
+const EDITOR_TO_DECORATE_STORE = new WeakMap<Editor, UseBoundStore<StoreApi<DecorateStore>>>()
 
-export const getDecorateStore = (editor: Editable) => {
+export const getDecorateStore = (editor: Editor) => {
   let store = EDITOR_TO_DECORATE_STORE.get(editor)
   if (!store) {
     store = create<DecorateStore>(() => ({
@@ -53,21 +51,21 @@ export const Decorate = {
     return value && typeof value.match === 'function' && typeof value.renderText === 'function'
   },
 
-  create: (editor: Editable, decorate: Decorate) => {
+  create: (editor: Editor, decorate: Decorate) => {
     const store = getDecorateStore(editor)
     store.setState(state => ({
       decorations: [...state.decorations, decorate],
     }))
   },
 
-  remove: (editor: Editable, decorate: Decorate | string) => {
+  remove: (editor: Editor, decorate: Decorate | string) => {
     const store = getDecorateStore(editor)
     store.setState(state => ({
       decorations: state.decorations.filter(d => !predicate(decorate)(d)),
     }))
   },
 
-  has: (editor: Editable, decorate: Decorate | string) => {
+  has: (editor: Editor, decorate: Decorate | string) => {
     const store = getDecorateStore(editor)
     return store.getState().decorations.some(predicate(decorate))
   },

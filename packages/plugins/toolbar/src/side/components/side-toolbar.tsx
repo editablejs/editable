@@ -1,21 +1,17 @@
 import {
   Editable,
-  Editor,
   useEditableStatic,
   useDragMethods,
   FormatData,
-  GridCell,
   useDragging,
   SlotComponentProps,
   useLocale,
   Decorate,
-  Transforms,
-  Path,
   useIsomorphicLayoutEffect,
   ElementDecorate,
-  Grid,
   DATA_EDITABLE_LEAF,
 } from '@editablejs/editor'
+import { Editor, GridCell, Transforms } from '@editablejs/models'
 import * as React from 'react'
 import { Point, Icon, Tooltip } from '@editablejs/ui'
 import {
@@ -135,7 +131,7 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       const entry = Editor.above(editor, {
         at: point,
         match: n => {
-          if (!isFindList && Editable.isList(editor, n)) {
+          if (!isFindList && Editor.isList(editor, n)) {
             isFindList = true
             return true
           }

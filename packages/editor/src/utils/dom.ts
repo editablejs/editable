@@ -1,84 +1,15 @@
 // COMPAT: This is required to prevent TypeScript aliases from doing some very
 // weird things for Slate's types with the same name as globals. (2019/11/27)
-
+import {
+  DOMPoint,
+  isDOMElement,
+  DOMElement,
+  DOMNode,
+  isDOMComment,
+  isDOMHTMLElement,
+} from '@editablejs/models'
 import { Constants } from './constants'
 import { CAN_USE_DOM } from './environment'
-
-// https://github.com/microsoft/TypeScript/issues/35002
-type DOMNode = globalThis.Node
-type DOMComment = globalThis.Comment
-type DOMElement = globalThis.Element
-type DOMHTMLElement = globalThis.HTMLElement
-type DOMText = globalThis.Text
-type DOMRange = globalThis.Range
-type DOMSelection = globalThis.Selection
-type DOMStaticRange = globalThis.StaticRange
-
-export type { DOMNode, DOMComment, DOMElement, DOMText, DOMRange, DOMSelection, DOMStaticRange }
-
-declare global {
-  interface Window {
-    Selection: (typeof Selection)['constructor']
-    DataTransfer: (typeof DataTransfer)['constructor']
-    Node: (typeof Node)['constructor']
-  }
-}
-
-export type DOMPoint = [Node, number]
-
-/**
- * Returns the host window of a DOM node
- */
-export const getDefaultView = (value: any): Window | null => {
-  return (value && value.ownerDocument && value.ownerDocument.defaultView) || null
-}
-
-/**
- * Check if a DOM node is a comment node.
- */
-
-export const isDOMComment = (value: any): value is DOMComment => {
-  return isDOMNode(value) && value.nodeType === 8
-}
-
-/**
- * Check if a DOM node is an element node.
- */
-
-export const isDOMElement = (value: any): value is DOMElement => {
-  return isDOMNode(value) && value.nodeType === 1
-}
-
-export const isDOMHTMLElement = (value: any): value is DOMHTMLElement => {
-  if (!isDOMElement(value)) return false
-  if (typeof HTMLElement !== 'undefined') return value instanceof HTMLElement
-  return (value as DOMHTMLElement).style instanceof CSSStyleDeclaration
-}
-/**
- * Check if a value is a DOM node.
- */
-
-export const isDOMNode = (value: any): value is DOMNode => {
-  const window = getDefaultView(value) ?? globalThis.window
-  return !!window && value instanceof window.Node
-}
-
-/**
- * Check if a value is a DOM selection.
- */
-
-export const isDOMSelection = (value: any): value is DOMSelection => {
-  const window = value && value.anchorNode && getDefaultView(value.anchorNode)
-  return !!window && value instanceof window.Selection
-}
-
-/**
- * Check if a DOM node is an element node.
- */
-
-export const isDOMText = (value: any): value is DOMText => {
-  return isDOMNode(value) && value.nodeType === 3
-}
 
 /**
  * Normalize a DOM point so that it always refers to a text node.
@@ -176,40 +107,6 @@ export const getEditableChild = (
 ): DOMNode => {
   const [child] = getEditableChildAndIndex(parent, index, direction)
   return child
-}
-
-const kebabCase = (str: string) => {
-  const regex = new RegExp(/[A-Z]/g)
-  return str.replace(regex, v => `-${v.toLowerCase()}`)
-}
-/**
- * CSSStyle 转换为 style 字符串
- */
-export const cssStyleToString = (style: Partial<CSSStyleDeclaration>): string => {
-  return Object.keys(style).reduce((accumulator, key) => {
-    // transform the key from camelCase to kebab-case
-    const cssKey = kebabCase(key)
-    // remove ' in value
-    const cssValue = (style as Record<string, any>)[key].replace("'", '')
-    // build the result
-    // you can break the line, add indent for it if you need
-    return `${accumulator}${cssKey}:${cssValue};`
-  }, '')
-}
-
-/**
- * React.HTMLAttributes<HTMLElement> 转换为 attributes 字符串
- */
-export const htmlAttributesToString = (attributes: Record<string, any>): string => {
-  return Object.keys(attributes).reduce((accumulator, key) => {
-    // transform the key from camelCase to kebab-case
-    const attrKey = kebabCase(key)
-    // remove ' in value
-    const attrValue = attributes[key].replace("'", '')
-    // build the result
-    // you can break the line, add indent for it if you need
-    return `${accumulator}${attrKey}="${attrValue}" `
-  }, '')
 }
 
 export const isEditableDOMElement = (value: any): boolean => {

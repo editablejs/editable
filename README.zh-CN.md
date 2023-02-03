@@ -64,7 +64,7 @@ pnpm dev
 - [x] Sup
 - [x] Fontsize
 - [x] OrderedList
-- [x] UnOrderedList
+- [x] UnorderedList
 - [x] TaskList
 - [x] Blockquote
 - [x] Indent

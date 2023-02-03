@@ -1,4 +1,4 @@
-import { Node, Operation } from '@editablejs/editor'
+import { Node, Operation } from '@editablejs/models'
 import * as Y from 'yjs'
 
 export type ApplyFunc<O extends Operation = Operation> = (

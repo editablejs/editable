@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { Editor, Text, Path, Element, Node } from 'slate'
+import { Editor, Text, Path, Element, Node, CompositionText } from '@editablejs/models'
 
-import { Editable, useEditableStatic } from '..'
-import { CompositionText } from '../interfaces/composition-text'
+import { Editable } from '../plugin/editable'
+import { useEditableStatic } from '../hooks/use-editable'
 import {
   DATA_EDITABLE_COMPOSITION,
   DATA_EDITABLE_LENGTH,

@@ -1,11 +1,5 @@
-import {
-  Editable,
-  Editor,
-  ElementAttributes,
-  Transforms,
-  useLocale,
-  useNodeFocused,
-} from '@editablejs/editor'
+import { Editable, ElementAttributes, useLocale, useNodeFocused } from '@editablejs/editor'
+import { Editor, Transforms } from '@editablejs/models'
 import {
   Icon,
   Popover,
@@ -21,7 +15,7 @@ import {
 import React, { forwardRef, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import tw, { css } from 'twin.macro'
 import { DATA_IMAGE_KEY } from '../constants'
-import { ImageEditor } from '../editor'
+import { ImageEditor } from '../plugin/image-editor'
 import { useViewer } from '../hooks/use-viewer'
 import { Image, ImageStyle } from '../interfaces/image'
 import { ImageLocale } from '../locale'
@@ -93,7 +87,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
           setRotatedUrl(URL.createObjectURL(blob))
         })
       }
-    }, [imageDOMElemennt, rotate, state])
+    }, [imageDOMElemennt, rotate, state, loaded])
 
     useEffect(() => {
       return () => {

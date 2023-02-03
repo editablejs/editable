@@ -6,48 +6,27 @@ import {
   Operation,
   Transforms,
   Range,
-  Text,
-  Element,
-  EditorMarks,
   Point,
-} from 'slate'
-import getDirection from 'direction'
-import { Editable, EditorElements, RenderElementProps, RenderLeafProps } from './editable'
-import { Key } from '../utils/key'
+  List,
+  Key,
+} from '@editablejs/models'
+import { Editable, RenderElementProps, RenderLeafProps } from './editable'
 import {
   EDITOR_TO_KEY_TO_ELEMENT,
   NODE_TO_KEY,
   IS_SHIFT_PRESSED,
-  IS_COMPOSING,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
-import Hotkeys from '../utils/hotkeys'
-import { getWordOffsetBackward, getWordOffsetForward } from '../utils/text'
-import { Grid } from '../interfaces/grid'
-import { GridRow } from '../interfaces/row'
-import { GridCell } from '../interfaces/cell'
-import { List } from '../interfaces/list'
-import { fragmentToString, parseDataTransfer } from '../utils/data-transfer'
-import {
-  APPLICATION_FRAGMENT_TYPE,
-  DATA_EDITABLE_FRAGMENT,
-  TEXT_HTML,
-  TEXT_PLAIN,
-} from '../utils/constants'
-import { readClipboardData, writeClipboardData } from '../utils/clipboard'
-import { HTMLSerializer, TextSerializer } from './serializer'
-import { HTMLDeserializer } from './deserializer'
-import { CompositionText } from '../interfaces/composition-text'
 import { EventEmitter } from './event'
 import { Placeholder } from './placeholder'
 import { Focused } from '../hooks/use-focused'
 import { canForceTakeFocus } from '../utils/dom'
-
-const EDITOR_ACTIVE_MARKS = new WeakMap<Editor, EditorMarks>()
-
-const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
+import { withInput } from './with-input'
+import { withKeydown } from './with-keydown'
+import { withNormalizeNode } from './with-normalize-node'
+import { withDataTransfer } from './with-data-transfer'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -59,23 +38,20 @@ const EDITOR_ACTIVE_ELEMENTS = new WeakMap<Editor, EditorElements>()
  */
 export const withEditable = <T extends Editor>(editor: T) => {
   const e = editor as T & Editable
-  const { apply, onChange, deleteBackward, deleteForward, normalizeNode } = e
+
+  withInput(e)
+
+  withKeydown(e)
+
+  withNormalizeNode(e)
+
+  withDataTransfer(e)
+
+  const { apply, onChange, deleteBackward, deleteForward } = e
 
   // The WeakMap which maps a key to a specific HTMLElement must be scoped to the editor instance to
   // avoid collisions between editors in the DOM that share the same value.
   EDITOR_TO_KEY_TO_ELEMENT.set(e, new WeakMap())
-
-  e.isSolidVoid = (_element: Element) => {
-    return true
-  }
-
-  e.isGrid = (value: any): value is Grid => false
-
-  e.isGridRow = (value: any): value is GridRow => false
-
-  e.isGridCell = (value: any): value is GridCell => false
-
-  e.isList = (value: any): value is List => false
 
   e.deleteForward = unit => {
     const { selection } = editor
@@ -112,7 +88,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
           return
         }
       }
-      const list = List.find(e)
+      const list = List.above(e)
       if (list && Editor.isStart(e, selection.focus, list[1])) {
         List.unwrapList(e)
         return
@@ -178,9 +154,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
       }
     }
 
-    EDITOR_ACTIVE_MARKS.delete(editor)
-    EDITOR_ACTIVE_ELEMENTS.delete(editor)
-
     apply(op)
 
     for (const [path, key] of matches) {
@@ -190,43 +163,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (!Editable.isFocused(e) && canForceTakeFocus()) {
       e.focus()
     }
-  }
-
-  e.normalizeNode = entry => {
-    const [node, path] = entry
-    if (Editor.isBlock(e, node)) {
-      const { type, ...attributes } = node
-      let isUnwrap = false
-      const isParagraph = !type || type === 'paragraph'
-      // 相同type类的block不嵌套，paragraph 下不能嵌套block节点
-      for (const [child, childPath] of Node.children(editor, path)) {
-        if (Editor.isBlock(e, child)) {
-          if (!isUnwrap && !isParagraph && child.type === type) {
-            Transforms.unwrapNodes(editor, { at: childPath })
-            return
-          } else if (isParagraph) {
-            Transforms.setNodes(editor, attributes, { at: childPath })
-            isUnwrap = true
-          }
-        }
-      }
-      if (isUnwrap) {
-        Transforms.unwrapNodes(editor, { at: path })
-        return
-      }
-
-      if (e.isGrid(node) || e.isVoid(node)) {
-        const parent = Node.parent(editor, path)
-        if (parent.children[parent.children.length - 1] === node) {
-          Transforms.insertNodes(
-            editor,
-            { type: 'paragraph', children: [{ text: '' }] },
-            { at: Path.next(path) },
-          )
-        }
-      }
-    }
-    normalizeNode(entry)
   }
 
   e.on = (type, handler, prepend) => {
@@ -248,9 +184,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
   let prevSelection: Range | null = null
   let prevAnchorNode: Node | null = null
   let prevFocusNode: Node | null = null
+
   e.onChange = () => {
-    EDITOR_ACTIVE_MARKS.delete(editor)
-    EDITOR_ACTIVE_ELEMENTS.delete(editor)
     // COMPAT: React doesn't batch `setState` hook calls, which means that the
     // children and selection can get out of sync for one render pass. So we
     // have to use this unstable API to ensure it batches them. (2019/12/03)
@@ -319,296 +254,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
-  e.queryActiveMarks = <T extends Text>() => {
-    const marks = EDITOR_ACTIVE_MARKS.get(editor)
-    if (marks) return marks as Omit<T, 'text'>
-    const editorMarks: Omit<T, 'text'> = Editor.marks(e) as any
-    if (editorMarks) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
-    return editorMarks ?? {}
-  }
-
-  e.queryActiveElements = () => {
-    let elements = EDITOR_ACTIVE_ELEMENTS.get(editor)
-    if (elements) return elements
-    elements = {}
-    e.normalizeSelection(selection => {
-      if (!elements || selection === null) return
-      const nodeEntries = Editor.nodes<Element>(editor, {
-        at: selection,
-        match: n => !Editor.isEditor(n) && Element.isElement(n),
-      })
-
-      for (const entry of nodeEntries) {
-        const type = entry[0].type ?? 'paragraph'
-        if (elements[type]) elements[type].push(entry)
-        else elements[type] = [entry]
-      }
-    })
-
-    if (Object.keys(elements).length > 0) EDITOR_ACTIVE_ELEMENTS.set(editor, elements)
-    return elements
-  }
-
-  let isPasteText = false
-  e.onKeydown = (event: KeyboardEvent) => {
-    e.emit('keydown', event)
-    if (event.defaultPrevented) return
-    const { selection } = editor
-    const element = editor.children[selection !== null ? selection.focus.path[0] : 0]
-    const isRTL = getDirection(Node.string(element)) === 'rtl'
-
-    if (Hotkeys.isShift(event)) {
-      IS_SHIFT_PRESSED.set(e, true)
-    }
-
-    if (Hotkeys.isSelectAll(event)) {
-      event.preventDefault()
-      Transforms.select(e, Editor.range(e, []))
-      return
-    }
-
-    if (Hotkeys.isCut(event)) {
-      event.preventDefault()
-      e.cut()
-      return
-    }
-
-    if (Hotkeys.isCopy(event)) {
-      event.preventDefault()
-      e.copy()
-      return
-    }
-
-    if (Hotkeys.isPaste(event)) {
-      isPasteText = false
-      return
-    }
-
-    if (Hotkeys.isPasteText(event)) {
-      isPasteText = true
-      return
-    }
-
-    if (Hotkeys.isExtendForward(event)) {
-      event.preventDefault()
-      Transforms.move(e, { edge: 'focus' })
-      return
-    }
-
-    if (Hotkeys.isExtendBackward(event)) {
-      event.preventDefault()
-      Transforms.move(e, { edge: 'focus', reverse: true })
-      return
-    }
-
-    if (Hotkeys.isExtendUp(event)) {
-      event.preventDefault()
-      const point = Editable.findPreviousLinePoint(e)
-      if (point && selection)
-        Transforms.select(editor, {
-          anchor: selection.anchor,
-          focus: point,
-        })
-      return
-    }
-
-    if (Hotkeys.isExtendDown(event)) {
-      event.preventDefault()
-      const point = Editable.findNextLinePoint(e)
-      if (point && selection)
-        Transforms.select(editor, {
-          anchor: selection.anchor,
-          focus: point,
-        })
-      return
-    }
-
-    if (Hotkeys.isMoveUp(event)) {
-      event.preventDefault()
-      const point = Editable.findPreviousLinePoint(e)
-      if (point) Transforms.select(editor, point)
-      return
-    }
-
-    if (Hotkeys.isMoveDown(event)) {
-      event.preventDefault()
-      const point = Editable.findNextLinePoint(e)
-      if (point) Transforms.select(editor, point)
-      return
-    }
-
-    if (Hotkeys.isExtendLineBackward(event)) {
-      event.preventDefault()
-      Transforms.move(e, {
-        unit: 'line',
-        edge: 'focus',
-        reverse: true,
-      })
-      return
-    }
-
-    if (Hotkeys.isExtendLineForward(event)) {
-      event.preventDefault()
-      Transforms.move(e, { unit: 'line', edge: 'focus' })
-      return
-    }
-
-    if (Hotkeys.isMoveWordBackward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-      if (selection) {
-        const { focus } = selection
-        const { path: focusPath } = focus
-        if (Editor.isStart(editor, focus, focusPath)) {
-          Transforms.move(e, { reverse: !isRTL })
-          return
-        }
-        const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
-        if (text) {
-          const wordOffset = getWordOffsetBackward(text, offset)
-          const newPoint = Editable.findPointOnLine(e, focusPath, wordOffset)
-          Transforms.select(editor, newPoint)
-          return
-        }
-      }
-      Transforms.move(e, { unit: 'word', reverse: !isRTL })
-      return
-    }
-
-    if (Hotkeys.isMoveWordForward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Transforms.collapse(editor, { edge: 'focus' })
-      }
-      if (selection) {
-        const { focus } = selection
-        const { path: focusPath } = focus
-        if (Editor.isEnd(editor, focus, focusPath)) {
-          Transforms.move(e, { reverse: isRTL })
-          return
-        }
-        const { text, offset } = Editable.findTextOffsetOnLine(e, focus)
-        if (text) {
-          const wordOffset = getWordOffsetForward(text, offset)
-          Transforms.select(editor, Editable.findPointOnLine(e, focusPath, wordOffset))
-          return
-        }
-      }
-      Transforms.move(e, { unit: 'word', reverse: isRTL })
-      return
-    }
-
-    if (Hotkeys.isMoveBackward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isCollapsed(selection)) {
-        Transforms.move(e, { reverse: !isRTL })
-      } else {
-        Transforms.collapse(editor, { edge: 'start' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isMoveForward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isCollapsed(selection)) {
-        Transforms.move(e, { reverse: isRTL })
-      } else {
-        Transforms.collapse(editor, { edge: 'end' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isSoftBreak(event)) {
-      event.preventDefault()
-      Editor.insertSoftBreak(editor)
-      return
-    }
-
-    if (Hotkeys.isSplitBlock(event)) {
-      event.preventDefault()
-      Editor.insertBreak(editor)
-      return
-    }
-
-    if (Hotkeys.isDeleteBackward(event)) {
-      event.preventDefault()
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor)
-      } else {
-        Editor.deleteBackward(editor)
-      }
-      return
-    }
-
-    if (Hotkeys.isDeleteForward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor)
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteLineBackward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
-      } else {
-        Editor.deleteBackward(editor, { unit: 'line' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteLineForward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor, { unit: 'line' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteWordBackward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'backward' })
-      } else {
-        Editor.deleteBackward(editor, { unit: 'word' })
-      }
-
-      return
-    }
-
-    if (Hotkeys.isDeleteWordForward(event)) {
-      event.preventDefault()
-
-      if (selection && Range.isExpanded(selection)) {
-        Editor.deleteFragment(editor, { direction: 'forward' })
-      } else {
-        Editor.deleteForward(editor, { unit: 'word' })
-      }
-
-      return
-    }
-  }
-
   e.onKeyup = (event: KeyboardEvent) => {
     if (event.key.toLowerCase() === 'shift') {
       IS_SHIFT_PRESSED.set(editor, false)
@@ -623,149 +268,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.onBlur = () => {
     e.emit('blur')
-  }
-
-  e.onInput = (value: string) => {
-    const { selection, marks } = editor
-    if (!selection) return
-    if (IS_COMPOSING.get(e)) {
-      let [node, path] = Editor.node(editor, selection)
-      if (marks) {
-        // 使用零宽字符绕过slate里面不能插入空字符的问题。组合输入法完成后会删除掉
-        const compositionText: CompositionText = {
-          text: '\u200b',
-          ...marks,
-          composition: {
-            text: value,
-            offset: 0,
-            isEmpty: true,
-          },
-        }
-        Transforms.insertNodes(editor, compositionText)
-        e.marks = null
-      } else if (Text.isText(node)) {
-        if (Range.isExpanded(selection)) {
-          Editor.deleteFragment(editor)
-        }
-        const composition = CompositionText.isCompositionText(node) ? node.composition : null
-        const offset = composition?.offset ?? Range.start(selection).offset
-
-        Transforms.setNodes<CompositionText>(
-          editor,
-          {
-            composition: {
-              ...composition,
-              text: value,
-              offset,
-            },
-          },
-          { at: path },
-        )
-        const point = { path, offset: offset + value.length }
-        Transforms.select(editor, {
-          anchor: point,
-          focus: point,
-        })
-      }
-    } else {
-      editor.insertText(value)
-    }
-    e.emit('input', value)
-  }
-
-  e.onBeforeInput = value => {
-    e.emit('beforeinput', value)
-  }
-
-  e.onCompositionStart = data => {
-    IS_COMPOSING.set(editor, true)
-    e.emit('compositionstart', data)
-  }
-
-  e.onCompositionEnd = (value: string) => {
-    const { selection } = editor
-    if (!selection) return
-    const [node, path] = Editor.node(editor, selection)
-    if (Text.isText(node)) {
-      const composition = CompositionText.isCompositionText(node) ? node.composition : null
-      Transforms.setNodes<CompositionText>(
-        editor,
-        {
-          composition: undefined,
-        },
-        { at: path },
-      )
-      const point = { path, offset: composition?.offset ?? selection.anchor.offset }
-      const range = composition?.isEmpty
-        ? {
-            anchor: { path, offset: 0 },
-            focus: { path, offset: 1 },
-          }
-        : point
-
-      IS_COMPOSING.set(editor, false)
-      Transforms.select(editor, range)
-      Transforms.insertText(editor, value)
-    }
-    e.emit('compositionend', value)
-  }
-
-  e.onCut = event => {
-    if (event.defaultPrevented) return
-    const { selection } = e
-    const { clipboardData } = event
-    if (clipboardData) writeClipboardData(clipboardData)
-    if (selection) {
-      if (Range.isExpanded(selection)) {
-        Editor.deleteFragment(e)
-      } else {
-        const node = Node.parent(e, selection.anchor.path)
-        if (Editor.isVoid(e, node)) {
-          Transforms.delete(e)
-        }
-      }
-    }
-    e.emit('cut', event)
-  }
-
-  e.onCopy = event => {
-    if (event.defaultPrevented) return
-    const { clipboardData } = event
-    if (clipboardData) writeClipboardData(clipboardData)
-    e.emit('copy', event)
-  }
-
-  e.onPaste = event => {
-    if (event.defaultPrevented) return
-    const { clipboardData } = event
-    if (!clipboardData) return
-    event.preventDefault()
-    const { text, fragment, html, files } = parseDataTransfer(clipboardData)
-    if (!isPasteText && fragment.length > 0) {
-      e.insertFragment(fragment)
-    } else if (!isPasteText && html) {
-      const document = new DOMParser().parseFromString(html, TEXT_HTML)
-      const fragment = HTMLDeserializer.transformWithEditor(e, document.body)
-      e.insertFragment(fragment)
-    } else {
-      const lines = text.split(/\r\n|\r|\n/)
-      let split = false
-
-      for (const line of lines) {
-        if (split) {
-          Transforms.splitNodes(e, { always: true })
-        }
-        e.normalizeSelection(selection => {
-          if (selection !== e.selection) e.selection = selection
-          e.insertText(line)
-        })
-        split = true
-      }
-    }
-    for (const file of files) {
-      e.insertFile(file)
-    }
-    e.emit('paste', event)
   }
 
   e.onSelectStart = () => {
@@ -829,81 +331,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
     )
   }
 
-  e.normalizeSelection = fn => {
-    const { selection } = e
-    const grid = Grid.find(e)
-    if (grid && selection) {
-      const sel = Grid.getSelection(e, grid)
-      if (sel) {
-        let { start, end } = sel
-        const [startRow, startCol] = start
-        const [endRow, endCol] = end
-
-        const rowCount = endRow - startRow
-        const colCount = endCol - startCol
-
-        if (rowCount > 0 || colCount > 0) {
-          const [, path] = grid
-          const edgesSelection = Grid.edges(e, grid, sel)
-          const { start: edgeStart, end: edgeEnd } = edgesSelection
-          const cells = Grid.cells(e, grid, {
-            startRow: edgeStart[0],
-            startCol: edgeStart[1],
-            endRow: edgeEnd[0],
-            endCol: edgeEnd[1],
-          })
-
-          for (const [cell, row, col] of cells) {
-            if (!cell) break
-            if (!cell.span) {
-              const range = Editor.range(editor, path.concat([row, col]))
-              fn(range, { grid, row, col })
-            }
-          }
-          // 恢复选区
-          Transforms.select(e, selection)
-          return
-        }
-      }
-    }
-    fn(selection)
-  }
-
-  e.getFragment = (range?: Range) => {
-    const selection = range ?? e.selection
-    if (!selection) return []
-    const grid = Grid.find(e)
-    if (grid) {
-      const sel = Grid.getSelection(e, grid)
-      const selected = Grid.getSelected(e, grid, sel)
-      if (selected) {
-        const { colFull, rowFull, cols, rows } = selected
-        if (colFull || rowFull || cols.length > 1 || rows.length > 1) {
-          const fragment = Grid.getFragment(e, grid, sel)
-          return fragment ? [fragment] : []
-        } else if (cols.length === 1 || rows.length === 1) {
-          const cell = Grid.getCell(e, grid, [rows[0], cols[0]])
-          if (cell) {
-            const { anchor, focus } = selection
-            const [n, p] = cell
-            return Node.fragment(n, {
-              anchor: {
-                path: anchor.path.slice(p.length),
-                offset: anchor.offset,
-              },
-              focus: {
-                path: focus.path.slice(p.length),
-                offset: focus.offset,
-              },
-            })
-          }
-        }
-      }
-    }
-    return Node.fragment(e, selection)
-  }
-
   const { insertBreak } = e
+
   e.insertBreak = () => {
     const { selection } = editor
 
@@ -919,58 +348,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
       return
     }
     List.splitList(editor)
-  }
-
-  e.getDataTransfer = range => {
-    const fragment = e.getFragment(range)
-    const fragmentString = fragmentToString(fragment)
-
-    const text = fragment.map(node => TextSerializer.transformWithEditor(e, node)).join('\n')
-
-    let html = fragment.map(node => HTMLSerializer.transformWithEditor(e, node)).join('')
-    html = `<div ${DATA_EDITABLE_FRAGMENT}="${fragmentString}">${html}</div>`
-    html = `<html><head><meta name="source" content="${DATA_EDITABLE_FRAGMENT}" /></head><body>${html}</body></html>`
-    const dataTransfer = new DataTransfer()
-    dataTransfer.setData(TEXT_PLAIN, text)
-    dataTransfer.setData(TEXT_HTML, html)
-    dataTransfer.setData(APPLICATION_FRAGMENT_TYPE, fragmentString)
-    return dataTransfer
-  }
-
-  e.copy = range => {
-    const data = e.getDataTransfer(range)
-    const event = new ClipboardEvent('copy', { clipboardData: data })
-    e.onCopy(event)
-  }
-
-  e.cut = range => {
-    const data = e.getDataTransfer(range)
-    const event = new ClipboardEvent('copy', { clipboardData: data })
-    if (range) {
-      Transforms.select(e, range)
-    }
-    e.onCut(event)
-  }
-
-  e.insertFromClipboard = range => {
-    if (range) {
-      Transforms.select(e, range)
-    }
-    readClipboardData().then(data => {
-      const event = new ClipboardEvent('paste', { clipboardData: data })
-      e.onPaste(event)
-    })
-  }
-
-  e.insertTextFromClipboard = range => {
-    if (range) {
-      Transforms.select(e, range)
-    }
-    readClipboardData().then(data => {
-      isPasteText = true
-      const event = new ClipboardEvent('paste-text', { clipboardData: data })
-      e.onPaste(event)
-    })
   }
 
   e.insertFile = (_, range) => {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Element, Text as SlateText } from 'slate'
+import { Element, Text as SlateText } from '@editablejs/models'
 
 import Leaf from './leaf'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'

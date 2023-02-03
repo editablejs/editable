@@ -1,5 +1,4 @@
-import { Ancestor, Editor, Node } from 'slate'
-import { Key } from './key'
+import { Ancestor, Editor, Node, Key } from '@editablejs/models'
 
 /**
  * Two weak maps that allow us rebuild a path given a node. They are populated
@@ -39,3 +38,5 @@ export const IS_TOUCH_HOLD: WeakMap<Editor, boolean> = new WeakMap()
  * Weak map for associating the context `onChange` context with the plugin.
  */
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
+
+export const IS_PASTE_TEXT: WeakMap<Editor, boolean> = new WeakMap()

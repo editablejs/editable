@@ -28,15 +28,16 @@ You don't need to install anything to play with Editable. Try editing this sandb
 
 ```js
 import * as React from 'react'
+import { createEditor } from '@editablejs/models'
 import {
   EditableProvider,
   ContentEditable,
-  createEditor,
+  withEditable,
 } from '@editablejs/editor'
 
 export default function App() {
   const editor = React.useMemo(() => {
-    return createEditor()
+    return withEditable(createEditor())
   }, [])
 
   return (

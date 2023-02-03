@@ -1,18 +1,18 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 
 export type FontSizeHotkey = Record<string, string | ((e: KeyboardEvent) => boolean)>
 
 export interface FontSizeOptions {
-  hotkeys?: FontSizeHotkey
+  hotkey?: FontSizeHotkey
   defaultSize?: string
 }
 
-const FONTSIZE_OPTIONS = new WeakMap<Editable, FontSizeOptions>()
+const FONTSIZE_OPTIONS = new WeakMap<Editor, FontSizeOptions>()
 
-export const getOptions = (editor: Editable): FontSizeOptions => {
+export const getOptions = (editor: Editor): FontSizeOptions => {
   return FONTSIZE_OPTIONS.get(editor) ?? {}
 }
 
-export const setOptions = (editor: Editable, options: FontSizeOptions) => {
+export const setOptions = (editor: Editor, options: FontSizeOptions) => {
   FONTSIZE_OPTIONS.set(editor, options)
 }

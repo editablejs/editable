@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Node as SlateNode } from 'slate'
+import { Node as SlateNode } from '@editablejs/models'
 import { NODE_TO_RESTORE_DOM } from '../utils/weak-maps'
 
 export function useContentKey(node: SlateNode) {

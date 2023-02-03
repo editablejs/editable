@@ -1,11 +1,11 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { CODEBLOCK_KEY } from '../constants'
 import { CodeBlock } from '../interfaces/codeblock'
-import { getOptions, CodeBlockOptions } from '../options'
+import { getOptions } from '../options'
 
 export type InsertCodeBlockOptions = Partial<Omit<CodeBlock, 'type' | 'children'>>
 
-export interface CodeBlockEditor extends Editable {
+export interface CodeBlockEditor extends Editor {
   insertCodeBlock: (options?: InsertCodeBlockOptions) => void
 
   updateCodeBlock: (element: CodeBlock, options: InsertCodeBlockOptions) => void
@@ -14,28 +14,26 @@ export interface CodeBlockEditor extends Editable {
 }
 
 export const CodeBlockEditor = {
-  isCodeBlockEditor: (editor: Editable): editor is CodeBlockEditor => {
+  isCodeBlockEditor: (editor: Editor): editor is CodeBlockEditor => {
     return !!(editor as CodeBlockEditor).insertCodeBlock
   },
 
-  isCodeBlock: (editor: Editable, value: any): value is CodeBlock => {
+  isCodeBlock: (editor: Editor, value: any): value is CodeBlock => {
     return CodeBlock.isCodeBlock(value)
   },
 
-  isActive: (editor: Editable) => {
-    const elements = editor.queryActiveElements()
+  isActive: (editor: Editor) => {
+    const elements = Editor.elements(editor)
     return !!elements[CODEBLOCK_KEY]
   },
 
-  getOptions: (editor: Editable): CodeBlockOptions => {
-    return getOptions(editor)
-  },
+  getOptions,
 
-  insert: (editor: Editable, options?: InsertCodeBlockOptions) => {
+  insert: (editor: Editor, options?: InsertCodeBlockOptions) => {
     if (CodeBlockEditor.isCodeBlockEditor(editor)) editor.insertCodeBlock(options)
   },
 
-  updateCodeBlock: (editor: Editable, element: CodeBlock, options: InsertCodeBlockOptions) => {
+  updateCodeBlock: (editor: Editor, element: CodeBlock, options: InsertCodeBlockOptions) => {
     if (CodeBlockEditor.isCodeBlockEditor(editor)) editor.updateCodeBlock(element, options)
   },
 }

@@ -29,8 +29,7 @@
     "yjs": "^13.5.43"
   },
   "dependencies": {
-    "@editablejs/editor": "workspace:*",
-    "@editablejs/plugin-yjs-websocket": "workspace:*"
+    "@editablejs/yjs-websocket": "workspace:*"
   },
   "peerDependencies": {
     "yjs": "^13.5.43"

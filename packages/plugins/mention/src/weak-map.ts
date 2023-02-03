@@ -1,4 +1,4 @@
-import { Editable, PointRef, RangeRef, Text } from '@editablejs/editor'
+import { Editor, PointRef, RangeRef, Text } from '@editablejs/models'
 
 interface MentionTriggerData {
   startRef: PointRef
@@ -6,16 +6,16 @@ interface MentionTriggerData {
   text: Text
 }
 
-const MENTION_TRIGGER_DATA_WEAK_MAP = new WeakMap<Editable, MentionTriggerData>()
+const MENTION_TRIGGER_DATA_WEAK_MAP = new WeakMap<Editor, MentionTriggerData>()
 
-export const getMentionTriggerData = (editor: Editable): MentionTriggerData | undefined => {
+export const getMentionTriggerData = (editor: Editor): MentionTriggerData | undefined => {
   return MENTION_TRIGGER_DATA_WEAK_MAP.get(editor)
 }
 
-export const setMentionTriggerData = (editor: Editable, data: MentionTriggerData) => {
+export const setMentionTriggerData = (editor: Editor, data: MentionTriggerData) => {
   MENTION_TRIGGER_DATA_WEAK_MAP.set(editor, data)
 }
 
-export const clearMentionTriggerData = (editor: Editable) => {
+export const clearMentionTriggerData = (editor: Editor) => {
   MENTION_TRIGGER_DATA_WEAK_MAP.delete(editor)
 }

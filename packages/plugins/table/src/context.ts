@@ -1,4 +1,4 @@
-import { GridSelected, GridSelection } from '@editablejs/editor'
+import { GridSelected, GridSelection } from '@editablejs/models'
 import * as React from 'react'
 import { StoreApi, useStore } from 'zustand'
 

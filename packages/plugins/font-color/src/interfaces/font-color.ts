@@ -1,4 +1,4 @@
-import { Text } from '@editablejs/editor'
+import { Text } from '@editablejs/models'
 import { FONTCOLOR_KEY } from '../constants'
 
 export interface FontColor extends Text {

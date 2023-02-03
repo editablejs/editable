@@ -1,14 +1,14 @@
 import {
   Decorate,
-  Path,
   SlotComponentProps,
   TextDecorate,
   useEditableStatic,
   useIsomorphicLayoutEffect,
 } from '@editablejs/editor'
+import { Path } from '@editablejs/models'
 import { FC, useRef } from 'react'
 import { useMentionOpen } from '../hooks/use-mention-open'
-import { MentionEditor } from '../plugin/editor'
+import { MentionEditor } from '../plugin/mention-editor'
 import { getMentionTriggerData } from '../weak-map'
 import { MentionPlaceholder } from './mention-placeholder'
 import { MentionSearch } from './mention-search'

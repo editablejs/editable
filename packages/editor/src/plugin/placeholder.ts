@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Node, NodeEntry } from 'slate'
+import { Node, NodeEntry } from '@editablejs/models'
 import create, { UseBoundStore, StoreApi } from 'zustand'
 import { Editable } from './editable'
 

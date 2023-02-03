@@ -1,6 +1,6 @@
 import { useEditableStatic } from '@editablejs/editor'
 import { useMemo } from 'react'
-import { getViewer } from '../plugins/create-viewer'
+import { getViewer } from '../create-viewer'
 
 export const useViewer = () => {
   const editor = useEditableStatic()

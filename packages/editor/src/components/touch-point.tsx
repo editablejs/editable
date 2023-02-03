@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Range } from 'slate'
+import { Range } from '@editablejs/models'
 import { useEditableStatic } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
 import {

@@ -1,4 +1,4 @@
-import { Editable, Editor, Path, Transforms } from '@editablejs/editor'
+import { Editor, Path, Transforms } from '@editablejs/models'
 import { IMAGE_KEY } from './constants'
 import { Image } from './interfaces/image'
 import { getOptions } from './options'
@@ -64,11 +64,11 @@ export const defaultUpload = (file: File | string) => {
   })
 }
 
-export const setPercentage = (editor: Editable, path: Path, percentage: number) => {
+export const setPercentage = (editor: Editor, path: Path, percentage: number) => {
   Transforms.setNodes<Image>(editor, { percentage }, { at: path })
 }
 
-export const insertImage = (editor: Editable, options: Partial<Image>) => {
+export const insertImage = (editor: Editor, options: Partial<Image>) => {
   const image: Image = {
     type: IMAGE_KEY,
     ...options,
@@ -83,7 +83,7 @@ export const insertImage = (editor: Editable, options: Partial<Image>) => {
   return entry[1]
 }
 
-export const uploadImage = (editor: Editable, path: Path, file: File | string) => {
+export const uploadImage = (editor: Editor, path: Path, file: File | string) => {
   const options = getOptions(editor)
   const promise = new Promise<void>(resolve => {
     const pathRef = Editor.pathRef(editor, path)

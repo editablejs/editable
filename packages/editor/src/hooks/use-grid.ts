@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Grid } from '../interfaces/grid'
+import { Grid } from '@editablejs/models'
 
 export const GridContext = React.createContext<Grid | null>(null)
 
