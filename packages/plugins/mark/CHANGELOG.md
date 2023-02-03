@@ -1,5 +1,19 @@
 # @editablejs/plugin-mark
 
+## 1.0.0-beta.20
+
+### Major Changes
+
+- [`559afa8`](https://github.com/editablejs/editable/commit/559afa882d9e7f8d6929fa5d74eb1a6fb54a6f39) Thanks [@big-camel](https://github.com/big-camel)! - refactor all
+
+### Patch Changes
+
+- Updated dependencies [[`8af07db`](https://github.com/editablejs/editable/commit/8af07db76b21ecd191e356aed10badc196179152), [`559afa8`](https://github.com/editablejs/editable/commit/559afa882d9e7f8d6929fa5d74eb1a6fb54a6f39)]:
+  - @editablejs/editor@1.0.0-beta.20
+  - @editablejs/deserializer@1.0.0-beta.1
+  - @editablejs/models@1.0.0-beta.1
+  - @editablejs/serializer@1.0.0-beta.1
+
 ## 1.0.0-beta.19
 
 ### Patch Changes
