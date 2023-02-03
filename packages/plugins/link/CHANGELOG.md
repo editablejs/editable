@@ -1,5 +1,11 @@
 # @editablejs/plugin-link
 
+## 1.0.0-beta.14
+
+### Patch Changes
+
+- [`f183c2b`](https://github.com/editablejs/editable/commit/f183c2b516c83b83e28b161e886ec87c62157838) Thanks [@big-camel](https://github.com/big-camel)! - fix import error
+
 ## 1.0.0-beta.13
 
 ### Major Changes
