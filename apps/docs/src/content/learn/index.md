@@ -41,11 +41,9 @@ export default function App() {
   }, [])
 
   return (
-    <div>
-      <EditableProvider editor={editor}>
-        <ContentEditable placeholder="Please enter content..." />
-      </EditableProvider>
-    </div>
+    <EditableProvider editor={editor}>
+      <ContentEditable placeholder="Please enter content..." />
+    </EditableProvider>
   )
 }
 

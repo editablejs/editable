@@ -86,6 +86,7 @@ function SandpackRoot(props: SandpackProps) {
         }}
         customSetup={{
           dependencies: {
+            '@editablejs/models': 'latest',
             '@editablejs/editor': 'latest',
             react: 'latest',
             'react-dom': 'latest',
