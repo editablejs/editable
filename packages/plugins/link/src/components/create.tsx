@@ -1,12 +1,10 @@
+import { Range, Transforms, Text } from '@editablejs/models'
 import {
   Editable,
-  Range,
   SlotComponentProps,
-  Transforms,
   useEditableStatic,
   useIsomorphicLayoutEffect,
   useSelectionDrawingRects,
-  Text,
   useLocale,
 } from '@editablejs/editor'
 import { Popover, PopoverContent, PopoverPortal, PopoverAnchor, Button } from '@editablejs/ui'

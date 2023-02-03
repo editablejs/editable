@@ -1,10 +1,10 @@
-import { Editable } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
 import { EditorView } from '@codemirror/view'
 
 import { getOptions } from '../options'
 import { useExtension } from './use-extension'
 
-export function useLanguage(view: EditorView | null, editor: Editable, language?: string) {
+export function useLanguage(view: EditorView | null, editor: Editor, language?: string) {
   return useExtension(
     view,
     () => {

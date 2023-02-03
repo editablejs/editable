@@ -11,7 +11,7 @@ import {
 import { FC, useMemo, useState } from 'react'
 import { CodeBlockEditor } from '../plugin/editor'
 import { CodeBlockLocale } from '../locale/types'
-import { CodeBlock, CodeBlockTheme } from '../interfaces/codeblock'
+import { CodeBlock } from '../interfaces/codeblock'
 import { getOptions } from '../options'
 import { EditorView } from '@codemirror/view'
 import { AutoWrapIcon, OverflowIcon, ThemeIcon } from './icons'

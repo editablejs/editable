@@ -1,7 +1,7 @@
 import { EditorState, EditorStateConfig } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { useIsomorphicLayoutEffect } from '@editablejs/editor'
-import { useCallback, useState, useRef } from 'react'
+import { useCallback, useState } from 'react'
 
 export function useEditorView(
   initState: (() => EditorStateConfig) | EditorStateConfig = {},

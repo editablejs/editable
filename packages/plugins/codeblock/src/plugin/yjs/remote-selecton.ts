@@ -8,7 +8,8 @@ import {
 } from '@editablejs/yjs-protocols/awareness-selection'
 import { YSyncConfig, ySyncFacet } from './sync'
 import { CODEBLOCK_AWARENESS_FIELD, CODEBLOCK_AWARENESS_ID } from '../../constants'
-import { Editable, Editor } from '@editablejs/editor'
+import { Editor } from '@editablejs/models'
+import { Editable } from '@editablejs/editor'
 import { CodeBlock } from '../../interfaces/codeblock'
 
 interface CodeBlockAwarenessSelection {

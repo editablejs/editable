@@ -1,7 +1,7 @@
+import { Transforms } from '@editablejs/models'
 import {
   Editable,
   RenderElementProps,
-  Transforms,
   useIsomorphicLayoutEffect,
   useNodeFocused,
 } from '@editablejs/editor'

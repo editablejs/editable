@@ -1,4 +1,5 @@
-import { Editable, Path, Range, Element } from '@editablejs/editor'
+import { Path, Range, Element } from '@editablejs/models'
+import { Editable } from '@editablejs/editor'
 
 interface CapturedData {
   selection: Range
