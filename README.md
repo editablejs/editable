@@ -52,7 +52,7 @@ pnpm dev
 
 - [x] Text
 - [x] Html
-- [ ] Markdown
+- [x] Markdown
 
 ### Plugins
 
