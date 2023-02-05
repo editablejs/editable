@@ -27,6 +27,7 @@ const defaultHotkeys: Hotkeys = {
 
 export interface HistoryOptions {
   hotkey?: Hotkeys
+  delay?: number
 }
 
 export const withHistory = <T extends Editable>(editor: T, options: HistoryOptions = {}) => {
@@ -102,12 +103,15 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     return op.type !== 'set_selection'
   }
 
+  let changeTime = Date.now()
+  const { delay } = options
   e.apply = (op: Operation) => {
     const stack = HistoryStack.get(e)
     const { operations } = e
     const { undos } = stack
     const lastBatch = undos[undos.length - 1]
     const lastOp = lastBatch && lastBatch.operations[lastBatch.operations.length - 1]
+
     let save = HistoryEditor.isSaving(e)
     let merge = HistoryEditor.isMerging(e)
 
@@ -116,12 +120,16 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     }
     if (save && !Editable.isComposing(e)) {
       if (merge == null) {
-        if (lastBatch == null) {
+        if (delay !== undefined) {
+          if (Date.now() - changeTime > delay) {
+            merge = false
+          } else {
+            merge = true
+          }
+          changeTime = Date.now()
+        } else if (lastBatch == null) {
           merge = false
-        } else if (
-          operations.length !== 0 &&
-          !operations.some(o => o.type === 'set_node' && 'composition' in o.properties)
-        ) {
+        } else if (operations.length !== 0 && shouldMerge(op, lastOp, true)) {
           merge = true
         } else {
           merge = shouldMerge(op, lastOp)
@@ -189,27 +197,15 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
 /**
  * Check whether to merge an operation into the previous operation.
  */
-
-const shouldMerge = (op: Operation, prev: Operation | undefined): boolean => {
-  if (
-    prev &&
-    op.type === 'insert_text' &&
-    prev.type === 'insert_text' &&
-    op.offset === prev.offset + prev.text.length &&
-    Path.equals(op.path, prev.path)
-  ) {
-    return true
+const shouldMerge = (op: Operation, prev: Operation | undefined, defaultMerge = false): boolean => {
+  if (prev && op.type === 'insert_text' && prev.type === 'insert_text') {
+    return op.offset === prev.offset + prev.text.length && Path.equals(op.path, prev.path)
   }
 
-  if (
-    prev &&
-    op.type === 'remove_text' &&
-    prev.type === 'remove_text' &&
-    op.offset + op.text.length === prev.offset &&
-    Path.equals(op.path, prev.path)
-  ) {
-    return true
+  if (prev && op.type === 'remove_text' && prev.type === 'remove_text') {
+    if (Path.equals(op.path, prev.path)) return op.offset + op.text.length === prev.offset
+    return op.offset === 0 && Path.equals(op.path, Path.next(prev.path))
   }
 
-  return false
+  return defaultMerge
 }

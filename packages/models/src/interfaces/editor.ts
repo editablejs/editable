@@ -125,6 +125,33 @@ const marks = (editor: SlateEditor): EditorMarks | null => {
   return rest
 }
 
+SlateEditor.marks = (editor: SlateEditor) => {
+  const caches = EDITOR_ACTIVE_MARKS.get(editor)
+  if (caches) return caches
+  let editorMarks: EditorMarks = {}
+  editor.normalizeSelection(selection => {
+    if (editor.selection !== selection) editor.selection = selection
+    Object.assign(editorMarks, marks(editor) ?? {})
+  })
+  EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
+  return editorMarks
+}
+
+const { point: slatePoint } = SlateEditor
+
+SlateEditor.point = (editor: SlateEditor, at: Location, options: EditorPointOptions = {}) => {
+  if (Point.isPoint(at)) {
+    const { edge = 'start' } = options
+    if (edge === 'end') {
+      return endPoint(editor, at)
+    } else {
+      return startPoint(editor, at)
+    }
+  } else {
+    return slatePoint(editor, at, options)
+  }
+}
+
 export const Editor: EditorInterface = {
   ...SlateEditor,
   isSolidVoid: (editor: SlateEditor, element: Element) => {
@@ -146,17 +173,7 @@ export const Editor: EditorInterface = {
     return editor.isList(value)
   },
 
-  marks(editor: SlateEditor) {
-    const caches = EDITOR_ACTIVE_MARKS.get(editor)
-    if (caches) return caches
-    let editorMarks: EditorMarks = {}
-    editor.normalizeSelection(selection => {
-      if (editor.selection !== selection) editor.selection = selection
-      Object.assign(editorMarks, marks(editor) ?? {})
-    })
-    EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
-    return editorMarks
-  },
+  marks: SlateEditor.marks as (editor: SlateEditor) => EditorMarks,
 
   elements(editor: SlateEditor) {
     let caches = EDITOR_ACTIVE_ELEMENTS.get(editor)
@@ -178,19 +195,6 @@ export const Editor: EditorInterface = {
 
     EDITOR_ACTIVE_ELEMENTS.set(editor, editorElements)
     return editorElements
-  },
-
-  point(editor: SlateEditor, at: Location, options: EditorPointOptions = {}) {
-    if (Point.isPoint(at)) {
-      const { edge = 'start' } = options
-      if (edge === 'end') {
-        return endPoint(editor, at)
-      } else {
-        return startPoint(editor, at)
-      }
-    } else {
-      return SlateEditor.point(editor, at, options)
-    }
   },
 }
 

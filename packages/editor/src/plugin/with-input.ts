@@ -6,12 +6,9 @@ export const withInput = <T extends Editor>(editor: T) => {
   const e = editor as T & Editable
 
   e.onInput = (value: string) => {
-    if (editor.selection && Range.isExpanded(editor.selection)) {
-      Editor.deleteFragment(editor)
-    }
-    const { selection, marks } = editor
-    if (!selection) return
-    if (IS_COMPOSING.get(e)) {
+    if (!editor.selection) return
+    if (Editable.isComposing(editor)) {
+      const { selection, marks } = editor
       let [node, path] = Editor.node(editor, selection)
       if (marks) {
         // 使用零宽字符绕过slate里面不能插入空字符的问题。组合输入法完成后会删除掉
@@ -58,6 +55,9 @@ export const withInput = <T extends Editor>(editor: T) => {
   }
 
   e.onCompositionStart = data => {
+    if (editor.selection && Range.isExpanded(editor.selection)) {
+      Editor.deleteFragment(editor)
+    }
     IS_COMPOSING.set(editor, true)
     e.emit('compositionstart', data)
   }
@@ -82,9 +82,9 @@ export const withInput = <T extends Editor>(editor: T) => {
             focus: { path, offset: 1 },
           }
         : point
+      Transforms.select(editor, range)
 
       IS_COMPOSING.set(editor, false)
-      Transforms.select(editor, range)
       Transforms.insertText(editor, value)
     }
     e.emit('compositionend', value)
