@@ -137,7 +137,7 @@ const PopoverTrigger = React.forwardRef<PopoverTriggerElement, PopoverTriggerPro
 
     const trigger = (
       <Root.button
-        type="button"
+        type={context.hasCustomAnchor ? 'button' : undefined}
         aria-haspopup="dialog"
         aria-expanded={context.open}
         aria-controls={context.contentId}

@@ -5,8 +5,11 @@ import { CodeBlockEditor } from './editor'
 import { CodeBlock } from '../interfaces/codeblock'
 import locale from '../locale'
 import { CodeBlockHotkey, CodeBlockOptions, setOptions } from '../options'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: CodeBlockHotkey = 'mod+shift+e'
+
+const defaultShortcuts: string[] = ['```']
 
 export const withCodeBlock = <T extends Editable>(editor: T, options: CodeBlockOptions = {}) => {
   const newEditor = editor as T & CodeBlockEditor
@@ -73,6 +76,11 @@ export const withCodeBlock = <T extends Editable>(editor: T, options: CodeBlockO
     }
 
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, Object.assign(defaultShortcuts, shortcuts === true ? {} : shortcuts))
   }
 
   return newEditor

@@ -210,12 +210,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
           at: e.selection,
         })
         for (const entry of nodes) {
-          if (Editable.isEmpty(e, entry[0])) {
+          if (Editor.isEmpty(e, entry[0])) {
             Placeholder.setCurrent(e, entry)
             break
           }
         }
-      } else if (Editable.isEmpty(e, e)) {
+      } else if (Editor.isEmpty(e, e)) {
         Placeholder.setCurrent(e, [e, []])
       }
 
@@ -340,9 +340,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       insertBreak()
       return
     }
-    const entrie = Editor.above<List>(editor, {
-      match: n => editor.isList(n),
-    })
+    const entrie = List.above(editor)
     if (!entrie) {
       insertBreak()
       return

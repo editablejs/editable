@@ -17,6 +17,7 @@ import {
   Operation,
 } from 'slate'
 import { GridCell } from './cell'
+import { CompositionText } from './composition-text'
 import { Grid } from './grid'
 import { List } from './list'
 import { GridRow } from './row'
@@ -35,6 +36,7 @@ interface EditorInterface extends SlateEditorInterface {
   isGridRow: (editor: SlateEditor, value: any) => value is GridRow
   isGridCell: (editor: SlateEditor, value: any) => value is GridCell
   isList: (editor: SlateEditor, value: any) => value is List
+  isEmpty: (editor: SlateEditor, node: Node) => boolean
   marks: (editor: SlateEditor) => EditorMarks
   elements: (editor: SlateEditor) => EditorElements
 }
@@ -152,8 +154,24 @@ SlateEditor.point = (editor: SlateEditor, at: Location, options: EditorPointOpti
   }
 }
 
+SlateEditor.isEmpty = (editor: Editor, node: Node): boolean => {
+  if (Text.isText(node)) {
+    return node.text === '' && !CompositionText.isCompositionText(node)
+  } else {
+    if (node.children.length === 0) return true
+    if (node.children.length === 1)
+      return (
+        !Editor.isVoid(editor, node) && SlateEditor.isEmpty(editor, node.children[0] as Element)
+      )
+    return false
+  }
+}
+
 export const Editor: EditorInterface = {
   ...SlateEditor,
+
+  isEmpty: (editor: SlateEditor, node: Node) => SlateEditor.isEmpty(editor, node as Element),
+
   isSolidVoid: (editor: SlateEditor, element: Element) => {
     return editor.isSolidVoid(element)
   },

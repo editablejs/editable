@@ -1,5 +1,5 @@
 import { Editable } from '@editablejs/editor'
-import { Range, Element } from '@editablejs/models'
+import { Editor, Range, Element } from '@editablejs/models'
 import {
   TableEditor,
   BlockquoteEditor,
@@ -12,7 +12,7 @@ import { Icon } from '@editablejs/ui'
 
 export const createSideToolbarItems = (editor: Editable, range: Range, element: Element) => {
   const items: SideToolbarItem[] = []
-  const isEmpty = Editable.isEmpty(editor, element)
+  const isEmpty = Editor.isEmpty(editor, element)
   if (isEmpty) {
     items.push(
       {

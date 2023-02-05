@@ -8,6 +8,7 @@ export type CodeBlockHotkey = string | ((e: KeyboardEvent) => boolean)
 export interface CodeBlockOptions {
   locale?: Record<string, CodeBlockLocale>
   hotkey?: CodeBlockHotkey
+  shortcuts?: string[] | boolean
   plugins?: Extension[]
   languages?: {
     value: string

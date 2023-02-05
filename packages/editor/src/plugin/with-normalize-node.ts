@@ -28,17 +28,6 @@ export const withNormalizeNode = <T extends Editor>(editor: T) => {
         Transforms.unwrapNodes(editor, { at: path })
         return
       }
-
-      if (e.isGrid(node) || e.isVoid(node)) {
-        const parent = Node.parent(editor, path)
-        if (parent.children[parent.children.length - 1] === node) {
-          Transforms.insertNodes(
-            editor,
-            { type: 'paragraph', children: [{ text: '' }] },
-            { at: Path.next(path) },
-          )
-        }
-      }
     }
     normalizeNode(entry)
   }

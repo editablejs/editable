@@ -39,7 +39,7 @@ export const ListStyles = styled.div(() => [
   tw`w-full flex align-baseline items-baseline justify-start`,
 ])
 export const ListLabelStyles = styled.span(() => [tw`inline-block mr-3 whitespace-nowrap`])
-export const ListContentsStyles = styled.div``
+export const ListContentsStyles = tw.div`flex-1`
 
 export const ListElement = ({
   element,

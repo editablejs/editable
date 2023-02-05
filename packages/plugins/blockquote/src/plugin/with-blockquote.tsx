@@ -3,8 +3,11 @@ import { Transforms, Editor, Path, Range } from '@editablejs/models'
 import { BLOCKQUOTE_KEY } from '../constants'
 import { BlockquoteHotkey, BlockquoteOptions, setOptions } from '../options'
 import { BlockquoteEditor } from './blockquote-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: BlockquoteHotkey = 'mod+shift+u'
+
+const defaultShortcuts: string[] = ['>']
 
 export const withBlockquote = <T extends Editable>(editor: T, options: BlockquoteOptions = {}) => {
   const newEditor = editor as T & BlockquoteEditor
@@ -77,7 +80,7 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
       if (entry) {
         const [block, path] = entry
         const [parent, parentPath] = Editor.parent(newEditor, path)
-        if (Editable.isEmpty(newEditor, block) && BlockquoteEditor.isBlockquote(editor, parent)) {
+        if (Editor.isEmpty(newEditor, block) && BlockquoteEditor.isBlockquote(editor, parent)) {
           e.preventDefault()
           if (parent.children.length === 1) {
             Transforms.unwrapNodes(newEditor, {
@@ -95,6 +98,11 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
       }
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, Object.assign(defaultShortcuts, shortcuts === true ? {} : shortcuts))
   }
 
   return newEditor

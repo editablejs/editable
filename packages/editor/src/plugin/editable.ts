@@ -172,19 +172,6 @@ export const Editable = {
     return !!IS_COMPOSING.get(editor)
   },
 
-  isEmpty(editor: Editor, node: Node): boolean {
-    if (Text.isText(node)) {
-      return node.text === '' && !IS_COMPOSING.get(editor)
-    } else {
-      if (node.children.length === 0) return true
-      if (node.children.length === 1)
-        return (
-          !Editor.isVoid(editor, node) && Editable.isEmpty(editor, (node as Element).children[0])
-        )
-      return false
-    }
-  },
-
   /**
    * 获取在选区内选中一行内容的节点以及所在行的索引
    * @param editor

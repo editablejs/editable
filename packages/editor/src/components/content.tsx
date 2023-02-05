@@ -119,7 +119,7 @@ export const ContentEditable = (props: EditableProps) => {
         },
         render: () => placeholder,
       })
-      if (Editable.isEmpty(editor, editor)) {
+      if (Editor.isEmpty(editor, editor)) {
         Placeholder.setCurrent(editor, [editor, []])
       }
     }

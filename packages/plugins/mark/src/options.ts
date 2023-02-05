@@ -7,6 +7,7 @@ export interface MarkOptions {
   enabled?: MarkFormat[]
   disabled?: MarkFormat[]
   hotkey?: MarkHotkey
+  shortcuts?: Record<string, MarkFormat> | boolean
 }
 
 const MARK_OPTIONS = new WeakMap<Editor, MarkOptions>()

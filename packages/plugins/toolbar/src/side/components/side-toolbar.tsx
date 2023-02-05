@@ -161,7 +161,7 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
         selection: Editor.range(editor, path),
         element: node,
         path,
-        isEmpty: Editable.isEmpty(editor, node),
+        isEmpty: Editor.isEmpty(editor, node),
         isVoid,
       })
       setPosition({

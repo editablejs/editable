@@ -4,6 +4,7 @@ import tw, { styled, css } from 'twin.macro'
 import { MarkFormat, Mark } from '../interfaces/mark'
 import { MarkHotkey, MarkOptions, setOptions } from '../options'
 import { MarkEditor } from './mark-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkeys: MarkHotkey = {
   bold: 'mod+b',
@@ -13,6 +14,15 @@ const defaultHotkeys: MarkHotkey = {
   code: 'mod+e',
   sub: 'mod+,',
   sup: 'mod+.',
+}
+
+const defaultShortcuts: Record<string, MarkFormat> = {
+  '**': 'bold',
+  '*': 'italic',
+  '~~': 'strikethrough',
+  '`': 'code',
+  '^': 'sup',
+  '~': 'sub',
 }
 
 const SubBaseStyles = styled.span(() => [
@@ -112,6 +122,11 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
       return
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, Object.assign(defaultShortcuts, shortcuts === true ? {} : shortcuts))
   }
 
   return newEditor
