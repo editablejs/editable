@@ -108,20 +108,25 @@ export const withHistory = <T extends Editable>(editor: T, options: HistoryOptio
     const { undos } = stack
     const lastBatch = undos[undos.length - 1]
     const lastOp = lastBatch && lastBatch.operations[lastBatch.operations.length - 1]
-    const lastOpPath = lastBatch && lastBatch.selectionBefore && lastBatch.selectionBefore.focus.path || [0, 0]
+    const lastOpPath = (lastBatch &&
+      lastBatch.selectionBefore &&
+      lastBatch.selectionBefore.focus.path) || [0, 0]
     let save = HistoryEditor.isSaving(e)
     let merge = HistoryEditor.isMerging(e)
 
     if (save == null) {
       save = historyProtocol.capture(op)
     }
-    if (save && (!Editable.isComposing(e) || op.type === 'remove_text' || op.type === 'remove_node')) {
+    if (
+      save &&
+      (!Editable.isComposing(e) || op.type === 'remove_text' || op.type === 'remove_node')
+    ) {
       if (merge == null) {
         if (lastBatch == null) {
           merge = false
         } else if (
           operations.length !== 0 &&
-          Path.equals(lastOpPath, operations.filter(o => o.path)[0].path)
+          operations.every(o => o.type === 'set_selection' || Path.equals(o.path, lastOpPath))
         ) {
           merge = true
         } else {
