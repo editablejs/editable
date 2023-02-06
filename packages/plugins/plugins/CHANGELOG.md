@@ -1,5 +1,32 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.39
+
+### Patch Changes
+
+- Updated dependencies [[`437dc00`](https://github.com/editablejs/editable/commit/437dc008d72a88d73160ce13e12dc334f7b33248), [`99325fd`](https://github.com/editablejs/editable/commit/99325fd2be94294ecd70ee069f3ba6cdff43219e), [`f983a67`](https://github.com/editablejs/editable/commit/f983a679c4ed20dfc71bcb9e815369a6d8cd6811)]:
+  - @editablejs/editor@1.0.0-beta.21
+  - @editablejs/models@1.0.0-beta.2
+  - @editablejs/plugin-blockquote@1.0.0-beta.22
+  - @editablejs/plugin-codeblock@1.0.0-beta.10
+  - @editablejs/plugin-list@1.0.0-beta.21
+  - @editablejs/plugin-mark@1.0.0-beta.21
+  - @editablejs/plugin-heading@1.0.0-beta.21
+  - @editablejs/plugin-hr@1.0.0-beta.13
+  - @editablejs/plugin-image@1.0.0-beta.16
+  - @editablejs/plugin-indent@1.0.0-beta.22
+  - @editablejs/plugin-link@1.0.0-beta.15
+  - @editablejs/plugin-table@1.0.0-beta.30
+  - @editablejs/plugin-align@1.0.0-beta.11
+  - @editablejs/plugin-background-color@1.0.0-beta.8
+  - @editablejs/plugin-context-menu@1.0.0-beta.31
+  - @editablejs/plugin-font-color@1.0.0-beta.8
+  - @editablejs/plugin-font-size@1.0.0-beta.8
+  - @editablejs/plugin-leading@1.0.0-beta.9
+  - @editablejs/plugin-mention@1.0.0-beta.10
+  - @editablejs/deserializer@1.0.0-beta.2
+  - @editablejs/serializer@1.0.0-beta.2
+
 ## 1.0.0-beta.38
 
 ### Patch Changes
