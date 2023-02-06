@@ -13,12 +13,12 @@ export interface CreateTableOptions {
   cols?: number
 }
 export interface TableEditor extends Editor {
-  toggleTable: (options?: CreateTableOptions) => void
+  insertTable: (options?: CreateTableOptions | Table) => void
 }
 
 export const TableEditor = {
   isTableEditor: (editor: Editor): editor is TableEditor => {
-    return !!(editor as TableEditor).toggleTable
+    return !!(editor as TableEditor).insertTable
   },
 
   isTable: (editor: Editor, value: Node): value is Table => {
@@ -61,7 +61,7 @@ export const TableEditor = {
     )
   },
 
-  toggle: (editor: Editor, options?: CreateTableOptions) => {
-    if (TableEditor.isTableEditor(editor)) editor.toggleTable(options)
+  insert: (editor: Editor, options?: CreateTableOptions | Table) => {
+    if (TableEditor.isTableEditor(editor)) editor.insertTable(options)
   },
 }

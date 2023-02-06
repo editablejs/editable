@@ -5,8 +5,11 @@ import { UNORDERED_LIST_KEY } from '../constants'
 import { UnorderedListOptions, UnorderedListHotkey } from '../options'
 import { UnorderedListTemplates } from '../template'
 import { UnorderedListEditor, ToggleUnorderedListOptions } from './unordered-list-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: UnorderedListHotkey = 'mod+shift+8'
+
+const defaultShortcuts = ['*', '-', '+']
 
 export const withUnorderedList = <T extends Editable>(
   editor: T,
@@ -64,6 +67,11 @@ export const withUnorderedList = <T extends Editable>(
       return
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, defaultShortcuts.concat(Array.isArray(shortcuts) ? shortcuts : []))
   }
 
   return newEditor

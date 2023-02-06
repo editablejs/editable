@@ -202,9 +202,14 @@ const shouldMerge = (op: Operation, prev: Operation | undefined, defaultMerge = 
     return op.offset === prev.offset + prev.text.length && Path.equals(op.path, prev.path)
   }
 
-  if (prev && op.type === 'remove_text' && prev.type === 'remove_text') {
-    if (Path.equals(op.path, prev.path)) return op.offset + op.text.length === prev.offset
-    return op.offset === 0 && Path.equals(op.path, Path.next(prev.path))
+  if (
+    prev &&
+    op.type === 'remove_text' &&
+    prev.type === 'remove_text' &&
+    Path.equals(op.path, prev.path) &&
+    op.offset + op.text.length === prev.offset
+  ) {
+    return true
   }
 
   return defaultMerge

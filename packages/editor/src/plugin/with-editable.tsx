@@ -322,6 +322,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
             opacity: '0.333',
             width: 'fit-content',
             whiteSpace: 'nowrap',
+            textIndent: 'initial',
           }}
           {...attributes}
         >

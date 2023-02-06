@@ -4,6 +4,7 @@ export type TaskListHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface TaskListOptions {
   hotkey?: TaskListHotkey
+  shortcuts?: boolean
 }
 
 const TASK_LIST_OPTIONS = new WeakMap<Editor, TaskListOptions>()

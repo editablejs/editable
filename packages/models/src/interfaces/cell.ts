@@ -1,4 +1,4 @@
-import { Element, NodeEntry, Path, Transforms, Location } from 'slate'
+import { Element, NodeEntry, Path, Transforms, Location, Text } from 'slate'
 import { SelectionEdge } from 'slate/dist/interfaces/types'
 import { Editor } from './editor'
 
@@ -35,13 +35,14 @@ export const GridCell = {
     })
     return cell
   },
-  create: <C extends GridCell>(cell: Partial<Omit<C, 'children'>> = {}): C => {
+  create: <C extends GridCell>(cell: Partial<C> = {}): C => {
+    const children = cell.children ?? [{ children: [{ text: '' }] }]
     return {
       colspan: 1,
       rowspan: 1,
       type: 'grid-cell',
       ...cell,
-      children: [{ children: [{ text: '' }] }],
+      children,
     } as C
   },
 

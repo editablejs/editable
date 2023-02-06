@@ -7,6 +7,7 @@ import { withTableRow } from '../../row'
 import { TableEditor } from './table-editor'
 import { Table } from '../interfaces/table'
 import { TableComponent } from '../../components/table'
+import { withShortcuts } from './with-shortcuts'
 
 export const withTable = <T extends Editable>(editor: T, options: TableOptions = {}) => {
   let newEditor = editor as T & TableEditor
@@ -25,8 +26,8 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
     return TableEditor.isTable(newEditor, node) || isGrid(node)
   }
 
-  newEditor.toggleTable = options => {
-    const table = TableEditor.create(newEditor, options)
+  newEditor.insertTable = options => {
+    const table = Table.isTable(options) ? options : TableEditor.create(newEditor, options)
     Transforms.insertNodes(newEditor, table)
     Grid.focus(newEditor, {
       point: [0, 0],
@@ -42,5 +43,9 @@ export const withTable = <T extends Editable>(editor: T, options: TableOptions =
     return renderElement(props)
   }
 
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor)
+  }
   return newEditor
 }

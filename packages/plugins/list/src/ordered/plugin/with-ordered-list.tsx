@@ -7,6 +7,7 @@ import { ORDERED_LIST_KEY } from '../constants'
 import { OrderedListHotkey, OrderedListOptions } from '../options'
 import { OrderedListTemplates } from '../template'
 import { OrderedListEditor, ToggleOrderedListOptions } from './ordered-list-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: OrderedListHotkey = 'mod+shift+7'
 
@@ -132,6 +133,11 @@ export const withOrderedList = <T extends Editable>(
       return
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor)
   }
 
   return newEditor

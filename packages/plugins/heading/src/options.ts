@@ -15,6 +15,7 @@ export interface HeadingOptions {
   enabled?: HeadingType[]
   disabled?: HeadingType[]
   hotkey?: HeadingHotkey
+  shortcuts?: Record<string, HeadingType> | boolean
   style?: Partial<Record<HeadingType, Record<HeadingFontStyleName, string>>>
   // 标题样式应用到text中的哪个属性
   textMark?: Partial<HeadingTextMark>

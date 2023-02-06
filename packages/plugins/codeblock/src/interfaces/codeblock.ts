@@ -27,6 +27,7 @@ export const CodeBlock = {
       theme: 'light',
       tabSize: 2,
       ...options,
+      language: options.language || 'plain',
       id: generateRandomKey(),
       type: CODEBLOCK_KEY,
       code: options.code ?? '',

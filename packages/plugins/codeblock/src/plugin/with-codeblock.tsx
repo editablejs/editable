@@ -80,7 +80,7 @@ export const withCodeBlock = <T extends Editable>(editor: T, options: CodeBlockO
 
   const { shortcuts } = options
   if (shortcuts !== false) {
-    withShortcuts(newEditor, Object.assign(defaultShortcuts, shortcuts === true ? {} : shortcuts))
+    withShortcuts(newEditor, defaultShortcuts.concat(Array.isArray(shortcuts) ? shortcuts : []))
   }
 
   return newEditor

@@ -15,6 +15,7 @@ import {
   readImageElement,
 } from '../utils'
 import { ImageViewer } from '../components/viewer'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: ImageHotkey = ''
 
@@ -201,6 +202,11 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
       return
     }
     insertFile(file, at)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor)
   }
   return newEditor
 }

@@ -6,6 +6,7 @@ export type HrHotkey = string | ((e: KeyboardEvent) => boolean)
 export interface HrOptions {
   locale?: Record<string, HrLocale>
   hotkey?: HrHotkey
+  shortcuts?: string[] | boolean
 }
 
 const HR_OPTIONS = new WeakMap<Editor, HrOptions>()

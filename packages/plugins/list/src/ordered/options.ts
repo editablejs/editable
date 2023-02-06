@@ -4,6 +4,7 @@ export type OrderedListHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface OrderedListOptions {
   hotkey?: OrderedListHotkey
+  shortcuts?: boolean
 }
 
 const ORDERED_LIST_OPTIONS = new WeakMap<Editor, OrderedListOptions>()

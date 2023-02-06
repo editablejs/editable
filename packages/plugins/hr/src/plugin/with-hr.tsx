@@ -6,8 +6,11 @@ import { Hr } from '../interfaces/hr'
 import locale from '../locale'
 import { HrHotkey, HrOptions, setOptions } from '../options'
 import { Transforms } from '@editablejs/models'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: HrHotkey = 'mod+shift+e'
+
+const defaultShortcuts: string[] = ['*', '-']
 
 export const withHr = <T extends Editable>(editor: T, options: HrOptions = {}) => {
   const newEditor = editor as T & HrEditor
@@ -94,6 +97,11 @@ export const withHr = <T extends Editable>(editor: T, options: HrOptions = {}) =
     }
 
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, defaultShortcuts.concat(Array.isArray(shortcuts) ? shortcuts : []))
   }
 
   return newEditor

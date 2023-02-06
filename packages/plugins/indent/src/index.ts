@@ -74,7 +74,11 @@ List.getLevel = (editor, options) => {
   const { path, key, type } = options
   const [element] = Editor.nodes<Indent>(editor, {
     at: path,
-    match: n => Editor.isBlock(editor, n) && (n as Indent).lineIndent !== undefined,
+    match: n => {
+      if (!Editor.isBlock(editor, n)) return false
+      const indent = n as Indent
+      return indent.lineIndent !== undefined || indent.textIndent !== undefined
+    },
     mode: 'highest',
   })
   const prev = Editor.previous<List & Indent>(editor, {

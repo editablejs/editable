@@ -10,6 +10,7 @@ export const TABLE_OPTIONS_WEAKMAP = new WeakMap<Editor, TableOptions>()
 
 export interface TableOptions extends TableCellOptions, TableRowOptions {
   locale?: Record<string, TableLocale>
+  shortcuts?: boolean
 }
 
 export const getOptions = (editor: Editor): TableOptions => {

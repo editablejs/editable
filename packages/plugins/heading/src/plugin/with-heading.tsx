@@ -11,8 +11,10 @@ import {
   PARAGRAPH_KEY,
   HeadingTags,
 } from '../constants'
+import { HeadingType } from '../interfaces/heading'
 import { HeadingHotkey, HeadingOptions, setOptions, getTextMark, getStyle } from '../options'
 import { HeadingEditor } from './heading-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkeys: HeadingHotkey = {
   [HEADING_ONE_KEY]: 'mod+opt+1',
@@ -21,6 +23,15 @@ const defaultHotkeys: HeadingHotkey = {
   [HEADING_FOUR_KEY]: 'mod+opt+4',
   [HEADING_FIVE_KEY]: 'mod+opt+5',
   [HEADING_SIX_KEY]: 'mod+opt+6',
+}
+
+const defaultShortcuts: Record<string, HeadingType> = {
+  '#': 'heading-one',
+  '##': 'heading-two',
+  '###': 'heading-three',
+  '####': 'heading-four',
+  '#####': 'heading-five',
+  '######': 'heading-six',
 }
 
 const StyledHeading = tw.h1`font-medium mb-2 mt-0`
@@ -115,6 +126,11 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
       }
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor, Object.assign(defaultShortcuts, shortcuts === true ? {} : shortcuts))
   }
 
   return newEditor

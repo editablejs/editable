@@ -5,6 +5,7 @@ export type ImageHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface ImageOptions {
   hotkey?: ImageHotkey
+  shortcuts?: boolean
   locale?: Record<string, ImageLocale>
   onBeforeRender?: (url: string) => Promise<string>
   onUploadBefore?: (files: (File | string)[]) => (File | string)[]

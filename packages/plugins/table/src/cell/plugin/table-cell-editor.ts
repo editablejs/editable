@@ -1,5 +1,5 @@
 import { Editable } from '@editablejs/editor'
-import { Editor, GridCell, DOMNode, isDOMElement } from '@editablejs/models'
+import { Editor, DOMNode, isDOMElement } from '@editablejs/models'
 import { TABLE_CELL_KEY } from '../constants'
 import { TableCell } from '../interfaces/table-cell'
 
@@ -15,7 +15,7 @@ export const TableCellEditor = {
     return elements.some(e => TableCellEditor.isTableCell(editor, e[0]))
   },
 
-  create: (editor: Editor, cell: Partial<Omit<TableCell, 'type' | 'children'>> = {}): TableCell => {
+  create: (editor: Editor, cell: Partial<Omit<TableCell, 'type'>> = {}): TableCell => {
     return TableCell.create(cell)
   },
 

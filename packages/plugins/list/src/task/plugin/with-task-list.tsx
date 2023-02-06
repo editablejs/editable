@@ -6,6 +6,7 @@ import { DATA_TASK_CHECKED_KEY, TASK_LIST_KEY } from '../constants'
 import { TaskList } from '../interfaces/task-list'
 import { TaskListHotkey, TaskListOptions } from '../options'
 import { TaskListEditor, ToggleTaskListOptions } from './task-list-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: TaskListHotkey = 'mod+shift+9'
 
@@ -159,6 +160,11 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
       return
     }
     onKeydown(e)
+  }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor)
   }
 
   return newEditor

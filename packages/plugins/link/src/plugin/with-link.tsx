@@ -7,6 +7,7 @@ import locale from '../locale'
 import { LinkHotkey, LinkOptions, setOptions } from '../options'
 import { LinkStore } from '../store'
 import { LinkEditor } from './link-editor'
+import { withShortcuts } from './with-shortcuts'
 
 const defaultHotkey: LinkHotkey = 'mod+k'
 
@@ -93,5 +94,11 @@ export const withLink = <T extends Editable>(editor: T, options: LinkOptions = {
     }
     onKeydown(e)
   }
+
+  const { shortcuts } = options
+  if (shortcuts !== false) {
+    withShortcuts(newEditor)
+  }
+
   return newEditor
 }

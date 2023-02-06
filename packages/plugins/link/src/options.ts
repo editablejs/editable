@@ -5,6 +5,7 @@ export type LinkHotkey = string | ((e: KeyboardEvent) => boolean)
 
 export interface LinkOptions {
   hotkey?: LinkHotkey
+  shortcuts?: boolean
   locale?: Record<string, LinkLocale>
 }
 const LINK_OPTIONS = new WeakMap<Editor, LinkOptions>()

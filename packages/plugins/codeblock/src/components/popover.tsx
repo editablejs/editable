@@ -64,6 +64,8 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
 
   const { toolbar } = useLocale<CodeBlockLocale>('codeblock')
 
+  const language = languages.find(({ value }) => value === element.language)
+
   return (
     <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -111,8 +113,8 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
                 CodeBlockEditor.updateCodeBlock(editor, element, { language: value })
                 view?.focus()
               }}
-              defaultValue={element.language}
-              value={element.language}
+              defaultValue={language?.value}
+              value={language?.value}
               items={languages}
               renderEmpty={() => <div tw="p-4 text-center">{toolbar.language.searchEmpty}</div>}
             />
