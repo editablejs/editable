@@ -144,7 +144,9 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       const isVoid = editor.isVoid(node)
       const element = Editable.toDOMNode(editor, node)
       // 优先对齐文本节点
-      const textElement = element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
+      const textElement = isFindList
+        ? element.firstElementChild
+        : element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
 
       const rect = (!isVoid && textElement ? textElement : element).getBoundingClientRect()
       let { x, y, height } = rect

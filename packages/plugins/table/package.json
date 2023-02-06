@@ -112,7 +112,7 @@
     "@editablejs/ui": "workspace:*",
     "mdast-util-gfm-table": "1.0.7",
     "micromark-extension-gfm-table": "1.0.5",
-    "styled-components": "5.3.5",
+    "styled-components": "5.3.6",
     "zustand": "4.1.4"
   },
   "lint-staged": {

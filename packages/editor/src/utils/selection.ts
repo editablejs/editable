@@ -17,7 +17,7 @@ import {
   DATA_EDITABLE_ZERO_WIDTH,
 } from './constants'
 
-interface LineRect {
+interface LineRectangle {
   top: number
   height: number
   bottom: number
@@ -25,31 +25,41 @@ interface LineRect {
   right: number
 }
 
-const splitLines = (rects: DOMRect[] | DOMRectList) => {
-  const lines: Map<LineRect, DOMRect[]> = new Map()
+/**
+ * Splits the rectangles into lines based on their positions.
+ * @param rects
+ */
+const splitRectsIntoLines = (rects: DOMRect[] | DOMRectList) => {
+  const lines: Map<LineRectangle, DOMRect[]> = new Map()
   if (rects.length === 0) return lines
-  const lineKeys: LineRect[] = []
-  // 找出每个 rect 所在的行的 key
-  const findKey = (rect: DOMRect) => {
+
+  const lineKeys: LineRectangle[] = []
+
+  /**
+   * Finds the line that the rectangle belongs to.
+   * @param rect
+   */
+  const findLineKey = (rect: DOMRect) => {
     for (const lineKey of lineKeys) {
-      const { top, bottom, right } = lineKey
-      const prevs = lines.get(lineKey)
-      const last = prevs
-        ? prevs
+      const { right } = lineKey
+      const previousRects = lines.get(lineKey)
+      const lastRect = previousRects
+        ? previousRects
             .concat()
             .reverse()
-            .find(p => p.width > 0) ?? prevs[prevs.length - 1]
+            .find(p => p.width > 0) ?? previousRects[previousRects.length - 1]
         : null
-      if (inLine(rect, lineKey) && rect.left <= (last ? last.right : right) + 1) {
+      if (isRectInLine(rect, lineKey) && rect.left <= (lastRect ? lastRect.right : right) + 1) {
         return lineKey
       }
     }
     return null
   }
-  // 循环每个 rect，找出所在的行
+
+  // Loop through each rectangle and find its line
   for (let r = 0; r < rects.length; r++) {
     const rect = rects[r]
-    const key = findKey(rect)
+    const key = findLineKey(rect)
     if (key) {
       lines.get(key)?.push(rect)
     } else {
@@ -64,14 +74,17 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
       lineKeys.push(lineRect)
     }
   }
-  // 找出每行的最小 top，最大 bottom，最大 right
+
+  // Find the minimum top, maximum bottom, and maximum right for each line
   for (const [line, rects] of lines) {
-    // 一行只有一个 rect，直接跳过
+    // If there's only one rectangle in the line, skip
     if (rects.length === 1) continue
+
     let minTop = line.top,
       maxBottom = line.bottom,
       maxRight = line.right
-    // 循环比对每个 rect
+
+    // Compare each rectangle
     for (const rect of rects) {
       const { top, bottom, right } = rect
       if (top < minTop) minTop = top
@@ -86,26 +99,26 @@ const splitLines = (rects: DOMRect[] | DOMRectList) => {
 }
 
 /**
- * 计算节点的高度，lineHeight * fontSize
- * @param el
- * @returns
+ * Calculates the height of a node based on line height and font size
+ * @param el The DOM element to calculate height for
+ * @returns The calculated height
  */
-const calcElementHeight = (el: DOMElement) => {
-  const { lineHeight, fontSize } = getComputedStyle(el)
+const calculateElementHeight = (el: DOMElement) => {
+  const { lineHeight, fontSize } = window.getComputedStyle(el)
 
-  // TODO: pt em rem
+  // TODO: Handle pt, em, rem units
 
   let height = 0
-  // endsWith px
+  // Ends with px
   if (lineHeight.endsWith('px')) {
     height = parseFloat(lineHeight)
     return height
   }
-  // endsWith %
+  // Ends with %
   else if (lineHeight.endsWith('%')) {
     height = parseInt(lineHeight, 10) / 100
   }
-  // number
+  // Number
   else if (/^\d+(\.\d+)?$/.test(lineHeight)) {
     height = parseFloat(lineHeight)
   } else {
@@ -120,6 +133,12 @@ const calcElementHeight = (el: DOMElement) => {
   return height * size
 }
 
+/**
+ * Resets the DOMRect of an element to the specified height
+ * @param rect The DOMRect to reset
+ * @param height The new height for the rect
+ * @returns The reset DOMRect
+ */
 const resetElementRect = (rect: DOMRect, height: number) => {
   const oldHeight = rect.height
   if (oldHeight >= height) return rect
@@ -127,53 +146,67 @@ const resetElementRect = (rect: DOMRect, height: number) => {
   return new DOMRect(rect.left, top, rect.width, height)
 }
 
-const inLine = (rect: DOMRect, line: Record<'top' | 'bottom' | 'height', number>) => {
+/**
+ * Check if a given DOMRect intersects with a given line defined by its top, bottom, and height values
+ * @param {DOMRect} rect - The DOMRect to check
+ * @param {Object} line - An object with top, bottom, and height properties representing the line
+ * @return {Boolean} - True if the rect intersects with the line, false otherwise
+ */
+const isRectInLine = (rect: DOMRect, line: Record<'top' | 'bottom' | 'height', number>) => {
   const deltaEdge = rect.height / 3
   return (
-    // 1. 介于行 top 与 bottom 之间，完全被行包住
+    // Check if the rect is fully contained within the line
     (rect.top >= line.top &&
       (rect.bottom <= line.bottom ||
-        // 2. 节点的 top 在行内，且溢出行的 bottom 在3分之2以内
+        // Check if the top of the rect is in the line and the overflow of the bottom is within 2/3
         rect.top + deltaEdge < line.bottom ||
-        // 3. 节点 bottom 在行的 top 下方至少 3分之2处，且 节点 top 位于行的 bottom 上方
+        // Check if the bottom of the rect is within 2/3 from the top of the line and the top of the rect is above the bottom of the line
         (rect.top <= line.top + line.height / 3 && rect.bottom > line.top))) ||
-    // 4. 覆盖了行的高度，行 位于 rect 的 top 与 bottom 之间
+    // Check if the rect covers the height of the line and the line is within the top and bottom of the rect
     (rect.top <= line.top &&
       (rect.bottom >= line.bottom ||
-        // 5. 节点的 top 位于行的上方或相等，且底部的高度至少3分之2在行内
+        // Check if the top of the rect is above or equal to the top of the line and the bottom of the rect is within 2/3 of the line
         rect.bottom - deltaEdge > line.top)) ||
-    // 6. 节点 top 在行的 bottom 上方至少 3分之2处，且 节点 bottom 位于行的 top 下方
+    // Check if the bottom of the rect is within 2/3 from the bottom of the line and the top of the rect is above the bottom of the line
     (rect.bottom <= line.bottom &&
       rect.bottom >= line.bottom - line.height / 3 &&
       rect.top < line.bottom)
   )
 }
-
 /**
- * 找到top位置在el节点中所在行的最大位置
- * @param editor
- * @param element
- * @param top
- * @param bottom
- * @returns
+ * Find the maximum position in the line of the top position in the el node
+ * @param editor - The Editor instance
+ * @param element - The DOM element
+ * @param top - The top position
+ * @param bottom - The bottom position
+ * @returns - Object containing the line rect information
  */
 const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: number) => {
   const lineRect = {
-    top: top,
+    top,
     height: bottom - top,
-    bottom: bottom,
+    bottom,
   }
 
+  /**
+   * Compare the height of the current rect with the line rect
+   * and update the line rect with the highest values
+   * @param rect - The current rect
+   */
   const compareHeight = (rect: DOMRect) => {
-    if (inLine(rect, lineRect)) {
-      const top = lineRect.top < rect.top ? lineRect.top : rect.top
-      const bottom = lineRect.bottom > rect.bottom ? lineRect.bottom : rect.bottom
-      lineRect.height = bottom - top
-      lineRect.top = top
-      lineRect.bottom = bottom
+    if (isRectInLine(rect, lineRect)) {
+      const newTop = lineRect.top < rect.top ? lineRect.top : rect.top
+      const newBottom = lineRect.bottom > rect.bottom ? lineRect.bottom : rect.bottom
+      lineRect.height = newBottom - newTop
+      lineRect.top = newTop
+      lineRect.bottom = newBottom
     }
   }
 
+  /**
+   * Recursively find the child nodes of the element and compare their rects
+   * @param element - The DOM element
+   */
   const match = (element: DOMElement) => {
     for (const child of element.childNodes) {
       if (isDOMElement(child)) {
@@ -182,10 +215,13 @@ const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: 
         if (node) {
           if (Element.isElement(node)) {
             if (editor.isVoid(node)) {
-              const rect = resetElementRect(child.getBoundingClientRect(), calcElementHeight(child))
+              const rect = resetElementRect(
+                child.getBoundingClientRect(),
+                calculateElementHeight(child),
+              )
               compareHeight(rect)
             } else if (editor.isInline(node)) {
-              const height = calcElementHeight(child)
+              const height = calculateElementHeight(child)
               const rects = child.getClientRects()
               for (let r = 0; r < rects.length; r++) {
                 const rect = resetElementRect(rects[r], height)
@@ -199,7 +235,7 @@ const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: 
               `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
             )
             nodes.forEach(node => {
-              const height = calcElementHeight(node)
+              const height = calculateElementHeight(node)
               const rects = node.getClientRects()
               for (let r = 0; r < rects.length; r++) {
                 const rect = resetElementRect(rects[r], height)
@@ -210,18 +246,6 @@ const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: 
         } else {
           match(child)
         }
-        // else if(!child.hasAttribute('data-no-selection')){
-        //   const display = window.getComputedStyle(child).display
-        //   if(display === 'inline') {
-        //     const rects = child.getClientRects()
-        //     for(let r = 0; r < rects.length; r++) {
-        //       const rect = rects[r]
-        //       compareHeight(rect)
-        //     }
-        //   } else {
-        //     match(child)
-        //   }
-        // }
       }
     }
   }
@@ -229,7 +253,13 @@ const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: 
   match(element)
   return lineRect
 }
-
+/**
+ * Get the line rectangles of a given node in an editor.
+ * @param editor The editor instance.
+ * @param node The node to get line rectangles of.
+ * @param minWidth The minimum width of the line rectangles. Default value is 4.
+ * @returns An array of DOMRect objects representing the line rectangles.
+ */
 export const getLineRectsByNode = (editor: Editor, node: Node, minWidth = 4) => {
   const path = Editable.findPath(editor, node)
   const block: NodeEntry | undefined =
@@ -245,7 +275,7 @@ export const getLineRectsByNode = (editor: Editor, node: Node, minWidth = 4) => 
   const domRect = domEl.getBoundingClientRect()
   const range = document.createRange()
   range.selectNodeContents(Editable.toDOMNode(editor, node))
-  const lines = splitLines(range.getClientRects())
+  const lines = splitRectsIntoLines(range.getClientRects())
   const lineRects: DOMRect[] = []
   for (const [line, rects] of lines) {
     let width = line.right - line.left
@@ -263,10 +293,11 @@ export const getLineRectsByNode = (editor: Editor, node: Node, minWidth = 4) => 
 }
 
 /**
- * 在范围内获取按行分割的DOMRect对象
+ * Get DOMRect objects split by line within range
  * @param editor
  * @param range
- * @returns
+ * @param minWidth minimum width of empty node, default to 4
+ * @returns array of DOMRect objects
  */
 export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) => {
   const anchor = Range.start(range)
@@ -341,14 +372,14 @@ export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) 
   for (const range of ranges) {
     rects.push(...range.getClientRects())
   }
-  const lines = splitLines(rects)
+  const lines = splitRectsIntoLines(rects)
   const lineRects: DOMRect[] = []
   let prevLineRect: DOMRect | null = null
   for (const [line, rects] of lines) {
     // 找到对应行所在的 element
     const blockRect = blockRects.find(
       r =>
-        inLine(r, line) &&
+        isRectInLine(r, line) &&
         (line.left >= r.left || Math.abs(line.left - r.left) < 1) &&
         (line.right <= r.right || Math.abs(line.right - r.right) < 1),
     )

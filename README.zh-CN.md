@@ -1,6 +1,6 @@
 # Editable
 
-editable是一个富文本编辑器框架，不再依赖~~**contenteditable**~~属性即可提供稳定的富文本编辑能力。
+editable是一个富文本编辑器框架，不再依赖 ~~**contenteditable**~~ 属性即可提供稳定的富文本编辑能力。
 
 演示：https://docs.editablejs.com/playground
 

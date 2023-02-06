@@ -99,7 +99,7 @@
   "dependencies": {
     "@editablejs/deserializer": "workspace:*",
     "@editablejs/serializer": "workspace:*",
-    "styled-components": "5.3.5"
+    "styled-components": "5.3.6"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

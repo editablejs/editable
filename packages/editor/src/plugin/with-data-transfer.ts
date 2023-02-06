@@ -63,7 +63,7 @@ export const withDataTransfer = <T extends Editor>(editor: T) => {
     if (!clipboardData) return
     event.preventDefault()
     const { text, fragment, html, files } = parseDataTransfer(clipboardData)
-    const isPasteText = IS_PASTE_TEXT.get(e)
+    const isPasteText = event.type === 'pasteText'
     if (!isPasteText && fragment.length > 0) {
       e.insertFragment(fragment)
     } else if (!isPasteText && html) {
@@ -122,7 +122,7 @@ export const withDataTransfer = <T extends Editor>(editor: T) => {
     }
     readClipboardData().then(data => {
       IS_PASTE_TEXT.set(e, true)
-      const event = new ClipboardEvent('paste-text', { clipboardData: data })
+      const event = new ClipboardEvent('pasteText', { clipboardData: data })
       e.onPaste(event)
     })
   }

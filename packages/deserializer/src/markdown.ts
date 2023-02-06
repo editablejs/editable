@@ -191,7 +191,13 @@ export const MarkdownDeserializer = {
 
   toMdast(value: Value, plugins: MarkdownDeserializerPlugin[] = []) {
     const disable = defaultDisable.concat()
-    const extensions: Extension[] = []
+    const extensions: Extension[] = [
+      {
+        disable: {
+          null: disable,
+        },
+      },
+    ]
 
     const setExtensionsOrDisable = (ext: MarkdownDeserializerExtension) => {
       if (Array.isArray(ext)) {
@@ -224,14 +230,7 @@ export const MarkdownDeserializer = {
     }
 
     return fromMarkdown(value, {
-      extensions: [
-        {
-          disable: {
-            null: disable,
-          },
-        },
-        ...extensions,
-      ],
+      extensions,
       mdastExtensions,
     })
   },

@@ -73,7 +73,7 @@
     "@editablejs/protocols": "workspace:*",
     "@editablejs/yjs-transform": "workspace:*",
     "@editablejs/yjs-protocols": "workspace:*",
-    "styled-components": "5.3.5",
+    "styled-components": "5.3.6",
     "zustand": "4.1.4"
   }
 }

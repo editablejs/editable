@@ -7,8 +7,9 @@ export const withLeadingHTMLDeserializerTransform: HTMLDeserializerWithTransform
     const { element } = options
     if (isDOMHTMLElement(node)) {
       const { lineHeight } = node.style
-      const leading: Leading = element as Leading
+      let leading: Partial<Leading> = element as Partial<Leading>
       if (lineHeight) {
+        if (!leading) leading = {}
         leading[LEADING_ATTR_KEY] = lineHeight
       }
       options.element = leading

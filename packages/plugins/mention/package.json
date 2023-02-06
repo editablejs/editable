@@ -99,7 +99,7 @@
     "@editablejs/serializer": "workspace:*",
     "@editablejs/ui": "workspace:*",
     "lodash.debounce": "^4.0.8",
-    "styled-components": "5.3.5",
+    "styled-components": "5.3.6",
     "zustand": "4.1.4"
   },
   "lint-staged": {

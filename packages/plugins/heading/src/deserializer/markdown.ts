@@ -1,13 +1,19 @@
 import {
   MarkdownDeserializerWithTransform,
   MarkdownDeserializerPlugin,
+  MarkdownDeserializerOptions,
 } from '@editablejs/deserializer/markdown'
+import { Editor } from '@editablejs/models'
 import { Heading, HeadingType } from '../interfaces/heading'
+import { getStyle, getTextMark } from '../options'
 
-export const withHeadingMarkdownDeserializerTransform: MarkdownDeserializerWithTransform = (
-  next,
-  self,
-) => {
+export interface HeadingMarkdownDeserializerOptions extends MarkdownDeserializerOptions {
+  editor: Editor
+}
+
+export const withHeadingMarkdownDeserializerTransform: MarkdownDeserializerWithTransform<
+  HeadingMarkdownDeserializerOptions
+> = (next, self, { editor }) => {
   return (node, options = {}) => {
     const { type } = node
     if (type === 'heading') {
@@ -31,8 +37,16 @@ export const withHeadingMarkdownDeserializerTransform: MarkdownDeserializerWithT
         default:
           type = 'heading-one'
       }
+      const textMark = getTextMark(editor)
+      const textStyle = getStyle(editor, type)
+      const text: Record<string, string> = options.text ?? {}
+      text[textMark.fontSize] = textStyle.fontSize
+      text[textMark.fontWeight] = textStyle.fontWeight
       return [
-        Heading.create(type, node.children.map(child => self.transform(child, options)).flat()),
+        Heading.create(
+          type,
+          node.children.map(child => self.transform(child, { ...options, text })).flat(),
+        ),
       ]
     }
     return next(node, options)

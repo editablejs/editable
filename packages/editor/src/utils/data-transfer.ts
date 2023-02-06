@@ -14,20 +14,20 @@ interface DataTransferFormatData {
 }
 
 /**
- * fragment 转换为字符串
+ * Convert fragment to string
  * @param fragment
- * @returns
- */
+ * @returns string representation of the fragment
+ **/
 export const fragmentToString = (fragment: Descendant[]) => {
   const string = JSON.stringify(fragment)
   return window.btoa(encodeURIComponent(string))
 }
 
 /**
- * 从字符串中解析 fragment
- * @param fragment
- * @returns
- */
+ * Parse fragment from string
+ * @param fragment string representation of the fragment
+ * @returns fragment
+ **/
 export const parseFragmentFromString = (fragment: string): Descendant[] => {
   const string = decodeURIComponent(window.atob(fragment))
   try {
@@ -38,20 +38,20 @@ export const parseFragmentFromString = (fragment: string): Descendant[] => {
 }
 
 /**
- * 匹配 html 中的 fragment
+ * Match fragment string from HTML
  * @param html
- * @returns
- */
+ * @returns string representation of the fragment
+ **/
 export const matchFragmentStringFromHTML = (html: string) => {
   const reg = new RegExp(`${DATA_EDITABLE_FRAGMENT}="(.+?)"`)
   return html.match(reg)?.[1] ?? ''
 }
 
 /**
- * 解析 DataTransfer 中的文件
+ * Parse files from DataTransfer object
  * @param dataTransfer
- * @returns
- */
+ * @returns array of files
+ **/
 export const parseDataTransferFiles = (dataTransfer: DataTransfer) => {
   let files: File[] = []
 
@@ -80,10 +80,10 @@ export const parseDataTransferFiles = (dataTransfer: DataTransfer) => {
 }
 
 /**
- * 解析 DataTransfer 中的数据
+ * Parse Data from DataTransfer
  * @param dataTransfer
- * @returns
- */
+ * @returns DataTransferFormatData
+ **/
 export const parseDataTransfer = (dataTransfer: DataTransfer): DataTransferFormatData => {
   const text = dataTransfer.getData(TEXT_PLAIN)
   const html = dataTransfer.getData(TEXT_HTML)
@@ -98,10 +98,10 @@ export const parseDataTransfer = (dataTransfer: DataTransfer): DataTransferForma
 }
 
 /**
- * 设置数据到 DataTransfer 中
+ * Set Data to DataTransfer
  * @param dataTransfer
  * @param data
- */
+ **/
 export const setDataTransfer = (
   dataTransfer: DataTransfer,
   data: Partial<DataTransferFormatData>,

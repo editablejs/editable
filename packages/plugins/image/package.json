@@ -108,7 +108,7 @@
     "@editablejs/protocols": "workspace:*",
     "@editablejs/ui": "workspace:*",
     "react-image-previewer": "1.1.6",
-    "styled-components": "5.3.5",
+    "styled-components": "5.3.6",
     "zustand": "4.1.4"
   },
   "lint-staged": {

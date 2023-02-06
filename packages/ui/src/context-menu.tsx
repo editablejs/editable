@@ -30,7 +30,7 @@ const sizeCls = (size: ContextMenuSize = 'default') => [
 const disabledCls = (disabled?: boolean) => [disabled && tw`text-gray-400 cursor-default`]
 
 const itemCls = (disabled?: boolean, size?: ContextMenuSize) => [
-  tw`relative flex cursor-pointer items-center pl-6 pr-2 text-center hover:bg-gray-100`,
+  tw`relative flex cursor-pointer items-center pl-7 pr-2 text-center hover:bg-gray-100`,
   size === 'small' && `pr-1 pl-3`,
   size === 'large' && `pr-3 pl-9`,
   ...sizeCls(size),

@@ -26,7 +26,7 @@ importers:
       prettier: 2.8.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.7.2
+      turbo: 1.7.3
 
   apps/docs:
     specifiers:
@@ -44,6 +44,7 @@ importers:
       '@codesandbox/sandpack-react': 1.17.1
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0
+      '@editablejs/deserializer': workspace:1.0.0-beta.2
       '@editablejs/editor': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/plugin-codeblock': workspace:*
@@ -94,7 +95,7 @@ importers:
       remark-unwrap-images: ^2.0.0
       retext: ^7.0.1
       retext-smartypants: ^4.0.0
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
       twin.macro: 3.1.0
@@ -113,6 +114,7 @@ importers:
       '@codesandbox/sandpack-react': 1.17.1_biqbaboplfbrettd7655fr4n2y
       '@docsearch/css': 3.3.0
       '@docsearch/react': 3.3.0_bbqmvyebg44zjqjhzodbnnxkxa
+      '@editablejs/deserializer': link:../../packages/deserializer
       '@editablejs/editor': link:../../packages/editor
       '@editablejs/models': link:../../packages/models
       '@editablejs/plugin-codeblock': link:../../packages/plugins/codeblock
@@ -137,7 +139,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       remark-frontmatter: 4.0.1
       remark-gfm: 3.0.1
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       yjs: 13.5.43
     devDependencies:
       '@babel/core': 7.19.1
@@ -153,7 +155,7 @@ importers:
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26
       babel-plugin-macros: 3.1.0
-      babel-plugin-styled-components: 2.0.7_styled-components@5.3.5
+      babel-plugin-styled-components: 2.0.7_styled-components@5.3.6
       babel-plugin-twin: 1.0.2
       eslint-config-editable: link:../../packages/config/eslint-config-editable
       gray-matter: 4.0.3
@@ -238,7 +240,7 @@ importers:
       '@babel/core': 7.19.1
       '@babel/preset-typescript': 7.18.6_@babel+core@7.19.1
       babel-plugin-macros: 3.1.0
-      babel-plugin-styled-components: 2.0.7_styled-components@5.3.5
+      babel-plugin-styled-components: 2.0.7_styled-components@5.3.6
       babel-plugin-twin: 1.0.2
 
   packages/config/eslint-config-editable:
@@ -307,7 +309,6 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
-      '@types/mdast': 3.0.10
       escape-html: 1.0.3
       lodash.merge: 4.6.2
       mdast-util-from-markdown: 1.3.0
@@ -317,6 +318,7 @@ importers:
       '@types/escape-html': 1.0.2
       '@types/jest': 26.0.24
       '@types/lodash.merge': 4.6.7
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       eslint-config-editable: link:../config/eslint-config-editable
       jest: 27.5.1
@@ -487,7 +489,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -498,7 +500,7 @@ importers:
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -546,7 +548,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -568,7 +570,7 @@ importers:
       '@lezer/highlight': 1.1.3
       escape-html: 1.0.3
       lib0: 0.2.52
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       yjs: 13.5.43
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -608,7 +610,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -621,7 +623,7 @@ importers:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -720,7 +722,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -731,7 +733,7 @@ importers:
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -806,7 +808,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -818,7 +820,7 @@ importers:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -857,7 +859,7 @@ importers:
       react: ^18.x
       react-dom: ^18.x
       react-image-previewer: 1.1.6
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -872,7 +874,7 @@ importers:
       '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       react-image-previewer: 1.1.6_pumtretovylab5lwhztzjp2kuy
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -909,7 +911,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -920,7 +922,7 @@ importers:
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -995,7 +997,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1010,7 +1012,7 @@ importers:
       '@editablejs/ui': link:../../ui
       mdast-util-gfm-autolink-literal: 1.0.3
       micromark-extension-gfm-autolink-literal: 1.0.3
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1051,7 +1053,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1064,7 +1066,7 @@ importers:
       '@editablejs/serializer': link:../../serializer
       mdast-util-gfm-task-list-item: 1.0.2
       micromark-extension-gfm-task-list-item: 1.0.3
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -1104,7 +1106,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1117,7 +1119,7 @@ importers:
       '@editablejs/serializer': link:../../serializer
       mdast-util-gfm-strikethrough: 1.0.3
       micromark-extension-gfm-strikethrough: 1.0.4
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -1156,7 +1158,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1170,7 +1172,7 @@ importers:
       '@editablejs/serializer': link:../../serializer
       '@editablejs/ui': link:../../ui
       lodash.debounce: 4.0.8
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1282,7 +1284,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1297,7 +1299,7 @@ importers:
       '@editablejs/ui': link:../../ui
       mdast-util-gfm-table: 1.0.7
       micromark-extension-gfm-table: 1.0.5
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1334,7 +1336,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1345,7 +1347,7 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1385,7 +1387,7 @@ importers:
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1399,7 +1401,7 @@ importers:
       '@editablejs/protocols': link:../../protocols
       '@editablejs/yjs-protocols': link:../../yjs-protocols
       '@editablejs/yjs-transform': link:../../yjs-transform
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
@@ -1471,7 +1473,6 @@ importers:
       tsup-config: workspace:*
       typescript: latest
     dependencies:
-      '@types/mdast': 3.0.10
       escape-html: 1.0.3
       lodash.merge: 4.6.2
       mdast-util-to-markdown: 1.5.0
@@ -1480,6 +1481,7 @@ importers:
       '@types/escape-html': 1.0.2
       '@types/jest': 26.0.24
       '@types/lodash.merge': 4.6.7
+      '@types/mdast': 3.0.10
       '@types/react': 18.0.25
       eslint-config-editable: link:../config/eslint-config-editable
       jest: 27.5.1
@@ -1504,7 +1506,7 @@ importers:
       react: ^18.x
       react-colorful: 5.6.1
       react-dom: ^18.x
-      styled-components: 5.3.5
+      styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
@@ -1516,7 +1518,7 @@ importers:
       '@floating-ui/react-dom': 1.0.0_biqbaboplfbrettd7655fr4n2y
       colord: 2.9.0
       react-colorful: 5.6.1_biqbaboplfbrettd7655fr4n2y
-      styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -4386,6 +4388,19 @@ packages:
       lodash: 4.17.21
       picomatch: 2.3.1
       styled-components: 5.3.5_pumtretovylab5lwhztzjp2kuy
+    dev: false
+
+  /babel-plugin-styled-components/2.0.7_styled-components@5.3.6:
+    resolution: {integrity: sha512-i7YhvPgVqRKfoQ66toiZ06jPNA3p6ierpfUuEWxNF+fV27Uv5gxBkf8KZLHUCc1nFA9j6+80pYoIpqCeyW3/bA==}
+    peerDependencies:
+      styled-components: '>= 2'
+    dependencies:
+      '@babel/helper-annotate-as-pure': 7.18.6
+      '@babel/helper-module-imports': 7.18.6
+      babel-plugin-syntax-jsx: 6.18.0
+      lodash: 4.17.21
+      picomatch: 2.3.1
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
 
   /babel-plugin-syntax-jsx/6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -10238,6 +10253,30 @@ packages:
       react-is: 17.0.2
       shallowequal: 1.1.0
       supports-color: 5.5.0
+    dev: false
+
+  /styled-components/5.3.6_pumtretovylab5lwhztzjp2kuy:
+    resolution: {integrity: sha512-hGTZquGAaTqhGWldX7hhfzjnIYBZ0IXQXkCYdvF1Sq3DsUaLx6+NTHC5Jj1ooM2F68sBiVz3lvhfwQs/S3l6qg==}
+    engines: {node: '>=10'}
+    requiresBuild: true
+    peerDependencies:
+      react: '>= 16.8.0'
+      react-dom: '>= 16.8.0'
+      react-is: '>= 16.8.0'
+    dependencies:
+      '@babel/helper-module-imports': 7.18.6
+      '@babel/traverse': 7.20.5_supports-color@5.5.0
+      '@emotion/is-prop-valid': 1.2.0
+      '@emotion/stylis': 0.8.5
+      '@emotion/unitless': 0.7.5
+      babel-plugin-styled-components: 2.0.7_styled-components@5.3.6
+      css-to-react-native: 3.0.0
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-is: 17.0.2
+      shallowequal: 1.1.0
+      supports-color: 5.5.0
 
   /styled-jsx/5.0.7_stn7tt2qafd37bpotzscxfaffy:
     resolution: {integrity: sha512-b3sUzamS086YLRuvnaDigdAewz1/EFYlHpYBP5mZovKEdQQOIIYq8lApylub3HHZ6xFjV051kkGU7cudJmrXEA==}
@@ -10711,65 +10750,65 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-darwin-64/1.7.2:
-    resolution: {integrity: sha512-Sml3WR8MSu80W+gS8SnoKNImcDOlIX7zlvezzds65mW11yGniIFfZ18aKWGOm92Nj2SvXCQ2+UmyGghbFaHNmQ==}
+  /turbo-darwin-64/1.7.3:
+    resolution: {integrity: sha512-7j9+j1CVztmdevnClT3rG/GRhULf3ukwmv+l48l8uwsXNI53zLso+UYMql6RsjZDbD6sESwh0CHeKNwGmOylFA==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.7.2:
-    resolution: {integrity: sha512-JnlgGLScboUJGJxvmSsF+5xkImEDTMPg2FHzX4n8AMB9az9ZlPQAMtc+xu4p6Xp9eaykKiV2RG81YS3H0fxDLA==}
+  /turbo-darwin-arm64/1.7.3:
+    resolution: {integrity: sha512-puS9+pqpiy4MrIvWRBTg3qfO2+JPXR7reQcXQ7qUreuyAJnSw9H9/TIHjeK6FFxUfQbmruylPtH6dNpfcML9CA==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.7.2:
-    resolution: {integrity: sha512-vbLJw6ovG+lpiPqxniscBjljKJ2jbsHuKp8uK4j/wqgp68wAVKeAZW77GGDAUgDb88XH6Kvhh2hcizL+iWduww==}
+  /turbo-linux-64/1.7.3:
+    resolution: {integrity: sha512-BnbpgcK8Wag6fhnff7tMaecswmFHN/T56VIDnjcwcJnK9H3jdwpjwZlmcDtkoslzjPj3VuqHyqLDMvSb3ejXSg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.7.2:
-    resolution: {integrity: sha512-zLnuS8WdHonKL74KqOopOH/leBOWumlVGF8/8hldbDPq0mwY+6myRR5/5LdveB51rkG4UJh/sQ94xV67tjBoyw==}
+  /turbo-linux-arm64/1.7.3:
+    resolution: {integrity: sha512-+epY+0dfjmAJNZHfj7rID2hENRaeM3D0Ijqkhh/M53o46fQMwPNqI5ff9erh+f9r8sWuTpVnRlZeu7TE1P/Okw==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.7.2:
-    resolution: {integrity: sha512-oE5PMoXjmR09okvVzteFb6FjA6yo+nMsacsgKH2yLNq4sOrVo9tG98JkRurOv5+L6ZQ3yGXPxWHiqeH7hLkAVQ==}
+  /turbo-windows-64/1.7.3:
+    resolution: {integrity: sha512-/2Z8WB4fASlq/diO6nhmHYuDCRPm3dkdUE6yhwQarXPOm936m4zj3xGQA2eSWMpvfst4xjVxxU7P7HOIOyWChA==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.7.2:
-    resolution: {integrity: sha512-mdTUJk23acRv5qxA/yEstYhM1VFenVE3FDrssxGRFq7S80smtCGK1xUd4BEDDzDlVXOqBohmM5jRh9516rcjPQ==}
+  /turbo-windows-arm64/1.7.3:
+    resolution: {integrity: sha512-UD9Uhop42xj1l1ba5LRdwqRq1Of+RgqQuv+QMd1xOAZ2FXn/91uhkfLv+H4Pkiw7XdUohOxpj/FcOvjCiiUxGw==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.7.2:
-    resolution: {integrity: sha512-YR/x3GZEx0C1RV6Yvuw/HB1Ixx3upM6ZTTa4WqKz9WtLWN8u2g+u2h5KpG5YtjCS3wl/8zVXgHf2WiMK6KIghg==}
+  /turbo/1.7.3:
+    resolution: {integrity: sha512-mrqo72vPQO6ykmARThaNP/KXPDuBDSqDXfkUxD8hX1ET3YSFbOWJixlHU32tPtiFIhScIKbEGShEVWBrLeM0wg==}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.7.2
-      turbo-darwin-arm64: 1.7.2
-      turbo-linux-64: 1.7.2
-      turbo-linux-arm64: 1.7.2
-      turbo-windows-64: 1.7.2
-      turbo-windows-arm64: 1.7.2
+      turbo-darwin-64: 1.7.3
+      turbo-darwin-arm64: 1.7.3
+      turbo-linux-64: 1.7.3
+      turbo-linux-arm64: 1.7.3
+      turbo-windows-64: 1.7.3
+      turbo-windows-arm64: 1.7.3
     dev: true
 
   /twin.macro/3.1.0_tailwindcss@3.2.4:

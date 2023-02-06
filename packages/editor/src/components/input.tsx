@@ -1,7 +1,7 @@
 import { Range } from '@editablejs/models'
 import * as React from 'react'
 import { Editable } from '../plugin/editable'
-import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN } from '../utils/weak-maps'
+import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
@@ -77,7 +77,10 @@ const InputComponent: React.FC<InputProps> = () => {
 
   const handlePaste = (event: React.ClipboardEvent) => {
     const { nativeEvent } = event
-    editor.onPaste(nativeEvent)
+    const isPasteText = IS_PASTE_TEXT.get(editor)
+    event.preventDefault()
+    const e = new ClipboardEvent(isPasteText ? 'pasteText' : 'paste', nativeEvent)
+    editor.onPaste(e)
   }
 
   const selection = useSelectionDrawingSelection()

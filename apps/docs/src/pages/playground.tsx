@@ -1,5 +1,11 @@
 import * as React from 'react'
 import NextLink from 'next/link'
+import { Seo } from 'components/seo'
+import { createGlobalStyle } from 'styled-components'
+import { ExternalLink } from 'components/external-link'
+import { IconGitHub } from 'components/icon/github'
+import Image from 'next/image'
+import { IconLogo } from 'components/icon/logo'
 import tw, { css, styled } from 'twin.macro'
 import {
   EditableProvider,
@@ -9,8 +15,10 @@ import {
   isTouchDevice,
   Editable,
   withEditable,
+  parseDataTransfer,
 } from '@editablejs/editor'
-import { Editor, createEditor } from '@editablejs/models'
+import { Editor, createEditor, Range, Transforms } from '@editablejs/models'
+import { MarkdownDeserializer } from '@editablejs/deserializer/markdown'
 import {
   withPlugins,
   useContextMenuEffect,
@@ -70,13 +78,8 @@ import {
   defaultFontColor,
 } from '../configs/toolbar-items'
 import { createSideToolbarItems } from '../configs/side-toolbar-items'
-import { Seo } from 'components/seo'
-import { createGlobalStyle } from 'styled-components'
-import { ExternalLink } from 'components/external-link'
-import { IconGitHub } from 'components/icon/github'
-import Image from 'next/image'
-import { IconLogo } from 'components/icon/logo'
 import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
+import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
 
 const initialValue = [
   {
@@ -252,12 +255,8 @@ export default function Playground() {
     }
 
     Placeholder.add(editor, {
-      check: entry => {
-        return Editable.isFocused(editor) && Editor.isBlock(editor, entry[0])
-      },
-      render: () => {
-        return 'Enter some text...'
-      },
+      check: entry => Editable.isFocused(editor) && Editor.isBlock(editor, entry[0]),
+      render: () => 'Enter some text...',
     })
     return editor
   }, [document, provider])
@@ -283,13 +282,47 @@ export default function Playground() {
   }, [editor, connected])
 
   useIsomorphicLayoutEffect(() => {
-    withMarkdownDeserializerPlugin(editor)
-    withMarkdownSerializerPlugin(editor)
-    withTextSerializerTransform(editor)
-    withHTMLSerializerTransform(editor)
-    withMarkdownSerializerTransform(editor)
-    withHTMLDeserializerTransform(editor)
-    withMarkdownDeserializerTransform(editor)
+    withMarkdownDeserializerPlugin(editor) // Adds a markdown deserializer plugin to the editor
+    withMarkdownSerializerPlugin(editor) // Adds a markdown serializer plugin to the editor
+    withTextSerializerTransform(editor) // Adds a text serializer transform to the editor
+    withHTMLSerializerTransform(editor) // Adds an HTML serializer transform to the editor
+    withMarkdownSerializerTransform(editor) // Adds a markdown serializer transform to the editor
+    withHTMLDeserializerTransform(editor) // Adds an HTML deserializer transform to the editor
+    withMarkdownDeserializerTransform(editor) // Adds a markdown deserializer transform to the editor
+
+    const { onPaste } = editor
+
+    editor.onPaste = event => {
+      const { clipboardData, type } = event
+      if (!clipboardData || !editor.selection) return onPaste(event)
+      const { text, fragment, html, files } = parseDataTransfer(clipboardData)
+      const isPasteText = type === 'pasteText'
+      if (!isPasteText && (fragment.length > 0 || files.length > 0)) {
+        return onPaste(event)
+      }
+      if (Range.isExpanded(editor.selection)) {
+        Transforms.delete(editor)
+      }
+      const anchor = Range.start(editor.selection)
+      onPaste(event)
+      // check markdown syntax
+      if (checkMarkdownSyntax(text, html) && editor.selection) {
+        const focus = Range.end(editor.selection)
+        Promise.resolve().then(() => {
+          const madst = MarkdownDeserializer.toMdastWithEditor(editor, text)
+          const content = MarkdownDeserializer.transformWithEditor(editor, madst)
+          editor.selection = {
+            anchor,
+            focus,
+          }
+          editor.insertFragment(content)
+        })
+      }
+    }
+
+    return () => {
+      editor.onPaste = onPaste
+    }
   }, [editor])
 
   useContextMenuEffect(() => {

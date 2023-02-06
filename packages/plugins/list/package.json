@@ -111,7 +111,7 @@
     "@editablejs/serializer": "workspace:*",
     "mdast-util-gfm-task-list-item": "1.0.2",
     "micromark-extension-gfm-task-list-item": "1.0.3",
-    "styled-components": "5.3.5"
+    "styled-components": "5.3.6"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

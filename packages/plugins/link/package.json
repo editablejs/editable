@@ -109,7 +109,7 @@
     "@editablejs/ui": "workspace:*",
     "mdast-util-gfm-autolink-literal": "1.0.3",
     "micromark-extension-gfm-autolink-literal": "1.0.3",
-    "styled-components": "5.3.5",
+    "styled-components": "5.3.6",
     "zustand": "4.1.4"
   },
   "lint-staged": {
