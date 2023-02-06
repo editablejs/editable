@@ -1,5 +1,16 @@
 # @editablejs/plugin-mention
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [`3855f3f`](https://github.com/editablejs/editable/commit/3855f3fdef0869e2057f18b18d2fd2b903ff4287) Thanks [@big-camel](https://github.com/big-camel)! - Add markdown paste demo
+
+- Updated dependencies [[`3855f3f`](https://github.com/editablejs/editable/commit/3855f3fdef0869e2057f18b18d2fd2b903ff4287)]:
+  - @editablejs/deserializer@1.0.0-beta.3
+  - @editablejs/editor@1.0.0-beta.22
+  - @editablejs/ui@1.0.0-beta.7
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
