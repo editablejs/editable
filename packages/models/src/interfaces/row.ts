@@ -11,7 +11,7 @@ export interface GridRow extends Element {
 export const GridRow = {
   create: <R extends GridRow, C extends GridCell>(
     row: Partial<Omit<R, 'children'>> = {},
-    cells: Partial<Omit<C, 'children'>>[],
+    cells: Partial<C>[],
   ): R => {
     const { height, contentHeight = height, ...rest } = row
     return {
