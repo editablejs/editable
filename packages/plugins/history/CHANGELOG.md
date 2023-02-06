@@ -1,5 +1,12 @@
 # @editablejs/plugin-history
 
+## 1.0.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [[`3855f3f`](https://github.com/editablejs/editable/commit/3855f3fdef0869e2057f18b18d2fd2b903ff4287)]:
+  - @editablejs/editor@1.0.0-beta.22
+
 ## 1.0.0-beta.22
 
 ### Major Changes
