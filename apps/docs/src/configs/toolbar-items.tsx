@@ -224,7 +224,7 @@ export const createToolbarItems = (editor: Editable) => {
       type: 'button',
       disabled: !!TableEditor.isActive(editor),
       onToggle: () => {
-        TableEditor.toggle(editor)
+        TableEditor.insert(editor)
       },
       icon: <Icon name="table" />,
     },

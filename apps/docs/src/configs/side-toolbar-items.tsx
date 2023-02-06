@@ -21,7 +21,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
         title: 'Table',
         disabled: !!TableEditor.isActive(editor),
         onSelect: () => {
-          TableEditor.toggle(editor)
+          TableEditor.insert(editor)
         },
       },
       {
