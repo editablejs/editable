@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.6
+
+### Patch Changes
+
+- [`437dc00`](https://github.com/editablejs/editable/commit/437dc008d72a88d73160ce13e12dc334f7b33248) Thanks [@big-camel](https://github.com/big-camel)! - add plugin shortcuts for codeblock & mark & blockquote
+
 ## 1.0.0-beta.5
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @editablejs/plugin-codeblock
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [`437dc00`](https://github.com/editablejs/editable/commit/437dc008d72a88d73160ce13e12dc334f7b33248) Thanks [@big-camel](https://github.com/big-camel)! - add plugin shortcuts for codeblock & mark & blockquote
+
+* [`f983a67`](https://github.com/editablejs/editable/commit/f983a679c4ed20dfc71bcb9e815369a6d8cd6811) Thanks [@big-camel](https://github.com/big-camel)! - Continuing to add markdown shortcuts to the plugin.
+
+* Updated dependencies [[`437dc00`](https://github.com/editablejs/editable/commit/437dc008d72a88d73160ce13e12dc334f7b33248), [`99325fd`](https://github.com/editablejs/editable/commit/99325fd2be94294ecd70ee069f3ba6cdff43219e), [`f983a67`](https://github.com/editablejs/editable/commit/f983a679c4ed20dfc71bcb9e815369a6d8cd6811)]:
+  - @editablejs/editor@1.0.0-beta.21
+  - @editablejs/models@1.0.0-beta.2
+  - @editablejs/ui@1.0.0-beta.6
+  - @editablejs/deserializer@1.0.0-beta.2
+  - @editablejs/protocols@1.0.0-beta.2
+  - @editablejs/serializer@1.0.0-beta.2
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
