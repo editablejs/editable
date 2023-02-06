@@ -1,6 +1,6 @@
 {
   "name": "@editablejs/plugin-link",
-  "version": "1.0.0-beta.15",
+  "version": "1.0.0-beta.16",
   "main": "./dist/index.js",
   "exports": {
     ".": {

@@ -1,5 +1,32 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.40
+
+### Patch Changes
+
+- [`2614623`](https://github.com/editablejs/editable/commit/26146237b961da8848ae6beee24a02f284bda861) Thanks [@big-camel](https://github.com/big-camel)! - fix withHeadingMarkdownDeserializerTransform
+
+- Updated dependencies [[`3855f3f`](https://github.com/editablejs/editable/commit/3855f3fdef0869e2057f18b18d2fd2b903ff4287)]:
+  - @editablejs/deserializer@1.0.0-beta.3
+  - @editablejs/editor@1.0.0-beta.22
+  - @editablejs/plugin-blockquote@1.0.0-beta.23
+  - @editablejs/plugin-codeblock@1.0.0-beta.11
+  - @editablejs/plugin-context-menu@1.0.0-beta.32
+  - @editablejs/plugin-heading@1.0.0-beta.22
+  - @editablejs/plugin-hr@1.0.0-beta.14
+  - @editablejs/plugin-image@1.0.0-beta.17
+  - @editablejs/plugin-indent@1.0.0-beta.23
+  - @editablejs/plugin-leading@1.0.0-beta.10
+  - @editablejs/plugin-link@1.0.0-beta.16
+  - @editablejs/plugin-list@1.0.0-beta.22
+  - @editablejs/plugin-mark@1.0.0-beta.22
+  - @editablejs/plugin-mention@1.0.0-beta.11
+  - @editablejs/plugin-table@1.0.0-beta.31
+  - @editablejs/plugin-align@1.0.0-beta.12
+  - @editablejs/plugin-background-color@1.0.0-beta.9
+  - @editablejs/plugin-font-color@1.0.0-beta.9
+  - @editablejs/plugin-font-size@1.0.0-beta.9
+
 ## 1.0.0-beta.39
 
 ### Patch Changes
