@@ -68,7 +68,7 @@ export const withMarkdownDeserializerTransform = (editor: Editor) => {
   withEditor(editor, withOrderedListMarkdownDeserializerTransform, {})
   withEditor(editor, withUnorderedListMarkdownDeserializerTransform, {})
   withEditor(editor, withHrMarkdownDeserializerTransform, {})
-  withEditor(editor, withHeadingMarkdownDeserializerTransform, {})
+  withEditor(editor, withHeadingMarkdownDeserializerTransform, { editor })
   withEditor(editor, withCodeBlockMarkdownDeserializerTransform, {})
   withEditor(editor, withBlockquoteMarkdownDeserializerTransform, {})
   withEditor(editor, withImageMarkdownDeserializerTransform, {})
