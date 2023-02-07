@@ -26,7 +26,7 @@ import { HistoryEditor } from '@editablejs/plugin-history'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
 import { Icon, IconMap } from '@editablejs/ui'
 
-const AlignDropdown: FC = () => {
+export const AlignDropdown: FC = () => {
   const editor = useEditable()
   const getAlign = useCallback(() => {
     const value = AlignEditor.queryActive(editor)
@@ -270,6 +270,7 @@ export const createToolbarItems = (editor: Editable) => {
         },
       ],
       children: <AlignDropdown />,
+      value: AlignEditor.queryActive(editor),
       onSelect: value => {
         AlignEditor.toggle(editor, value as AlignKeys)
       },

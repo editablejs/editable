@@ -6,9 +6,10 @@ import {
   useSlotActive,
   useIsomorphicLayoutEffect,
   useLocale,
+  useEditable,
 } from '@editablejs/editor'
 import { Range } from '@editablejs/models'
-import { Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'
+import { Measurable, Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'
 import * as React from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from '../store'
 import { Toolbar } from '../../components/toolbar'
@@ -27,7 +28,7 @@ export const InlineToolbar = () => {
   const [side, setSide] = React.useState<'bottom' | 'top'>('bottom')
 
   const pointRef = React.useRef({ x: 0, y: 0 })
-  const virtualRef = React.useRef({
+  const virtualRef = React.useRef<Measurable>({
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
@@ -66,8 +67,10 @@ export const InlineToolbar = () => {
     }
   }, [editor, setOpen])
 
+  const isRootMouseDown = React.useRef(false)
+
   const handleSelectStart = React.useCallback(() => {
-    setOpen(false)
+    if (!isRootMouseDown.current) setOpen(false)
   }, [setOpen])
 
   const handleSelectionChange = React.useCallback(() => {
@@ -77,21 +80,47 @@ export const InlineToolbar = () => {
     }
   }, [editor, setOpen])
 
+  const [contentChanged, setContentChanged] = React.useState({})
+
+  React.useEffect(() => {
+    if (!open) return
+    handleSelectEnd()
+    document.dispatchEvent(new CustomEvent('refreshInlineToolbarPosition'))
+  }, [open, contentChanged, handleSelectEnd])
+
   React.useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
     const root = document.createElement('div')
+
+    const handleMouseDown = () => {
+      isRootMouseDown.current = true
+    }
+
+    const handleMouseUp = () => {
+      isRootMouseDown.current = false
+    }
+
+    const handleChange = () => {
+      setContentChanged({})
+    }
+    root.addEventListener('mousedown', handleMouseDown)
+    root.addEventListener('mouseup', handleMouseUp)
     rootRef.current = root
     document.body.appendChild(root)
     editor.on('blur', handleSelectStart)
     editor.on('selectstart', handleSelectStart)
     editor.on('selectend', handleSelectEnd)
     editor.on('selectionchange', handleSelectionChange)
+    editor.on('change', handleChange)
     return () => {
       document.body.removeChild(root)
       editor.off('blur', handleSelectStart)
       editor.off('selectstart', handleSelectStart)
       editor.off('selectend', handleSelectEnd)
       editor.off('selectionchange', handleSelectionChange)
+      editor.off('change', handleChange)
+      root.removeEventListener('mousedown', handleMouseDown)
+      root.removeEventListener('mouseup', handleMouseUp)
     }
   }, [editor, handleSelectEnd, handleSelectStart, handleSelectionChange])
 
@@ -111,7 +140,10 @@ export const InlineToolbar = () => {
   if (items.length > 0 && containerRef.current && rootRef.current)
     return (
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverAnchor virtualRef={virtualRef} />
+        <PopoverAnchor
+          virtualRef={virtualRef}
+          dispatchRefreshCustomEvent="refreshInlineToolbarPosition"
+        />
         <PopoverPortal container={rootRef.current}>
           <PopoverContent side={side} sideOffset={10}>
             <Toolbar items={items} mode="inline" locale={locale} />

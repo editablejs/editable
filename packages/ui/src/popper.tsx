@@ -78,11 +78,12 @@ type PrimitiveDivProps = React.ComponentPropsWithoutRef<typeof Root.div>
 
 interface PopperAnchorProps extends PrimitiveDivProps {
   virtualRef?: React.RefObject<Measurable>
+  dispatchRefreshCustomEvent?: string
 }
 
 const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
   (props: PopperAnchorProps, forwardedRef) => {
-    const { virtualRef, ...anchorProps } = props
+    const { virtualRef, dispatchRefreshCustomEvent, ...anchorProps } = props
     const context = usePopperContext()
     const ref = React.useRef<PopperAnchorElement>(null)
     const composedRefs = useComposedRefs(forwardedRef, ref)
@@ -93,6 +94,20 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
       // `anchorRef` with their virtual ref in this case.
       context.onAnchorChange(virtualRef?.current || ref.current)
     })
+
+    React.useEffect(() => {
+      const handleRefresh = () => {
+        const getBoundingClientRect = virtualRef?.current?.getBoundingClientRect
+        if (!getBoundingClientRect) return
+        context.onAnchorChange({ getBoundingClientRect })
+      }
+      if (dispatchRefreshCustomEvent) {
+        document.addEventListener(dispatchRefreshCustomEvent, handleRefresh)
+        return () => {
+          document.removeEventListener(dispatchRefreshCustomEvent, handleRefresh)
+        }
+      }
+    }, [])
 
     return virtualRef ? null : <Slot {...anchorProps} ref={composedRefs} />
   },

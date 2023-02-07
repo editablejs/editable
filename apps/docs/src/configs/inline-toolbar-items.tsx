@@ -10,8 +10,13 @@ import {
   TaskListEditor,
   TableEditor,
   ImageEditor,
+  BackgroundColorEditor,
+  FontColorEditor,
+  AlignEditor,
+  AlignKeys,
 } from '@editablejs/plugins'
 import { Icon } from '@editablejs/ui'
+import { defaultFontColor, defaultBackgroundColor, AlignDropdown } from './toolbar-items'
 
 const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough']
 
@@ -27,6 +32,30 @@ export const createInlineToolbarItems = (editor: Editable) => {
   }))
   items.push(...markItems)
   items.push(
+    {
+      type: 'color-picker',
+      defaultValue: '#F5222D',
+      defaultColor: {
+        color: defaultFontColor,
+        title: 'Default color',
+      },
+      children: <Icon name="fontColor" />,
+      onSelect: color => {
+        FontColorEditor.toggle(editor, color)
+      },
+    },
+    {
+      type: 'color-picker',
+      defaultValue: '#FADB14',
+      defaultColor: {
+        color: defaultBackgroundColor,
+        title: 'No color',
+      },
+      children: <Icon name="backgroundColor" />,
+      onSelect: color => {
+        BackgroundColorEditor.toggle(editor, color)
+      },
+    },
     'separator',
     {
       type: 'button',
@@ -94,6 +123,52 @@ export const createInlineToolbarItems = (editor: Editable) => {
         TableEditor.insert(editor)
       },
       icon: <Icon name="table" />,
+    },
+    {
+      type: 'dropdown',
+      items: [
+        {
+          value: 'left',
+          content: (
+            <div className="flex items-center gap-1">
+              <Icon name="alignLeft" />
+              Align Left
+            </div>
+          ),
+        },
+        {
+          value: 'center',
+          content: (
+            <div className="flex items-center gap-1">
+              <Icon name="alignCenter" />
+              Align Center
+            </div>
+          ),
+        },
+        {
+          value: 'right',
+          content: (
+            <div className="flex items-center gap-1">
+              <Icon name="alignRight" />
+              Align Right
+            </div>
+          ),
+        },
+        {
+          value: 'justify',
+          content: (
+            <div className="flex items-center gap-1">
+              <Icon name="alignJustify" />
+              Align Justify
+            </div>
+          ),
+        },
+      ],
+      children: <AlignDropdown />,
+      value: AlignEditor.queryActive(editor),
+      onSelect: value => {
+        AlignEditor.toggle(editor, value as AlignKeys)
+      },
     },
   )
 
