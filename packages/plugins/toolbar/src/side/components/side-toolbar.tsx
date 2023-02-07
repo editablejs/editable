@@ -11,7 +11,7 @@ import {
   ElementDecorate,
   DATA_EDITABLE_LEAF,
 } from '@editablejs/editor'
-import { Editor, GridCell, Transforms } from '@editablejs/models'
+import { DOMElement, Editor, GridCell, Transforms } from '@editablejs/models'
 import * as React from 'react'
 import { Point, Icon, Tooltip } from '@editablejs/ui'
 import {
@@ -35,6 +35,13 @@ const StyledElementDecorator = styled.div(({ isVoid }: { isVoid: boolean }) => [
   tw`rounded-md bg-blue-50 relative -mx-1 px-1`,
   isVoid && tw`-mx-0 px-0`,
 ])
+
+const findFirstElementChild = (el: DOMElement): DOMElement => {
+  const child = el.firstElementChild
+  if (!child) return el
+  return findFirstElementChild(child)
+}
+
 export const SideToolbar: React.FC<SideToolbar> = () => {
   const editor = useEditableStatic()
   const {
@@ -145,7 +152,7 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       const element = Editable.toDOMNode(editor, node)
       // 优先对齐文本节点
       const textElement = isFindList
-        ? element.firstElementChild
+        ? findFirstElementChild(element)
         : element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
 
       const rect = (!isVoid && textElement ? textElement : element).getBoundingClientRect()
