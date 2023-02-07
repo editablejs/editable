@@ -1,5 +1,11 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.34
+
+### Patch Changes
+
+- [`dc00449`](https://github.com/editablejs/editable/commit/dc004497f24430d07eb9e25c88432982653532e2) Thanks [@big-camel](https://github.com/big-camel)! - Fix the issue of inaccurate sidebar button in list nodes.
+
 ## 1.0.0-beta.33
 
 ### Patch Changes
