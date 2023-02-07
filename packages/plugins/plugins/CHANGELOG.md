@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.42
+
+### Patch Changes
+
+- Updated dependencies [[`d90d640`](https://github.com/editablejs/editable/commit/d90d640a65909a8b06771285b4acf3dd20f3ddcf)]:
+  - @editablejs/plugin-codeblock@1.0.0-beta.13
+
 ## 1.0.0-beta.41
 
 ### Patch Changes
