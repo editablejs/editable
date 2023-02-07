@@ -31,7 +31,7 @@ export interface ImageComponentProps extends ElementAttributes {
 export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
   ({ children, element, editor, ...props }, ref) => {
     const { url, state, rotate, errorMessage, percentage, width, height } = element
-    const [error, setError] = useState(errorMessage)
+    const [errorMsg, setErrorMsg] = useState(errorMessage)
     const [loading, setLoading] = useState(true)
     const [loaded, setLoaded] = useState(false)
     const [src, setSrc] = useState('')
@@ -52,7 +52,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
             setSrc(url)
           })
           .catch(err => {
-            setError(err.message)
+            setErrorMsg(err.message)
           })
           .finally(() => {
             setLoading(false)
@@ -73,7 +73,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
             setImageDOMElement(image)
           })
           .catch(err => {
-            if (state === 'done') setError(err.message)
+            if (state === 'done') setErrorMsg(err.message)
           })
       }
     }, [src, state])
@@ -149,13 +149,13 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
       )
     }
 
-    const isError = state === 'error' || !!error
+    const isError = state === 'error' || !!errorMsg
 
     const renderError = () => {
       if (!isError) return null
       return (
-        <span tw="px-2 py-0.5 text-red-500 align-baseline border border-gray-300 rounded">
-          <span>Image Error: {error}</span>
+        <span tw="px-2 py-0.5 text-sm text-red-500 align-baseline border border-gray-300 rounded">
+          <span>{errorMsg || 'Image error.'}</span>
         </span>
       )
     }
@@ -195,7 +195,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     }
 
     const handleImageClick = (event: React.MouseEvent) => {
-      if (isFocusedMouseDownBefore.current && !event.defaultPrevented) {
+      if (isFocusedMouseDownBefore.current && !event.defaultPrevented && isDone && loaded) {
         viewer.open(element)
       }
     }
@@ -247,7 +247,11 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     const { style: styleLocale, viewer: viewerLocale } = useLocale<ImageLocale>('image')
 
     return (
-      <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
+      <Popover
+        open={isDone ? popoverOpen : false}
+        onOpenChange={handlePopoverOpenChange}
+        trigger="hover"
+      >
         <PopoverTrigger asChild>
           <div
             {...props}
@@ -257,14 +261,18 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
               element.style === 'shadow' && tw`shadow-outer`,
               focused && isDone && tw`cursor-zoom-in`,
               !loaded && tw`bg-gray-100`,
-              !focused && popoverOpen && tw`border-primary`,
+              !focused && isDone && popoverOpen && tw`border-primary`,
+              (loading || isUploading || isError) && tw`leading-[inherit]`,
             ]}
           >
             <div
               tw="inline-block min-w-[24px] min-h-[24px] h-auto max-w-full"
-              style={{ width: size[0], height: loaded ? undefined : size[1] }}
+              style={{
+                width: isError ? undefined : size[0],
+                height: loaded || isError ? undefined : size[1],
+              }}
             >
-              <div onMouseDown={handleImageDown} onClick={handleImageClick}>
+              <div tw="inline-block" onMouseDown={handleImageDown} onClick={handleImageClick}>
                 {renderImage()}
                 {renderStyleStroke()}
                 <div tw="hidden absolute">{children}</div>
@@ -272,7 +280,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
                 {renderError()}
                 {renderLoading()}
               </div>
-              {focused && (
+              {focused && !isError && (
                 <Resizer
                   onChange={handleResizeChange}
                   previewImage={isDone && loaded ? rotatedUrl || src : undefined}

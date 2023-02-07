@@ -102,7 +102,7 @@ export const uploadImage = (editor: Editor, path: Path, file: File | string) => 
         if (path)
           Transforms.setNodes<Image>(
             editor,
-            { state: 'error', errorMessage: err.message },
+            { state: 'error', errorMessage: typeof err === 'string' ? err : err.message },
             { at: path },
           )
       })
