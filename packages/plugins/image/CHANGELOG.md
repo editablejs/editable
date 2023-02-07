@@ -1,5 +1,11 @@
 # @editablejs/plugin-image
 
+## 1.0.0-beta.19
+
+### Patch Changes
+
+- [`f2b065d`](https://github.com/editablejs/editable/commit/f2b065d2d1ffac900b15a112e30485508ad9a0aa) Thanks [@big-camel](https://github.com/big-camel)! - fix image error style
+
 ## 1.0.0-beta.18
 
 ### Patch Changes
