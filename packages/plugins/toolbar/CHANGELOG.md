@@ -1,5 +1,14 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.35
+
+### Patch Changes
+
+- [`b14a6dd`](https://github.com/editablejs/editable/commit/b14a6ddbcdc499a1233003b76ea45c86b3dc2fba) Thanks [@big-camel](https://github.com/big-camel)! - add dispatchRefreshCustomEvent for popper ui
+
+- Updated dependencies [[`b14a6dd`](https://github.com/editablejs/editable/commit/b14a6ddbcdc499a1233003b76ea45c86b3dc2fba)]:
+  - @editablejs/ui@1.0.0-beta.8
+
 ## 1.0.0-beta.34
 
 ### Patch Changes

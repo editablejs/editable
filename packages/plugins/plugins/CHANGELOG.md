@@ -1,5 +1,18 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.43
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @editablejs/plugin-codeblock@1.0.0-beta.14
+  - @editablejs/plugin-context-menu@1.0.0-beta.33
+  - @editablejs/plugin-hr@1.0.0-beta.15
+  - @editablejs/plugin-image@1.0.0-beta.18
+  - @editablejs/plugin-link@1.0.0-beta.17
+  - @editablejs/plugin-mention@1.0.0-beta.12
+  - @editablejs/plugin-table@1.0.0-beta.32
+
 ## 1.0.0-beta.42
 
 ### Patch Changes
