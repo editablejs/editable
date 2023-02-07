@@ -2,7 +2,7 @@ import { Editable, SelectionDrawing, Slot } from '@editablejs/editor'
 import { Editor, Range } from '@editablejs/models'
 import { Awareness } from '@editablejs/yjs-protocols/awareness'
 
-import { getAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
+import { withAwarenessSelection } from '@editablejs/yjs-protocols/awareness-selection'
 
 import { withProviderProtocol } from '@editablejs/protocols/provider'
 import { editorRangeToRelativeRange, relativeRangeToEditorRange } from '@editablejs/yjs-transform'
@@ -42,7 +42,7 @@ export function withYCursors<TCursorData extends CursorData, T extends Editor>(
   }: WithCursorsOptions<TCursorData> = {},
 ): T & YCursorEditor<TCursorData> {
   const e = editor as Editor & T & YCursorEditor<TCursorData>
-  const awarenessSelection = getAwarenessSelection(awareness, selectionStateField)
+  const awarenessSelection = withAwarenessSelection(awareness, selectionStateField)
 
   awarenessSelection.relativeSelectionToNativeSelection = selection => {
     if (Object.keys(selection).length !== 2) return null

@@ -107,7 +107,7 @@ export const createAwarenessSelection = (
   return awarenessSelection
 }
 
-export const getAwarenessSelection = (awareness: Awareness, field?: string) => {
+export const withAwarenessSelection = (awareness: Awareness, field?: string) => {
   let awarenessSelection = AWARENESS_WEAK_MAP.get(awareness)
 
   const selections: Record<string, AwarenessSelection> = awarenessSelection

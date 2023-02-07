@@ -4,7 +4,7 @@ import { Awareness } from '@editablejs/yjs-protocols/awareness'
 import {
   AwarenessSelection,
   AwarenessRelativeSelection,
-  getAwarenessSelection,
+  withAwarenessSelection,
 } from '@editablejs/yjs-protocols/awareness-selection'
 import { YSyncConfig, ySyncFacet } from './sync'
 import { CODEBLOCK_AWARENESS_FIELD, CODEBLOCK_AWARENESS_ID } from '../../constants'
@@ -29,7 +29,7 @@ export class YRemoteSelectionsPluginValue {
 
     this._awareness = this.conf.awareness
 
-    const awarenessSelection = getAwarenessSelection(this._awareness, CODEBLOCK_AWARENESS_FIELD)
+    const awarenessSelection = withAwarenessSelection(this._awareness, CODEBLOCK_AWARENESS_FIELD)
     const { relativeSelectionToNativeSelection, nativeSelectionToRelativeSelection } =
       awarenessSelection
 
