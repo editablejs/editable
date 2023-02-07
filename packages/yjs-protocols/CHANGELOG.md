@@ -1,5 +1,11 @@
 # @editablejs/yjs-protocols
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [`d90d640`](https://github.com/editablejs/editable/commit/d90d640a65909a8b06771285b4acf3dd20f3ddcf) Thanks [@big-camel](https://github.com/big-camel)! - getAwarenessSelection -> withAwarenessSelection
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
