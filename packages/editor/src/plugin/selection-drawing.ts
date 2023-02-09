@@ -96,11 +96,16 @@ export const SelectionDrawing = {
     if (Range.isCollapsed(range)) {
       const domRange = Editable.toDOMRange(editor, range)
       const clientRects = domRange.getClientRects()
-      rects = [clientRects[clientRects.length - 1]]
+      if (clientRects.length > 1) {
+        rects = [clientRects[clientRects.length - 1]]
+      } else {
+        rects = [domRange.getBoundingClientRect()]
+      }
     } else {
       rects = getLineRectsByRange(editor, range)
     }
 
+    console.log('rects2', rects)
     return relative
       ? rects.map(r => {
           const [x, y] = Editable.toRelativePosition(editor, r.left, r.top)
