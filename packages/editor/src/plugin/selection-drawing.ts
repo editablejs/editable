@@ -95,8 +95,8 @@ export const SelectionDrawing = {
     let rects: DOMRect[] = []
     if (Range.isCollapsed(range)) {
       const domRange = Editable.toDOMRange(editor, range)
-      const clientRects = domRange.getClientRects();
-      rects = [clientRects[clientRects.length - 1]];
+      const clientRects = domRange.getClientRects()
+      rects = [clientRects[clientRects.length - 1]]
     } else {
       rects = getLineRectsByRange(editor, range)
     }
