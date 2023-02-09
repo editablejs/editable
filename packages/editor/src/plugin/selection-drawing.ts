@@ -105,7 +105,6 @@ export const SelectionDrawing = {
       rects = getLineRectsByRange(editor, range)
     }
 
-    console.log('rects2', rects)
     return relative
       ? rects.map(r => {
           const [x, y] = Editable.toRelativePosition(editor, r.left, r.top)
