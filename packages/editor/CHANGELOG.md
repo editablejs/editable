@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.23
+
+### Patch Changes
+
+- [#82](https://github.com/editablejs/editable/pull/82) [`af0a5ae`](https://github.com/editablejs/editable/commit/af0a5aed6e688e0fe69bea3349cef643b8321d16) Thanks [@YaoKaiLun](https://github.com/YaoKaiLun)! - Fix incorrect caret position in iOS
+
 ## 1.0.0-beta.22
 
 ### Patch Changes
