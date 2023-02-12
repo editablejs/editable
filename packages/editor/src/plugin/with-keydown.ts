@@ -184,6 +184,44 @@ export const withKeydown = <T extends Editor>(editor: T) => {
       return
     }
 
+    if (Hotkeys.isMoveLineStart(event)) {
+      event.preventDefault()
+
+      const point = Editable.findLineEdgePoint(e)
+      if (point) {
+        Transforms.select(editor, point)
+      }
+
+      return
+    }
+
+    if (Hotkeys.isMoveLineEnd(event)) {
+      event.preventDefault()
+
+      const point = Editable.findLineEdgePoint(e, { edge: 'end' })
+      if (point) {
+        Transforms.select(editor, point)
+      }
+
+      return
+    }
+
+    if (Hotkeys.isMoveEditorStart(event)) {
+      event.preventDefault()
+
+      e.focus(true)
+
+      return
+    }
+
+    if (Hotkeys.isMoveEditorEnd(event)) {
+      event.preventDefault()
+
+      e.focus(false)
+
+      return
+    }
+
     if (Hotkeys.isSoftBreak(event)) {
       event.preventDefault()
       Editor.insertSoftBreak(editor)

@@ -722,6 +722,32 @@ export const Editable = {
     return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 0, top)
   },
 
+  findLineEdgePoint(
+    editor: Editor,
+    { at, edge = 'start' }: { at?: Range; edge?: 'start' | 'end' } = {},
+  ): Point | null {
+    const { selection } = editor
+    if (!at && selection) at = selection
+    if (!at) return null
+    const isStart = edge === 'start'
+    const point = isStart ? Range.start(at) : Range.end(at)
+    const range = Editable.toDOMRange(editor, {
+      anchor: point,
+      focus: point,
+    })
+    range.collapse(isStart)
+    const rects = range.getClientRects()
+    const rect = rects[rects.length - 1]
+    const bottom = rect.top + rect.height / 2
+    const block = Editor.above(editor, {
+      at: point,
+      match: n => Editor.isBlock(editor, n),
+    })
+    if (!block) return null
+    const domBlock = Editable.toDOMNode(editor, block[0])
+    return Editable.findClosestPoint(editor, domBlock, isStart ? -99999 : 99999, bottom)
+  },
+
   findNextLinePoint(editor: Editor, at?: Range): Point | null {
     const { selection } = editor
     if (!at && selection) at = selection
