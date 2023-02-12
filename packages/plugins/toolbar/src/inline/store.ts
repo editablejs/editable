@@ -33,13 +33,18 @@ export const useInlineToolbarItems = (editor: Editable) => {
   return useStore(store, state => state.items, shallow)
 }
 
-export const useInlineToolbarOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
+export const useInlineToolbarOpen = (
+  editor: Editable,
+): [boolean, (open: boolean | ((value: boolean) => boolean)) => void] => {
   const store = useInlineToolbarStore(editor)
   const open = useStore(store, state => state.open)
   return React.useMemo(
     () => [
       open,
-      (open: boolean) => {
+      (open: boolean | ((value: boolean) => boolean)) => {
+        if (typeof open === 'function') {
+          open = open(store.getState().open)
+        }
         InlineToolbar.setOpen(editor, open)
       },
     ],

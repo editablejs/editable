@@ -27,6 +27,7 @@ import { withInput } from './with-input'
 import { withKeydown } from './with-keydown'
 import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
+import { getWordRange } from '../utils/text'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -254,6 +255,51 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
   }
 
+  e.selectWord = (options = {}) => {
+    const { at, edge = 'focus' } = options
+    if (at) {
+      Transforms.select(e, at)
+    }
+    const { selection } = e
+    if (!selection) return
+    const point = ['focus', 'end'].includes(edge) ? Range.end(selection) : Range.start(selection)
+    const { text, offset } = Editable.findTextOffsetOnLine(e, point)
+    if (text) {
+      const { path } = point
+      const [startOffset, endOffset] = getWordRange(text, offset)
+      Transforms.select(e, {
+        anchor: Editable.findPointOnLine(e, path, startOffset, true),
+        focus: Editable.findPointOnLine(e, path, endOffset),
+      })
+      e.onSelectEnd()
+    }
+  }
+
+  e.selectLine = (options = {}) => {
+    const { at, edge = 'focus' } = options
+    if (at) {
+      Transforms.select(e, at)
+    }
+    const { selection } = e
+    if (!selection) return
+    const point = ['focus', 'end'].includes(edge) ? Range.end(selection) : Range.start(selection)
+    const { path } = point
+    const node = Node.get(e, path)
+    let linePath = path
+    if (!Editor.isBlock(e, node)) {
+      const block = Editor.above(e, {
+        match: n => Editor.isBlock(e, n),
+        at: path,
+      })
+
+      linePath = block?.[1] ?? path.slice(0, 1)
+    }
+
+    const range = Editor.range(e, linePath)
+    Transforms.select(e, range)
+    e.onSelectEnd()
+  }
+
   e.onKeyup = (event: KeyboardEvent) => {
     if (event.key.toLowerCase() === 'shift') {
       IS_SHIFT_PRESSED.set(editor, false)
@@ -284,6 +330,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.onSelectionChange = () => {
     e.emit('selectionchange')
+  }
+
+  e.onTouchHold = event => {
+    e.emit('touchhold', event)
   }
 
   e.onContextMenu = event => {

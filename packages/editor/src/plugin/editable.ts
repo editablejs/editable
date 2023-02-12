@@ -121,6 +121,11 @@ export interface DeserializeHtmlOptions {
   stripBreak?: true | ((text: string) => boolean)
 }
 
+export interface SelectWordOptions {
+  at?: Range
+  edge?: SelectionEdge
+}
+
 /**
  * A React and DOM-specific version of the `Editor` interface.
  */
@@ -129,6 +134,8 @@ export interface Editable extends Editor {
   focus(start?: boolean): void
   copy(range?: Range): void
   cut(range?: Range): void
+  selectWord: (options?: SelectWordOptions) => void
+  selectLine: (options?: SelectWordOptions) => void
   insertFromClipboard(at?: Range): void
   insertTextFromClipboard(at?: Range): void
   insertFile(file: File, at?: Range): void
@@ -151,6 +158,7 @@ export interface Editable extends Editor {
   onSelecting: () => void
   onSelectEnd: () => void
   onSelectionChange: () => void
+  onTouchHold: (event: TouchEvent) => void
   onContextMenu: (event: MouseEvent) => void
   onDestory: () => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes

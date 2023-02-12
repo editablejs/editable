@@ -181,6 +181,12 @@ export const ContentEditable = (props: EditableProps) => {
     if (IS_TOUCHMOVING.get(editor)) {
       handleDocumentMouseUp(event)
       IS_TOUCHING.set(editor, false)
+    } else if (IS_TOUCH_HOLD.get(editor)) {
+      IS_TOUCHING.set(editor, false)
+      IS_MOUSEDOWN.set(editor, false)
+      IS_TOUCH_HOLD.set(editor, false)
+      event.preventDefault()
+      editor.onTouchHold(event)
     }
   }
 
@@ -290,9 +296,11 @@ export const ContentEditable = (props: EditableProps) => {
       clearTouchHoldTimer()
       return
     }
-    IS_TOUCHMOVING.set(editor, isTouchEvent(event))
+    const isTouchMoving = isTouchEvent(event)
+    IS_TOUCHMOVING.set(editor, isTouchMoving)
 
     if (
+      !isTouchMoving &&
       !darg &&
       ((isMouseEvent(event) && event.button !== 0) ||
         !isMouseDown ||
@@ -315,7 +323,7 @@ export const ContentEditable = (props: EditableProps) => {
       return
     }
     // 阻止 touchmove 时页面滚动
-    if (isTouchEvent(event)) event.preventDefault()
+    if (isTouchMoving) event.preventDefault()
     const range = handleSelecting(point)
     if (range) editor.onSelecting()
   }
@@ -417,42 +425,19 @@ export const ContentEditable = (props: EditableProps) => {
       event.preventDefault()
       const container = Editable.toDOMNode(editor, editor)
       if (isDOMNode(event.target) && !container.contains(event.target)) return
-      const { focus } = selection
-      const { path: focusPath } = focus
-      const focusNode = Node.get(editor, focusPath)
       const isCollapsed = Range.isCollapsed(selection)
       if (count === 1 && !isCollapsed) {
         return false
       } else if (count === 2) {
-        const { text, offset } = Editable.findTextOffsetOnLine(editor, focus)
-        if (text) {
-          const [startOffset, endOffset] = getWordRange(text, offset)
-          Transforms.select(editor, {
-            anchor: Editable.findPointOnLine(editor, focusPath, startOffset, true),
-            focus: Editable.findPointOnLine(editor, focusPath, endOffset),
-          })
-          editor.onSelectEnd()
-          isDoubleClickRef.current = true
-          if (isDoubleClickTimerRef.current) clearTimeout(isDoubleClickTimerRef.current)
-          isDoubleClickTimerRef.current = setTimeout(() => {
-            isDoubleClickRef.current = false
-          }, 500)
-          return
-        }
+        editor.selectWord()
+        isDoubleClickRef.current = true
+        if (isDoubleClickTimerRef.current) clearTimeout(isDoubleClickTimerRef.current)
+        isDoubleClickTimerRef.current = setTimeout(() => {
+          isDoubleClickRef.current = false
+        }, 500)
+        return
       } else if (count === 3) {
-        let blockPath = focusPath
-        if (!Editor.isBlock(editor, focusNode)) {
-          const block = Editor.above(editor, {
-            match: n => Editor.isBlock(editor, n),
-            at: focusPath,
-          })
-
-          blockPath = block?.[1] ?? focusPath.slice(0, 1)
-        }
-
-        const range = Editor.range(editor, blockPath)
-        Transforms.select(editor, range)
-        editor.onSelectEnd()
+        editor.selectLine()
         isDoubleClickRef.current = false
         return false
       }
@@ -563,7 +548,7 @@ export const ContentEditable = (props: EditableProps) => {
   }
 
   const handleContextMenu = (event: React.MouseEvent) => {
-    editor.onContextMenu(event.nativeEvent)
+    if (!isTouchDevice) editor.onContextMenu(event.nativeEvent)
   }
 
   const cursor = React.useMemo(() => {
@@ -577,9 +562,10 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleAnchorTouchPointStart = React.useCallback(
     (event: React.TouchEvent) => {
+      event.stopPropagation()
       const { selection } = editor
       if (!selection) return
-      startPointRef.current = Range.isBackward(selection) ? selection.anchor : selection.focus
+      startPointRef.current = Range.end(selection)
       IS_MOUSEDOWN.set(editor, true)
       editor.onSelectStart()
     },
@@ -591,7 +577,7 @@ export const ContentEditable = (props: EditableProps) => {
       event.stopPropagation()
       const { selection } = editor
       if (!selection) return
-      startPointRef.current = Range.isBackward(selection) ? selection.focus : selection.anchor
+      startPointRef.current = Range.start(selection)
       IS_MOUSEDOWN.set(editor, true)
       editor.onSelectStart()
     },

@@ -46,11 +46,11 @@ export const isDOMEventHandled = <E extends Event>(
 }
 
 export const isTouchEvent = (event: any): event is TouchEvent => {
-  return typeof window.TouchEvent === 'object' && event instanceof TouchEvent
+  return typeof window.TouchEvent !== 'undefined' && event instanceof TouchEvent
 }
 
 export const isTouch = (event: any): event is Touch => {
-  return typeof window.Touch === 'object' && event instanceof Touch
+  return typeof window.Touch !== 'undefined' && event instanceof Touch
 }
 
 export const isMouseEvent = (event: any): event is MouseEvent => {

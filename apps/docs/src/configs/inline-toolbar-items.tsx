@@ -1,5 +1,5 @@
 import { Editable } from '@editablejs/editor'
-import { Grid } from '@editablejs/models'
+import { Editor, Grid, Range, Transforms } from '@editablejs/models'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
 import {
   HeadingEditor,
@@ -22,6 +22,24 @@ const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough']
 
 export const createInlineToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = []
+  const { selection } = editor
+  if (selection && Range.isCollapsed(selection)) {
+    items.push({
+      type: 'button',
+      children: 'Select',
+      onToggle: () => {
+        editor.selectWord()
+      },
+    })
+    items.push({
+      type: 'button',
+      children: 'Select All',
+      onToggle: () => {
+        Transforms.select(editor, Editor.range(editor, []))
+      },
+    })
+    return items
+  }
   const markItems: ToolbarItem[] = marks.map(mark => ({
     type: 'button',
     active: MarkEditor.isActive(editor, mark),

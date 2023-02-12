@@ -8,7 +8,7 @@ import {
   useLocale,
   useEditable,
 } from '@editablejs/editor'
-import { Range } from '@editablejs/models'
+import { Descendant, Range, Selection } from '@editablejs/models'
 import { Measurable, Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'
 import * as React from 'react'
 import { useInlineToolbarItems, useInlineToolbarOpen } from '../store'
@@ -32,40 +32,54 @@ export const InlineToolbar = () => {
     getBoundingClientRect: () => DOMRect.fromRect({ width: 0, height: 0, ...pointRef.current }),
   })
 
-  const handleSelectEnd = React.useCallback(() => {
+  const updatePoint = React.useCallback(() => {
     const { selection } = editor
-    if (selection && Range.isExpanded(selection)) {
-      let x = 0,
-        y = 0
+    if (!selection) return
+    let x = 0,
+      y = 0
 
-      const rects = SelectionDrawing.toRects(editor, selection, false)
-      const isBackward = Range.isBackward(selection)
-      if (rects.length > 0) {
-        const rect = isBackward ? rects[0] : rects[rects.length - 1]
-        x = isBackward ? rect.x : rect.right
-        y = isBackward ? rect.y : rect.bottom
-      } else {
-        const range = Editable.toDOMRange(editor, selection)
-        range.collapse(isBackward)
-        const rect = range.getBoundingClientRect()
-        if (rect.width === 0 || rect.height === 0) {
-          setOpen(false)
-          return
-        }
-        x = isBackward ? rect.x : rect.right
-        y = isBackward ? rect.y : rect.bottom
-      }
-
-      pointRef.current = {
-        x,
-        y,
-      }
-      setSide(isBackward ? 'top' : 'bottom')
-      setOpen(true)
+    const rects = SelectionDrawing.toRects(editor, selection, false)
+    const isBackward = Range.isBackward(selection)
+    if (rects.length > 0) {
+      const rect = isBackward ? rects[0] : rects[rects.length - 1]
+      x = isBackward ? rect.x : rect.right
+      y = isBackward ? rect.y : rect.bottom
     } else {
-      setOpen(false)
+      const range = Editable.toDOMRange(editor, selection)
+      range.collapse(isBackward)
+      const rect = range.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) {
+        setOpen(false)
+        return
+      }
+      x = isBackward ? rect.x : rect.right
+      y = isBackward ? rect.y : rect.bottom
     }
-  }, [editor, setOpen])
+
+    pointRef.current = {
+      x,
+      y,
+    }
+    setSide(isBackward ? 'top' : 'bottom')
+  }, [editor, setOpen, setSide])
+
+  const handleOpen = React.useCallback(
+    (force = false) => {
+      const { selection } = editor
+      if (selection && (Range.isExpanded(selection) || force)) {
+        updatePoint()
+        setOpen(value => {
+          if (value) {
+            document.dispatchEvent(new CustomEvent('refreshInlineToolbarPosition'))
+          }
+          return true
+        })
+      } else {
+        setOpen(false)
+      }
+    },
+    [editor, setOpen, updatePoint],
+  )
 
   const isRootMouseDown = React.useRef(false)
 
@@ -80,13 +94,13 @@ export const InlineToolbar = () => {
     }
   }, [editor, setOpen])
 
-  const [contentChanged, setContentChanged] = React.useState({})
+  const [contentChanged, setContentChanged] = React.useState<Descendant[]>([])
 
   React.useEffect(() => {
     if (!open) return
-    handleSelectEnd()
+    updatePoint()
     document.dispatchEvent(new CustomEvent('refreshInlineToolbarPosition'))
-  }, [open, contentChanged, handleSelectEnd])
+  }, [open, contentChanged, updatePoint])
 
   React.useEffect(() => {
     containerRef.current = Editable.toDOMNode(editor, editor)
@@ -101,28 +115,39 @@ export const InlineToolbar = () => {
     }
 
     const handleChange = () => {
-      setContentChanged({})
+      setContentChanged(editor.children)
     }
     root.addEventListener('mousedown', handleMouseDown)
     root.addEventListener('mouseup', handleMouseUp)
     rootRef.current = root
+
+    const handleSelectOpen = () => {
+      handleOpen()
+    }
+
+    const handleTouchHoldOpen = () => {
+      handleOpen(true)
+    }
+
     document.body.appendChild(root)
     editor.on('blur', handleSelectStart)
+    editor.on('touchhold', handleTouchHoldOpen)
     editor.on('selectstart', handleSelectStart)
-    editor.on('selectend', handleSelectEnd)
+    editor.on('selectend', handleSelectOpen)
     editor.on('selectionchange', handleSelectionChange)
     editor.on('change', handleChange)
     return () => {
       document.body.removeChild(root)
       editor.off('blur', handleSelectStart)
+      editor.on('touchhold', handleTouchHoldOpen)
       editor.off('selectstart', handleSelectStart)
-      editor.off('selectend', handleSelectEnd)
+      editor.off('selectend', handleSelectOpen)
       editor.off('selectionchange', handleSelectionChange)
       editor.off('change', handleChange)
       root.removeEventListener('mousedown', handleMouseDown)
       root.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [editor, handleSelectEnd, handleSelectStart, handleSelectionChange])
+  }, [editor, handleOpen, handleSelectStart, handleSelectionChange])
 
   const [active] = useSlotActive(InlineToolbar)
   useIsomorphicLayoutEffect(() => {

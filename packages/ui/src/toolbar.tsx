@@ -25,6 +25,7 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButton>(
               ${tw`text-primary bg-blue-100 border-blue-100 hover:bg-blue-100 hover:text-primary hover:border-blue-100`}
             }
           `,
+          children && tw`w-auto`,
         ]}
         data-active={active || undefined}
         onClick={onToggle}
