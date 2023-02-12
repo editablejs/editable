@@ -317,7 +317,13 @@ export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) 
   if (!anchorEntry || !focusEntry) return []
 
   const blockRects: DOMRect[] = []
-  const rectMap: Map<DOMRect, DOMElement> = new Map()
+  const rectMap: Map<
+    DOMRect,
+    {
+      dom: DOMElement
+      element: Element
+    }
+  > = new Map()
 
   let [startBlock, startPath] = anchorEntry
   let [_, endPath] = focusEntry
@@ -328,7 +334,10 @@ export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) 
     const [nextBlock, nextPath] = next as NodeEntry<Element>
     const element = Editable.toDOMNode(editor, nextBlock)
     const rect = element.getBoundingClientRect()
-    rectMap.set(rect, element)
+    rectMap.set(rect, {
+      dom: element,
+      element: nextBlock,
+    })
     blockRects.push(rect)
 
     if (Path.equals(nextPath, endPath)) break
@@ -383,15 +392,21 @@ export const getLineRectsByRange = (editor: Editor, range: Range, minWidth = 4) 
         (line.left >= r.left || Math.abs(line.left - r.left) < 1) &&
         (line.right <= r.right || Math.abs(line.right - r.right) < 1),
     )
-    const el = blockRect ? rectMap.get(blockRect) : null
+    const block = blockRect ? rectMap.get(blockRect) : null
 
     let width = line.right - line.left
-    if (el) {
-      const lineRect = matchHighest(editor, el, line.top, line.bottom)
+    if (block) {
+      const { dom, element } = block
+      const lineRect = matchHighest(editor, dom, line.top, line.bottom)
       line.top = lineRect.top
       line.height = lineRect.height
       // 空节点的宽度给个最小值
-      if (el && width < 1 && el.getBoundingClientRect().left === line.left) {
+      if (
+        dom &&
+        Editor.isEmpty(editor, element) &&
+        width < 1 &&
+        dom.getBoundingClientRect().left === line.left
+      ) {
         width = minWidth
       }
     }

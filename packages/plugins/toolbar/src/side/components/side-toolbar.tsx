@@ -155,7 +155,9 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
         ? findFirstElementChild(element)
         : element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
 
-      const rect = (!isVoid && textElement ? textElement : element).getBoundingClientRect()
+      const rects = (!isVoid && textElement ? textElement : element).getClientRects()
+      if (!rects.length) return delayHide()
+      const rect = rects[0]
       let { x, y, height } = rect
       const gridCell = GridCell.find(editor, point)
       if (gridCell) {

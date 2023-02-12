@@ -225,7 +225,7 @@ export const Editable = {
     if (!entry) return false
     const [block] = entry
     const rangeLines = getLineRectsByRange(editor, { anchor: point, focus: point })
-    if (rangeLines.length < 0) return false
+    if (rangeLines.length === 0) return false
     const rangeLine = rangeLines[0]
     const lines = getLineRectsByNode(editor, block)
     for (const line of lines) {
@@ -678,24 +678,27 @@ export const Editable = {
     const { selection } = editor
     if (!at && selection) at = selection
     if (!at) return null
-    const domRange = Editable.toDOMRange(editor, at)
-    const startRange = domRange.cloneRange()
-    startRange.collapse(true)
-    const endRange = domRange.cloneRange()
-    endRange.collapse(false)
-    const isBackward = Range.isBackward(at)
-    const startRect = (isBackward ? endRange : startRange).getClientRects()[0]
-    const endRect = (isBackward ? startRange : endRange).getClientRects()[0]
+    const startPoint = Range.start(at)
+    const endPoint = Range.end(at)
+    const startRange = Editable.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
+    const endRange = Editable.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
 
-    let blockEntry = Editor.above(editor, {
+    const startRects = startRange.getClientRects()
+    const endRects = endRange.getClientRects()
+
+    const block = Editor.above(editor, {
       at: at.focus,
       match: n => Editor.isBlock(editor, n),
     })
-    let top = endRect.top
+    let top = endRects[0].top
     let isFind = false
+
+    let isSameLine = true
+
+    let prevBlock = block
     let domBlock: DOMElement | null = null
-    while (blockEntry && !isFind) {
-      const [block, path] = blockEntry
+    while (prevBlock && !isFind) {
+      const [block, path] = prevBlock
       domBlock = Editable.toDOMNode(editor, block)
       const lowestElements = Editable.findLowestDOMElements(editor, block)
       for (let l = lowestElements.length - 1; l >= 0 && !isFind; l--) {
@@ -712,14 +715,20 @@ export const Editable = {
         }
       }
       if (!isFind) {
-        blockEntry = Editor.previous(editor, {
+        isSameLine = false
+        prevBlock = Editor.previous(editor, {
           at: path,
           match: n => Editor.isBlock(editor, n),
         })
       }
     }
     if (!domBlock) return null
-    return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 0, top)
+    return Editable.findClosestPoint(
+      editor,
+      domBlock,
+      isFind && !isSameLine ? startRects[0].x : 0,
+      top,
+    )
   },
 
   findLineEdgePoint(
@@ -752,21 +761,21 @@ export const Editable = {
     const { selection } = editor
     if (!at && selection) at = selection
     if (!at) return null
-    const domRange = Editable.toDOMRange(editor, at)
-    const startRange = domRange.cloneRange()
-    startRange.collapse(true)
-    const endRange = domRange.cloneRange()
-    endRange.collapse(false)
-    const isBackward = Range.isBackward(at)
-    const startRect = (isBackward ? endRange : startRange).getClientRects()[0]
-    const endRect = (isBackward ? startRange : endRange).getClientRects()[0]
+    const startPoint = Range.start(at)
+    const endPoint = Range.end(at)
+    const startRange = Editable.toDOMRange(editor, { anchor: startPoint, focus: startPoint })
+    const endRange = Editable.toDOMRange(editor, { anchor: endPoint, focus: endPoint })
+
+    const startRects = startRange.getClientRects()
+    const endRects = endRange.getClientRects()
 
     let blockEntry = Editor.above(editor, {
       at: at.focus,
       match: n => Editor.isBlock(editor, n),
     })
-    let bottom = endRect.bottom
+    let bottom = endRects[0].bottom
     let isFind = false
+    let isSameLine = true
     let domBlock: DOMElement | null = null
     while (blockEntry && !isFind) {
       const [block, path] = blockEntry
@@ -790,11 +799,17 @@ export const Editable = {
           at: path,
           match: n => Editor.isBlock(editor, n),
         })
+        isSameLine = false
       }
     }
     if (!domBlock) return null
 
-    return Editable.findClosestPoint(editor, domBlock, isFind ? startRect.x : 99999, bottom)
+    return Editable.findClosestPoint(
+      editor,
+      domBlock,
+      isFind && !isSameLine ? startRects[0].x : 99999,
+      bottom,
+    )
   },
 
   findTextOffsetOnLine(editor: Editor, point: Point) {

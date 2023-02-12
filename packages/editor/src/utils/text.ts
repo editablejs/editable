@@ -88,18 +88,29 @@ interface Segment {
   isWordLike: boolean
 }
 
+declare global {
+  interface Window {
+    Intl: {
+      Segmenter?: new (
+        locale?: string,
+        options?: { granularity: 'word' | 'sentence' | 'line' },
+      ) => {
+        segment: (text: string) => Iterable<Segment>
+      }
+    }
+  }
+}
+
 export const splitTextOfWord = (text: string, callback?: (segments: Segment[]) => Segment) => {
   // split word
-  const Segmenter = (Intl as any)['Segmenter']
-  if (typeof Segmenter === 'function') {
-    if (isIdeograph(text)) {
-      const segments: Segment[] = Array.from(
-        new Segmenter('cn', { granularity: 'word' }).segment(text),
-      )
-      if (segments.length > 0) {
-        const { segment, index } = callback ? callback(segments) : segments[segments.length - 1]
-        return { text: segment, offset: index }
-      }
+  const Segmenter = window.Intl.Segmenter
+  if (Segmenter && isIdeograph(text)) {
+    const segments: Segment[] = Array.from(
+      new Segmenter(undefined, { granularity: 'word' }).segment(text),
+    )
+    if (segments.length > 0) {
+      const { segment, index } = callback ? callback(segments) : segments[segments.length - 1]
+      return { text: segment, offset: index }
     }
   }
   return { text, offset: 0 }
@@ -223,17 +234,18 @@ export const getTextOffset = (
     } catch (e) {
       return start
     }
-    const rect = range.getClientRects()[0]
-    if (!rect) {
+    const rects = range.getClientRects()
+    if (rects.length === 0) {
       return start
     }
-
-    if (y < rect.top) {
-      return getTextOffset(node, x, y, start, mid, length)
-    } else if (y > rect.bottom) {
-      return getTextOffset(node, x, y, mid, end, length)
-    } else if (x <= rect.left + rect.width) {
-      return getTextOffset(node, x, y, start, mid, length)
+    for (const rect of rects) {
+      if (y < rect.top) {
+        return getTextOffset(node, x, y, start, mid, length)
+      } else if (y > rect.bottom) {
+        return getTextOffset(node, x, y, mid, end, length)
+      } else if (x <= rect.left + rect.width) {
+        return getTextOffset(node, x, y, start, mid, length)
+      }
     }
     return getTextOffset(node, x, y, mid, end, length)
   }
@@ -244,17 +256,18 @@ export const getTextOffset = (
   } catch (err) {
     return rStart
   }
-  const rects = Array.from(range.getClientRects())
-  const rect = rects.find(r => r.width > 0) || rects[0]
-  if (!rect) {
-    return rStart
-  } else if (y < rect.top) {
-    return rStart
-  } else if (y > rect.bottom) {
-    return rEnd
-  } else if (x <= rect.left + rect.width / 2) {
-    return rStart
-  } else {
-    return rEnd
+  const rects = range.getClientRects()
+  if (rects.length === 0) return rStart
+
+  for (const rect of rects) {
+    if (rect.width === 0) continue
+    if (y < rect.top) {
+      return rStart
+    } else if (y > rect.bottom) {
+      return rEnd
+    } else if (x <= rect.left + rect.width / 2) {
+      return rStart
+    }
   }
+  return rEnd
 }
