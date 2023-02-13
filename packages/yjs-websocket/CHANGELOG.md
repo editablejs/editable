@@ -1,5 +1,13 @@
 # @editablejs/plugin-yjs-websocket
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [[`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd)]:
+  - @editablejs/models@1.0.0-beta.3
+  - @editablejs/yjs-transform@1.0.0-beta.3
+
 ## 1.0.0-beta.3
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @editablejs/editor
 
+## 1.0.0-beta.25
+
+### Patch Changes
+
+- [`ea51ee7`](https://github.com/editablejs/editable/commit/ea51ee7c873f7272076a53b35e085aec1a2865ce) Thanks [@big-camel](https://github.com/big-camel)! - Add the `scrollIntoView` method to `Editable`
+
+* [`7350f1b`](https://github.com/editablejs/editable/commit/7350f1b0bbd33a4f0815b11dcb765b4c2de1924e) Thanks [@big-camel](https://github.com/big-camel)! - Optimized mobile touch behavior
+
+- [`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd) Thanks [@big-camel](https://github.com/big-camel)! - Refactor read-only
+
+- Updated dependencies [[`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd)]:
+  - @editablejs/models@1.0.0-beta.3
+  - @editablejs/deserializer@1.0.0-beta.4
+  - @editablejs/serializer@1.0.0-beta.3
+
 ## 1.0.0-beta.24
 
 ### Major Changes
