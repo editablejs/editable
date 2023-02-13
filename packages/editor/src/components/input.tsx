@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Editable } from '../plugin/editable'
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT } from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
-import { ShadowRect } from './shadow'
+import { ShadowBlock, ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { useEditableStatic } from '../hooks/use-editable'
 import {
@@ -12,16 +12,33 @@ import {
 } from '../hooks/use-selection-drawing'
 import { ReadOnly, useReadOnly } from '../hooks/use-read-only'
 import { composeEventHandlers } from '../utils/event'
+import { useEffect } from 'react'
 
-interface InputProps {}
+interface InputProps {
+  autoFocus?: boolean
+}
 
-const InputComponent: React.FC<InputProps> = () => {
+const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
   const editor = useEditableStatic()
-
+  const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const [focused, setFocused] = useFocused()
   const [readOnly] = useReadOnly()
 
   const [rect, setRect] = React.useState<ShadowRect | null>(null)
+
+  useIsomorphicLayoutEffect(() => {
+    if (inputRef.current) EDITOR_TO_INPUT.set(editor, inputRef.current)
+    return () => {
+      EDITOR_TO_INPUT.delete(editor)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (autoFocus) {
+      editor.focus()
+      Editable.scrollIntoView(editor)
+    }
+  }, [editor, autoFocus])
 
   const handleKeydown = (event: React.KeyboardEvent) => {
     const { nativeEvent } = event
@@ -110,16 +127,12 @@ const InputComponent: React.FC<InputProps> = () => {
   }, [focused, rects, selection])
 
   return (
-    <ShadowRect
+    <ShadowBlock
       rect={Object.assign({}, rect, { color: 'transparent', width: 1 })}
       style={{ opacity: 0, outline: 'none', caretColor: 'transparent', overflow: 'hidden' }}
     >
       <textarea
-        ref={current => {
-          if (current) {
-            EDITOR_TO_INPUT.set(editor, current)
-          } else EDITOR_TO_INPUT.delete(editor)
-        }}
+        ref={inputRef}
         rows={1}
         style={{
           fontSize: 'inherit',
@@ -132,7 +145,6 @@ const InputComponent: React.FC<InputProps> = () => {
           resize: 'vertical',
         }}
         readOnly={readOnly}
-        autoFocus={true}
         onKeyDown={handleKeydown}
         onKeyUp={handleKeyup}
         onBeforeInput={handleBeforeInput}
@@ -143,7 +155,7 @@ const InputComponent: React.FC<InputProps> = () => {
         onFocus={handleFocus}
         onPaste={handlePaste}
       />
-    </ShadowRect>
+    </ShadowBlock>
   )
 }
 

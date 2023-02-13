@@ -53,6 +53,7 @@ import {
 } from '../utils/constants'
 import { getNativeEvent, isTouch } from '../utils/event'
 import { ReadOnly } from '../hooks/use-read-only'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -266,7 +267,7 @@ export const Editable = {
   },
 
   /**
-   * Find a key for a Slate node.
+   * Find a key for a Editor node.
    */
 
   findKey(editor: Editor, node: Node): Key {
@@ -281,7 +282,7 @@ export const Editable = {
   },
 
   /**
-   * Find the path of Slate node.
+   * Find the path of Editor node.
    */
 
   findPath(editor: Editor, node: Node): Path {
@@ -309,7 +310,7 @@ export const Editable = {
       child = parent
     }
 
-    throw new Error(`Unable to find the path for Slate node: ${Scrubber.stringify(node)}`)
+    throw new Error(`Unable to find the path for Editor node: ${Scrubber.stringify(node)}`)
   },
 
   /**
@@ -394,7 +395,7 @@ export const Editable = {
   },
 
   /**
-   * Find the native DOM element from a Slate node.
+   * Find the native DOM element from a Editor node.
    */
 
   toDOMNode(editor: Editor, node: Node): HTMLElement {
@@ -404,14 +405,14 @@ export const Editable = {
       : KEY_TO_ELEMENT?.get(Editable.findKey(editor, node))
 
     if (!offsetNode) {
-      throw new Error(`Cannot resolve a DOM node from Slate node: ${Scrubber.stringify(node)}`)
+      throw new Error(`Cannot resolve a DOM node from Editor node: ${Scrubber.stringify(node)}`)
     }
 
     return offsetNode
   },
 
   /**
-   * Find a native DOM selection point from a Slate point.
+   * Find a native DOM selection point from a Editor point.
    */
   toDOMPoint(editor: Editor, point: Point): DOMPoint {
     const [node] = Editor.node(editor, point.path)
@@ -453,21 +454,20 @@ export const Editable = {
     }
 
     if (!domPoint) {
-      throw new Error(`Cannot resolve a DOM point from Slate point: ${Scrubber.stringify(point)}`)
+      throw new Error(`Cannot resolve a DOM point from Editor point: ${Scrubber.stringify(point)}`)
     }
 
     return domPoint
   },
 
   /**
-   * Find a native DOM range from a Slate `range`.
+   * Find a native DOM range from a Editor `range`.
    *
-   * Notice: the returned range will always be ordinal regardless of the direction of Slate `range` due to DOM API limit.
+   * Notice: the returned range will always be ordinal regardless of the direction of Editor `range` due to DOM API limit.
    *
    * there is no way to create a reverse DOM Range using Range.setStart/setEnd
    * according to https://dom.spec.whatwg.org/#concept-range-bp-set.
    */
-
   toDOMRange(editor: Editor, range: Range): DOMRange {
     const { anchor, focus } = range
     const isBackward = Range.isBackward(range)
@@ -479,7 +479,7 @@ export const Editable = {
     const [startNode, startOffset] = isBackward ? domFocus : domAnchor
     const [endNode, endOffset] = isBackward ? domAnchor : domFocus
 
-    // A slate Point at zero-width Leaf always has an offset of 0 but a native DOM selection at
+    // A editor Point at zero-width Leaf always has an offset of 0 but a native DOM selection at
     // zero-width node has an offset of 1 so we have to check if we are in a zero-width node and
     // adjust the offset accordingly.
     const startEl = (isDOMElement(startNode) ? startNode : startNode.parentElement) as HTMLElement
@@ -493,10 +493,9 @@ export const Editable = {
   },
 
   /**
-   * Find a Slate node from a native DOM `element`.
+   * Find a Editor node from a native DOM `element`.
    */
-
-  toSlateNode(editor: Editor, offsetNode: DOMNode): Node {
+  toEditorNode(editor: Editor, offsetNode: DOMNode): Node {
     let domEl = isDOMElement(offsetNode) ? offsetNode : offsetNode.parentElement
 
     if (domEl && !domEl.hasAttribute(DATA_EDITABLE_NODE)) {
@@ -506,7 +505,7 @@ export const Editable = {
     const node = domEl ? ELEMENT_TO_NODE.get(domEl as HTMLElement) : null
 
     if (!node) {
-      throw new Error(`Cannot resolve a Slate node from DOM node: ${domEl}`)
+      throw new Error(`Cannot resolve a Editor node from DOM node: ${domEl}`)
     }
 
     return node
@@ -544,7 +543,7 @@ export const Editable = {
         addToElements(node)
       }
     } else {
-      const node = Editable.toSlateNode(editor, element)
+      const node = Editable.toEditorNode(editor, element)
       if (Text.isText(node) || Editor.isVoid(editor, node)) {
         addToElements(node)
       } else {
@@ -631,7 +630,7 @@ export const Editable = {
       }
     }
     if (!offsetNode) return null
-    const node = Editable.toSlateNode(editor, offsetNode)
+    const node = Editable.toEditorNode(editor, offsetNode)
     if (Text.isText(node)) {
       const path = Editable.findPath(editor, node)
       if (node.text.length === 0) {
@@ -656,7 +655,7 @@ export const Editable = {
         offset: startOffset + offset,
       }
     } else if (Element.isElement(node)) {
-      const point = Editable.toSlatePoint(editor, [offsetNode, 0], {
+      const point = Editable.toEditorPoint(editor, [offsetNode, 0], {
         exactMatch: false,
         suppressThrow: true,
       })
@@ -673,7 +672,7 @@ export const Editable = {
     const { clientX: x, clientY: y } = event
 
     if (x == null || y == null) {
-      throw new Error(`Cannot resolve a Slate range from a DOM event: ${event}`)
+      throw new Error(`Cannot resolve a Editor range from a DOM event: ${event}`)
     }
     let target = event.target
     if (isTouch(event)) {
@@ -830,7 +829,7 @@ export const Editable = {
       offset: 0,
     }
     if (!blockEntry) {
-      throw new Error(`Cannot resolve a Slate block from a point: ${point}`)
+      throw new Error(`Cannot resolve a Editor block from a point: ${point}`)
     }
     const textNodes = Node.texts(blockEntry[0])
     let isFindOffset = false
@@ -858,7 +857,7 @@ export const Editable = {
       at: path,
     })
     if (!blockEntry) {
-      throw new Error(`Cannot resolve a Slate block from a path: ${path}`)
+      throw new Error(`Cannot resolve a Editor block from a path: ${path}`)
     }
     const textNodes = Node.texts(blockEntry[0])
     let findOffset = 0
@@ -893,10 +892,9 @@ export const Editable = {
   },
 
   /**
-   * Find a Slate point from a DOM selection's `offsetNode` and `domOffset`.
+   * Find a Editor point from a DOM selection's `offsetNode` and `domOffset`.
    */
-
-  toSlatePoint<T extends boolean>(
+  toEditorPoint<T extends boolean>(
     editor: Editor,
     domPoint: DOMPoint,
     options: {
@@ -973,7 +971,7 @@ export const Editable = {
       if (
         offsetNode &&
         offset === offsetNode.textContent!.length &&
-        // COMPAT: If the parent node is a Slate zero-width space, editor is
+        // COMPAT: If the parent node is a Editor zero-width space, editor is
         // because the text node should have no characters. However, during IME
         // composition the ASCII characters will be prepended to the zero-width
         // space, so subtract 1 from the offset to account for the zero-width
@@ -992,22 +990,21 @@ export const Editable = {
       if (suppressThrow) {
         return null as T extends true ? Point | null : Point
       }
-      throw new Error(`Cannot resolve a Slate point from DOM point: ${domPoint}`)
+      throw new Error(`Cannot resolve a Editor point from DOM point: ${domPoint}`)
     }
 
-    // COMPAT: If someone is clicking from one Slate editor into another,
+    // COMPAT: If someone is clicking from one Editor editor into another,
     // the select event fires twice, once for the old editor's `element`
     // first, and then afterwards for the correct `element`. (2017/03/03)
-    const slateNode = Editable.toSlateNode(editor, textNode!)
-    const path = Editable.findPath(editor, slateNode)
+    const editorNode = Editable.toEditorNode(editor, textNode!)
+    const path = Editable.findPath(editor, editorNode)
     return { path, offset } as T extends true ? Point | null : Point
   },
 
   /**
-   * Find a Slate range from a DOM range or selection.
+   * Find a Editor range from a DOM range or selection.
    */
-
-  toSlateRange<T extends boolean>(
+  toEditorRange<T extends boolean>(
     editor: Editor,
     domRange: DOMRange | DOMStaticRange | DOMSelection,
     options: {
@@ -1050,10 +1047,10 @@ export const Editable = {
     }
 
     if (anchorNode == null || focusNode == null || anchorOffset == null || focusOffset == null) {
-      throw new Error(`Cannot resolve a Slate range from DOM range: ${domRange}`)
+      throw new Error(`Cannot resolve a Editor range from DOM range: ${domRange}`)
     }
 
-    const anchor = Editable.toSlatePoint(editor, [anchorNode, anchorOffset], {
+    const anchor = Editable.toEditorPoint(editor, [anchorNode, anchorOffset], {
       exactMatch,
       suppressThrow,
     })
@@ -1063,7 +1060,7 @@ export const Editable = {
 
     const focus = isCollapsed
       ? anchor
-      : Editable.toSlatePoint(editor, [focusNode, focusOffset], {
+      : Editable.toEditorPoint(editor, [focusNode, focusOffset], {
           exactMatch,
           suppressThrow,
         })
@@ -1099,5 +1096,14 @@ export const Editable = {
     const container = Editable.toDOMNode(editor, editor)
     const rootRect = container.getBoundingClientRect()
     return [x + rootRect.left, y + rootRect.top]
+  },
+
+  scrollIntoView(editor: Editor, range = editor.selection) {
+    if (!range) return
+    const domRange = Editable.toDOMRange(editor, range)
+    const focusEl = domRange.endContainer.parentElement!
+    scrollIntoView(focusEl, {
+      scrollMode: 'if-needed',
+    })
   },
 }

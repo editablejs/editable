@@ -11,12 +11,12 @@ export interface ShadowRect {
   style?: React.CSSProperties
 }
 
-type ShadowRectProps = {
+type ShadowBlockProps = {
   rect: ShadowRect
 } & React.HTMLAttributes<HTMLDivElement>
 
-export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<HTMLDivElement>> =
-  React.forwardRef<HTMLDivElement, ShadowRectProps>(({ children, rect, style, ...props }, ref) => (
+export const ShadowBlockDefault: React.FC<ShadowBlockProps & React.RefAttributes<HTMLDivElement>> =
+  React.forwardRef<HTMLDivElement, ShadowBlockProps>(({ children, rect, style, ...props }, ref) => (
     <div
       ref={ref}
       style={{
@@ -38,9 +38,9 @@ export const ShadowRectDefault: React.FC<ShadowRectProps & React.RefAttributes<H
     </div>
   ))
 
-ShadowRectDefault.displayName = 'ShadowRect'
+ShadowBlockDefault.displayName = 'ShadowBlock'
 
-export const ShadowRect = React.memo(ShadowRectDefault, (prev, next) => {
+export const ShadowBlock = React.memo(ShadowBlockDefault, (prev, next) => {
   return (
     prev.rect.left === next.rect.left &&
     prev.rect.top === next.rect.top &&
@@ -51,32 +51,31 @@ export const ShadowRect = React.memo(ShadowRectDefault, (prev, next) => {
   )
 })
 
-interface ShadowProps {
+interface ShadowContainerProps {
   children?: React.ReactNode
 }
 
-const Shadow: React.FC<ShadowProps & React.RefAttributes<ShadowRoot>> = React.forwardRef<
-  ShadowRoot,
-  ShadowProps
->(({ children }, ref) => {
-  const [root, setRoot] = React.useState<ShadowRoot>()
-  const containerRef = React.useRef<HTMLDivElement>(null)
+const ShadowContainer: React.FC<ShadowContainerProps & React.RefAttributes<ShadowRoot>> =
+  React.forwardRef<ShadowRoot, ShadowContainerProps>(({ children }, ref) => {
+    const [root, setRoot] = React.useState<ShadowRoot>()
+    const containerRef = React.useRef<HTMLDivElement>(null)
 
-  useIsomorphicLayoutEffect(() => {
-    if (!containerRef.current || containerRef.current.shadowRoot) return
-    const root = containerRef.current.attachShadow({ mode: 'open' })
-    setRoot(root)
-  }, [])
+    useIsomorphicLayoutEffect(() => {
+      if (!containerRef.current || containerRef.current.shadowRoot) return
+      const root = containerRef.current.attachShadow({ mode: 'open' })
+      setRoot(root)
+    }, [])
 
-  React.useImperativeHandle(ref, () => root!, [root])
+    React.useImperativeHandle(ref, () => root!, [root])
 
-  return (
-    <div ref={containerRef} style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
-      {root && ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{children}</div>, root)}
-    </div>
-  )
-})
+    return (
+      <div ref={containerRef} style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
+        {root &&
+          ReactDOM.createPortal(<div style={{ pointerEvents: 'none' }}>{children}</div>, root)}
+      </div>
+    )
+  })
 
-Shadow.displayName = 'Shadow'
+ShadowContainer.displayName = 'Shadow'
 
-export default Shadow
+export default ShadowContainer

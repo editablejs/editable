@@ -5,7 +5,7 @@ import { useEditableStatic } from '../hooks/use-editable'
 import { useSelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { Editable } from '../plugin/editable'
 import { SelectionDrawing } from '../plugin/selection-drawing'
-import { ShadowRect } from './shadow'
+import { ShadowBlock } from './shadow'
 
 export const DragCaretComponent = React.memo(() => {
   const editor = useEditableStatic()
@@ -65,7 +65,7 @@ export const DragCaretComponent = React.memo(() => {
   if (!rects || rects.length === 0) return null
   if (dragType === 'block') {
     return (
-      <ShadowRect
+      <ShadowBlock
         rect={Object.assign({}, rects[0].toJSON(), {
           color: dragColor,
         })}
@@ -73,7 +73,7 @@ export const DragCaretComponent = React.memo(() => {
     )
   }
   return (
-    <ShadowRect
+    <ShadowBlock
       rect={Object.assign({}, rects[0].toJSON(), {
         width: caretWidth,
         color: dragColor,

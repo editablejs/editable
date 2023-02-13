@@ -10,7 +10,7 @@ import {
 } from '../hooks/use-selection-drawing'
 import { isTouchDevice } from '../utils/environment'
 import { IS_TOUCHING, IS_TOUCHMOVING } from '../utils/weak-maps'
-import { ShadowRect } from './shadow'
+import { ShadowBlock } from './shadow'
 
 interface TouchPointProps {
   onAnchorTouchStart?: (e: React.TouchEvent) => void
@@ -50,7 +50,7 @@ const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
 
     return (
       <>
-        <ShadowRect
+        <ShadowBlock
           rect={Object.assign({}, anchor.toJSON(), {
             color: style.dragColor,
             width: 2,
@@ -68,8 +68,8 @@ const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
               left: -5,
             }}
           />
-        </ShadowRect>
-        <ShadowRect
+        </ShadowBlock>
+        <ShadowBlock
           rect={Object.assign({}, focus.toJSON(), {
             color: style.dragColor,
             width: 2,
@@ -87,7 +87,7 @@ const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
               right: -5,
             }}
           />
-        </ShadowRect>
+        </ShadowBlock>
       </>
     )
   },

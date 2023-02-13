@@ -4,7 +4,6 @@ import { useEditableStatic } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { IS_MOUSEDOWN } from '../utils/weak-maps'
-import { ShadowRect } from './shadow'
 import {
   useSelectionDrawingEnabled,
   useSelectionDrawingRects,
@@ -13,6 +12,7 @@ import {
 } from '../hooks/use-selection-drawing'
 import { isTouchDevice } from '../utils/environment'
 import { useReadOnly } from '../hooks/use-read-only'
+import { ShadowBlock } from './shadow'
 
 interface CaretProps {
   timeout?: number | false
@@ -80,7 +80,7 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   if (!enabled || readOnly) return null
 
   return (
-    <ShadowRect
+    <ShadowBlock
       rect={
         rect
           ? Object.assign({}, rect, { width: caretWidth, color: caretColor })

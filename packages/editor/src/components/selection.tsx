@@ -7,7 +7,7 @@ import {
   useSelectionDrawingEnabled,
   useSelectionDrawingStyle,
 } from '../hooks/use-selection-drawing'
-import { ShadowRect } from './shadow'
+import { ShadowBlock } from './shadow'
 
 interface SelectionProps {}
 
@@ -23,7 +23,7 @@ const SelectionComponent: React.FC<SelectionProps> = () => {
     <>
       {rects.map((rect, index) => {
         return (
-          <ShadowRect
+          <ShadowBlock
             key={`sel-${index}`}
             rect={Object.assign({}, rect.toJSON(), {
               color: focused ? style.focusColor : style.blurColor,

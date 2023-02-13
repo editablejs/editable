@@ -24,7 +24,7 @@ export const TableCellEditor = {
     if (!el) return null
     const tdEl = el.closest('td')
     if (!tdEl) return null
-    const slateNode = Editable.toSlateNode(editor, tdEl)
+    const slateNode = Editable.toEditorNode(editor, tdEl)
     if (TableCellEditor.isTableCell(editor, slateNode)) return slateNode
     return null
   },

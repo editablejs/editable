@@ -7,11 +7,9 @@ import {
   Path,
   Element,
   DOMNode,
-  DOMRange,
   getDefaultView,
   isDOMNode,
 } from '@editablejs/models'
-import scrollIntoView from 'scroll-into-view-if-needed'
 
 import useChildren from '../hooks/use-children'
 import { useEditable, useEditableStatic } from '../hooks/use-editable'
@@ -33,7 +31,7 @@ import {
 } from '../utils/weak-maps'
 import { useMultipleClick } from '../hooks/use-multiple-click'
 import { Focused, useFocused } from '../hooks/use-focused'
-import Shadow from './shadow'
+import ShadowContainer from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
 import { InputComponent } from './input'
@@ -71,7 +69,6 @@ export type EditableProps = {
   placeholder?: string
   role?: string
   style?: React.CSSProperties
-  scrollSelectionIntoView?: (editor: Editable, domRange: DOMRange) => void
   as?: React.ElementType
   selectionDrawingStyle?: SelectionDrawingStyle
 }
@@ -81,11 +78,10 @@ export type EditableProps = {
  */
 export const ContentEditable = (props: EditableProps) => {
   const {
-    autoFocus,
+    autoFocus = true,
     placeholder,
     readOnly: readOnlyProp = false,
     lang,
-    scrollSelectionIntoView = defaultScrollSelectionIntoView,
     style = {},
     as: Component = 'div',
     selectionDrawingStyle: selectionDrawingStyleProp,
@@ -105,12 +101,6 @@ export const ContentEditable = (props: EditableProps) => {
 
   // Touch hold timer
   const touchHoldTimer = React.useRef<number | null>(null)
-
-  React.useEffect(() => {
-    if (autoFocus) {
-      editor.focus()
-    }
-  }, [editor, autoFocus])
 
   React.useEffect(() => {
     if (placeholder && !readOnly) {
@@ -346,7 +336,7 @@ export const ContentEditable = (props: EditableProps) => {
     IS_TOUCHING.set(editor, true)
     IS_TOUCH_HOLD.set(editor, false)
     clearTouchHoldTimer()
-    // touch 应该延迟选中
+    // touch hold
     touchHoldTimer.current = setTimeout(() => {
       IS_TOUCH_HOLD.set(editor, true)
 
@@ -505,7 +495,7 @@ export const ContentEditable = (props: EditableProps) => {
         window?.removeEventListener('mousemove', handleDocumentMouseMove)
       }
     }
-  })
+  }, [editor, handleDocumentMouseDown, handleDocumentMouseMove, handleDocumentMouseUp])
 
   React.useEffect(() => {
     // 在拖拽完成后触发onSelectEnd，否则内容可能还未渲染完毕
@@ -634,12 +624,12 @@ export const ContentEditable = (props: EditableProps) => {
       >
         <Children renderPlaceholder={renderPlaceholder} />
       </Component>
-      <Shadow ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
+      <ShadowContainer ref={current => EDITOR_TO_SHADOW.set(editor, current)}>
         <CaretComponent />
         <DragCaretComponent />
         <SelectionComponent />
-        <InputComponent />
-      </Shadow>
+        <InputComponent autoFocus={autoFocus} />
+      </ShadowContainer>
       <TouchPointComponent
         onAnchorTouchStart={handleAnchorTouchPointStart}
         onFocusTouchStart={handleFocusTouchPointStart}
@@ -647,20 +637,4 @@ export const ContentEditable = (props: EditableProps) => {
       {rendered && <Slots />}
     </div>
   )
-}
-
-/**
- * A default implement to scroll dom range into view.
- */
-const defaultScrollSelectionIntoView = (editor: Editable, domRange: DOMRange) => {
-  // This was affecting the selection of multiple blocks and dragging behavior,
-  // so enabled only if the selection has been collapsed.
-  if (!editor.selection || (editor.selection && Range.isCollapsed(editor.selection))) {
-    const leafEl = domRange.startContainer.parentElement!
-    leafEl.getBoundingClientRect = domRange.getBoundingClientRect.bind(domRange)
-    scrollIntoView(leafEl, {
-      scrollMode: 'if-needed',
-    })
-    delete (leafEl as any).getBoundingClientRect
-  }
 }

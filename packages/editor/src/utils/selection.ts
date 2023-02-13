@@ -211,7 +211,7 @@ const matchHighest = (editor: Editor, element: DOMElement, top: number, bottom: 
     for (const child of element.childNodes) {
       if (isDOMElement(child)) {
         const hasNode = child.hasAttribute(DATA_EDITABLE_NODE)
-        const node = hasNode ? Editable.toSlateNode(editor, child) : null
+        const node = hasNode ? Editable.toEditorNode(editor, child) : null
         if (node) {
           if (Element.isElement(node)) {
             if (editor.isVoid(node)) {
