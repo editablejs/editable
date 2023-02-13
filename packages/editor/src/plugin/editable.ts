@@ -25,7 +25,6 @@ import {
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
-  IS_READ_ONLY,
   NODE_TO_INDEX,
   NODE_TO_KEY,
   NODE_TO_PARENT,
@@ -53,6 +52,7 @@ import {
   DATA_EDITABLE_ZERO_WIDTH,
 } from '../utils/constants'
 import { getNativeEvent, isTouch } from '../utils/event'
+import { ReadOnly } from '../hooks/use-read-only'
 
 export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
 
@@ -333,7 +333,7 @@ export const Editable = {
   /**
    * Check if the editor is focused.
    */
-  isFocused(editor: Editable): boolean {
+  isFocused(editor: Editor): boolean {
     return Focused.is(editor)
   },
 
@@ -342,7 +342,7 @@ export const Editable = {
    */
 
   isReadOnly(editor: Editor): boolean {
-    return !!IS_READ_ONLY.get(editor)
+    return ReadOnly.is(editor)
   },
 
   /**

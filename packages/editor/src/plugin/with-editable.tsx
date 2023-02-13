@@ -28,6 +28,7 @@ import { withKeydown } from './with-keydown'
 import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
+import { ReadOnly } from '../hooks/use-read-only'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -205,8 +206,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
         prevAnchorNode = e.selection ? Node.get(e, e.selection.anchor.path) : null
         prevFocusNode = e.selection ? Node.get(e, e.selection.focus.path) : null
       }
+      const isReadOnly = Editable.isReadOnly(e)
       Placeholder.clearCurrent(e)
-      if (e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {
+      if (!isReadOnly && e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {
         const nodes = Editor.nodes(e, {
           at: e.selection,
         })
@@ -216,7 +218,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
             break
           }
         }
-      } else if (Editor.isEmpty(e, e)) {
+      } else if (!isReadOnly && Editor.isEmpty(e, e)) {
         Placeholder.setCurrent(e, [e, []])
       }
 

@@ -23,21 +23,32 @@ const marks: MarkFormat[] = ['bold', 'italic', 'underline', 'strikethrough']
 export const createInlineToolbarItems = (editor: Editable) => {
   const items: ToolbarItem[] = []
   const { selection } = editor
-  if (selection && Range.isCollapsed(selection)) {
-    items.push({
-      type: 'button',
-      children: 'Select',
-      onToggle: () => {
-        editor.selectWord()
-      },
-    })
-    items.push({
-      type: 'button',
-      children: 'Select All',
-      onToggle: () => {
-        Transforms.select(editor, Editor.range(editor, []))
-      },
-    })
+  const isCollapsed = selection && Range.isCollapsed(selection)
+  if (isCollapsed || Editable.isReadOnly(editor)) {
+    if (isCollapsed) {
+      items.push({
+        type: 'button',
+        children: 'Select',
+        onToggle: () => {
+          editor.selectWord()
+        },
+      })
+      items.push({
+        type: 'button',
+        children: 'Select All',
+        onToggle: () => {
+          Transforms.select(editor, Editor.range(editor, []))
+        },
+      })
+    } else if (Editable.isReadOnly(editor)) {
+      items.push({
+        type: 'button',
+        children: 'Copy',
+        onToggle() {
+          editor.copy()
+        },
+      })
+    }
     return items
   }
   const markItems: ToolbarItem[] = marks.map(mark => ({

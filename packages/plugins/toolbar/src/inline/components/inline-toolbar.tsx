@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {
   Editable,
   useEditableStatic,
@@ -6,11 +7,11 @@ import {
   useSlotActive,
   useIsomorphicLayoutEffect,
   useLocale,
-  useEditable,
+  useReadOnly,
 } from '@editablejs/editor'
-import { Descendant, Range, Selection } from '@editablejs/models'
+import { Descendant, Range } from '@editablejs/models'
 import { Measurable, Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'
-import * as React from 'react'
+
 import { useInlineToolbarItems, useInlineToolbarOpen } from '../store'
 import { Toolbar } from '../../components/toolbar'
 import { InlineToolbarLocale } from '../locale'
@@ -139,7 +140,7 @@ export const InlineToolbar = () => {
     return () => {
       document.body.removeChild(root)
       editor.off('blur', handleSelectStart)
-      editor.on('touchhold', handleTouchHoldOpen)
+      editor.off('touchhold', handleTouchHoldOpen)
       editor.off('selectstart', handleSelectStart)
       editor.off('selectend', handleSelectOpen)
       editor.off('selectionchange', handleSelectionChange)

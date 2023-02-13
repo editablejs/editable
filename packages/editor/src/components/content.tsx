@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {
   Editor,
-  Node,
   Range,
   Transforms,
   Point,
@@ -23,7 +22,6 @@ import { inAbsoluteDOMElement } from '../utils/dom'
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
-  IS_READ_ONLY,
   NODE_TO_ELEMENT,
   EDITOR_TO_WINDOW,
   IS_SHIFT_PRESSED,
@@ -33,9 +31,8 @@ import {
   IS_TOUCHING,
   IS_TOUCH_HOLD,
 } from '../utils/weak-maps'
-import { getWordRange } from '../utils/text'
 import { useMultipleClick } from '../hooks/use-multiple-click'
-import { useFocused } from '../hooks/use-focused'
+import { Focused, useFocused } from '../hooks/use-focused'
 import Shadow from './shadow'
 import { CaretComponent } from './caret'
 import { SelectionComponent } from './selection'
@@ -53,6 +50,7 @@ import { isTouchDevice } from '../utils/environment'
 import { TouchPointComponent } from './touch-point'
 import { getNativeEvent, isMouseEvent, isTouchEvent } from '../utils/event'
 import { canForceTakeFocus, isEditableDOMElement } from '../utils/dom'
+import { Locale } from '../plugin/locale'
 
 const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>) => {
   const editor = useEditable()
@@ -67,6 +65,8 @@ const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selec
  * `EditableProps` are passed to the `<Editable>` component.
  */
 export type EditableProps = {
+  readOnly?: boolean
+  lang?: string
   autoFocus?: boolean
   placeholder?: string
   role?: string
@@ -83,6 +83,8 @@ export const ContentEditable = (props: EditableProps) => {
   const {
     autoFocus,
     placeholder,
+    readOnly: readOnlyProp = false,
+    lang,
     scrollSelectionIntoView = defaultScrollSelectionIntoView,
     style = {},
     as: Component = 'div',
@@ -92,7 +94,7 @@ export const ContentEditable = (props: EditableProps) => {
   const editor = useEditableStatic()
 
   const ref = React.useRef<HTMLDivElement>(null)
-  const readOnly = useReadOnly()
+  const [readOnly, setReadOnly] = useReadOnly()
   // 标记是否是刚拖拽完毕
   const isDragEnded = React.useRef(false)
   const dragTo = useDragTo()
@@ -111,7 +113,7 @@ export const ContentEditable = (props: EditableProps) => {
   }, [editor, autoFocus])
 
   React.useEffect(() => {
-    if (placeholder) {
+    if (placeholder && !readOnly) {
       Placeholder.add(editor, {
         key: 'editorRootPlaceholder',
         check: entry => {
@@ -126,11 +128,15 @@ export const ContentEditable = (props: EditableProps) => {
     return () => {
       Placeholder.remove(editor, 'editorRootPlaceholder')
     }
-  }, [editor, placeholder])
+  }, [editor, placeholder, readOnly])
 
   useIsomorphicLayoutEffect(() => {
-    IS_READ_ONLY.set(editor, readOnly)
-  }, [editor, readOnly])
+    setReadOnly(readOnlyProp)
+  }, [readOnlyProp])
+
+  useIsomorphicLayoutEffect(() => {
+    Locale.setLang(editor, props.lang || 'en-US')
+  }, [editor, lang])
 
   useIsomorphicLayoutEffect(() => {
     if (selectionDrawingStyleProp) SelectionDrawing.setStyle(editor, selectionDrawingStyleProp)
@@ -343,8 +349,13 @@ export const ContentEditable = (props: EditableProps) => {
     // touch 应该延迟选中
     touchHoldTimer.current = setTimeout(() => {
       IS_TOUCH_HOLD.set(editor, true)
-      handleRootMouseDown(event)
-    }, 300)
+
+      if (Focused.is(editor)) {
+        handleRootMouseDown(event)
+      } else {
+        editor.selectWord()
+      }
+    }, 530)
   }
 
   const handleRootMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
@@ -511,6 +522,7 @@ export const ContentEditable = (props: EditableProps) => {
   // 处理文件拖拽
   const handleDragOver = (event: React.DragEvent) => {
     event.preventDefault()
+    if (readOnly) return
     const point = Editable.findEventPoint(editor, event)
     if (point) {
       const dragRange = {
@@ -539,6 +551,7 @@ export const ContentEditable = (props: EditableProps) => {
     event.preventDefault()
     event.stopPropagation()
     setDrag(null)
+    if (readOnly) return
     const point = Editable.findEventPoint(editor, event)
     if (point) {
       Transforms.select(editor, point)

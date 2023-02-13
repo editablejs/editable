@@ -10,6 +10,8 @@ import {
   useSelectionDrawingSelection,
   useSelectionDrawingRects,
 } from '../hooks/use-selection-drawing'
+import { ReadOnly, useReadOnly } from '../hooks/use-read-only'
+import { composeEventHandlers } from '../utils/event'
 
 interface InputProps {}
 
@@ -17,6 +19,7 @@ const InputComponent: React.FC<InputProps> = () => {
   const editor = useEditableStatic()
 
   const [focused, setFocused] = useFocused()
+  const [readOnly] = useReadOnly()
 
   const [rect, setRect] = React.useState<ShadowRect | null>(null)
 
@@ -67,8 +70,8 @@ const InputComponent: React.FC<InputProps> = () => {
     editor.onCompositionStart(data)
   }
 
-  const handleCompositionEnd = (ev: React.CompositionEvent) => {
-    const textarea = ev.target
+  const handleCompositionEnd = (event: React.CompositionEvent) => {
+    const textarea = event.target
     if (!(textarea instanceof HTMLTextAreaElement)) return
     const value = textarea.value
     textarea.value = ''
@@ -76,11 +79,20 @@ const InputComponent: React.FC<InputProps> = () => {
   }
 
   const handlePaste = (event: React.ClipboardEvent) => {
-    const { nativeEvent } = event
-    const isPasteText = IS_PASTE_TEXT.get(editor)
-    event.preventDefault()
-    const e = new ClipboardEvent(isPasteText ? 'pasteText' : 'paste', nativeEvent)
-    editor.onPaste(e)
+    composeEventHandlers(
+      (event: React.ClipboardEvent) => {
+        if (ReadOnly.is(editor)) {
+          event.preventDefault()
+        }
+      },
+      event => {
+        const { nativeEvent } = event
+        const isPasteText = IS_PASTE_TEXT.get(editor)
+        event.preventDefault()
+        const e = new ClipboardEvent(isPasteText ? 'pasteText' : 'paste', nativeEvent)
+        editor.onPaste(e)
+      },
+    )(event)
   }
 
   const selection = useSelectionDrawingSelection()
@@ -119,6 +131,7 @@ const InputComponent: React.FC<InputProps> = () => {
           overflow: 'auto',
           resize: 'vertical',
         }}
+        readOnly={readOnly}
         autoFocus={true}
         onKeyDown={handleKeydown}
         onKeyUp={handleKeyup}

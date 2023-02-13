@@ -12,6 +12,7 @@ import {
   useSelectionDrawingStyle,
 } from '../hooks/use-selection-drawing'
 import { isTouchDevice } from '../utils/environment'
+import { useReadOnly } from '../hooks/use-read-only'
 
 interface CaretProps {
   timeout?: number | false
@@ -25,6 +26,8 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   const timer = React.useRef<number>()
 
   const ref = React.useRef<HTMLDivElement>(null)
+
+  const [readOnly] = useReadOnly()
 
   const enabled = useSelectionDrawingEnabled()
   const selection = useSelectionDrawingSelection()
@@ -68,11 +71,13 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   )
 
   useIsomorphicLayoutEffect(() => {
-    active(1)
+    if (readOnly) {
+      clearActive()
+    } else active(1)
     return () => clearActive()
-  }, [editor, active, clearActive])
+  }, [editor, readOnly, active, clearActive])
 
-  if (!enabled) return null
+  if (!enabled || readOnly) return null
 
   return (
     <ShadowRect

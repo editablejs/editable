@@ -1,17 +1,6 @@
-import {
-  NodeMatch,
-  Transforms,
-  Node,
-  Location,
-  Element,
-  Path,
-  Text,
-  RangeRef,
-  PathRef,
-} from 'slate'
+import { NodeMatch, Transforms, Node, Location, Element, Path, PathRef } from 'slate'
 import { RangeMode } from 'slate/dist/interfaces/types'
 import { Editor } from '../interfaces/editor'
-import { Grid } from '../interfaces/grid'
 import { handleInserInGrid } from './utils'
 
 const { insertNodes: defaultInsertNodes } = Transforms

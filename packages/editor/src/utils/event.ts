@@ -1,48 +1,15 @@
-/**
- * Check if an event is overrided by a handler.
- */
-
-import * as React from 'react'
-
-export const isEventHandled = <EventType extends React.SyntheticEvent<unknown, unknown>>(
-  event: EventType,
-  handler?: (event: EventType) => void | boolean,
+export const composeEventHandlers = <E>(
+  originalEventHandler?: (event: E) => void,
+  ourEventHandler?: (event: E) => void,
+  { checkForDefaultPrevented = true } = {},
 ) => {
-  if (!handler) {
-    return false
+  return function handleEvent(event: E) {
+    originalEventHandler?.(event)
+
+    if (checkForDefaultPrevented === false || !(event as unknown as Event).defaultPrevented) {
+      return ourEventHandler?.(event)
+    }
   }
-  // The custom event handler may return a boolean to specify whether the event
-  // shall be treated as being handled or not.
-  const shouldTreatEventAsHandled = handler(event)
-
-  if (shouldTreatEventAsHandled != null) {
-    return shouldTreatEventAsHandled
-  }
-
-  return event.isDefaultPrevented() || event.isPropagationStopped()
-}
-
-/**
- * Check if a DOM event is overrided by a handler.
- */
-
-export const isDOMEventHandled = <E extends Event>(
-  event: E,
-  handler?: (event: E) => void | boolean,
-) => {
-  if (!handler) {
-    return false
-  }
-
-  // The custom event handler may return a boolean to specify whether the event
-  // shall be treated as being handled or not.
-  const shouldTreatEventAsHandled = handler(event)
-
-  if (shouldTreatEventAsHandled != null) {
-    return shouldTreatEventAsHandled
-  }
-
-  return event.defaultPrevented
 }
 
 export const isTouchEvent = (event: any): event is TouchEvent => {

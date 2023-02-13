@@ -1,31 +1,63 @@
 import * as React from 'react'
-import { Descendant } from '@editablejs/models'
+import { Descendant, Node, Editor, Scrubber } from '@editablejs/models'
+import create, { StoreApi, UseBoundStore } from 'zustand'
 import { Editable } from '../plugin/editable'
-import { useEditableStoreProvider, EditableStoreContext } from '../hooks/use-editable'
+import { EditableStore, EditableStoreContext } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { Locale } from '../plugin/locale'
+
+const EDITABLE_TO_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<EditableStore>>>()
 
 export const EditableProvider = (props: {
   editor: Editable
-  initialValue?: Descendant[]
+  value?: Descendant[]
   children: React.ReactNode
-  lang?: string
-  readOnly?: boolean
   onChange?: (value: Descendant[]) => void
 }) => {
-  const { editor, children, initialValue, lang = 'en-US', readOnly = false, ...rest } = props
+  const {
+    editor,
+    children,
+    value = [{ type: 'paragraph', children: [{ text: '' }] }],
+    onChange,
+    ...rest
+  } = props
 
-  const store = useEditableStoreProvider(editor, {
-    storeValue: {
-      readOnly,
-    },
-    initialValue,
-    ...rest,
-  })
+  const store = React.useMemo(() => {
+    const store = EDITABLE_TO_STORE.get(editor)
+    if (store) {
+      return store
+    }
+    if (!Node.isNodeList(value)) {
+      throw new Error(
+        `[Editable] value is invalid! Expected a list of elements` +
+          `but got: ${Scrubber.stringify(value)}`,
+      )
+    }
+    if (!Editor.isEditor(editor)) {
+      throw new Error(`[Editable] editor is invalid! you passed:` + `${Scrubber.stringify(editor)}`)
+    }
+    editor.children = value
+    Object.assign(editor, rest)
+    const newStore = create<EditableStore>(() => ({
+      editor: [editor],
+    }))
+    EDITABLE_TO_STORE.set(editor, newStore)
+    return newStore
+  }, [editor, value, rest])
 
   useIsomorphicLayoutEffect(() => {
-    Locale.setLang(editor, lang)
-  }, [editor, lang])
+    const handleChange = () => {
+      if (onChange) {
+        onChange(editor.children)
+      }
+      store.setState({
+        editor: [editor],
+      })
+    }
+    editor.on('change', handleChange)
+    return () => {
+      editor.off('change', handleChange)
+    }
+  }, [editor, onChange])
 
   return (
     <EditableStoreContext.Provider

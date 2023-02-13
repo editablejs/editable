@@ -1,3 +1,4 @@
+import { Editor } from '@editablejs/models'
 import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
@@ -6,9 +7,9 @@ interface FocusedStore {
   isFocused: boolean
 }
 
-const EDITABLE_TO_FOCUSED_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<FocusedStore>>>()
+const EDITABLE_TO_FOCUSED_STORE = new WeakMap<Editor, UseBoundStore<StoreApi<FocusedStore>>>()
 
-const getStore = (editor: Editable) => {
+const getStore = (editor: Editor) => {
   let store = EDITABLE_TO_FOCUSED_STORE.get(editor)
   if (!store) {
     store = create<FocusedStore>(() => ({
@@ -16,6 +17,8 @@ const getStore = (editor: Editable) => {
     }))
     EDITABLE_TO_FOCUSED_STORE.set(editor, store)
     store.subscribe(({ isFocused }) => {
+      if (!Editable.isEditor(editor)) return
+
       if (isFocused) {
         editor.onFocus()
       } else {
@@ -41,7 +44,7 @@ export const useFocused = (): [boolean, (isFocused: boolean) => void] => {
 }
 
 export const Focused = {
-  is: (editor: Editable) => {
+  is: (editor: Editor) => {
     const store = getStore(editor)
     return store.getState().isFocused
   },

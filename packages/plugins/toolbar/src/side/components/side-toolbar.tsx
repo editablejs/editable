@@ -10,6 +10,7 @@ import {
   useIsomorphicLayoutEffect,
   ElementDecorate,
   DATA_EDITABLE_LEAF,
+  useReadOnly,
 } from '@editablejs/editor'
 import { DOMElement, Editor, GridCell, Transforms } from '@editablejs/models'
 import * as React from 'react'
@@ -60,6 +61,8 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
   const prevEventPositionRef = React.useRef<Point | null>(null)
   const showingRef = React.useRef(false)
   const delayHideTimer = React.useRef<number | null>(null)
+
+  const [readOnly] = useReadOnly()
 
   const dragging = useDragging()
 
@@ -304,7 +307,7 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       data: dataTransfer,
       position,
     })
-  }, [position, setDrag])
+  }, [position, setDrag, editor])
 
   const [tooltipDefaultOpen, setTooltipDefaultOpen] = React.useState(false)
   const delayDragTimer = React.useRef<number | null>(null)
@@ -438,6 +441,8 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       </div>
     )
   }
+
+  if (readOnly) return null
 
   if (dragging || menuOpen || !visible) return renderBtn()
 

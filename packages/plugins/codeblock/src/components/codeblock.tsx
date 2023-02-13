@@ -4,6 +4,7 @@ import {
   RenderElementProps,
   useIsomorphicLayoutEffect,
   useNodeFocused,
+  useReadOnly as useEditableReadOnly,
 } from '@editablejs/editor'
 import { FC, useRef } from 'react'
 import tw from 'twin.macro'
@@ -34,6 +35,7 @@ import { useLanguage } from '../hooks/use-language'
 import { useEditorView } from '../hooks/use-editor-view'
 import { useTheme } from '../hooks/use-theme'
 import { baseTheme } from '../themes/base'
+import { useReadOnly } from '../hooks/use-read-only'
 
 const basicSetup = (() => [
   lineNumbers(),
@@ -106,6 +108,10 @@ export const CodeBlockComponent: FC<CodeBlockProps> = ({
   useIsomorphicLayoutEffect(() => {
     elementRef.current = element
   }, [element])
+
+  const [readOnly] = useEditableReadOnly()
+
+  useReadOnly(view, readOnly)
   useTheme(view, element.theme)
   useLanguage(view, editor, element.language)
   useIndent(view, element.tabSize ?? 2)

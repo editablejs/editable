@@ -151,6 +151,7 @@ declare global {
 }
 
 export default function Playground() {
+  const [readOnly, setReadOnly] = React.useState(false)
   const [connected, setConnected] = React.useState(false)
   const [connecting, setConnection] = React.useState(false)
   const [enableCollaborative, setEnableCollaborative] = React.useState(false)
@@ -346,7 +347,7 @@ export default function Playground() {
     <>
       <CustomStyles />
       <Seo title="Editable Playground" />
-      <EditableProvider editor={editor} initialValue={initialValue}>
+      <EditableProvider editor={editor} value={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
             <div tw="flex text-2xl text-link flex-1 gap-3">
@@ -392,10 +393,10 @@ export default function Playground() {
               </div>
             </div>
           </div>
-          <StyledToolbar editor={editor} />
+          <StyledToolbar editor={editor} disabled={readOnly} />
         </StyledHeader>
         <StyledContainer>
-          <ContentEditable placeholder="Please enter content..." />
+          <ContentEditable readOnly={readOnly} placeholder="Please enter content..." />
         </StyledContainer>
       </EditableProvider>
     </>

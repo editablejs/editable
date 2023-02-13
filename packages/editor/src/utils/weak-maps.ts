@@ -25,7 +25,6 @@ export const EDITOR_TO_SELECTION_RECTS = new WeakMap<Editor, DOMRect[]>()
 /**
  * Weak maps for storing editor-related state.
  */
-export const IS_READ_ONLY: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_CLICKING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_COMPOSING: WeakMap<Editor, boolean> = new WeakMap()
 export const IS_ON_COMPOSITION_END: WeakMap<Editor, boolean> = new WeakMap()

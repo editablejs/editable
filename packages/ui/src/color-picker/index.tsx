@@ -137,7 +137,11 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps & { class
     }
 
     return (
-      <Popover open={open} onOpenChange={setOpen} trigger="click">
+      <Popover
+        open={open}
+        onOpenChange={value => setOpen(disabled ? false : value)}
+        trigger="click"
+      >
         <PopoverTrigger asChild>
           <div
             data-open={open || undefined}

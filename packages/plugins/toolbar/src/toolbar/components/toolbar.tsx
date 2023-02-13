@@ -1,4 +1,4 @@
-import { Editable, useLocale } from '@editablejs/editor'
+import { Editable, useLocale, useReadOnly } from '@editablejs/editor'
 import { useToolbarItems } from '../store'
 import { Toolbar, ToolbarProps } from '../../components/toolbar'
 import { ToolbarLocale } from '../../locale'
