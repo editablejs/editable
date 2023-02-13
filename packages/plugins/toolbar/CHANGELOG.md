@@ -1,5 +1,18 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.38
+
+### Patch Changes
+
+- [`7350f1b`](https://github.com/editablejs/editable/commit/7350f1b0bbd33a4f0815b11dcb765b4c2de1924e) Thanks [@big-camel](https://github.com/big-camel)! - Optimized mobile touch behavior
+
+* [`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd) Thanks [@big-camel](https://github.com/big-camel)! - Refactor read-only
+
+* Updated dependencies [[`ea51ee7`](https://github.com/editablejs/editable/commit/ea51ee7c873f7272076a53b35e085aec1a2865ce), [`7350f1b`](https://github.com/editablejs/editable/commit/7350f1b0bbd33a4f0815b11dcb765b4c2de1924e), [`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd)]:
+  - @editablejs/editor@1.0.0-beta.25
+  - @editablejs/models@1.0.0-beta.3
+  - @editablejs/ui@1.0.0-beta.10
+
 ## 1.0.0-beta.37
 
 ### Major Changes

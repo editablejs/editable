@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [`5420964`](https://github.com/editablejs/editable/commit/5420964753edb470ae94572e5272980ea82ae3fd) Thanks [@big-camel](https://github.com/big-camel)! - Refactor read-only
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
