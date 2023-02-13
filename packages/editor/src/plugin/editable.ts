@@ -160,6 +160,7 @@ export interface Editable extends Editor {
   onSelectEnd: () => void
   onSelectionChange: () => void
   onTouchHold: (event: TouchEvent) => void
+  onTouchTrack: () => void
   onContextMenu: (event: MouseEvent) => void
   onDestory: () => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes

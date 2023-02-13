@@ -9,7 +9,7 @@ import {
   useSelectionDrawingStyle,
 } from '../hooks/use-selection-drawing'
 import { isTouchDevice } from '../utils/environment'
-import { IS_TOUCHING, IS_TOUCHMOVING } from '../utils/weak-maps'
+import { IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from '../utils/weak-maps'
 import { ShadowBlock } from './shadow'
 
 interface TouchPointProps {
@@ -25,15 +25,13 @@ const TouchPointComponent: React.FC<TouchPointProps> = React.memo(
     const style = useSelectionDrawingStyle()
     const editor = useEditableStatic()
 
-    const [focused] = useFocused()
     if (
       rects.length === 0 ||
       !isTouchDevice ||
       !enabled ||
       !selection ||
       IS_TOUCHING.get(editor) ||
-      (!IS_TOUCHMOVING.get(editor) && Range.isCollapsed(selection)) ||
-      !focused
+      (!IS_TOUCHMOVING.get(editor) && Range.isCollapsed(selection))
     )
       return null
     const anchor = rects[0]

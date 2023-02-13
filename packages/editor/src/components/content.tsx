@@ -143,7 +143,9 @@ export const ContentEditable = (props: EditableProps) => {
 
   const handleDocumentMouseDown = (event: MouseEvent | TouchEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
-    if (!isMouseDown && !event.defaultPrevented) setFocused(false)
+    const isTouching = IS_TOUCHING.get(editor)
+    console.log(isTouching, isMouseDown)
+    if (!isMouseDown && !isTouching && !event.defaultPrevented) setFocused(false)
   }
 
   const handleSelecting = (point: Point | null, rest = true, forceFocus = true) => {
@@ -164,7 +166,7 @@ export const ContentEditable = (props: EditableProps) => {
     if (selection && forceFocus && Range.equals(range, selection)) {
       editor.focus()
       setFocused(true)
-      return
+      return true
     }
     Transforms.select(editor, range)
     return range
@@ -199,6 +201,7 @@ export const ContentEditable = (props: EditableProps) => {
         editor.focus()
       }
       const point = Editable.findEventPoint(editor, event)
+      let isSelectedSame = false
       if (point && drag) {
         const { from, data, type = 'text' } = drag
         const fromRange = Editor.range(editor, from)
@@ -268,15 +271,32 @@ export const ContentEditable = (props: EditableProps) => {
           Transforms.select(editor, point)
         }
       } else {
-        handleSelecting(point, !isContextMenu.current, !isEditableDOMElement(event.target))
+        const { selection } = editor
+        if (
+          IS_TOUCHING.get(editor) &&
+          point &&
+          selection &&
+          isSelectedOnCurrentSelection(editor, selection, point)
+        ) {
+          isSelectedSame = true
+        } else {
+          // 是否选中在同一个位置
+          isSelectedSame =
+            handleSelecting(point, !isContextMenu.current, !isEditableDOMElement(event.target)) ===
+            true
+        }
       }
       // 修复 touch 时，触发了 mouse up 事件，导致无法触发 onSelectStart
       if (IS_TOUCHING.get(editor) && !IS_TOUCH_HOLD.get(editor)) {
-        editor.onSelectStart()
+        // touch 在同一个位置，触发 onTouchTrack
+        if (isSelectedSame) editor.onTouchTrack()
+        else editor.onSelectStart()
       }
       setDrag(null)
-      if (!isDragEnded.current) editor.onSelectEnd()
+      if (!isDragEnded.current && (!IS_TOUCHING.get(editor) || !isSelectedSame))
+        editor.onSelectEnd()
     }
+
     isContextMenu.current = false
     startPointRef.current = null
     IS_TOUCHMOVING.set(editor, false)
@@ -333,6 +353,9 @@ export const ContentEditable = (props: EditableProps) => {
       inAbsoluteDOMElement(event.target)
     )
       return
+
+    const { selection } = editor
+
     IS_TOUCHING.set(editor, true)
     IS_TOUCH_HOLD.set(editor, false)
     clearTouchHoldTimer()
@@ -342,8 +365,16 @@ export const ContentEditable = (props: EditableProps) => {
 
       if (Focused.is(editor)) {
         handleRootMouseDown(event)
-      } else {
-        editor.selectWord()
+      } else if (!selection || Range.isCollapsed(selection)) {
+        IS_TOUCHING.set(editor, false)
+        const point = Editable.findEventPoint(editor, event)
+        if (point)
+          editor.selectWord({
+            at: {
+              anchor: point,
+              focus: point,
+            },
+          })
       }
     }, 530)
   }
@@ -375,28 +406,29 @@ export const ContentEditable = (props: EditableProps) => {
         const { selection } = editor
         if (event instanceof MouseEvent && event.button === 2) {
           isContextMenu.current = true
-        } else if (
+        }
+        // Perform drag on existing selection while selected.
+        else if (
           selection &&
           focused &&
-          Range.includes(selection, point) &&
-          ((!Point.equals(Range.end(selection), point) &&
-            !Point.equals(Range.start(selection), point)) ||
-            (Range.isCollapsed(selection) &&
-              !!Editor.above(editor, { match: n => Editor.isVoid(editor, n) })))
+          isSelectedOnCurrentSelection(editor, selection, point, isTouchDevice)
         ) {
-          const dataTransfer = new DataTransfer()
-          setDataTransfer(dataTransfer, {
-            fragment: editor.getFragment(selection),
-          })
-          setDrag({
-            from: selection,
-            data: dataTransfer,
-            position: {
-              x: event.clientX,
-              y: event.clientY,
-            },
-          })
-          editor.onSelectStart()
+          // Drag not performed on touch devices.
+          if (!isTouchDevice) {
+            const dataTransfer = new DataTransfer()
+            setDataTransfer(dataTransfer, {
+              fragment: editor.getFragment(selection),
+            })
+            setDrag({
+              from: selection,
+              data: dataTransfer,
+              position: {
+                x: event.clientX,
+                y: event.clientY,
+              },
+            })
+            editor.onSelectStart()
+          }
           return
         }
         startPointRef.current = point
@@ -636,5 +668,23 @@ export const ContentEditable = (props: EditableProps) => {
       />
       {rendered && <Slots />}
     </div>
+  )
+}
+
+const isSelectedOnCurrentSelection = (
+  editor: Editor,
+  selection: Range,
+  point: Point,
+  compareOnCollapsed = false,
+) => {
+  return (
+    (Range.includes(selection, point) &&
+      ((!Point.equals(Range.end(selection), point) &&
+        !Point.equals(Range.start(selection), point)) ||
+        (Range.isCollapsed(selection) &&
+          !!Editor.above(editor, { match: n => Editor.isVoid(editor, n) })))) ||
+    (compareOnCollapsed &&
+      Range.isCollapsed(selection) &&
+      Point.equals(Range.start(selection), point))
   )
 }

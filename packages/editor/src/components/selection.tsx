@@ -8,6 +8,7 @@ import {
   useSelectionDrawingStyle,
 } from '../hooks/use-selection-drawing'
 import { ShadowBlock } from './shadow'
+import { isTouchDevice } from '../utils/environment'
 
 interface SelectionProps {}
 
@@ -26,7 +27,7 @@ const SelectionComponent: React.FC<SelectionProps> = () => {
           <ShadowBlock
             key={`sel-${index}`}
             rect={Object.assign({}, rect.toJSON(), {
-              color: focused ? style.focusColor : style.blurColor,
+              color: isTouchDevice || focused ? style.focusColor : style.blurColor,
             })}
           />
         )

@@ -1,7 +1,13 @@
 import { Range } from '@editablejs/models'
 import * as React from 'react'
 import { Editable } from '../plugin/editable'
-import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT } from '../utils/weak-maps'
+import {
+  EDITOR_TO_INPUT,
+  IS_COMPOSING,
+  IS_MOUSEDOWN,
+  IS_PASTE_TEXT,
+  IS_TOUCHING,
+} from '../utils/weak-maps'
 import { useFocused } from '../hooks/use-focused'
 import { ShadowBlock, ShadowRect } from './shadow'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
@@ -58,7 +64,7 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
   }
 
   const handleBlur = () => {
-    if (!IS_MOUSEDOWN.get(editor)) setFocused(false)
+    if (!IS_MOUSEDOWN.get(editor) && !IS_TOUCHING.get(editor)) setFocused(false)
   }
 
   const handleFocus = () => {

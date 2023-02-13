@@ -338,6 +338,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
     e.emit('touchhold', event)
   }
 
+  e.onTouchTrack = () => {
+    e.emit('touchtrack')
+  }
+
   e.onContextMenu = event => {
     e.emit('contextmenu', event)
   }

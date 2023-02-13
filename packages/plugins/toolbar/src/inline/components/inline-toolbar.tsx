@@ -130,9 +130,20 @@ export const InlineToolbar = () => {
       handleOpen(true)
     }
 
+    const handleTouchTrack = () => {
+      setOpen(value => {
+        const newValue = !value
+        if (newValue) {
+          handleOpen(true)
+        }
+        return newValue
+      })
+    }
+
     document.body.appendChild(root)
     editor.on('blur', handleSelectStart)
     editor.on('touchhold', handleTouchHoldOpen)
+    editor.on('touchtrack', handleTouchTrack)
     editor.on('selectstart', handleSelectStart)
     editor.on('selectend', handleSelectOpen)
     editor.on('selectionchange', handleSelectionChange)
@@ -141,6 +152,7 @@ export const InlineToolbar = () => {
       document.body.removeChild(root)
       editor.off('blur', handleSelectStart)
       editor.off('touchhold', handleTouchHoldOpen)
+      editor.off('touchtrack', handleTouchTrack)
       editor.off('selectstart', handleSelectStart)
       editor.off('selectend', handleSelectOpen)
       editor.off('selectionchange', handleSelectionChange)
@@ -163,19 +175,20 @@ export const InlineToolbar = () => {
 
   const locale = useLocale<InlineToolbarLocale>('inlineToolbar')
 
-  if (items.length > 0 && containerRef.current && rootRef.current)
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverAnchor
-          virtualRef={virtualRef}
-          dispatchRefreshCustomEvent="refreshInlineToolbarPosition"
-        />
-        <PopoverPortal container={rootRef.current}>
-          <PopoverContent side={side} sideOffset={10}>
-            <Toolbar items={items} mode="inline" locale={locale} />
-          </PopoverContent>
-        </PopoverPortal>
-      </Popover>
-    )
-  return null
+  return (
+    <Popover
+      open={items.length > 0 && containerRef.current && rootRef.current ? open : false}
+      onOpenChange={setOpen}
+    >
+      <PopoverAnchor
+        virtualRef={virtualRef}
+        dispatchRefreshCustomEvent="refreshInlineToolbarPosition"
+      />
+      <PopoverPortal container={rootRef.current}>
+        <PopoverContent side={side} sideOffset={10}>
+          <Toolbar items={items} mode="inline" locale={locale} />
+        </PopoverContent>
+      </PopoverPortal>
+    </Popover>
+  )
 }
