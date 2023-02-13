@@ -1,5 +1,11 @@
 # @editablejs/plugin-ui
 
+## 1.0.0-beta.9
+
+### Patch Changes
+
+- [`66365e8`](https://github.com/editablejs/editable/commit/66365e8de879e66ab1717735c2e1ad410cfd2a85) Thanks [@big-camel](https://github.com/big-camel)! - Unable to select on Android + Chrome browser
+
 ## 1.0.0-beta.8
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @editablejs/plugin-indent
 
+## 1.0.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [[`66365e8`](https://github.com/editablejs/editable/commit/66365e8de879e66ab1717735c2e1ad410cfd2a85), [`bcae219`](https://github.com/editablejs/editable/commit/bcae21983542dafdc17d852d7670a604d8a37b3b), [`ee09868`](https://github.com/editablejs/editable/commit/ee09868cd7b6a5791657fc1619a4cea9b19f1e44), [`1092b75`](https://github.com/editablejs/editable/commit/1092b7572695079b42a9afbe96c05e6451730501)]:
+  - @editablejs/editor@1.0.0-beta.24
+
 ## 1.0.0-beta.24
 
 ### Patch Changes
