@@ -245,7 +245,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
       Transforms.select(e, Editor.start(e, path))
     } else if (start === false) {
       const path = Editable.findPath(e, e)
-      Transforms.select(e, Editor.start(e, path))
+      Transforms.select(e, Editor.end(e, path))
     }
 
     const shadow = EDITOR_TO_SHADOW.get(editor)
