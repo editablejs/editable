@@ -1,5 +1,19 @@
 # @editablejs/editor
 
+## 1.0.0-beta.24
+
+### Major Changes
+
+- [`ee09868`](https://github.com/editablejs/editable/commit/ee09868cd7b6a5791657fc1619a4cea9b19f1e44) Thanks [@big-camel](https://github.com/big-camel)! - Fix keyboard-related selection events
+
+### Patch Changes
+
+- [`66365e8`](https://github.com/editablejs/editable/commit/66365e8de879e66ab1717735c2e1ad410cfd2a85) Thanks [@big-camel](https://github.com/big-camel)! - Unable to select on Android + Chrome browser
+
+* [`bcae219`](https://github.com/editablejs/editable/commit/bcae21983542dafdc17d852d7670a604d8a37b3b) Thanks [@big-camel](https://github.com/big-camel)! - Pressing CMD + LEFT does not move to the start of the row
+
+- [`1092b75`](https://github.com/editablejs/editable/commit/1092b7572695079b42a9afbe96c05e6451730501) Thanks [@big-camel](https://github.com/big-camel)! - Fix the failure of editor.focus(false)
+
 ## 1.0.0-beta.23
 
 ### Patch Changes
