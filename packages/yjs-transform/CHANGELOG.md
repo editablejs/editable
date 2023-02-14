@@ -1,5 +1,11 @@
 # @editablejs/plugin-yjs-transform
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [`81c1330`](https://github.com/editablejs/editable/commit/81c13306f94a4c045ab3e9c7f97e17df5cc9d35d) Thanks [@big-camel](https://github.com/big-camel)! - Enhancing collaboration services with MongoDB
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
