@@ -46,9 +46,10 @@
   },
   "devDependencies": {
     "@editablejs/models": "workspace:*",
-    "@types/lodash.debounce": "4.0.7",
-    "@types/ws": "8.5.3",
     "@types/jest": "^26.0.22",
+    "@types/lodash.debounce": "4.0.7",
+    "@types/mongodb": "4.0.7",
+    "@types/ws": "8.5.3",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
@@ -57,7 +58,7 @@
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "latest",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "dependencies": {
     "@editablejs/yjs-protocols": "workspace:*",
@@ -67,11 +68,12 @@
   },
   "peerDependencies": {
     "@editablejs/models": "workspace:*",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "optionalDependencies": {
+    "mongodb": "5.0.1",
     "ws": "^6.2.1",
-    "y-leveldb": "^0.1.0"
+    "y-leveldb": "^0.1.2"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

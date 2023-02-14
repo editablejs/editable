@@ -5,7 +5,7 @@ import WebSocket from 'ws'
 import http from 'http'
 import { Element } from '@editablejs/models'
 import { setupWSConnection, UpdateCallback } from './utils'
-import { initPersistence } from './persistence'
+import { initPersistence, PersistenceOptions } from './persistence'
 
 const wss = new WebSocket.Server({ noServer: true })
 
@@ -17,8 +17,8 @@ export interface ServerOptions {
     request: http.IncomingMessage,
     ws: WebSocket,
   ) => Promise<void | { code: number; data: string | Buffer }>
-  // 持久化 leveldb 目录，false 为不持久化
-  persistenceDir?: string | false
+  // 持久化选项，false 为不持久化
+  persistenceOptions?: PersistenceOptions | false
   // 文档内容字段，默认为 content
   contentField?: string
   // 更新回调
@@ -60,10 +60,10 @@ server.on('upgrade', (request, socket, head) => {
 
 export const startServer = (options: ServerOptions) => {
   SERVER_OPTIONS_WEAKMAP.set(server, options)
-  const { host, port, persistenceDir, contentField } = options
+  const { host, port, persistenceOptions = { provider: 'leveldb' }, contentField } = options
 
-  if (persistenceDir !== false) {
-    initPersistence(persistenceDir, contentField)
+  if (persistenceOptions !== false) {
+    initPersistence(persistenceOptions, contentField)
   }
 
   server.listen(port, host, () => {

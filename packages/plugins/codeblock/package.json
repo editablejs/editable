@@ -104,12 +104,12 @@
     "tsup-config": "workspace:*",
     "twin.macro": "3.1.0",
     "typescript": "latest",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "peerDependencies": {
     "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "peerDependenciesMeta": {
     "yjs": {

@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --watch node_modules ./src/index.ts",
+    "dev": "nodemon --watch node_modules --watch src ./src/index.ts",
     "lint": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
@@ -26,13 +26,13 @@
     "ts-node": "10.9.1",
     "tsconfig": "workspace:*",
     "typescript": "latest",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "dependencies": {
     "@editablejs/yjs-websocket": "workspace:*"
   },
   "peerDependencies": {
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "license": "MIT"
 }

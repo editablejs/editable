@@ -63,13 +63,13 @@
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "latest",
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "dependencies": {
     "lib0": "^0.2.52"
   },
   "peerDependencies": {
-    "yjs": "^13.5.43"
+    "yjs": "^13.5.46"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [
