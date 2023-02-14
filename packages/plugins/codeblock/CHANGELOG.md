@@ -1,5 +1,14 @@
 # @editablejs/plugin-codeblock
 
+## 1.0.0-beta.18
+
+### Patch Changes
+
+- [`81c1330`](https://github.com/editablejs/editable/commit/81c13306f94a4c045ab3e9c7f97e17df5cc9d35d) Thanks [@big-camel](https://github.com/big-camel)! - Enhancing collaboration services with MongoDB
+
+- Updated dependencies [[`81c1330`](https://github.com/editablejs/editable/commit/81c13306f94a4c045ab3e9c7f97e17df5cc9d35d)]:
+  - @editablejs/yjs-protocols@1.0.0-beta.4
+
 ## 1.0.0-beta.17
 
 ### Patch Changes
