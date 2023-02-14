@@ -2,14 +2,49 @@
 
 # Editable
 
-Editable is a rich text editor framework that provides stable rich text editing capabilities without relying on the contenteditable attribute.
+`Editable` is an extensible rich text editor framework that focuses on stability, controllability, and performance. To achieve this, we did not use the native editable attribute [~~contenteditable~~](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable), but instead used a custom renderer that allows us to better control the editor's behavior. From now on, you no longer have to worry about cross-platform and browser compatibility issues (such as `Selection`, `Input`), just focus on your business logic.
 
-Playground: https://docs.editablejs.com/playground
+Currently, it is still in beta version and the API may undergo significant changes, so related documents are not yet complete.
+
+You can see a demo here: https://docs.editablejs.com/playground
+
+---
+
+- Why not use `canvas` rendering?
+
+  Although `canvas` rendering may be faster than DOM rendering in terms of performance, the development experience of `canvas` is not good and requires writing more code.
+
+- Why use `React` for rendering?
+
+  `React` makes plugins more flexible and has a good ecosystem. However, React's performance is not as good as native DOM.
+
+  In my ideal frontend framework for rich text, it should be like this:
+
+  1. No virtual DOM
+  2. No diff algorithm
+  3. No proxy object
+
+  Therefore, I compared frontend frameworks such as `Vue`, `Solid-js`, and `SvelteJS` and found that `Solid-js` meets the first two criteria, but each property is wrapped in a `proxy`, which may cause problems when comparing with pure JS objects using `===` during extension development.
+
+  To improve performance, we are likely to refactor it for native DOM rendering in future development.
+
+Currently, React meets the following two standards:
+
+- [x] Development experience
+- [x] Plugin extensibility
+- [ ] Cross-frontend compatibility
+- [ ] Rendering performance
+
+In the subsequent refactoring selection, we will try to balance these four standards as much as possible.
+
 ## Development
 
 ```bash
-# Install
+# install
 pnpm install
+
+# build
+pnpm build
 
 # start up
 pnpm dev
@@ -31,7 +66,7 @@ pnpm dev
 - [x] Switch cursor and selection by keyboard Ctrl+up and down keys
 - [x] Switch cursor and selection by keyboard up and down keys
 - [x] Double-click and triple-click to select text after word segmentation
-- [x] touch to select selection and cursor
+- [x] Touch to select selection and cursor
 - [ ] Full coverage of unit tests
 
 ### Input
