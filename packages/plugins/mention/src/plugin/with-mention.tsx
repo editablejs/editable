@@ -141,11 +141,12 @@ export const withMention = <T extends Editable>(editor: T, options: MentionOptio
     // get searchValue
     else if (triggerData) {
       const start = triggerData.startRef.current
-      if (!start) return
+      const range = triggerData.rangeRef.current
+      if (!start || !range) return
       const beforeText = getBeforeText(editor, start)
       const reg = new RegExp(`(^|.*)${triggerChar}(.*)$`)
       const match = beforeText && beforeText.match(reg)
-      if (match === null) {
+      if (match === null || start.offset === range.anchor.offset) {
         closeMentionDecorate(newEditor)
         return
       }

@@ -1,0 +1,170 @@
+{
+  "name": "@editablejs/plugin-font",
+  "version": "1.0.0-beta.0",
+  "exports": {
+    "./background-color": {
+      "import": {
+        "types": "./dist/background-color/index.d.ts",
+        "default": "./dist/background-color/index.mjs"
+      },
+      "require": {
+        "types": "./dist/background-color/index.d.ts",
+        "default": "./dist/background-color/index.js"
+      }
+    },
+    "./background-color/serializer/*": {
+      "import": {
+        "types": "./dist/background-color/serializer/*.d.ts",
+        "default": "./dist/background-color/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/background-color/serializer/*.d.ts",
+        "default": "./dist/background-color/serializer/*.js"
+      }
+    },
+    "./background-color/deserializer/*": {
+      "import": {
+        "types": "./dist/background-color/deserializer/*.d.ts",
+        "default": "./dist/background-color/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/background-color/deserializer/*.d.ts",
+        "default": "./dist/background-color/deserializer/*.js"
+      }
+    },
+    "./color": {
+      "import": {
+        "types": "./dist/color/index.d.ts",
+        "default": "./dist/color/index.mjs"
+      },
+      "require": {
+        "types": "./dist/color/index.d.ts",
+        "default": "./dist/color/index.js"
+      }
+    },
+    "./color/serializer/*": {
+      "import": {
+        "types": "./dist/color/serializer/*.d.ts",
+        "default": "./dist/color/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/color/serializer/*.d.ts",
+        "default": "./dist/color/serializer/*.js"
+      }
+    },
+    "./color/deserializer/*": {
+      "import": {
+        "types": "./dist/color/deserializer/*.d.ts",
+        "default": "./dist/color/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/color/deserializer/*.d.ts",
+        "default": "./dist/color/deserializer/*.js"
+      }
+    },
+    "./size": {
+      "import": {
+        "types": "./dist/size/index.d.ts",
+        "default": "./dist/size/index.mjs"
+      },
+      "require": {
+        "types": "./dist/size/index.d.ts",
+        "default": "./dist/size/index.js"
+      }
+    },
+    "./size/serializer/*": {
+      "import": {
+        "types": "./dist/size/serializer/*.d.ts",
+        "default": "./dist/size/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/size/serializer/*.d.ts",
+        "default": "./dist/size/serializer/*.js"
+      }
+    },
+    "./size/deserializer/*": {
+      "import": {
+        "types": "./dist/size/deserializer/*.d.ts",
+        "default": "./dist/size/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/size/deserializer/*.d.ts",
+        "default": "./dist/size/deserializer/*.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "background-color": [
+        "dist/background-color/index.d.ts"
+      ],
+      "background-color/serializer/html": [
+        "dist/background-color/serializer/html.d.ts"
+      ],
+      "background-color/deserializer/html": [
+        "dist/background-color/deserializer/html.d.ts"
+      ],
+      "color": [
+        "dist/color/index.d.ts"
+      ],
+      "color/serializer/html": [
+        "dist/color/serializer/html.d.ts"
+      ],
+      "color/deserializer/html": [
+        "dist/color/deserializer/html.d.ts"
+      ],
+      "size": [
+        "dist/size/index.d.ts"
+      ],
+      "size/serializer/html": [
+        "dist/size/serializer/html.d.ts"
+      ],
+      "size/deserializer/html": [
+        "dist/size/deserializer/html.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/models": "workspace:*",
+    "@editablejs/editor": "workspace:*",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup-config": "workspace:*",
+    "tsup": "^6.5.0",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "@editablejs/models": "workspace:*",
+    "@editablejs/editor": "workspace:*"
+  },
+  "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*",
+    "colord": "2.9.0"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

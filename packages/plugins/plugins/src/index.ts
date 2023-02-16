@@ -1,12 +1,12 @@
 import { Editable } from '@editablejs/editor'
 import { MarkEditor, MarkOptions, withMark } from '@editablejs/plugin-mark'
-import { FontSizeEditor, FontSizeOptions, withFontSize } from '@editablejs/plugin-font-size'
-import { FontColorEditor, FontColorOptions, withFontColor } from '@editablejs/plugin-font-color'
+import { FontSizeEditor, FontSizeOptions, withFontSize } from '@editablejs/plugin-font/size'
+import { FontColorEditor, FontColorOptions, withFontColor } from '@editablejs/plugin-font/color'
 import {
   BackgroundColorEditor,
   BackgroundColorOptions,
   withBackgroundColor,
-} from '@editablejs/plugin-background-color'
+} from '@editablejs/plugin-font/background-color'
 import { HeadingEditor, HeadingOptions, withHeading } from '@editablejs/plugin-heading'
 import { BlockquoteOptions, withBlockquote, BlockquoteEditor } from '@editablejs/plugin-blockquote'
 import { IndentEditor, IndentOptions, withIndent } from '@editablejs/plugin-indent'
@@ -100,9 +100,9 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
 }
 
 export * from '@editablejs/plugin-mark'
-export * from '@editablejs/plugin-font-size'
-export * from '@editablejs/plugin-font-color'
-export * from '@editablejs/plugin-background-color'
+export * from '@editablejs/plugin-font/size'
+export * from '@editablejs/plugin-font/color'
+export * from '@editablejs/plugin-font/background-color'
 export * from '@editablejs/plugin-heading'
 export * from '@editablejs/plugin-blockquote'
 export * from '@editablejs/plugin-list'

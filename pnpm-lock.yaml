@@ -442,37 +442,6 @@ importers:
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.5
 
-  packages/plugins/background-color:
-    specifiers:
-      '@editablejs/deserializer': workspace:*
-      '@editablejs/editor': workspace:*
-      '@editablejs/models': workspace:*
-      '@editablejs/serializer': workspace:*
-      colord: 2.9.0
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.5.0
-      tsup-config: workspace:*
-      typescript: latest
-    dependencies:
-      '@editablejs/deserializer': link:../../deserializer
-      '@editablejs/serializer': link:../../serializer
-      colord: 2.9.0
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@editablejs/models': link:../../models
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.9.5
-
   packages/plugins/blockquote:
     specifiers:
       '@editablejs/deserializer': workspace:*
@@ -646,7 +615,7 @@ importers:
       twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 4.9.5
 
-  packages/plugins/font-color:
+  packages/plugins/font:
     specifiers:
       '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
@@ -665,35 +634,6 @@ importers:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
       colord: 2.9.0
-    devDependencies:
-      '@editablejs/editor': link:../../editor
-      '@editablejs/models': link:../../models
-      eslint-config-editable: link:../../config/eslint-config-editable
-      jest: 27.5.1
-      jest-presets: link:../../config/jest-presets
-      prettier-config: link:../../config/prettier-config
-      tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
-      tsup-config: link:../../config/tsup-config
-      typescript: 4.9.5
-
-  packages/plugins/font-size:
-    specifiers:
-      '@editablejs/deserializer': workspace:*
-      '@editablejs/editor': workspace:*
-      '@editablejs/models': workspace:*
-      '@editablejs/serializer': workspace:*
-      eslint-config-editable: workspace:*
-      jest: ^27.5.1
-      jest-presets: workspace:*
-      prettier-config: workspace:*
-      tsconfig: workspace:*
-      tsup: ^6.5.0
-      tsup-config: workspace:*
-      typescript: latest
-    dependencies:
-      '@editablejs/deserializer': link:../../deserializer
-      '@editablejs/serializer': link:../../serializer
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
@@ -1200,12 +1140,10 @@ importers:
       '@editablejs/editor': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/plugin-align': workspace:*
-      '@editablejs/plugin-background-color': workspace:*
       '@editablejs/plugin-blockquote': workspace:*
       '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-context-menu': workspace:*
-      '@editablejs/plugin-font-color': workspace:*
-      '@editablejs/plugin-font-size': workspace:*
+      '@editablejs/plugin-font': workspace:*
       '@editablejs/plugin-heading': workspace:*
       '@editablejs/plugin-hr': workspace:*
       '@editablejs/plugin-image': workspace:*
@@ -1232,12 +1170,10 @@ importers:
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/plugin-align': link:../align
-      '@editablejs/plugin-background-color': link:../background-color
       '@editablejs/plugin-blockquote': link:../blockquote
       '@editablejs/plugin-codeblock': link:../codeblock
       '@editablejs/plugin-context-menu': link:../context-menu
-      '@editablejs/plugin-font-color': link:../font-color
-      '@editablejs/plugin-font-size': link:../font-size
+      '@editablejs/plugin-font': link:../font
       '@editablejs/plugin-heading': link:../heading
       '@editablejs/plugin-hr': link:../hr
       '@editablejs/plugin-image': link:../image
@@ -1327,12 +1263,14 @@ importers:
       '@editablejs/editor': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/ui': workspace:*
+      '@types/lodash.debounce': 4.0.7
       '@types/react': ^18.x
       '@types/react-dom': ^18.x
       '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
+      lodash.debounce: ^4.0.8
       prettier-config: workspace:*
       react: ^18.x
       react-dom: ^18.x
@@ -1347,11 +1285,13 @@ importers:
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
+      lodash.debounce: 4.0.8
       styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models
+      '@types/lodash.debounce': 4.0.7
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
       '@types/styled-components': 5.1.26

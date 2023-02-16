@@ -31,6 +31,9 @@
       ],
       "side": [
         "dist/side/index.d.ts"
+      ],
+      "slash": [
+        "dist/slash/index.d.ts"
       ]
     }
   },
@@ -53,8 +56,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@editablejs/models": "workspace:*",
     "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*",
+    "@types/lodash.debounce": "4.0.7",
     "@types/react": "^18.x",
     "@types/react-dom": "^18.x",
     "@types/styled-components": "5.1.26",
@@ -73,11 +77,12 @@
     "typescript": "latest"
   },
   "peerDependencies": {
-    "@editablejs/models": "workspace:*",
-    "@editablejs/editor": "workspace:*"
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*"
   },
   "dependencies": {
     "@editablejs/ui": "workspace:*",
+    "lodash.debounce": "^4.0.8",
     "styled-components": "5.3.6",
     "zustand": "4.1.4"
   },

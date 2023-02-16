@@ -144,7 +144,6 @@ export const ContentEditable = (props: EditableProps) => {
   const handleDocumentMouseDown = (event: MouseEvent | TouchEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
     const isTouching = IS_TOUCHING.get(editor)
-    console.log(isTouching, isMouseDown)
     if (!isMouseDown && !isTouching && !event.defaultPrevented) setFocused(false)
   }
 

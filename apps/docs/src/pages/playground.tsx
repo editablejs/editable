@@ -70,6 +70,11 @@ import {
   useSideToolbarMenuEffect,
   SideToolbar,
 } from '@editablejs/plugin-toolbar/side'
+import {
+  withSlashToolbar,
+  useSlashToolbarEffect,
+  SlashToolbar,
+} from '@editablejs/plugin-toolbar/slash'
 import { Switch, SwitchThumb, Icon, Tooltip } from '@editablejs/ui'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import {
@@ -80,32 +85,8 @@ import {
 import { createSideToolbarItems } from '../configs/side-toolbar-items'
 import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
-
-const initialValue = [
-  {
-    type: 'paragraph',
-    children: [
-      {
-        text: 'Hello, ',
-      },
-      {
-        text: 'This',
-        fontSize: '28px',
-      },
-      {
-        text: ' is a Paragraph',
-      },
-    ],
-  },
-  {
-    type: 'paragraph',
-    children: [
-      {
-        text: 'A line of text in a paragraph.',
-      },
-    ],
-  },
-]
+import { createSlashToolbarItems } from 'configs/slash-toolbar-items'
+import { initialValue } from 'configs/initial-value'
 
 const CustomStyles = createGlobalStyle({
   body: {
@@ -255,9 +236,11 @@ export default function Playground() {
       editor = withSideToolbar(editor)
     }
 
+    editor = withSlashToolbar(editor)
+
     Placeholder.add(editor, {
       check: entry => Editable.isFocused(editor) && Editor.isBlock(editor, entry[0]),
-      render: () => 'Enter some text...',
+      render: () => 'Type / evoke more',
     })
     return editor
   }, [document, provider])
@@ -341,6 +324,11 @@ export default function Playground() {
   useSideToolbarMenuEffect((...a) => {
     SideToolbar.setItems(editor, createSideToolbarItems(editor, ...a))
   }, editor)
+
+  useSlashToolbarEffect(value => {
+    SlashToolbar.setItems(editor, createSlashToolbarItems(editor, value))
+  }, editor)
+
   const remoteClients = useRemoteStates<CursorData>(editor)
 
   return (
@@ -396,7 +384,10 @@ export default function Playground() {
           <StyledToolbar editor={editor} disabled={readOnly} />
         </StyledHeader>
         <StyledContainer>
-          <ContentEditable readOnly={readOnly} placeholder="Please enter content..." />
+          <ContentEditable
+            readOnly={readOnly}
+            placeholder="Type something. Style with keyboard shortcuts or markdown."
+          />
         </StyledContainer>
       </EditableProvider>
     </>

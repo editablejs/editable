@@ -37,7 +37,7 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
     return () => {
       EDITOR_TO_INPUT.delete(editor)
     }
-  }, [])
+  }, [editor])
 
   useEffect(() => {
     if (autoFocus) {
