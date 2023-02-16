@@ -32,7 +32,9 @@
     "@editablejs/yjs-protocols": "1.0.0-beta.0",
     "@editablejs/deserializer": "1.0.0-beta.0",
     "@editablejs/models": "1.0.0-beta.0",
-    "@editablejs/serializer": "1.0.0-beta.0"
+    "@editablejs/serializer": "1.0.0-beta.0",
+    "@editablejs/plugin-font": "1.0.0-beta.0",
+    "@editablejs/plugin-title": "1.0.0-beta.0"
   },
   "changesets": [
     "afraid-roses-yawn",
@@ -70,6 +72,7 @@
     "loud-actors-speak",
     "lovely-icons-turn",
     "mean-fireants-wait",
+    "moody-pillows-cover",
     "nasty-tomatoes-smell",
     "nervous-bees-beg",
     "nervous-dogs-sort",
@@ -81,6 +84,7 @@
     "popular-chicken-stare",
     "popular-turkeys-crash",
     "purple-moose-nail",
+    "purple-shoes-explode",
     "quiet-numbers-kiss",
     "rare-oranges-provide",
     "rich-sloths-shout",

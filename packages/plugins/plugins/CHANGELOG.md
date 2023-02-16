@@ -1,5 +1,32 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.49
+
+### Patch Changes
+
+- [`5c15653`](https://github.com/editablejs/editable/commit/5c1565330e543b5f80e3baa5d6857cd63d0389f9) Thanks [@big-camel](https://github.com/big-camel)! - add slash toolbar
+
+- Updated dependencies [[`a644a5a`](https://github.com/editablejs/editable/commit/a644a5aa29ac1b28f95b49225d049c73ecd4ead5), [`5c15653`](https://github.com/editablejs/editable/commit/5c1565330e543b5f80e3baa5d6857cd63d0389f9)]:
+  - @editablejs/editor@1.0.0-beta.26
+  - @editablejs/models@1.0.0-beta.4
+  - @editablejs/plugin-blockquote@1.0.0-beta.27
+  - @editablejs/plugin-image@1.0.0-beta.23
+  - @editablejs/plugin-list@1.0.0-beta.26
+  - @editablejs/plugin-mention@1.0.0-beta.16
+  - @editablejs/plugin-align@1.0.0-beta.16
+  - @editablejs/plugin-codeblock@1.0.0-beta.19
+  - @editablejs/plugin-context-menu@1.0.0-beta.37
+  - @editablejs/plugin-font@1.0.0-beta.1
+  - @editablejs/plugin-heading@1.0.0-beta.26
+  - @editablejs/plugin-hr@1.0.0-beta.19
+  - @editablejs/plugin-indent@1.0.0-beta.27
+  - @editablejs/plugin-leading@1.0.0-beta.14
+  - @editablejs/plugin-link@1.0.0-beta.21
+  - @editablejs/plugin-mark@1.0.0-beta.26
+  - @editablejs/plugin-table@1.0.0-beta.36
+  - @editablejs/deserializer@1.0.0-beta.5
+  - @editablejs/serializer@1.0.0-beta.4
+
 ## 1.0.0-beta.48
 
 ### Patch Changes
