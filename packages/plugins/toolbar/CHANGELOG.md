@@ -1,5 +1,18 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.39
+
+### Patch Changes
+
+- [`a644a5a`](https://github.com/editablejs/editable/commit/a644a5aa29ac1b28f95b49225d049c73ecd4ead5) Thanks [@big-camel](https://github.com/big-camel)! - add title plugin
+
+* [`5c15653`](https://github.com/editablejs/editable/commit/5c1565330e543b5f80e3baa5d6857cd63d0389f9) Thanks [@big-camel](https://github.com/big-camel)! - add slash toolbar
+
+* Updated dependencies [[`a644a5a`](https://github.com/editablejs/editable/commit/a644a5aa29ac1b28f95b49225d049c73ecd4ead5), [`5c15653`](https://github.com/editablejs/editable/commit/5c1565330e543b5f80e3baa5d6857cd63d0389f9)]:
+  - @editablejs/editor@1.0.0-beta.26
+  - @editablejs/models@1.0.0-beta.4
+  - @editablejs/ui@1.0.0-beta.11
+
 ## 1.0.0-beta.38
 
 ### Patch Changes
