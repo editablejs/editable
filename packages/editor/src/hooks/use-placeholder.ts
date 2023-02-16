@@ -19,9 +19,8 @@ export const usePlaceholders = () => {
 
 export const usePlaceholder = (node: Node) => {
   const store = usePlaceholderStore()
-  const current = useStore(store, state => state.current)
+  const activePlaceholders = useStore(store, state => state.activePlaceholders)
   return React.useMemo(() => {
-    if (!current) return
-    return current.node === node ? current.render : undefined
-  }, [current, node])
+    return activePlaceholders.find(d => d.node === node)?.render
+  }, [activePlaceholders, node])
 }

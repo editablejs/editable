@@ -3,7 +3,7 @@ import { IMAGE_KEY } from './constants'
 import { Image } from './interfaces/image'
 import { getOptions } from './options'
 
-export const readBase64 = (file: File) => {
+const readBase64WithFileReader = (file: File) => {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -16,8 +16,32 @@ export const readBase64 = (file: File) => {
   })
 }
 
-export const readImageElement = (url: string) => {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
+const readBase64WithFetch = (url: string) => {
+  return new Promise<string>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.onload = () => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        resolve(reader.result as string)
+      }
+      reader.onerror = error => {
+        reject(error)
+      }
+      reader.readAsDataURL(xhr.response)
+    }
+    xhr.open('GET', url)
+    xhr.responseType = 'blob'
+    xhr.send()
+  })
+}
+
+export const readBase64 = (file: File | string) => {
+  return typeof file === 'string' ? readBase64WithFetch(file) : readBase64WithFileReader(file)
+}
+
+export const readImageElement = (url: string, base64 = false) => {
+  return new Promise<HTMLImageElement>(async (resolve, reject) => {
+    if (base64) url = await readBase64(url)
     const image = new window.Image()
     image.onload = () => {
       resolve(image)

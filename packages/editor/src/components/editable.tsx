@@ -41,6 +41,7 @@ export const EditableProvider = (props: {
       editor: [editor],
     }))
     EDITABLE_TO_STORE.set(editor, newStore)
+    editor.normalizeNode([editor, []])
     return newStore
   }, [editor, value, rest])
 

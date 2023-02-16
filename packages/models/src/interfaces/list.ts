@@ -1,4 +1,4 @@
-import { Element, NodeEntry, Path, Transforms, Node, Range } from 'slate'
+import { Element, NodeEntry, Path, Transforms, Node, Range, Location } from 'slate'
 import { Editor } from './editor'
 import { generateRandomKey } from '../utils/key'
 
@@ -10,6 +10,11 @@ export interface List extends Element {
   template?: string
 }
 
+export interface ListAboveOptions {
+  at?: Location
+  match?: (node: List) => boolean
+}
+
 export interface GetLevelOptions {
   type: string
   key: string
@@ -17,22 +22,19 @@ export interface GetLevelOptions {
   path: Path
 }
 
-export interface WrapListOptions {
+export interface WrapListOptions extends ListAboveOptions {
   props?: (key: string, node: Element, path: Path) => Record<string, any>
 }
 
-export interface UnwrapListOptions {
-  type?: string
+export interface UnwrapListOptions extends ListAboveOptions {
   props?: (node: List, path: Path) => Record<string, any>
 }
 
-export interface SplitListOptions {
-  type?: string
+export interface SplitListOptions extends ListAboveOptions {
   props?: (node: List, path: Path) => Record<string, any>
 }
 
-export interface DeleteLevelOptions {
-  type?: string
+export interface DeleteLevelOptions extends ListAboveOptions {
   unwrapProps?: (node: Node, path: Path) => Record<string, any>
 }
 
@@ -57,22 +59,25 @@ export interface ListTemplate {
 const TEMPLATE_WEAKMAP = new WeakMap<Editor, Map<string, ListTemplate[]>>()
 
 export const List = {
-  above: (editor: Editor, type?: string) => {
-    const { selection } = editor
+  above: (editor: Editor, options: ListAboveOptions = {}) => {
+    const { at, match } = options
+    const selection = at ?? editor.selection
     if (!selection) return
     const entry = Editor.above<List>(editor, {
-      match: n => Editor.isList(editor, n) && (!type || n.type === type),
+      at: selection,
+      match: n => Editor.isList(editor, n) && (!match || match(n)),
     })
     return entry
   },
 
-  lists: (editor: Editor, type?: string) => {
-    const elements = Editor.elements(editor)
+  lists: (editor: Editor, options: ListAboveOptions = {}) => {
+    const { at, match } = options
+    const elements = Editor.elements(editor, at)
     const entries: NodeEntry<List>[] = []
     for (const key in elements) {
       entries.push(
         ...(elements[key].filter(
-          ([node]) => editor.isList(node) && (!type || node.type === type),
+          ([node]) => editor.isList(node) && (!match || match(node)),
         ) as any),
       )
     }
@@ -192,12 +197,16 @@ export const List = {
     list: Partial<Omit<T, 'children'>> & { type: string },
     opitons: WrapListOptions = {},
   ) {
+    const { at } = opitons
     let { start = 1, template, type } = list
-    List.unwrapList(editor)
+    List.unwrapList(editor, {
+      at,
+    })
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
       if (!selection) return
       const entrys = Editor.nodes<Element>(editor, {
+        at: selection,
         match: n => Editor.isBlock(editor, n),
         mode: 'lowest',
       })
@@ -228,8 +237,15 @@ export const List = {
         key = generateRandomKey()
       }
       const { props } = opitons
-      let nextPath: Path = []
+
+      let prevPath = null
       for (const [node, path] of entrys) {
+        if (prevPath) {
+          const prevNode = Node.get(editor, prevPath)
+          if (!Editor.isList(editor, prevNode)) {
+            start--
+          }
+        }
         const newLevel = List.getLevel(editor, {
           type,
           path,
@@ -249,22 +265,22 @@ export const List = {
         Transforms.wrapNodes(editor, element, {
           at: path,
         })
-        nextPath = path
+        prevPath = path
         start++
       }
-      if (nextPath.length > 0) {
+      if (prevPath) {
         List.updateStart(editor, {
           type,
-          path: nextPath,
+          path: prevPath,
           key,
         })
       }
-    })
+    }, at)
   },
 
   unwrapList: (editor: Editor, options: UnwrapListOptions = {}) => {
-    const { type, props } = options
-    const activeLists = List.lists(editor, type)
+    const { at, match, props } = options
+    const activeLists = List.lists(editor, { at, match })
     editor.normalizeSelection(selection => {
       if (editor.selection !== selection) editor.selection = selection
 
@@ -272,7 +288,7 @@ export const List = {
       const topLists = new Map<string, NodeEntry<List>>()
       for (const [element, path] of activeLists) {
         hasList = true
-        const { key } = element
+        const { key, type } = element
         if (!topLists.has(key)) {
           const startList = List.findFirstList(editor, {
             path,
@@ -300,7 +316,8 @@ export const List = {
       }
       if (!hasList) return
       Transforms.unwrapNodes(editor, {
-        match: n => Editor.isList(editor, n) && (!type || n.type === type),
+        at,
+        match: n => Editor.isList(editor, n) && (!match || match(n)),
         split: true,
       })
       if (!selection) return
@@ -313,17 +330,20 @@ export const List = {
           start: list.start,
         })
       }
-    })
+    }, at)
   },
 
   splitList: (editor: Editor, options?: SplitListOptions) => {
     const { selection } = editor
     if (!selection || Range.isExpanded(selection)) return
-    let { type, props } = options ?? {}
-    const entry = List.above(editor, type)
+    let { at, match, props } = options ?? {}
+    const entry = List.above(editor, {
+      at,
+      match,
+    })
     if (!entry) return
     const [list, path] = entry
-    type = list.type
+    const type = list.type
     // 空节点拆分
     if (Editor.isEmpty(editor, list)) {
       // 缩进的节点拆分
@@ -359,7 +379,7 @@ export const List = {
             key: list.key,
           })
       } else {
-        List.unwrapList(editor, { type })
+        List.unwrapList(editor, { at, match: n => n.type === type })
         List.updateStart(editor, {
           type,
           path,
@@ -372,7 +392,8 @@ export const List = {
     }
     // split the current list
     Transforms.splitNodes(editor, {
-      match: n => editor.isList(n) && (!type || n.type === type),
+      at,
+      match: n => editor.isList(n) && n.type === type,
       always: true,
     })
     List.updateStart(editor, {
@@ -386,9 +407,10 @@ export const List = {
   deleteLevel: (editor: Editor, options?: DeleteLevelOptions) => {
     const { selection } = editor
     if (!selection) return
-    const { type, unwrapProps } = options ?? {}
+    const { at, match, unwrapProps } = options ?? {}
     const entry = Editor.above<List>(editor, {
-      match: n => Editor.isList(editor, n) && (!type || n.type === type),
+      at,
+      match: n => Editor.isList(editor, n) && (!match || match(n)),
     })
     if (!entry) return
     let [list, path] = entry
@@ -413,7 +435,7 @@ export const List = {
           path,
           key,
           level: list.level,
-          type,
+          type: list.type,
         }) ?? entry
       // level 为0 就删除
       Transforms.unwrapNodes(editor, {
@@ -432,7 +454,7 @@ export const List = {
       }
 
       List.updateStart(editor, {
-        type,
+        type: list.type,
         path,
         key,
         level: list.level,

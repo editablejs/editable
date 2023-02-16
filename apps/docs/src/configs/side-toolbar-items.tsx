@@ -6,6 +6,7 @@ import {
   UnorderedListEditor,
   OrderedListEditor,
   TaskListEditor,
+  ImageEditor,
 } from '@editablejs/plugins'
 import { SideToolbarItem } from '@editablejs/plugin-toolbar/side'
 import { Icon } from '@editablejs/ui'
@@ -15,6 +16,14 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
   const isEmpty = Editor.isEmpty(editor, element)
   if (isEmpty) {
     items.push(
+      {
+        key: 'image',
+        icon: <Icon name="image" />,
+        title: 'Image',
+        onSelect: () => {
+          ImageEditor.open(editor)
+        },
+      },
       {
         key: 'table',
         icon: <Icon name="table" />,

@@ -50,6 +50,7 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
     delayHideDuration = 0.2,
     horizontalDistanceThreshold = 30,
     verticalDistanceThreshold = 30,
+    match,
   } = React.useMemo(() => {
     return getOptions(editor)
   }, [editor])
@@ -141,6 +142,8 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       const entry = Editor.above(editor, {
         at: point,
         match: n => {
+          const customMatch = match?.(n)
+          if (customMatch === false) return false
           if (!isFindList && Editor.isList(editor, n)) {
             isFindList = true
             return true

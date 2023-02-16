@@ -1,11 +1,17 @@
 import { Editable, Hotkey } from '@editablejs/editor'
-import { Grid, Range } from '@editablejs/models'
+import { Editor, Grid, Range } from '@editablejs/models'
 import { ContextMenuItem } from '@editablejs/plugins'
 import { Icon } from '@editablejs/ui'
 
 export const createContextMenuItems = (editor: Editable) => {
   const { selection } = editor
-  const isDisabled = !selection || Range.isCollapsed(selection)
+  let isDisabled = !selection || Range.isCollapsed(selection)
+  if (isDisabled) {
+    const voidNode = Editor.above(editor, {
+      match: n => Editor.isVoid(editor, n),
+    })
+    if (voidNode) isDisabled = false
+  }
 
   const items: ContextMenuItem[] = [
     {

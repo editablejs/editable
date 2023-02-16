@@ -49,6 +49,7 @@ importers:
       '@editablejs/models': workspace:*
       '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-history': workspace:*
+      '@editablejs/plugin-title': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
       '@editablejs/plugins': workspace:*
@@ -119,6 +120,7 @@ importers:
       '@editablejs/models': link:../../packages/models
       '@editablejs/plugin-codeblock': link:../../packages/plugins/codeblock
       '@editablejs/plugin-history': link:../../packages/plugins/history
+      '@editablejs/plugin-title': link:../../packages/plugins/title
       '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
       '@editablejs/plugins': link:../../packages/plugins/plugins
@@ -1237,6 +1239,55 @@ importers:
       micromark-extension-gfm-table: 1.0.5
       styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
       zustand: 4.1.4_react@18.2.0
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/mdast': 3.0.10
+      '@types/react': 18.0.25
+      '@types/react-dom': 18.0.9
+      '@types/styled-components': 5.1.26
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.1.0_tailwindcss@3.2.4
+      typescript: 4.9.5
+
+  packages/plugins/title:
+    specifiers:
+      '@editablejs/deserializer': workspace:*
+      '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/serializer': workspace:*
+      '@types/mdast': 3.0.10
+      '@types/react': ^18.x
+      '@types/react-dom': ^18.x
+      '@types/styled-components': 5.1.26
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      react: ^18.x
+      react-dom: ^18.x
+      styled-components: 5.3.6
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      twin.macro: 3.1.0
+      typescript: latest
+    dependencies:
+      '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/serializer': link:../../serializer
+      styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
       '@editablejs/editor': link:../../editor
       '@editablejs/models': link:../../models

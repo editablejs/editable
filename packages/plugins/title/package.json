@@ -1,0 +1,114 @@
+{
+  "name": "@editablejs/plugin-title",
+  "version": "1.0.0-beta.0",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    },
+    "./serializer/*": {
+      "import": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/serializer/*.d.ts",
+        "default": "./dist/serializer/*.js"
+      }
+    },
+    "./deserializer/*": {
+      "import": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.mjs"
+      },
+      "require": {
+        "types": "./dist/deserializer/*.d.ts",
+        "default": "./dist/deserializer/*.js"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "serializer/html": [
+        "dist/serializer/html.d.ts"
+      ],
+      "deserializer/html": [
+        "dist/deserializer/html.d.ts"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "devDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*",
+    "@types/mdast": "3.0.10",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x",
+    "@types/styled-components": "5.1.26",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^6.5.0",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.1.0",
+    "typescript": "latest"
+  },
+  "peerDependencies": {
+    "@editablejs/editor": "workspace:*",
+    "@editablejs/models": "workspace:*"
+  },
+  "dependencies": {
+    "@editablejs/deserializer": "workspace:*",
+    "@editablejs/serializer": "workspace:*",
+    "styled-components": "5.3.6"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

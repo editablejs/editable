@@ -6,6 +6,7 @@ import {
   UnorderedListEditor,
   OrderedListEditor,
   TaskListEditor,
+  ImageEditor,
 } from '@editablejs/plugins'
 import { SlashToolbarItem } from '@editablejs/plugin-toolbar/slash'
 import { Icon } from '@editablejs/ui'
@@ -13,6 +14,14 @@ import { Icon } from '@editablejs/ui'
 export const createSlashToolbarItems = (editor: Editable, value: string) => {
   const items: SlashToolbarItem[] = []
   items.push(
+    {
+      key: 'image',
+      icon: <Icon name="image" />,
+      title: 'Image',
+      onSelect: () => {
+        ImageEditor.open(editor)
+      },
+    },
     {
       key: 'table',
       icon: <Icon name="table" />,

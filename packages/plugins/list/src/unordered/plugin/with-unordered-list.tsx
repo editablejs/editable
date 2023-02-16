@@ -43,7 +43,7 @@ export const withUnorderedList = <T extends Editable>(
     const activeElements = UnorderedListEditor.queryActive(editor)
     if (activeElements) {
       List.unwrapList(editor, {
-        type: UNORDERED_LIST_KEY,
+        match: n => n.type === UNORDERED_LIST_KEY,
       })
     } else {
       const { template } = options

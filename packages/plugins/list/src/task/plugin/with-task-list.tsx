@@ -135,7 +135,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
     const activeElements = TaskListEditor.queryActive(editor)
     if (activeElements) {
       List.unwrapList(editor, {
-        type: TASK_LIST_KEY,
+        match: n => n.type === TASK_LIST_KEY,
       })
     } else {
       const { checked, template } = options

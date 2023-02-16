@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Node, NodeEntry } from '@editablejs/models'
+import { Editor, Node, NodeEntry } from '@editablejs/models'
 import create, { UseBoundStore, StoreApi } from 'zustand'
 import { Editable } from './editable'
 
@@ -10,16 +10,20 @@ export type PlaceholderRender = (props: RenderPlaceholderProps) => React.ReactNo
 
 export interface PlaceholderState {
   key?: string
+  keep?: boolean
   check: (entry: NodeEntry) => boolean
+  render: PlaceholderRender
+}
+
+export interface ActivePlaceholder {
+  node: Node
+  keep: boolean
   render: PlaceholderRender
 }
 
 export interface PlaceholderStore {
   placeholders: PlaceholderState[]
-  current: {
-    node: Node
-    render: PlaceholderRender
-  } | null
+  activePlaceholders: ActivePlaceholder[]
 }
 
 const EDITOR_TO_PLACEHOLDER_STORE = new WeakMap<
@@ -27,12 +31,12 @@ const EDITOR_TO_PLACEHOLDER_STORE = new WeakMap<
   UseBoundStore<StoreApi<PlaceholderStore>>
 >()
 
-const getStore = (editor: Editable) => {
+const getPlaceholderStore = (editor: Editable) => {
   let store = EDITOR_TO_PLACEHOLDER_STORE.get(editor)
   if (!store) {
     store = create<PlaceholderStore>(() => ({
       placeholders: [],
-      current: null,
+      activePlaceholders: [],
     }))
     EDITOR_TO_PLACEHOLDER_STORE.set(editor, store)
   }
@@ -40,17 +44,17 @@ const getStore = (editor: Editable) => {
 }
 
 export const Placeholder = {
-  getStore,
+  getStore: getPlaceholderStore,
 
   add: (editor: Editable, placeholder: PlaceholderState) => {
-    const store = getStore(editor)
+    const store = getPlaceholderStore(editor)
     store.setState(state => ({
       placeholders: [...state.placeholders, placeholder],
     }))
   },
 
   remove: (editor: Editable, placeholder: PlaceholderState | string) => {
-    const store = getStore(editor)
+    const store = getPlaceholderStore(editor)
     const isKey = typeof placeholder === 'string'
     store.setState(state => ({
       placeholders: state.placeholders.filter(d =>
@@ -59,21 +63,38 @@ export const Placeholder = {
     }))
   },
 
-  setCurrent: (editor: Editable, entry: NodeEntry) => {
-    const store = getStore(editor)
+  update: (editor: Editable, entry: NodeEntry) => {
+    const store = getPlaceholderStore(editor)
     return store.setState(state => {
-      const current = state.placeholders.find(p => p.check(entry))
+      const placeholder = state.placeholders.find(p => p.check(entry))
+      if (!placeholder) return state
+
+      const activePlaceholders = state.activePlaceholders.filter(p => p.node !== entry[0] || p.keep)
+      activePlaceholders.push({
+        node: entry[0],
+        keep: placeholder.keep ?? false,
+        render: placeholder.render,
+      })
       return {
-        current: current ? { node: entry[0], render: current.render } : null,
+        activePlaceholders,
       }
     })
   },
 
-  clearCurrent: (editor: Editable) => {
-    const store = getStore(editor)
-    return store.setState(() => {
+  updateActive: (editor: Editable) => {
+    const store = getPlaceholderStore(editor)
+    return store.setState(state => {
+      const activePlaceholders = []
+      for (const placeholder of state.activePlaceholders) {
+        if (placeholder.keep && Editor.isEmpty(editor, placeholder.node)) {
+          activePlaceholders.push(placeholder)
+        }
+      }
       return {
-        current: null,
+        activePlaceholders:
+          activePlaceholders.length === state.activePlaceholders.length
+            ? state.activePlaceholders
+            : activePlaceholders,
       }
     })
   },

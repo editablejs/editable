@@ -1,4 +1,5 @@
 import { Editable } from '@editablejs/editor'
+import { Node } from '@editablejs/models'
 import { SideToolbarLocale } from './locale'
 
 export interface SideToolbarOptions {
@@ -7,6 +8,7 @@ export interface SideToolbarOptions {
   delayDragDuration?: number
   horizontalDistanceThreshold?: number
   verticalDistanceThreshold?: number
+  match?: (node: Node) => boolean
 }
 
 export const SIDE_TOOLBAR_OPTIONS = new WeakMap<Editable, SideToolbarOptions>()

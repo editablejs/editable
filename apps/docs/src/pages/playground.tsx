@@ -87,6 +87,7 @@ import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
 import { createSlashToolbarItems } from 'configs/slash-toolbar-items'
 import { initialValue } from 'configs/initial-value'
+import { TitleEditor, withTitle } from '@editablejs/plugin-title'
 
 const CustomStyles = createGlobalStyle({
   body: {
@@ -233,10 +234,14 @@ export default function Playground() {
     editor = withInlineToolbar(withToolbar(editor))
 
     if (!isTouchDevice) {
-      editor = withSideToolbar(editor)
+      editor = withSideToolbar(editor, {
+        match: n => !TitleEditor.isTitle(editor, n),
+      })
     }
 
     editor = withSlashToolbar(editor)
+
+    editor = withTitle(editor)
 
     Placeholder.add(editor, {
       check: entry => Editable.isFocused(editor) && Editor.isBlock(editor, entry[0]),

@@ -207,21 +207,20 @@ export const withEditable = <T extends Editor>(editor: T) => {
         prevFocusNode = e.selection ? Node.get(e, e.selection.focus.path) : null
       }
       const isReadOnly = Editable.isReadOnly(e)
-      Placeholder.clearCurrent(e)
+      Placeholder.updateActive(e)
       if (!isReadOnly && e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {
         const nodes = Editor.nodes(e, {
           at: e.selection,
         })
         for (const entry of nodes) {
           if (Editor.isEmpty(e, entry[0])) {
-            Placeholder.setCurrent(e, entry)
+            Placeholder.update(e, entry)
             break
           }
         }
       } else if (!isReadOnly && Editor.isEmpty(e, e)) {
-        Placeholder.setCurrent(e, [e, []])
+        Placeholder.update(e, [e, []])
       }
-
       onChange()
       e.emit('change')
     })

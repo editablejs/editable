@@ -1,5 +1,5 @@
 import { Editable, Hotkey } from '@editablejs/editor'
-import { Transforms, Editor, Path, Range } from '@editablejs/models'
+import { Transforms, Editor, Path, Range, Node, Text } from '@editablejs/models'
 import { BLOCKQUOTE_KEY } from '../constants'
 import { BlockquoteHotkey, BlockquoteOptions, setOptions } from '../options'
 import { BlockquoteEditor } from './blockquote-editor'
@@ -39,7 +39,20 @@ export const withBlockquote = <T extends Editable>(editor: T, options: Blockquot
     })
   }
 
-  const { renderElement } = newEditor
+  const { renderElement, normalizeNode } = newEditor
+
+  newEditor.normalizeNode = entry => {
+    const [node, path] = entry
+    if (BlockquoteEditor.isBlockquote(newEditor, node)) {
+      for (const [child, childPath] of Node.children(editor, path)) {
+        if (!Editor.isBlock(editor, child)) {
+          Transforms.wrapNodes(editor, { type: 'paragraph', children: [] }, { at: childPath })
+          return
+        }
+      }
+    }
+    return normalizeNode(entry)
+  }
 
   newEditor.renderElement = ({ element, attributes, children }) => {
     if (BlockquoteEditor.isBlockquote(newEditor, element)) {

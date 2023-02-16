@@ -21,7 +21,9 @@ export const TaskListEditor = {
   },
 
   queryActive: (editor: Editor) => {
-    const elements = List.lists(editor, TASK_LIST_KEY)
+    const elements = List.lists(editor, {
+      match: n => n.type === TASK_LIST_KEY,
+    })
     return elements.length > 0 ? elements : null
   },
 

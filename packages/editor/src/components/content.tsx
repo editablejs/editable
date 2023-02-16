@@ -106,13 +106,11 @@ export const ContentEditable = (props: EditableProps) => {
     if (placeholder && !readOnly) {
       Placeholder.add(editor, {
         key: 'editorRootPlaceholder',
-        check: entry => {
-          return Editable.isEditor(entry[0])
-        },
+        check: entry => Editable.isEditor(entry[0]),
         render: () => placeholder,
       })
       if (Editor.isEmpty(editor, editor)) {
-        Placeholder.setCurrent(editor, [editor, []])
+        Placeholder.update(editor, [editor, []])
       }
     }
     return () => {
@@ -323,7 +321,7 @@ export const ContentEditable = (props: EditableProps) => {
         isContextMenu.current)
     )
       return
-    const point = Editable.findEventPoint(editor, event)
+    const point = event.defaultPrevented ? null : Editable.findEventPoint(editor, event)
     if (point && dragging && isMouseEvent(event)) {
       setDrag({
         to: {

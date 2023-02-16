@@ -1,4 +1,5 @@
 import React from 'react'
+import { useIsomorphicLayoutEffect } from '../utils'
 import { useControllableState } from './use-controllable-state'
 import { usePointerInTransit } from './use-pointer-in-transit'
 
@@ -163,7 +164,7 @@ export const usePointerOpen = ({
     setOpen(prevOpen => !prevOpen)
   }, [setOpen])
 
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!triggerEl) return
     if (isActionHover) {
       triggerEl.addEventListener('pointermove', handlePointerMove, { passive: false })

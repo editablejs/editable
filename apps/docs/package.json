@@ -32,6 +32,7 @@
     "@editablejs/models": "workspace:*",
     "@editablejs/plugin-codeblock": "workspace:*",
     "@editablejs/plugin-history": "workspace:*",
+    "@editablejs/plugin-title": "workspace:*",
     "@editablejs/plugin-toolbar": "workspace:*",
     "@editablejs/plugin-yjs": "workspace:*",
     "@editablejs/plugins": "workspace:*",

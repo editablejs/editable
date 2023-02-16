@@ -5,6 +5,7 @@ import {
   NodeEntry,
   BaseRange,
   BaseSelection,
+  Location,
 } from 'slate'
 import { GridCell } from './interfaces/cell'
 import { Grid } from './interfaces/grid'
@@ -23,6 +24,7 @@ type BaseEditor = SlateEditor & {
       selection: BaseSelection,
       options?: { grid: NodeEntry<Grid>; row: number; col: number },
     ) => void,
+    at?: Location,
   ) => void
 }
 declare module 'slate' {

@@ -108,7 +108,7 @@ export const withOrderedList = <T extends Editable>(
     const activeElements = OrderedListEditor.queryActive(editor)
     if (activeElements) {
       List.unwrapList(editor, {
-        type: ORDERED_LIST_KEY,
+        match: n => n.type === ORDERED_LIST_KEY,
       })
     } else {
       const { start, template } = options

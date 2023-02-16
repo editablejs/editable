@@ -37,8 +37,8 @@ interface EditorInterface extends SlateEditorInterface {
   isGridCell: (editor: SlateEditor, value: any) => value is GridCell
   isList: (editor: SlateEditor, value: any) => value is List
   isEmpty: (editor: SlateEditor, node: Node) => boolean
-  marks: (editor: SlateEditor) => EditorMarks
-  elements: (editor: SlateEditor) => EditorElements
+  marks: (editor: SlateEditor, at?: Location) => EditorMarks
+  elements: (editor: SlateEditor, at?: Location) => EditorElements
 }
 
 const startPoint = (root: Node, at: Point): Point => {
@@ -127,15 +127,18 @@ const marks = (editor: SlateEditor): EditorMarks | null => {
   return rest
 }
 
-SlateEditor.marks = (editor: SlateEditor) => {
+SlateEditor.marks = (editor: SlateEditor, at?: Location) => {
   const caches = EDITOR_ACTIVE_MARKS.get(editor)
-  if (caches) return caches
+  if (caches && !at) return caches
   let editorMarks: EditorMarks = {}
+  const prevSelection = editor.selection
+  if (at) editor.selection = Editor.range(editor, at)
   editor.normalizeSelection(selection => {
     if (editor.selection !== selection) editor.selection = selection
     Object.assign(editorMarks, marks(editor) ?? {})
   })
-  EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
+  editor.selection = prevSelection
+  if (!at) EDITOR_ACTIVE_MARKS.set(editor, editorMarks)
   return editorMarks
 }
 
@@ -193,9 +196,11 @@ export const Editor: EditorInterface = {
 
   marks: SlateEditor.marks as (editor: SlateEditor) => EditorMarks,
 
-  elements(editor: SlateEditor) {
+  elements(editor: SlateEditor, at?: Location) {
     let caches = EDITOR_ACTIVE_ELEMENTS.get(editor)
-    if (caches) return caches
+    if (caches && !at) return caches
+    const prevSelection = editor.selection
+    if (at) editor.selection = Editor.range(editor, at)
     const editorElements: EditorElements = {}
     editor.normalizeSelection(selection => {
       if (selection === null) return
@@ -210,8 +215,8 @@ export const Editor: EditorInterface = {
         else editorElements[type] = [entry]
       }
     })
-
-    EDITOR_ACTIVE_ELEMENTS.set(editor, editorElements)
+    editor.selection = prevSelection
+    if (!at) EDITOR_ACTIVE_ELEMENTS.set(editor, editorElements)
     return editorElements
   },
 }
@@ -247,10 +252,11 @@ export const createEditor = () => {
 
   baseEditor.isList = (value: any): value is List => false
 
-  baseEditor.normalizeSelection = fn => {
-    const { selection } = baseEditor
-    const grid = Grid.above(baseEditor)
-    if (grid && selection) {
+  baseEditor.normalizeSelection = (fn, at) => {
+    const selection = at ? Editor.range(baseEditor, at) : baseEditor.selection
+    if (!selection) return fn(selection)
+    const grid = Grid.above(baseEditor, selection)
+    if (grid) {
       const sel = Grid.getSelection(baseEditor, grid)
       if (sel) {
         let { start, end } = sel
@@ -270,7 +276,7 @@ export const createEditor = () => {
             endRow: edgeEnd[0],
             endCol: edgeEnd[1],
           })
-
+          const rangeRef = Editor.rangeRef(baseEditor, selection)
           for (const [cell, row, col] of cells) {
             if (!cell) break
             if (!cell.span) {
@@ -278,8 +284,8 @@ export const createEditor = () => {
               fn(range, { grid, row, col })
             }
           }
-          // 恢复选区
-          Transforms.select(baseEditor, selection)
+          const range = rangeRef.unref()
+          Transforms.select(baseEditor, range ?? selection)
           return
         }
       }

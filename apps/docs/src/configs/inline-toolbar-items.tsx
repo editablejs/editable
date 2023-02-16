@@ -1,5 +1,6 @@
 import { Editable } from '@editablejs/editor'
 import { Editor, Grid, Range, Transforms } from '@editablejs/models'
+import { TitleEditor } from '@editablejs/plugin-title'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
 import {
   HeadingEditor,
@@ -14,6 +15,7 @@ import {
   FontColorEditor,
   AlignEditor,
   AlignKeys,
+  LinkEditor,
 } from '@editablejs/plugins'
 import { Icon } from '@editablejs/ui'
 import { defaultFontColor, defaultBackgroundColor, AlignDropdown } from './toolbar-items'
@@ -49,6 +51,46 @@ export const createInlineToolbarItems = (editor: Editable) => {
         },
       })
     }
+    return items
+  }
+  if (TitleEditor.isFocused(editor)) {
+    items.push(
+      {
+        type: 'button',
+        icon: <Icon name="link" />,
+        onToggle: () => {
+          LinkEditor.open(editor)
+        },
+      },
+      {
+        type: 'button',
+        icon: <Icon name="alignLeft" />,
+        onToggle: () => {
+          AlignEditor.toggle(editor, 'left')
+        },
+      },
+      {
+        type: 'button',
+        icon: <Icon name="alignCenter" />,
+        onToggle: () => {
+          AlignEditor.toggle(editor, 'center')
+        },
+      },
+      {
+        type: 'button',
+        icon: <Icon name="alignRight" />,
+        onToggle: () => {
+          AlignEditor.toggle(editor, 'right')
+        },
+      },
+      {
+        type: 'button',
+        icon: <Icon name="alignJustify" />,
+        onToggle: () => {
+          AlignEditor.toggle(editor, 'justify')
+        },
+      },
+    )
     return items
   }
   const markItems: ToolbarItem[] = marks.map(mark => ({
