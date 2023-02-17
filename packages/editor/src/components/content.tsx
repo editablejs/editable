@@ -104,17 +104,17 @@ export const ContentEditable = (props: EditableProps) => {
 
   React.useEffect(() => {
     if (placeholder && !readOnly) {
-      Placeholder.add(editor, {
-        key: 'editorRootPlaceholder',
-        check: entry => Editable.isEditor(entry[0]),
-        render: () => placeholder,
-      })
-      if (Editor.isEmpty(editor, editor)) {
-        Placeholder.update(editor, [editor, []])
+      const unsubscribe = Placeholder.subscribe(
+        editor,
+        ([node]) => {
+          if (Editable.isEditor(node)) return () => placeholder
+        },
+        true,
+      )
+
+      return () => {
+        unsubscribe()
       }
-    }
-    return () => {
-      Placeholder.remove(editor, 'editorRootPlaceholder')
     }
   }, [editor, placeholder, readOnly])
 

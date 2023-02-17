@@ -14,6 +14,16 @@ const DefaultTitle: FC<TitleComponentProps> = ({ attributes, children }) => {
   return <StyledTitle {...attributes}>{children}</StyledTitle>
 }
 
+const { isEmpty } = Editor
+
+Editor.isEmpty = (editor, node) => {
+  if (Editor.isEditor(node)) {
+    if (!Title.isTitle(node.children[0])) return isEmpty(editor, node)
+    return isEmpty(editor, { children: node.children.slice(1) })
+  }
+  return isEmpty(editor, node)
+}
+
 export const withTitle = <T extends Editable>(editor: T, options: TitleOptions = {}) => {
   const titleEditor = editor as T & TitleEditor
 
@@ -109,11 +119,13 @@ export const withTitle = <T extends Editable>(editor: T, options: TitleOptions =
     normalizeNode(entry)
   }
 
-  Placeholder.add(editor, {
-    keep: true,
-    check: entry => Title.isTitle(entry[0]),
-    render: () => options.placeholder ?? 'Untitled',
-  })
+  Placeholder.subscribe(
+    editor,
+    ([node]) => {
+      if (Title.isTitle(node)) return () => options.placeholder ?? 'Untitled'
+    },
+    true,
+  )
 
   return titleEditor
 }

@@ -93,6 +93,9 @@ export const withSlashToolbar = <T extends Editable>(
       isInputTrigger = false
       const [start] = Range.edges(selection)
       const [text] = Editor.node(editor, start.path)
+      if (options.match && !options.match(text, start.path)) {
+        return
+      }
       const beforeText = getBeforeText(editor, start)
       const reg = new RegExp(`(^|.*)${triggerChar}$`)
       const match = beforeText && beforeText.match(reg)

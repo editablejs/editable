@@ -194,7 +194,7 @@ export function withYjs<T extends Editor>(
     editor.selection = null
     editor.children = content.children
 
-    Editor.normalize(editor, { force: true })
+    // Editor.normalize(editor, { force: true })
     if (!editor.operations.length) {
       editor.onChange()
     }

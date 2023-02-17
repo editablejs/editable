@@ -205,6 +205,7 @@ export default function Playground() {
             resolve(users)
           })
         },
+        match: () => !Editor.above(editor, { match: n => TitleEditor.isTitle(editor, n) }),
       },
       codeBlock: {
         languages: [
@@ -239,13 +240,19 @@ export default function Playground() {
       })
     }
 
-    editor = withSlashToolbar(editor)
+    editor = withSlashToolbar(editor, {
+      match: () => !Editor.above(editor, { match: n => TitleEditor.isTitle(editor, n) }),
+    })
 
     editor = withTitle(editor)
 
-    Placeholder.add(editor, {
-      check: entry => Editable.isFocused(editor) && Editor.isBlock(editor, entry[0]),
-      render: () => 'Type / evoke more',
+    Placeholder.subscribe(editor, ([node]) => {
+      if (
+        Editable.isFocused(editor) &&
+        Editor.isBlock(editor, node) &&
+        !TitleEditor.isTitle(editor, node)
+      )
+        return () => 'Type / evoke more'
     })
     return editor
   }, [document, provider])
@@ -340,7 +347,7 @@ export default function Playground() {
     <>
       <CustomStyles />
       <Seo title="Editable Playground" />
-      <EditableProvider editor={editor} value={initialValue}>
+      <EditableProvider editor={editor} value={[]}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
             <div tw="flex text-2xl text-link flex-1 gap-3">

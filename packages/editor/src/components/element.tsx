@@ -31,11 +31,14 @@ const Element = (props: {
   const editor = useEditableStatic()
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)
+
   const currentRenderPlaceholder = usePlaceholder(element)
   let children: React.ReactNode = useChildren({
     node: element,
     selection,
-    renderPlaceholder: renderPlaceholder ?? currentRenderPlaceholder,
+    renderPlaceholder: Editor.isEmpty(editor, element)
+      ? currentRenderPlaceholder ?? renderPlaceholder
+      : undefined,
   })
 
   // Attributes that the developer must mix into the element in their

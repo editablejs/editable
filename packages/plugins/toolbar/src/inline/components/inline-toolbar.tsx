@@ -7,7 +7,6 @@ import {
   useSlotActive,
   useIsomorphicLayoutEffect,
   useLocale,
-  useReadOnly,
 } from '@editablejs/editor'
 import { Descendant, Range } from '@editablejs/models'
 import { Measurable, Popover, PopoverAnchor, PopoverContent, PopoverPortal } from '@editablejs/ui'

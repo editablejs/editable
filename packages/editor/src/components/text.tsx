@@ -9,7 +9,6 @@ import { Editable } from '../plugin/editable'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { useTextDecorations } from '../hooks/use-decorate'
 import { PlaceholderRender } from '../plugin/placeholder'
-import { usePlaceholder } from '../hooks/use-placeholder'
 
 /**
  * Text.
@@ -35,15 +34,13 @@ const Text = (props: {
     .flat()
   const leaves = SlateText.decorations(text, ranges)
 
-  const currentRenderPlaceholder = usePlaceholder(text)
-
   const decorateKeys = decorates.map(d => d.key)
   const children = []
   for (let i = 0; i < leaves.length; i++) {
     const leaf = leaves[i]
     let content = (
       <Leaf
-        renderPlaceholder={renderPlaceholder ?? currentRenderPlaceholder}
+        renderPlaceholder={renderPlaceholder}
         isLast={isLast && i === leaves.length - 1}
         key={`${key.id}-${i}`}
         text={text}

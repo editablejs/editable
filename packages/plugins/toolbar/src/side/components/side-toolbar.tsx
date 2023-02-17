@@ -11,6 +11,9 @@ import {
   ElementDecorate,
   DATA_EDITABLE_LEAF,
   useReadOnly,
+  DATA_EDITABLE_PLACEHOLDER,
+  DATA_EDITABLE_STRING,
+  DATA_EDITABLE_ZERO_WIDTH,
 } from '@editablejs/editor'
 import { DOMElement, Editor, GridCell, Transforms } from '@editablejs/models'
 import * as React from 'react'
@@ -40,6 +43,11 @@ const StyledElementDecorator = styled.div(({ isVoid }: { isVoid: boolean }) => [
 const findFirstElementChild = (el: DOMElement): DOMElement => {
   const child = el.firstElementChild
   if (!child) return el
+  if (child.querySelector(`[${DATA_EDITABLE_PLACEHOLDER}]`)) {
+    const next = child.nextElementSibling
+    if (next) return findFirstElementChild(next)
+    return el
+  }
   return findFirstElementChild(child)
 }
 
@@ -159,11 +167,11 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
       // 优先对齐文本节点
       const textElement = isFindList
         ? findFirstElementChild(element)
-        : element.querySelector(`[${DATA_EDITABLE_LEAF}]`)
-
+        : element.querySelector(`[${DATA_EDITABLE_STRING}],[${DATA_EDITABLE_ZERO_WIDTH}]`)
       const rects = (!isVoid && textElement ? textElement : element).getClientRects()
+
       if (!rects.length) return delayHide()
-      const rect = rects[0]
+      const rect = Array.from(rects).find(rect => rect.height > 0) ?? rects[0]
       let { x, y, height } = rect
       const gridCell = GridCell.find(editor, point)
       if (gridCell) {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Editor, Node, NodeEntry } from '@editablejs/models'
+import { Editor, Node, NodeEntry, Range } from '@editablejs/models'
 import create, { UseBoundStore, StoreApi } from 'zustand'
 import { Editable } from './editable'
 
@@ -8,22 +8,19 @@ export interface RenderPlaceholderProps {
 }
 export type PlaceholderRender = (props: RenderPlaceholderProps) => React.ReactNode
 
-export interface PlaceholderState {
-  key?: string
-  keep?: boolean
-  check: (entry: NodeEntry) => boolean
-  render: PlaceholderRender
-}
+export type PlaceholderSubscribe = (entry: NodeEntry) => PlaceholderRender | void
 
+const PLACEHOLDER_IS_ALONE = new WeakMap<PlaceholderSubscribe, boolean>()
 export interface ActivePlaceholder {
-  node: Node
-  keep: boolean
+  entry: NodeEntry
+  alone: boolean
   render: PlaceholderRender
+  placeholder: PlaceholderSubscribe
 }
 
 export interface PlaceholderStore {
-  placeholders: PlaceholderState[]
-  activePlaceholders: ActivePlaceholder[]
+  placeholders: PlaceholderSubscribe[]
+  actives: ActivePlaceholder[]
 }
 
 const EDITOR_TO_PLACEHOLDER_STORE = new WeakMap<
@@ -36,7 +33,7 @@ const getPlaceholderStore = (editor: Editable) => {
   if (!store) {
     store = create<PlaceholderStore>(() => ({
       placeholders: [],
-      activePlaceholders: [],
+      actives: [],
     }))
     EDITOR_TO_PLACEHOLDER_STORE.set(editor, store)
   }
@@ -46,56 +43,97 @@ const getPlaceholderStore = (editor: Editable) => {
 export const Placeholder = {
   getStore: getPlaceholderStore,
 
-  add: (editor: Editable, placeholder: PlaceholderState) => {
-    const store = getPlaceholderStore(editor)
-    store.setState(state => ({
-      placeholders: [...state.placeholders, placeholder],
-    }))
+  isAlone: (fn: PlaceholderSubscribe) => {
+    return PLACEHOLDER_IS_ALONE.get(fn) ?? false
   },
 
-  remove: (editor: Editable, placeholder: PlaceholderState | string) => {
+  subscribe: (editor: Editable, fn: PlaceholderSubscribe, alone = false) => {
     const store = getPlaceholderStore(editor)
-    const isKey = typeof placeholder === 'string'
+    PLACEHOLDER_IS_ALONE.set(fn, alone)
+
     store.setState(state => ({
-      placeholders: state.placeholders.filter(d =>
-        isKey ? d.key !== placeholder : d !== placeholder,
-      ),
+      placeholders: [...state.placeholders.filter(d => d !== fn), fn],
     }))
+
+    return () => {
+      store.setState(state => ({
+        placeholders: state.placeholders.filter(d => d !== fn),
+      }))
+      PLACEHOLDER_IS_ALONE.delete(fn)
+    }
   },
 
   update: (editor: Editable, entry: NodeEntry) => {
     const store = getPlaceholderStore(editor)
-    return store.setState(state => {
-      const placeholder = state.placeholders.find(p => p.check(entry))
-      if (!placeholder) return state
-
-      const activePlaceholders = state.activePlaceholders.filter(p => p.node !== entry[0] || p.keep)
-      activePlaceholders.push({
-        node: entry[0],
-        keep: placeholder.keep ?? false,
-        render: placeholder.render,
-      })
-      return {
-        activePlaceholders,
+    const state = store.getState()
+    let render: PlaceholderRender | null = null
+    let placeholder: PlaceholderSubscribe | null = null
+    const aloneActive = state.actives.find(d => d.alone && d.entry[0] === entry[0])
+    if (aloneActive) {
+      const r = aloneActive.placeholder(entry)
+      if (r) {
+        render = r
+        placeholder = aloneActive.placeholder
       }
-    })
-  },
-
-  updateActive: (editor: Editable) => {
-    const store = getPlaceholderStore(editor)
-    return store.setState(state => {
-      const activePlaceholders = []
-      for (const placeholder of state.activePlaceholders) {
-        if (placeholder.keep && Editor.isEmpty(editor, placeholder.node)) {
-          activePlaceholders.push(placeholder)
+    }
+    // 没有以编辑器为placeholder的情况下，才会去找其他的placeholder
+    else {
+      const hasEditorPlaceholder = state.actives.some(d => d.entry[0] === editor)
+      const placeholders = state.placeholders.sort(a => (Placeholder.isAlone(a) ? 1 : 0))
+      for (let i = placeholders.length - 1; i >= 0; i--) {
+        placeholder = placeholders[i]
+        if (!Placeholder.isAlone(placeholder) && hasEditorPlaceholder) continue
+        const r = placeholder(entry)
+        if (r) {
+          render = r
+          break
         }
       }
-      return {
-        activePlaceholders:
-          activePlaceholders.length === state.activePlaceholders.length
-            ? state.activePlaceholders
-            : activePlaceholders,
-      }
+    }
+
+    const actives = state.actives.filter(d => {
+      if (!d.alone || (d.entry[0] === entry[0] && render)) return false
+      return Editor.isEmpty(editor, d.entry[0])
     })
+
+    if (render && placeholder) {
+      actives.push({
+        entry,
+        alone: Placeholder.isAlone(placeholder),
+        render,
+        placeholder,
+      })
+    }
+    store.setState({ actives })
+    return render
+  },
+
+  refresh: (editor: Editable) => {
+    const isReadOnly = Editable.isReadOnly(editor)
+    const store = getPlaceholderStore(editor)
+    if (isReadOnly) {
+      store.setState({ actives: [] })
+    } else if (Editor.isEmpty(editor, editor)) {
+      Placeholder.update(editor, [editor, []])
+    } else if (editor.selection && Range.isCollapsed(editor.selection)) {
+      const nodes = Editor.nodes(editor, {
+        at: editor.selection,
+      })
+      for (const entry of nodes) {
+        if (Editor.isEmpty(editor, entry[0])) {
+          return Placeholder.update(editor, entry)
+        }
+      }
+      store.setState(({ actives }) => {
+        return {
+          actives: actives.filter(d => {
+            if (!d.alone) return false
+            return Editor.isEmpty(editor, d.entry[0])
+          }),
+        }
+      })
+    } else {
+      store.setState({ actives: [] })
+    }
   },
 }

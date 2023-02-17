@@ -188,42 +188,22 @@ export const withEditable = <T extends Editor>(editor: T) => {
   let prevFocusNode: Node | null = null
 
   e.onChange = () => {
-    // COMPAT: React doesn't batch `setState` hook calls, which means that the
-    // children and selection can get out of sync for one render pass. So we
-    // have to use this unstable API to ensure it batches them. (2019/12/03)
-    // https://github.com/facebook/react/issues/14259#issuecomment-439702367
-    ReactDOM.unstable_batchedUpdates(() => {
-      if (
-        ((!prevSelection || !e.selection) && prevSelection !== e.selection) ||
-        (prevSelection &&
-          e.selection &&
-          (!Range.equals(prevSelection, e.selection) ||
-            prevAnchorNode !== Node.get(e, e.selection.anchor.path) ||
-            prevFocusNode !== Node.get(e, e.selection.focus.path)))
-      ) {
-        e.onSelectionChange()
-        prevSelection = e.selection ? Object.assign({}, e.selection) : null
-        prevAnchorNode = e.selection ? Node.get(e, e.selection.anchor.path) : null
-        prevFocusNode = e.selection ? Node.get(e, e.selection.focus.path) : null
-      }
-      const isReadOnly = Editable.isReadOnly(e)
-      Placeholder.updateActive(e)
-      if (!isReadOnly && e.selection && Range.isCollapsed(e.selection) && Focused.is(e)) {
-        const nodes = Editor.nodes(e, {
-          at: e.selection,
-        })
-        for (const entry of nodes) {
-          if (Editor.isEmpty(e, entry[0])) {
-            Placeholder.update(e, entry)
-            break
-          }
-        }
-      } else if (!isReadOnly && Editor.isEmpty(e, e)) {
-        Placeholder.update(e, [e, []])
-      }
-      onChange()
-      e.emit('change')
-    })
+    if (
+      ((!prevSelection || !e.selection) && prevSelection !== e.selection) ||
+      (prevSelection &&
+        e.selection &&
+        (!Range.equals(prevSelection, e.selection) ||
+          prevAnchorNode !== Node.get(e, e.selection.anchor.path) ||
+          prevFocusNode !== Node.get(e, e.selection.focus.path)))
+    ) {
+      e.onSelectionChange()
+      prevSelection = e.selection ? Object.assign({}, e.selection) : null
+      prevAnchorNode = e.selection ? Node.get(e, e.selection.anchor.path) : null
+      prevFocusNode = e.selection ? Node.get(e, e.selection.focus.path) : null
+    }
+    Placeholder.refresh(e)
+    onChange()
+    e.emit('change')
   }
 
   e.blur = (): void => {
@@ -310,10 +290,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.onFocus = () => {
     e.focus()
+    Placeholder.refresh(e)
     e.emit('focus')
   }
 
   e.onBlur = () => {
+    Placeholder.refresh(e)
     e.emit('blur')
   }
 
@@ -370,7 +352,15 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.renderPlaceholder = ({ attributes, children }) => {
     return (
-      <span style={{ pointerEvents: 'none', userSelect: 'none', position: 'relative' }}>
+      <span
+        style={{
+          pointerEvents: 'none',
+          userSelect: 'none',
+          position: 'relative',
+          display: 'block',
+          width: '100%',
+        }}
+      >
         <span
           style={{
             position: 'absolute',
@@ -378,6 +368,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
             width: 'fit-content',
             whiteSpace: 'nowrap',
             textIndent: 'initial',
+            textOverflow: 'ellipsis',
+            maxWidth: '100%',
+            overflow: 'hidden',
           }}
           {...attributes}
         >

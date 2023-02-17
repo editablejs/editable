@@ -1,4 +1,5 @@
 import { Editable } from '@editablejs/editor'
+import { Path, Node } from '@editablejs/models'
 import { SlashToolbarItem } from './store'
 
 export type SlashHotkey = string | string[] | ((e: KeyboardEvent) => boolean)
@@ -12,6 +13,8 @@ export interface SlashToolbarOptions {
   onSearchRender?: (items: SlashToolbarItem[]) => React.ReactElement
   onSearchRenderItem?: (item: SlashToolbarItem) => React.ReactNode
   onSearchRenderEmpty?: () => React.ReactNode
+
+  match?: (node: Node, path: Path) => boolean
 }
 
 export const SLASH_TOOLBAR_OPTIONS = new WeakMap<Editable, SlashToolbarOptions>()
