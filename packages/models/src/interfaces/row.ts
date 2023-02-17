@@ -5,7 +5,6 @@ export interface GridRow extends Element {
   type: string
   children: GridCell[]
   height?: number
-  contentHeight?: number
 }
 
 export const GridRow = {
@@ -13,12 +12,11 @@ export const GridRow = {
     row: Partial<Omit<R, 'children'>> = {},
     cells: Partial<C>[],
   ): R => {
-    const { height, contentHeight = height, ...rest } = row
+    const { height, ...rest } = row
     return {
       type: 'grid-row',
       children: cells.map(cell => GridCell.create<C>(cell)),
       height,
-      contentHeight,
       ...rest,
     } as unknown as R
   },

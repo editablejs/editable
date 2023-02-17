@@ -94,12 +94,13 @@ export const _delete = (editor: Editor, options: TextDeleteOptions = {}) => {
         }
       }
     }
+    const beforeGrid = Grid.above(editor)
     defaultDelete(editor, options)
     // 删除后，如果当前位置在grid内，说明删除空行后聚焦到了 gird，此时则选择整个grid
     if (!start && !end && editor.selection && Range.isCollapsed(editor.selection)) {
-      const grid = Grid.above(editor, editor.selection)
-      if (!grid) return
-      Grid.select(editor, grid)
+      const afterGrid = Grid.above(editor, editor.selection)
+      if (!afterGrid || (beforeGrid && Path.equals(beforeGrid[1], afterGrid[1]))) return
+      Grid.select(editor, afterGrid)
     }
   }
 }

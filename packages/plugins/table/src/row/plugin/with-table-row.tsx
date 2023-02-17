@@ -5,6 +5,7 @@ import { RowStyles } from '../../components/styles'
 import { TableRow } from '../interfaces/table-row'
 import { getOptions, setOptions, TableRowOptions } from '../options'
 import { TableRowEditor } from './table-row-editor'
+import { RowStore } from '../store'
 
 interface TableRowProps extends React.AnchorHTMLAttributes<HTMLTableRowElement> {
   editor: Editor
@@ -25,14 +26,8 @@ const Row: React.FC<TableRowProps & RenderElementProps<TableRow, HTMLTableRowEle
     let maxHeight = getOptions(editor).minRowHeight
     const rect = ref.current.getBoundingClientRect()
     maxHeight = Math.max(maxHeight, rect.height)
-    if (maxHeight !== element.contentHeight) {
-      Transforms.setNodes<TableRow>(
-        editor,
-        { contentHeight: maxHeight },
-        {
-          at: Editable.findPath(editor, element),
-        },
-      )
+    if (maxHeight !== RowStore.getContentHeight(element)) {
+      RowStore.setContentHeight(element, maxHeight)
     }
   }, [editor, ref, width, element])
 

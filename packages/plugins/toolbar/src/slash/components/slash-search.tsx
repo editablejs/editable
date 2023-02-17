@@ -181,6 +181,7 @@ export const SlashToolbarSearch: FC<SlashToolbarSearchProps> = ({
         onMouseDown={event => {
           event.preventDefault()
           if (onContextSelect) onContextSelect()
+          item.onSelect?.()
         }}
       >
         {icon && (

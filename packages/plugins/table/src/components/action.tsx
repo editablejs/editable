@@ -24,6 +24,7 @@ import { useTableOptions } from '../table/options'
 import { defaultTableMinColWidth } from '../cell/options'
 import { defaultTableMinRowHeight } from '../row/options'
 import { adaptiveExpandColumnWidthInContainer } from '../table/utils'
+import { RowStore } from '../row/store'
 
 const TYPE_COL = 'col'
 const TYPE_ROW = 'row'
@@ -199,8 +200,10 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
         newColsWidth[start] = width
         Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
       } else if (type === TYPE_ROW) {
-        const { height, children: cells, contentHeight: ch = height } = table.children[start]
+        const row = table.children[start]
+        const { height, children: cells } = row
         if (height) {
+          const ch = RowStore.getContentHeight(row)
           const cY = e.clientY
           const val = cY - y
           let h = Math.max(height, ch!) + val
@@ -215,11 +218,8 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
           if (h < contentHeight) {
             h = contentHeight
           }
-          Transforms.setNodes<TableRow>(
-            editor,
-            { height: h, contentHeight: h },
-            { at: path.concat(start) },
-          )
+          RowStore.setContentHeight(row, contentHeight)
+          Transforms.setNodes<TableRow>(editor, { height: h }, { at: path.concat(start) })
         }
       }
     },

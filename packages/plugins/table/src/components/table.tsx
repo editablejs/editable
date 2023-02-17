@@ -31,6 +31,7 @@ import { TableSelection as TableSelectionElement } from './selection'
 import { AllHeaderStyles, TableStyles } from './styles'
 import { Table } from '../table/interfaces/table'
 import { TableEditor } from '../table/plugin/table-editor'
+import { useTableRowContentHeights } from '../row/store'
 
 interface TableProps extends RenderElementProps<Table> {
   editor: TableEditor
@@ -127,15 +128,18 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
     }
     return width
   }, [colsWidth])
+  const rowContentHeights = useTableRowContentHeights(element.children)
+
   // table height
   const tableHeight = React.useMemo(() => {
     const { children } = element
     let height = 0
     for (let i = 0; i < children.length; i++) {
-      height += children[i].contentHeight ?? 0
+      const row = children[i]
+      height += (rowContentHeights[i] || row.height) ?? 0
     }
     return height
-  }, [element])
+  }, [element, rowContentHeights])
 
   const [isHover, setHover] = React.useState(false)
 
@@ -316,7 +320,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
         ref={composedRefs}
       >
         <TableColHeader editor={editor} table={element} />
-        <TableRowHeader editor={editor} table={element} />
+        <TableRowHeader editor={editor} table={element} rowContentHeights={rowContentHeights} />
         {renderAllHeader()}
         <table style={{ width: tableWidth }}>
           {renderColgroup()}

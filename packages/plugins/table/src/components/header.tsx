@@ -11,12 +11,17 @@ import {
   RowsHeaderStyles,
 } from './styles'
 import { TableDrag } from '../hooks/use-drag'
+import { useTableRowContentHeights } from '../row/store'
 export interface TableHeaderProps {
   editor: Editor
   table: Grid
 }
 
-const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
+const TableRowHeaderDefault: React.FC<
+  TableHeaderProps & {
+    rowContentHeights: number[]
+  }
+> = ({ editor, table, rowContentHeights }) => {
   const { width, selected, cols } = useTableStore()
 
   const selectRow = React.useCallback(
@@ -87,7 +92,8 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     let height = 0
     const { children } = table
     for (let i = 0; i < children.length; i++) {
-      const rowHeight = children[i].contentHeight
+      const row = children[i]
+      const rowHeight = rowContentHeights[i] || row.height
       const currentHeight = height
       const h = rowHeight ?? 0
       height += h
@@ -133,23 +139,13 @@ const TableRowHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) =>
     selected.rows,
     table,
     width,
+    rowContentHeights,
   ])
 
   return <RowsHeaderStyles>{headers}</RowsHeaderStyles>
 }
 
-const TableRowHeader = React.memo(TableRowHeaderDefault, (prev, next) => {
-  const { editor, table } = prev
-  const { editor: nextEditor, table: nextTable } = next
-  const { children } = table
-  const { children: nextChildren } = nextTable
-  return (
-    editor === nextEditor &&
-    children.length === nextChildren.length &&
-    table.colsWidth?.length === nextTable.colsWidth?.length &&
-    children.every((item, index) => item.contentHeight === nextChildren[index].contentHeight)
-  )
-})
+const TableRowHeader = TableRowHeaderDefault
 
 const TableColHeaderDefault: React.FC<TableHeaderProps> = ({ editor, table }) => {
   const { height, selected, rows } = useTableStore()
