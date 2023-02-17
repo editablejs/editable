@@ -1,5 +1,11 @@
 # @editablejs/plugin-hr
 
+## 1.0.0-beta.22
+
+### Patch Changes
+
+- [`c416997`](https://github.com/editablejs/editable/commit/c416997ba4f78fce20f016587b3810d5eca1b03e) Thanks [@big-camel](https://github.com/big-camel)! - Fix hr plugin modification style is invalid
+
 ## 1.0.0-beta.21
 
 ### Patch Changes
