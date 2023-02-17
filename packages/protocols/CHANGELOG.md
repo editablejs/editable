@@ -1,5 +1,12 @@
 # @editablejs/protocols
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [[`981e4ee`](https://github.com/editablejs/editable/commit/981e4eeb902ddf53135999fbab05a8e7bfb8778f)]:
+  - @editablejs/models@1.0.0-beta.5
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
