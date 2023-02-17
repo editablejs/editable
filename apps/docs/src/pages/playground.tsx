@@ -246,7 +246,11 @@ export default function Playground() {
 
     editor = withTitle(editor)
 
-    Placeholder.subscribe(editor, ([node]) => {
+    return editor
+  }, [document, provider])
+
+  React.useLayoutEffect(() => {
+    const unsubscribe = Placeholder.subscribe(editor, ([node]) => {
       if (
         Editable.isFocused(editor) &&
         Editor.isBlock(editor, node) &&
@@ -254,8 +258,8 @@ export default function Playground() {
       )
         return () => 'Type / evoke more'
     })
-    return editor
-  }, [document, provider])
+    return () => unsubscribe()
+  }, [editor])
 
   // Connect editor and provider in useEffect to comply with concurrent mode
   // requirements.
