@@ -1,5 +1,11 @@
 # @editablejs/models
 
+## 1.0.0-beta.6
+
+### Patch Changes
+
+- [`0daab81`](https://github.com/editablejs/editable/commit/0daab812f79401a7cc4c1f20c92717666c6eade4) Thanks [@big-camel](https://github.com/big-camel)! - Refactor list node style update.
+
 ## 1.0.0-beta.5
 
 ### Patch Changes
