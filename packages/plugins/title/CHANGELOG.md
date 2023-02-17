@@ -1,5 +1,11 @@
 # @editablejs/plugin-title
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [`782f464`](https://github.com/editablejs/editable/commit/782f464cb9ec1394f60096af65443b7f08a9ea1e) Thanks [@big-camel](https://github.com/big-camel)! - Spelling error in method name "withTitleHTMLSerializerTransform".
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
