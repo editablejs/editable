@@ -36,6 +36,7 @@
     "@editablejs/plugin-toolbar": "workspace:*",
     "@editablejs/plugin-yjs": "workspace:*",
     "@editablejs/plugins": "workspace:*",
+    "@editablejs/serializer": "workspace:1.0.0-beta.6",
     "@editablejs/ui": "workspace:*",
     "@editablejs/yjs-websocket": "workspace:*",
     "@faker-js/faker": "7.5.0",

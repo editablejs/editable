@@ -1,7 +1,7 @@
 import { HTMLDeserializerWithTransform } from '@editablejs/deserializer/html'
 import { TITLE_KEY } from '../constants'
 
-export const witTitleHTMLDeserializerTransform: HTMLDeserializerWithTransform = (
+export const withTitleHTMLDeserializerTransform: HTMLDeserializerWithTransform = (
   next,
   serializer,
 ) => {

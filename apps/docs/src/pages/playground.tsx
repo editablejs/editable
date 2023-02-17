@@ -49,6 +49,10 @@ import {
   withMarkdownDeserializerTransform,
   withMarkdownDeserializerPlugin,
 } from '@editablejs/plugins/deserializer/markdown'
+
+import { withTitleHTMLSerializerTransform } from '@editablejs/plugin-title/serializer/html'
+import { withTitleHTMLDeserializerTransform } from '@editablejs/plugin-title/deserializer/html'
+
 import { withHistory } from '@editablejs/plugin-history'
 import { javascript as codemirrorJavascript } from '@codemirror/lang-javascript-next'
 import { html as codemirrorHtml } from '@codemirror/lang-html-next'
@@ -76,6 +80,9 @@ import {
   SlashToolbar,
 } from '@editablejs/plugin-toolbar/slash'
 import { Switch, SwitchThumb, Icon, Tooltip } from '@editablejs/ui'
+import { TitleEditor, withTitle } from '@editablejs/plugin-title'
+import { HTMLDeserializer } from '@editablejs/deserializer/html'
+import { HTMLSerializer } from '@editablejs/serializer/html'
 import { createContextMenuItems } from '../configs/context-menu-items'
 import {
   createToolbarItems,
@@ -87,7 +94,6 @@ import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
 import { createSlashToolbarItems } from 'configs/slash-toolbar-items'
 import { initialValue } from 'configs/initial-value'
-import { TitleEditor, withTitle } from '@editablejs/plugin-title'
 
 const CustomStyles = createGlobalStyle({
   body: {
@@ -249,7 +255,7 @@ export default function Playground() {
     return editor
   }, [document, provider])
 
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const unsubscribe = Placeholder.subscribe(editor, ([node]) => {
       if (
         Editable.isFocused(editor) &&
@@ -289,7 +295,8 @@ export default function Playground() {
     withMarkdownSerializerTransform(editor) // Adds a markdown serializer transform to the editor
     withHTMLDeserializerTransform(editor) // Adds an HTML deserializer transform to the editor
     withMarkdownDeserializerTransform(editor) // Adds a markdown deserializer transform to the editor
-
+    HTMLDeserializer.withEditor(editor, withTitleHTMLDeserializerTransform, {})
+    HTMLSerializer.withEditor(editor, withTitleHTMLSerializerTransform, {})
     const { onPaste } = editor
 
     editor.onPaste = event => {
