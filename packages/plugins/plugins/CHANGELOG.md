@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.52
+
+### Patch Changes
+
+- Updated dependencies [[`c416997`](https://github.com/editablejs/editable/commit/c416997ba4f78fce20f016587b3810d5eca1b03e)]:
+  - @editablejs/plugin-hr@1.0.0-beta.22
+
 ## 1.0.0-beta.51
 
 ### Patch Changes
