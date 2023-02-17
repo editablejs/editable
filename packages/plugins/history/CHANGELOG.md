@@ -1,5 +1,14 @@
 # @editablejs/plugin-history
 
+## 1.0.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [[`981e4ee`](https://github.com/editablejs/editable/commit/981e4eeb902ddf53135999fbab05a8e7bfb8778f)]:
+  - @editablejs/models@1.0.0-beta.5
+  - @editablejs/editor@1.0.0-beta.27
+  - @editablejs/protocols@1.0.0-beta.5
+
 ## 1.0.0-beta.27
 
 ### Patch Changes
