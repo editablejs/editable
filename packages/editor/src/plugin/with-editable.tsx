@@ -356,8 +356,6 @@ export const withEditable = <T extends Editor>(editor: T) => {
         style={{
           pointerEvents: 'none',
           userSelect: 'none',
-          position: 'relative',
-          display: 'block',
           width: '100%',
         }}
       >

@@ -114,14 +114,17 @@ export const SlashToolbarSearch: FC<SlashToolbarSearchProps> = ({
       if (event.defaultPrevented) return
       if (Hotkey.match('enter', event)) {
         event.preventDefault()
+        event.stopPropagation()
         handleInsert()
       } else if (Hotkey.match(['up', 'left'], event)) {
         event.preventDefault()
+        event.stopPropagation()
         setActive(value => {
           return value === 0 ? items.length - 1 : value - 1
         })
       } else if (Hotkey.match(['down', 'right'], event)) {
         event.preventDefault()
+        event.stopPropagation()
         setActive(value => {
           return value === items.length - 1 ? 0 : value + 1
         })

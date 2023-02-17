@@ -158,16 +158,11 @@ SlateEditor.point = (editor: SlateEditor, at: Location, options: EditorPointOpti
 }
 
 SlateEditor.isEmpty = (editor: Editor, node: Node): boolean => {
-  if (Text.isText(node)) {
-    return node.text === '' && !CompositionText.isCompositionText(node)
-  } else {
-    if (node.children.length === 0) return true
-    if (node.children.length === 1)
-      return (
-        !Editor.isVoid(editor, node) && SlateEditor.isEmpty(editor, node.children[0] as Element)
-      )
-    return false
-  }
+  if (Text.isText(node)) return node.text === '' && !CompositionText.isCompositionText(node)
+  else if (node.children.length === 0) return true
+  else if (node.children.length === 1)
+    return !Editor.isVoid(editor, node) && SlateEditor.isEmpty(editor, node.children[0] as Element)
+  else return false
 }
 
 export const Editor: EditorInterface = {

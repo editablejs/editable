@@ -107,7 +107,8 @@ export const ContentEditable = (props: EditableProps) => {
       const unsubscribe = Placeholder.subscribe(
         editor,
         ([node]) => {
-          if (Editable.isEditor(node)) return () => placeholder
+          if (Editable.isEditor(node) && !node.children.some(n => Editor.isList(editor, n)))
+            return () => placeholder
         },
         true,
       )

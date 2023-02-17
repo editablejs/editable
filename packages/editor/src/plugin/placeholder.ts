@@ -133,7 +133,9 @@ export const Placeholder = {
         }
       })
     } else {
-      store.setState({ actives: [] })
+      store.setState(({ actives }) => ({
+        actives: actives.filter(d => d.alone),
+      }))
     }
   },
 }

@@ -1,5 +1,5 @@
 import { Editable, Hotkey } from '@editablejs/editor'
-import { Editor, Transforms, List, Path, Element, Text, Range } from '@editablejs/models'
+import { Editor, Transforms, List, Path, Element, Text, Range, NodeEntry } from '@editablejs/models'
 import tw from 'twin.macro'
 import {
   HEADING_ONE_KEY,
@@ -55,8 +55,24 @@ export const withHeading = <T extends Editable>(editor: T, options: HeadingOptio
         mode: 'lowest',
         match: n => Editor.isBlock(editor, n),
       })
-      for (const [_, path] of lowestBlocks) {
-        const textMark = getTextMark(editor)
+
+      const blocks: NodeEntry<Element>[] = []
+      for (const entry of lowestBlocks) {
+        const parent = Editor.parent(editor, entry[1])
+        if (Editor.isList(editor, parent[0])) {
+          for (let p = 0; p < parent[0].children.length; p++) {
+            const child = parent[0].children[p]
+            if (Element.isElement(child)) {
+              blocks.push([child, parent[1].concat(p)])
+            }
+          }
+        } else {
+          blocks.push(entry)
+        }
+      }
+
+      const textMark = getTextMark(editor)
+      for (const [_, path] of blocks) {
         if (type !== PARAGRAPH_KEY) {
           const style = getStyle(editor, type)
           const mark: Partial<Record<string, string>> = {}

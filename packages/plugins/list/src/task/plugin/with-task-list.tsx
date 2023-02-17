@@ -126,6 +126,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
           }
           return <TaskElement checked={checked ?? false} onChange={onChange} />
         },
+        isAutoUpdateLabelStyle: false,
       })
     }
     return renderElement(props)
