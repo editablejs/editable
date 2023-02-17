@@ -82,12 +82,14 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
       if (!imageDOMElemennt) {
         return setRotatedUrl('')
       }
-      if (rotate !== undefined && loaded && state === 'done') {
-        rotateImgWithCanvas(imageDOMElemennt, rotate).then(blob => {
-          setRotatedUrl(URL.createObjectURL(blob))
+      if (rotate !== undefined && loaded && state === 'done' && options.allowRotate !== false) {
+        readImageElement(imageDOMElemennt.src, true).then(img => {
+          rotateImgWithCanvas(img, rotate).then(blob => {
+            setRotatedUrl(URL.createObjectURL(blob))
+          })
         })
       }
-    }, [imageDOMElemennt, rotate, state, loaded])
+    }, [imageDOMElemennt, rotate, state, loaded, options.allowRotate])
 
     useEffect(() => {
       return () => {
@@ -293,18 +295,14 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
         </PopoverTrigger>
         <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
           <Toolbar mode="inline">
-            <Tooltip content={viewerLocale.rotateLeft} side="top" sideOffset={5} arrow={false}>
-              <ToolbarButton
-                icon={<Icon name="rotateLeft" />}
-                onToggle={() => changeRotate((rotate ?? 0) - 90)}
-              />
-            </Tooltip>
-            <Tooltip content={viewerLocale.rotateRight} side="top" sideOffset={5} arrow={false}>
-              <ToolbarButton
-                icon={<Icon name="rotateRight" />}
-                onToggle={() => changeRotate((rotate ?? 0) + 90)}
-              />
-            </Tooltip>
+            {options.allowRotate !== false && (
+              <Tooltip content={viewerLocale.rotateLeft} side="top" sideOffset={5} arrow={false}>
+                <ToolbarButton
+                  icon={<Icon name="rotateLeft" />}
+                  onToggle={() => changeRotate((rotate ?? 0) - 90)}
+                />
+              </Tooltip>
+            )}
             <Tooltip content={styleLocale.tooltip} side="top" sideOffset={5} arrow={false}>
               <ToolbarDropdown
                 onSelect={value => changeStyle(value as ImageStyle)}

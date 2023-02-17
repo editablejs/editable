@@ -119,12 +119,12 @@ export const withImage = <T extends Editable>(editor: T, options: ImageOptions =
   }
 
   newEditor.rotateImage = (rotate, image) => {
-    const { onRotate } = options
+    const { onRotate, allowRotate } = options
     const { url, state } = image
     if (state !== 'done') return
     const degrees = rotate % -360
-    if (onRotate && url) {
-      readImageElement(url).then(img => {
+    if (onRotate && url && allowRotate !== false) {
+      readImageElement(url, true).then(img => {
         rotateImgWithCanvas(img, degrees).then(blob => {
           const file = new File([blob], image.name ?? 'rotate.png', { type: 'image/png' })
           onRotate(file).then(res => {

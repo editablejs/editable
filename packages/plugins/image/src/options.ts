@@ -14,6 +14,7 @@ export interface ImageOptions {
     update: (options: Record<'percentage', number>) => void,
   ) => Promise<string>
   onRotate?: (file: File) => Promise<string | { url: string; rotate?: number }>
+  allowRotate?: boolean
 }
 const IMAGE_OPTIONS = new WeakMap<Editor, ImageOptions>()
 
