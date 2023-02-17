@@ -2,7 +2,7 @@
 name: Bug report
 about: A bug that occurs in Editable's core logic, on all platforms
 title: ''
-labels: bug
+labels: ''
 assignees: big-camel
 
 ---
