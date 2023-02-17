@@ -4,6 +4,7 @@ import tw, { css } from 'twin.macro'
 import { HrEditor } from '../plugin/hr-editor'
 import { Hr } from '../interfaces/hr'
 import { HrPopover } from './hr-popover'
+import { DEFAULT_HR_STYLE, DEFAULT_HR_WIDTH, DEFUALT_HR_COLOR } from '../constants'
 
 export interface HrProps extends RenderElementProps<Hr> {
   editor: HrEditor
@@ -13,7 +14,7 @@ export interface HrProps extends RenderElementProps<Hr> {
 export const HrComponent: FC<HrProps> = ({ children, attributes, editor, element }) => {
   const focused = useNodeFocused()
 
-  const { color, width, style } = element
+  const { color = DEFUALT_HR_COLOR, width = DEFAULT_HR_WIDTH, style = DEFAULT_HR_STYLE } = element
   return (
     <HrPopover editor={editor} element={element}>
       <div
