@@ -1,5 +1,17 @@
 # @editablejs/plugin-heading
 
+## 1.0.0-beta.28
+
+### Patch Changes
+
+- [`0daab81`](https://github.com/editablejs/editable/commit/0daab812f79401a7cc4c1f20c92717666c6eade4) Thanks [@big-camel](https://github.com/big-camel)! - Refactor list node style update.
+
+- Updated dependencies [[`0daab81`](https://github.com/editablejs/editable/commit/0daab812f79401a7cc4c1f20c92717666c6eade4), [`f97e47c`](https://github.com/editablejs/editable/commit/f97e47c08f3d0933478df7283d90b0da6832b391)]:
+  - @editablejs/editor@1.0.0-beta.28
+  - @editablejs/models@1.0.0-beta.6
+  - @editablejs/deserializer@1.0.0-beta.7
+  - @editablejs/serializer@1.0.0-beta.6
+
 ## 1.0.0-beta.27
 
 ### Patch Changes
