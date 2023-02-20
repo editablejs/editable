@@ -1,7 +1,10 @@
 import { IconLogo } from 'components/icon/logo'
 import YouWillLearnCard from 'components/mdx/you-will-learn-card'
+import { useTranslation } from 'react-i18next'
 
 function HomepageHero() {
+  const { t } = useTranslation()
+
   return (
     <>
       <div tw="mx-auto mt-8 mb-0 flex max-w-4xl grow flex-col items-start justify-start sm:mt-8 sm:mb-8 sm:flex-row sm:items-center lg:mt-10 lg:mb-6">
@@ -17,16 +20,13 @@ function HomepageHero() {
       </div>
       <section tw="my-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:my-10 lg:grid-cols-2">
         <div tw="flex flex-col justify-center">
-          <YouWillLearnCard title="Learn Editable" path="/learn">
-            <p>
-              Learn how to think in Editable with step-by-step explanations and interactive
-              examples.
-            </p>
+          <YouWillLearnCard title={t('docs.learn-editable')} path="/learn">
+            <p>{t('docs.learn-editable-detail')}</p>
           </YouWillLearnCard>
         </div>
         <div tw="flex flex-col justify-center">
-          <YouWillLearnCard title="API Reference" path="/apis/editable">
-            <p>Look up the API of Editable, and see their shape with color-coded signatures.</p>
+          <YouWillLearnCard title={t('docs.api-reference')} path="/apis/editable">
+            <p>{t('docs.api-reference-detail')}</p>
           </YouWillLearnCard>
         </div>
       </section>

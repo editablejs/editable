@@ -7,6 +7,7 @@ import { SandpackConsole } from './console'
 import type { LintDiagnostic } from './use-sandpack-lint'
 import { LoadingOverlay } from './loading-overlay'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 type CustomPreviewProps = {
   className?: string
@@ -159,6 +160,8 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
     return {}
   }
 
+  const { t } = useTranslation()
+
   return (
     <SandpackStack className={className}>
       <div
@@ -180,7 +183,7 @@ export function Preview({ isExpanded, className, lintErrors }: CustomPreviewProp
               hideContent && tw`absolute opacity-0 pointer-events-none duration-75`,
               !hideContent && tw`opacity-100 duration-150`,
             ]}
-            title="Sandbox Preview"
+            title={t('docs.sandpack.preview-sandpack') ?? ''}
             style={{
               height: iframeComputedHeight || '15px',
               zIndex: isExpanded ? 'initial' : -1,

@@ -25,6 +25,7 @@ import ButtonLink from 'components/button-link'
 import { TocContext } from './toc-context'
 import type { Toc, TocItem } from './toc-context'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 function CodeStep({ children, step }: { children: any; step: number }) {
   return (
@@ -79,6 +80,7 @@ const Blockquote = ({ children, ...props }: JSX.IntrinsicElements['blockquote'])
 }
 
 function LearnMore({ children, path }: { title: string; path?: string; children: any }) {
+  const { t } = useTranslation()
   return (
     <>
       <section tw="bg-card dark:bg-card-dark mt-16 mb-16 flex flex-row items-center justify-between rounded-lg p-8 shadow-inner">
@@ -88,8 +90,8 @@ function LearnMore({ children, path }: { title: string; path?: string; children:
           </h2>
           {children}
           {path ? (
-            <ButtonLink tw="mt-1" label="Read More" href={path} type="primary">
-              Read More
+            <ButtonLink tw="mt-1" label={t('docs.read_more') ?? ''} href={path} type="primary">
+              {t('docs.read_more')}
               <IconNavArrow displayDirection="right" tw="ml-1 inline" />
             </ButtonLink>
           ) : null}
@@ -127,7 +129,8 @@ function MathI({ children }: { children: any }) {
 }
 
 function YouWillLearn({ children, isChapter }: { children: any; isChapter?: boolean }) {
-  let title = isChapter ? 'In this chapter' : 'You will learn'
+  const { t } = useTranslation()
+  let title = isChapter ? t('docs.in-this-chapter') : t('docs.you-will-learn')
   return <SimpleCallout title={title}>{children}</SimpleCallout>
 }
 

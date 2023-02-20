@@ -94,6 +94,8 @@ import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
 import { createSlashToolbarItems } from 'configs/slash-toolbar-items'
 import { initialValue } from 'configs/initial-value'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'react-i18next'
 
 const CustomStyles = createGlobalStyle({
   body: {
@@ -139,6 +141,9 @@ declare global {
 }
 
 export default function Playground() {
+  const router = useRouter()
+  const local = router.locale
+  const { t } = useTranslation()
   const [readOnly, setReadOnly] = React.useState(false)
   const [connected, setConnected] = React.useState(false)
   const [connecting, setConnection] = React.useState(false)
@@ -262,7 +267,7 @@ export default function Playground() {
         Editor.isBlock(editor, node) &&
         !TitleEditor.isTitle(editor, node)
       )
-        return () => 'Type / evoke more'
+        return () => t('playground.editor.block-placeholder')
     })
     return () => unsubscribe()
   }, [editor])
@@ -357,7 +362,7 @@ export default function Playground() {
   return (
     <>
       <CustomStyles />
-      <Seo title="Editable Playground" />
+      <Seo title={t('playground.title')} />
       <EditableProvider editor={editor} value={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
@@ -389,7 +394,11 @@ export default function Playground() {
               })}
               <div tw="flex items-center text-xs ml-3">
                 <label htmlFor="collaboration-mode" tw="mr-2">
-                  {connecting ? 'Connecting...' : connected ? 'Collaboration mode' : 'Local mode'}
+                  {connecting
+                    ? t('playground.connecting')
+                    : connected
+                    ? t('playground.mode.collaboration')
+                    : t('playground.mode.local')}
                 </label>
                 {connecting && <Icon name="loading" />}
                 {!connecting && (
@@ -408,8 +417,9 @@ export default function Playground() {
         </StyledHeader>
         <StyledContainer>
           <ContentEditable
+            lang={local ?? 'en-US'}
             readOnly={readOnly}
-            placeholder="Type something. Style with keyboard shortcuts or markdown."
+            placeholder={t('playground.editor.placeholder')}
           />
         </StyledContainer>
       </EditableProvider>

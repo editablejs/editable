@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 import tw from 'twin.macro'
 import { forwardRefWithAs } from 'utils/forward-ref-with-as'
 export interface HeadingProps {
@@ -14,9 +15,10 @@ const Heading = forwardRefWithAs<HeadingProps, 'div'>(function Heading(
   { as: Comp = 'div', className, children, id, isPageAnchor = true, ...props },
   ref,
 ) {
-  let label = 'Link for this heading'
+  const { t } = useTranslation()
+  let label = t('docs.link-for-heading')
   if (typeof children === 'string') {
-    label = 'Link for ' + children
+    label = t('docs.link-for', { name: children })
   }
 
   return (

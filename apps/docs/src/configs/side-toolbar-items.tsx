@@ -10,6 +10,7 @@ import {
 } from '@editablejs/plugins'
 import { SideToolbarItem } from '@editablejs/plugin-toolbar/side'
 import { Icon } from '@editablejs/ui'
+import { Translation } from 'react-i18next'
 
 export const createSideToolbarItems = (editor: Editable, range: Range, element: Element) => {
   const items: SideToolbarItem[] = []
@@ -19,7 +20,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'image',
         icon: <Icon name="image" />,
-        title: 'Image',
+        title: <Translation>{t => t('playground.editor.plugin.image')}</Translation>,
         onSelect: () => {
           ImageEditor.open(editor)
         },
@@ -27,7 +28,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'table',
         icon: <Icon name="table" />,
-        title: 'Table',
+        title: <Translation>{t => t('playground.editor.plugin.table')}</Translation>,
         disabled: !!TableEditor.isActive(editor),
         onSelect: () => {
           TableEditor.insert(editor)
@@ -36,7 +37,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'blockquote',
         icon: <Icon name="blockquote" />,
-        title: 'Blockquote',
+        title: <Translation>{t => t('playground.editor.plugin.blockquote')}</Translation>,
         onSelect: () => {
           BlockquoteEditor.toggle(editor)
         },
@@ -44,7 +45,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'unorderedList',
         icon: <Icon name="unorderedList" />,
-        title: 'Unordered List',
+        title: <Translation>{t => t('playground.editor.plugin.unordered-list')}</Translation>,
         onSelect: () => {
           UnorderedListEditor.toggle(editor)
         },
@@ -52,7 +53,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'orderedList',
         icon: <Icon name="orderedList" />,
-        title: 'Ordered List',
+        title: <Translation>{t => t('playground.editor.plugin.ordered-list')}</Translation>,
         onSelect: () => {
           OrderedListEditor.toggle(editor)
         },
@@ -60,7 +61,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'taskList',
         icon: <Icon name="taskList" />,
-        title: 'Task List',
+        title: <Translation>{t => t('playground.editor.plugin.task-list')}</Translation>,
         onSelect: () => {
           TaskListEditor.toggle(editor)
         },
@@ -71,7 +72,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'cut',
         icon: <Icon name="cut" />,
-        title: 'Cut',
+        title: <Translation>{t => t('playground.editor.base.cut')}</Translation>,
         onSelect() {
           editor.cut(range)
         },
@@ -79,7 +80,7 @@ export const createSideToolbarItems = (editor: Editable, range: Range, element: 
       {
         key: 'copy',
         icon: <Icon name="copy" />,
-        title: 'Copy',
+        title: <Translation>{t => t('playground.editor.base.copy')}</Translation>,
         onSelect() {
           editor.copy(range)
         },

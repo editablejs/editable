@@ -1,23 +1,20 @@
 import * as React from 'react'
-import cn from 'classnames'
+import tw from 'twin.macro'
 
 export const IconChevron = React.memo<
   JSX.IntrinsicElements['svg'] & {
     displayDirection: 'up' | 'down' | 'left' | 'right'
   }
 >(function IconChevron({ className, displayDirection }) {
-  const classes = cn(
-    {
-      'rotate-0': displayDirection === 'down',
-      'rotate-90': displayDirection === 'left',
-      'rotate-180': displayDirection === 'up',
-      '-rotate-90': displayDirection === 'right',
-    },
-    className,
-  )
   return (
     <svg
-      className={classes}
+      css={[
+        displayDirection === 'down' && tw`rotate-0`,
+        displayDirection === 'left' && tw`rotate-90`,
+        displayDirection === 'up' && tw`rotate-180`,
+        displayDirection === 'right' && tw`-rotate-90`,
+        className,
+      ]}
       xmlns="http://www.w3.org/2000/svg"
       width="20"
       height="20"

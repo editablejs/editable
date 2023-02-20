@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'react-i18next'
 
 export function Feedback({ onSubmit = () => {} }: { onSubmit?: () => void }) {
   const { asPath } = useRouter()
@@ -37,10 +38,11 @@ function sendGAEvent(isPositive: boolean) {
 
 function SendFeedback({ onSubmit }: { onSubmit: () => void }) {
   const [isSubmitted, setIsSubmitted] = React.useState(false)
+  const [t] = useTranslation()
   return (
     <div tw="bg-wash dark:bg-gray-95 m-4 flex w-80 max-w-xs rounded-lg py-3 px-4 shadow-lg lg:w-auto">
       <p tw="dark:text-primary-dark mr-4 w-full text-lg font-bold text-primary">
-        {isSubmitted ? 'Thank you for your feedback!' : 'Is this page useful?'}
+        {isSubmitted ? t('docs.feedback.submitted') : t('docs.feedback.question')}
       </p>
       {!isSubmitted && (
         <button

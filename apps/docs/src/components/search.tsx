@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Router from 'next/router'
 import * as React from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { siteConfig } from 'siteConfig'
 
 export interface SearchProps {
@@ -125,7 +126,7 @@ export function Search({
   )
 
   useDocSearchKeyboardEvents({ isOpen: isShowing, onOpen, onClose })
-
+  const { t } = useTranslation()
   return (
     <>
       <Head>
@@ -133,7 +134,7 @@ export function Search({
       </Head>
 
       <button
-        aria-label="Search"
+        aria-label={t('docs.search') ?? 'Search'}
         type="button"
         tw="ml-4 inline-flex items-center p-1 text-lg md:hidden lg:ml-6"
         onClick={onOpen}
@@ -147,7 +148,7 @@ export function Search({
         onClick={onOpen}
       >
         <IconSearch tw="text-gray-30 hover:text-gray-70 mr-3 shrink-0 align-middle" />
-        Search
+        {t('docs.search')}
         <span tw="items-center ml-auto hidden sm:flex">
           <Kbd>⌘</Kbd>
           <Kbd>K</Kbd>

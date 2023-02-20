@@ -1,6 +1,7 @@
 import * as React from 'react'
 import ButtonLink from 'components/button-link'
 import { IconNavArrow } from 'components/icon/nav-arrow'
+import { useTranslation } from 'react-i18next'
 
 interface YouWillLearnCardProps {
   title: string
@@ -9,6 +10,7 @@ interface YouWillLearnCardProps {
 }
 
 function YouWillLearnCard({ title, path, children }: YouWillLearnCardProps) {
+  const { t } = useTranslation()
   return (
     <div tw="bg-card dark:bg-card-dark mt-3 flex h-full flex-col justify-between rounded-lg p-6 pb-8 shadow-inner xl:p-8">
       <div>
@@ -17,7 +19,7 @@ function YouWillLearnCard({ title, path, children }: YouWillLearnCardProps) {
       </div>
       <div>
         <ButtonLink href={path} tw="mt-1" type="primary" size="md" label={title}>
-          Read More
+          {t('docs.read-more')}
           <IconNavArrow displayDirection="right" tw="ml-1 inline" />
         </ButtonLink>
       </div>

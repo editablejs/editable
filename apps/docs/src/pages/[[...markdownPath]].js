@@ -62,11 +62,16 @@ export async function getStaticProps(context) {
 
   // Read MDX from the file.
   let path = (context.params.markdownPath || []).join('/') || 'index'
+  const localPath = context.locale === 'en-US' ? '' : `.${context.locale}`
   let mdx
   try {
-    mdx = fs.readFileSync(rootDir + path + '.md', 'utf8')
+    try {
+      mdx = fs.readFileSync(rootDir + path + localPath + '.md', 'utf8')
+    } catch (error) {
+      mdx = fs.readFileSync(rootDir + path + '.md', 'utf8')
+    }
   } catch {
-    mdx = fs.readFileSync(rootDir + path + '/index.md', 'utf8')
+    mdx = fs.readFileSync(rootDir + path + `/index${localPath}.md`, 'utf8')
   }
 
   // See if we have a cached output first.
@@ -88,11 +93,11 @@ export async function getStaticProps(context) {
   )
   const cached = await store.get(hash)
   if (cached) {
-    console.log('Reading compiled MDX for /' + path + ' from ./node_modules/.cache/')
+    console.log('Reading compiled MDX for /' + path + localPath + ' from ./node_modules/.cache/')
     return cached
   }
   if (process.env.NODE_ENV === 'production') {
-    console.log('Cache miss for MDX for /' + path + ' from ./node_modules/.cache/')
+    console.log('Cache miss for MDX for /' + path + localPath + ' from ./node_modules/.cache/')
   }
 
   // If we don't add these fake imports, the MDX compiler
@@ -187,7 +192,7 @@ export async function getStaticProps(context) {
 }
 
 // Collect all MDX files for static generation.
-export async function getStaticPaths() {
+export async function getStaticPaths(context) {
   const { promisify } = require('util')
   const { resolve } = require('path')
   const fs = require('fs')
@@ -210,22 +215,32 @@ export async function getStaticPaths() {
   // 'foo/bar/baz.md' -> ['foo', 'bar', 'baz']
   // 'foo/bar/qux/index.md' -> ['foo', 'bar', 'qux']
   function getSegments(file) {
-    let segments = file.slice(0, -3).replace(/\\/g, '/').split('/')
+    const locale = context.locales.find(locale => file.endsWith(`.${locale}.md`))
+    let segments = file
+      .slice(0, (locale ? -locale.length - 1 : 0) - 3)
+      .replace(/\\/g, '/')
+      .split('/')
+
     if (segments[segments.length - 1] === 'index') {
       segments.pop()
     }
-    return segments
+    return [segments, locale]
   }
 
   const files = await getFiles(rootDir)
-  const paths = files.map(file => ({
-    params: {
-      markdownPath: getSegments(file),
-      // ^^^ CAREFUL HERE.
-      // If you rename markdownPath, update patches/next-remote-watch.patch too.
-      // Otherwise you'll break Fast Refresh for all MD files.
-    },
-  }))
+
+  const paths = files.map(file => {
+    const [paths, locale] = getSegments(file)
+    return {
+      params: {
+        markdownPath: paths,
+        // ^^^ CAREFUL HERE.
+        // If you rename markdownPath, update patches/next-remote-watch.patch too.
+        // Otherwise you'll break Fast Refresh for all MD files.
+      },
+      locale,
+    }
+  })
 
   return {
     paths: paths,

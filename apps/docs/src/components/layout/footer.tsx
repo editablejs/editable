@@ -5,9 +5,12 @@ import { ExternalLink } from 'components/external-link'
 import { IconGitHub } from 'components/icon/github'
 import { IconNavArrow } from 'components/icon/nav-arrow'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 export function Footer() {
   const socialLinkClasses = 'hover:text-primary dark:text-primary-dark'
+
+  const { t } = useTranslation()
   return (
     <>
       <div tw="w-full self-stretch">
@@ -25,7 +28,7 @@ export function Footer() {
                 size="md"
                 target="_blank"
               >
-                Take our survey!
+                {t('docs.survey')}
                 <IconNavArrow displayDirection="right" tw="ml-1 inline" />
               </ButtonLink>
             </div>
@@ -38,35 +41,35 @@ export function Footer() {
               href="https://github.com/editablejs"
               tw="col-span-2 w-44 justify-items-start text-left sm:col-span-1"
             >
-              <div>Editable JS</div>
-              <div>Open Source</div>
+              <div>EditableJS</div>
+              <div>{t('docs.open-source')}</div>
               <div tw="mt-2 pr-0.5 text-left text-xs">&copy;{new Date().getFullYear()}</div>
             </ExternalLink>
             <div tw="flex flex-col">
               <FooterLink href="/learn" isHeader={true}>
-                Learn Editable
+                {t('docs.learn-editable')}
               </FooterLink>
-              <FooterLink href="/learn/">Quick Start</FooterLink>
-              <FooterLink href="/learn/installation">Installation</FooterLink>
+              <FooterLink href="/learn/">{t('docs.learn-start')}</FooterLink>
+              <FooterLink href="/learn/installation">{t('docs.learn-install')}</FooterLink>
             </div>
             <div tw="flex flex-col">
               <FooterLink href="/apis/editor" isHeader={true}>
-                API Reference
+                {t('docs.api-reference')}
               </FooterLink>
-              <FooterLink href="/apis/editor">Editor APIs</FooterLink>
-              <FooterLink href="/apis/plugins">Plugin APIs</FooterLink>
+              <FooterLink href="/apis/editor">{t('docs.api-editor')}</FooterLink>
+              <FooterLink href="/apis/plugins">{t('docs.api-plugin')}</FooterLink>
             </div>
             <div tw="flex flex-col sm:col-start-2 xl:col-start-4">
               <FooterLink href="/" isHeader={true}>
-                Community
+                {t('docs.community')}
               </FooterLink>
-              <FooterLink href="">Code of Conduct</FooterLink>
-              <FooterLink href="">Blog</FooterLink>
+              <FooterLink href="">{t('docs.code-of-conduct')}</FooterLink>
+              <FooterLink href="">{t('docs.blog')}</FooterLink>
             </div>
             <div tw="flex flex-col">
-              <FooterLink isHeader={true}>More</FooterLink>
-              <FooterLink href="">Privacy</FooterLink>
-              <FooterLink href="">Terms</FooterLink>
+              <FooterLink isHeader={true}>{t('docs.more')}</FooterLink>
+              <FooterLink href="">{t('docs.privacy')}</FooterLink>
+              <FooterLink href="">{t('docs.terms')}</FooterLink>
               <div tw="mt-8 flex flex-row gap-x-2">
                 <ExternalLink
                   aria-label="Editable on Github"

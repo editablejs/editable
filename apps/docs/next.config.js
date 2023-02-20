@@ -15,6 +15,14 @@ const baseConfig = {
     legacyBrowsers: false,
     browsersListForSwc: true,
   },
+  i18n: {
+    // These are all the locales you want to support in
+    // your application
+    locales: ['en-US', 'zh-CN'],
+    // This is the default locale you want to be used when visiting
+    // a non-locale prefixed path e.g. `/hello`
+    defaultLocale: 'en-US',
+  },
   env: {
     SANDPACK_BARE_COMPONENTS: process.env.SANDPACK_BARE_COMPONENTS,
     YJS_SERVER: process.env.YJS_SERVER,

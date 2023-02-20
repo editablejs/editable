@@ -66,7 +66,7 @@ export type EditableProps = {
   readOnly?: boolean
   lang?: string
   autoFocus?: boolean
-  placeholder?: string
+  placeholder?: React.ReactNode
   role?: string
   style?: React.CSSProperties
   as?: React.ElementType

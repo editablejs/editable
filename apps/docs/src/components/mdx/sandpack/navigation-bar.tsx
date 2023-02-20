@@ -6,6 +6,7 @@ import { DownloadButton } from './download-button'
 import { IconChevron } from '../../icon/chevron'
 import { Listbox } from '@headlessui/react'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 export function useEvent(fn: any): any {
   const ref = React.useRef(null)
@@ -77,6 +78,8 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
     }
   }, [isMultiFile, onContainerResize])
 
+  const { t } = useTranslation()
+
   const handleReset = () => {
     /**
      * resetAllFiles must come first, otherwise
@@ -85,7 +88,7 @@ export function NavigationBar({ providedFiles }: { providedFiles: Array<string> 
      *
      * Plus, it should only prompts if there's any file changes
      */
-    if (sandpack.editorState === 'dirty' && confirm('Reset all your edits too?')) {
+    if (sandpack.editorState === 'dirty' && confirm(t('docs.sandpack.reset-all') ?? '')) {
       sandpack.resetAllFiles()
     }
 

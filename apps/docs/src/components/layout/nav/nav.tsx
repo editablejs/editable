@@ -16,6 +16,7 @@ import sidebarLearn from 'sidebarLearn.json'
 import sidebarAPIs from 'sidebarAPIs.json'
 import tw from 'twin.macro'
 import { IconLogo } from 'components/icon/logo'
+import { useTranslation } from 'react-i18next'
 
 declare global {
   interface Window {
@@ -172,6 +173,8 @@ export default function Nav() {
     scrollParentRef.current!.scrollTop = 0
   }
 
+  const { t } = useTranslation()
+
   return (
     <div css={[tw`sticky top-0 flex flex-col lg:bottom-0 lg:h-screen`, isOpen && tw`h-screen`]}>
       <nav tw="bg-wash dark:bg-wash-dark z-50 flex w-full items-center justify-between pt-0 pr-5 lg:block lg:px-5 lg:pt-4">
@@ -190,7 +193,7 @@ export default function Nav() {
           <NextLink href="/">
             <a tw="text-lg dark:text-primary-dark mr-0 inline-flex items-center whitespace-nowrap py-1 font-normal text-primary sm:mr-3">
               <IconLogo tw="text-link dark:text-link-dark mr-2 text-sm" />
-              Editable Docs
+              {t('docs.title')}
             </a>
           </NextLink>
           <div tw="hidden h-auto flex-initial items-center pr-5 pt-0.5 leading-loose sm:flex lg:w-full lg:pr-5">
@@ -225,10 +228,10 @@ export default function Nav() {
         </div>
         <div tw="border-border dark:border-border-dark hidden w-full items-center self-center border-b-0 px-0 pt-2 lg:flex lg:border-b 2xl:max-w-xs">
           <NavLink href="/learn" isActive={section === 'learn' || section === 'home'}>
-            Learn
+            {t('docs.learn')}
           </NavLink>
           <NavLink href="/apis/editor" isActive={section === 'apis'}>
-            API
+            {t('docs.api')}
           </NavLink>
         </div>
         <div tw="my-4 mx-0 flex h-10 w-full justify-end lg:hidden lg:max-w-sm">
@@ -290,10 +293,10 @@ export default function Nav() {
             isActive={tab === 'learn' || tab === 'home'}
             onClick={() => selectTab('learn')}
           >
-            Learn
+            {t('docs.learn')}
           </TabButton>
           <TabButton isActive={tab === 'apis'} onClick={() => selectTab('apis')}>
-            API
+            {t('docs.api')}
           </TabButton>
         </div>
       )}

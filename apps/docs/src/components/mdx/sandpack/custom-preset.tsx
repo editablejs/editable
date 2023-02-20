@@ -15,6 +15,7 @@ import { Preview } from './preview'
 
 import { useSandpackLint } from './use-sandpack-lint'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 export const CustomPreset = React.memo(function CustomPreset({
   showDevTools,
@@ -69,6 +70,7 @@ const SandboxShell = React.memo(function SandboxShell({
 }) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [isExpanded, setIsExpanded] = React.useState(false)
+  const { t } = useTranslation()
   return (
     <>
       <div tw="rounded-lg shadow-lg dark:shadow-lg-dark" ref={containerRef}>
@@ -111,7 +113,7 @@ const SandboxShell = React.memo(function SandboxShell({
                   tw="mr-1.5 inline text-xl"
                   displayDirection={isExpanded ? 'up' : 'down'}
                 />
-                {isExpanded ? 'Show less' : 'Show more'}
+                {isExpanded ? t('docs.sandpack.show-less') : t('docs.sandpack.show-more')}
               </span>
             </button>
           )}

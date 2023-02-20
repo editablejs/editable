@@ -1,5 +1,4 @@
 import { Editable } from '@editablejs/editor'
-import { Editor, Range, Element } from '@editablejs/models'
 import {
   TableEditor,
   BlockquoteEditor,
@@ -10,14 +9,16 @@ import {
 } from '@editablejs/plugins'
 import { SlashToolbarItem } from '@editablejs/plugin-toolbar/slash'
 import { Icon } from '@editablejs/ui'
+import { Translation } from 'react-i18next'
 
 export const createSlashToolbarItems = (editor: Editable, value: string) => {
-  const items: SlashToolbarItem[] = []
+  const items: (SlashToolbarItem & { search?: string })[] = []
   items.push(
     {
       key: 'image',
       icon: <Icon name="image" />,
-      title: 'Image',
+      title: <Translation>{t => t('playground.editor.plugin.image')}</Translation>,
+      search: 'image,图片',
       onSelect: () => {
         ImageEditor.open(editor)
       },
@@ -25,8 +26,9 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
     {
       key: 'table',
       icon: <Icon name="table" />,
-      title: 'Table',
+      title: <Translation>{t => t('playground.editor.plugin.table')}</Translation>,
       disabled: !!TableEditor.isActive(editor),
+      search: 'table,表格',
       onSelect: () => {
         TableEditor.insert(editor)
       },
@@ -34,7 +36,8 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
     {
       key: 'blockquote',
       icon: <Icon name="blockquote" />,
-      title: 'Blockquote',
+      title: <Translation>{t => t('playground.editor.plugin.blockquote')}</Translation>,
+      search: 'blockquote,引用',
       onSelect: () => {
         BlockquoteEditor.toggle(editor)
       },
@@ -42,7 +45,8 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
     {
       key: 'unorderedList',
       icon: <Icon name="unorderedList" />,
-      title: 'Unordered List',
+      title: <Translation>{t => t('playground.editor.plugin.unordered-list')}</Translation>,
+      search: 'list,unordered,无序列表',
       onSelect: () => {
         UnorderedListEditor.toggle(editor)
       },
@@ -50,7 +54,8 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
     {
       key: 'orderedList',
       icon: <Icon name="orderedList" />,
-      title: 'Ordered List',
+      title: <Translation>{t => t('playground.editor.plugin.ordered-list')}</Translation>,
+      search: 'list,ordered,有序列表',
       onSelect: () => {
         OrderedListEditor.toggle(editor)
       },
@@ -58,7 +63,8 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
     {
       key: 'taskList',
       icon: <Icon name="taskList" />,
-      title: 'Task List',
+      title: <Translation>{t => t('playground.editor.plugin.task-list')}</Translation>,
+      search: 'list,task,任务列表',
       onSelect: () => {
         TaskListEditor.toggle(editor)
       },
@@ -68,8 +74,6 @@ export const createSlashToolbarItems = (editor: Editable, value: string) => {
   return items.filter(item => {
     if ('content' in item || 'type' in item) return true
     if (item.disabled) return false
-    return typeof item.title === 'string'
-      ? item.title.toLowerCase().includes(value)
-      : item.key.toLowerCase().includes(value)
+    return item.search?.includes(value)
   })
 }

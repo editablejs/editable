@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useSandpack } from '@codesandbox/sandpack-react'
 import { IconDownload } from '../../icon/download'
+import { useTranslation } from 'react-i18next'
 export interface DownloadButtonProps {}
 
 let supportsImportMap: boolean | void
@@ -28,6 +29,7 @@ const SUPPORTED_FILES = ['/App.js', '/styles.css']
 
 export function DownloadButton({ providedFiles }: { providedFiles: Array<string> }) {
   const { sandpack } = useSandpack()
+  const { t } = useTranslation()
   const supported = useSupportsImportMap()
   if (!supported) {
     return null
@@ -88,10 +90,10 @@ ${css}
     <button
       tw="dark:text-primary-dark hover:text-link mx-1 inline-flex items-center text-sm text-primary transition duration-100 ease-in"
       onClick={downloadHTML}
-      title="Download Sandbox"
+      title={t('docs.sandpack.download-sandpack') ?? ''}
       type="button"
     >
-      <IconDownload tw="mr-1 inline" /> Download
+      <IconDownload tw="mr-1 inline" /> {t('docs.sandpack.download')}
     </button>
   )
 }

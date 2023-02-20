@@ -1,13 +1,17 @@
 import * as React from 'react'
+import i18n from 'i18next'
 import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import GlobalStyles from '../styles/global'
 import '../styles/index.css'
 import '../styles/sandpack.css'
+import '../i18n'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
+
+  i18n.changeLanguage(router.locale)
 
   React.useEffect(() => {
     // Taken from StackOverflow. Trying to detect both Safari desktop and mobile.

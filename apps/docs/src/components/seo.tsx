@@ -13,7 +13,7 @@ export interface SeoProps {
 export const Seo = withRouter(
   ({
     title,
-    description = 'A JavaScript library for building user interfaces',
+    description = 'Editable is a rich text editor for React, built with a plugin architecture and extensible by design.',
     children,
   }: SeoProps & { router: Router }) => (
     <Head>

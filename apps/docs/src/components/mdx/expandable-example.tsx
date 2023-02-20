@@ -4,6 +4,7 @@ import { IconDeepDive } from '../icon/deep-dive'
 import { IconCodeBlock } from '../icon/code-block'
 import { Button } from '../button'
 import tw, { styled } from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 interface ExpandableExampleProps {
   children: React.ReactNode
@@ -25,6 +26,8 @@ function ExpandableExample({ children, title, excerpt, type }: ExpandableExample
   const [isExpanded, setIsExpanded] = React.useState(false)
   const isDeepDive = type === 'DeepDive'
   const isExample = type === 'Example'
+
+  const { t } = useTranslation()
 
   return (
     <details
@@ -79,7 +82,7 @@ function ExpandableExample({ children, title, excerpt, type }: ExpandableExample
           <span tw="mr-1">
             <IconChevron displayDirection={isExpanded ? 'up' : 'down'} />
           </span>
-          {isExpanded ? 'Hide Details' : 'Show Details'}
+          {isExpanded ? t('docs.hide-details') : t('docs.show-details')}
         </StyledButton>
       </summary>
       <div
