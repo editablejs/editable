@@ -1,5 +1,12 @@
 # @editablejs/plugin-heading
 
+## 1.0.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [[`88d673b`](https://github.com/editablejs/editable/commit/88d673b7313c7a9f95cb6814dbf95caf1d09dbd1)]:
+  - @editablejs/editor@1.0.0-beta.29
+
 ## 1.0.0-beta.28
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @editablejs/editor
 
+## 1.0.0-beta.29
+
+### Patch Changes
+
+- [`88d673b`](https://github.com/editablejs/editable/commit/88d673b7313c7a9f95cb6814dbf95caf1d09dbd1) Thanks [@big-camel](https://github.com/big-camel)! - chore: add intl
+
 ## 1.0.0-beta.28
 
 ### Patch Changes
