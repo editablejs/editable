@@ -1,5 +1,11 @@
 # @editablejs/plugin-link
 
+## 1.0.0-beta.25
+
+### Patch Changes
+
+- [`1ff75b6`](https://github.com/editablejs/editable/commit/1ff75b699c689ca59681084a81b1c5d3865ebcf7) Thanks [@big-camel](https://github.com/big-camel)! - fix plugin-link types
+
 ## 1.0.0-beta.24
 
 ### Patch Changes
