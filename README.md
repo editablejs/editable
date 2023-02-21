@@ -329,11 +329,11 @@ const text = TextSerializer.transformWithEditor(editor, { type: 'paragraph', chi
   type: 'mention',
   children: [{ text: '' }],
   user: {
-    name: '张三',
+    name: 'User',
     id: '1',
   },
 }] })
-// output: hello @张三
+// output: hello @User
 ```
 </p>
 </details>

@@ -365,7 +365,7 @@ const markdown = MarkdownSerializer.transformWithEditor(editor, { type: 'paragra
 
 欢迎 🌟 Stars 和 📥 PR！，共同构建更好的富文本编辑器！
 
-[贡献指南](CONTRIBUTING.md) 在这里，欢迎阅读。如果你有不错的插件，欢迎分享给我们。
+[贡献指南](CONTRIBUTING.zh-CN.md) 在这里，欢迎阅读。如果你有不错的插件，欢迎分享给我们。
 
 特别感谢 [Sparticle](https://www.sparticle.com) 的支持，为开源事业做出了贡献。
 
