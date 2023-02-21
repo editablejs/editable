@@ -356,6 +356,21 @@ const markdown = MarkdownSerializer.transformWithEditor(editor, { type: 'paragra
 </p>
 </details>
 
+Every plugin requires importing its own serialization converter, which is cumbersome, so we provide the serialization converters for all built-in plugins in `@editablejs/plugins`.
+
+```tsx
+import { withHTMLSerializerTransform } from '@editablejs/plugins/serializer/html'
+import { withTextSerializerTransform } from '@editablejs/plugins/serializer/text'
+import { withMarkdownSerializerTransform, withMarkdownSerializerPlugin } from '@editablejs/plugins/serializer/markdown'
+
+useLayoutEffect(() => {
+  withMarkdownSerializerPlugin(editor)
+  withTextSerializerTransform(editor)
+  withHTMLSerializerTransform(editor)
+  withMarkdownSerializerTransform(editor)
+}, [editor])
+```
+
 ### Deserialization
 
 `@editablejs/serializer` provides a deserializer that can deserialize data in `html`, `text`, and `markdown` formats into editor data.

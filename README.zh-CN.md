@@ -353,6 +353,21 @@ const markdown = MarkdownSerializer.transformWithEditor(editor, { type: 'paragra
 </p>
 </details>
 
+每个插件都需要去导入它的序列化转换器，这样太繁琐了，所以我们在 `@editablejs/plugins` 中提供了它内置所有插件的序列化转换器。
+
+```tsx
+import { withHTMLSerializerTransform } from '@editablejs/plugins/serializer/html'
+import { withTextSerializerTransform } from '@editablejs/plugins/serializer/text'
+import { withMarkdownSerializerTransform, withMarkdownSerializerPlugin } from '@editablejs/plugins/serializer/markdown'
+
+useLayoutEffect(() => {
+  withMarkdownSerializerPlugin(editor)
+  withTextSerializerTransform(editor)
+  withHTMLSerializerTransform(editor)
+  withMarkdownSerializerTransform(editor)
+}, [editor])
+```
+
 ### 反序列化
 
 `@editablejs/serializer` 提供了一个反序列化器，它可以将 `html`，`text`，`markdown` 格式的数据反序列化为编辑器的数据。
