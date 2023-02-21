@@ -62,7 +62,8 @@ export async function getStaticProps(context) {
 
   // Read MDX from the file.
   let path = (context.params.markdownPath || []).join('/') || 'index'
-  const localPath = context.locale === 'en-US' ? '' : `.${context.locale}`
+  const locale = context.locale || 'en-US'
+  const localPath = locale === 'en-US' ? '' : `.${locale}`
   let mdx
   try {
     try {

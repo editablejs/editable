@@ -23,6 +23,7 @@
     "@changesets/cli": "^2.22.0",
     "@commitlint/cli": "17.1.2",
     "@commitlint/config-conventional": "17.1.0",
+    "all-contributors-cli": "6.24.0",
     "eslint-config-editable": "workspace:*",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",

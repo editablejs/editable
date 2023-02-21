@@ -27,5 +27,5 @@ export const withLinkMarkdownSerializerTransform: MarkdownSerializerWithTransfor
 }
 
 export const withLinkMarkdownSerializerPlugin: MarkdownSerializerPlugin = {
-  extensions: gfmAutolinkLiteralToMarkdown,
+  extensions: [gfmAutolinkLiteralToMarkdown as any],
 }

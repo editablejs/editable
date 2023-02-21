@@ -1,0 +1,53 @@
+{
+  "projectName": "Editable",
+  "projectOwner": "big-camel",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md",
+    "README.zh-CN.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "claviering",
+      "name": "Kevin Lin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16227832?v=4",
+      "profile": "https://claviering.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "YaoKaiLun",
+      "name": "kailunyao",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11460856?v=4",
+      "profile": "https://yaokailun.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ren-chen2021",
+      "name": "ren.chen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88533891?v=4",
+      "profile": "https://github.com/ren-chen2021",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "byoungd",
+      "name": "han",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16145783?v=4",
+      "profile": "https://github.com/byoungd",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": false
+}
