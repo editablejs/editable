@@ -95,11 +95,11 @@
     "survey": "Take a survey!",
     "open-source": "Open source",
     "learn-editable": "Learn Editable",
-    "learn-editable-detail": "Learn how to think in Editable with step-by-step explanations and interactive examples.",
+    "learn-editable-detail": "Integrate Editable related functions into your project quickly and learn about its features.",
     "learn-start": "Quick Start",
     "learn-install": "Installation",
     "api-reference": "API Reference",
-    "api-reference-detail": "Look up the API of Editable, and see their shape with color-coded signatures.",
+    "api-reference-detail": "View the APIs of Editable and related plugins, and learn about their configuration options.",
     "api-editor": "Editor APIs",
     "api-plugin": "Plugin APIs",
     "community": "Community",
@@ -111,6 +111,12 @@
     "read-more": "Read more",
     "in-this-chapter": "In this chapter",
     "you-will-learn": "You will learn",
-    "search": "Search"
+    "search": "Search",
+    "like-docs": "How do you like these docs?"
+  },
+  "nav": {
+    "title": "Learn Editable",
+    "quick-start": "Quick Start",
+    "install": "Installation"
   }
 }

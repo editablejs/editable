@@ -5,6 +5,7 @@ import { IconNavArrow } from 'components/icon/nav-arrow'
 import Link from 'next/link'
 import { ExternalLink } from 'components/external-link'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 interface SidebarLinkProps {
   href: string
@@ -35,7 +36,7 @@ export function SidebarLink({
   target,
 }: SidebarLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
-
+  const { t } = useTranslation()
   React.useEffect(() => {
     if (selected && ref && ref.current) {
       // @ts-ignore
@@ -53,7 +54,7 @@ export function SidebarLink({
     return (
       <>
         {/* This here needs to be refactored ofc */}
-        <span css={[wip && tw`text-gray-400 dark:text-gray-500`]}>{title}</span>
+        <span css={[wip && tw`text-gray-400 dark:text-gray-500`]}>{t(title)}</span>
         {isExpanded != null && !heading && !hideArrow && (
           <span css={[tw`pr-1`, isExpanded && tw`text-link`, !isExpanded && tw`text-gray-30`]}>
             <IconNavArrow displayDirection={isExpanded ? 'down' : 'right'} />

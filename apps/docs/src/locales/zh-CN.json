@@ -61,7 +61,7 @@
   },
   "docs": {
     "title": "Editable Docs",
-    "learn": "上手",
+    "learn": "教程",
     "api": "API",
     "feedback": {
       "submitted": "感谢您的反馈！",
@@ -92,12 +92,12 @@
     },
     "survey": "参加调查！",
     "open-source": "Open Source",
-    "learn-editable": "学习 Editable",
-    "learn-editable-detail": "通过逐步解释和交互式示例学习如何思考 Editable。",
+    "learn-editable": "Editable教程",
+    "learn-editable-detail": "为您的项目快速集成 Editable 相关功能，并了解其特性。",
     "learn-start": "快速开始",
     "learn-install": "安装",
     "api-reference": "API 参考",
-    "api-reference-detail": "查看 Editable 的 API，并通过颜色编码的签名查看它们的形状。",
+    "api-reference-detail": "查看 Editable 以及相关插件的API，并了解其配置选项。",
     "api-editor": "编辑器 API",
     "api-plugin": "插件 API",
     "community": "社区",
@@ -109,6 +109,12 @@
     "read-more": "阅读更多",
     "in-this-chapter": "本章中",
     "you-will-learn": "您将学到",
-    "search": "搜索"
+    "search": "搜索",
+    "like-docs": "喜欢这些文档吗？"
+  },
+  "nav": {
+    "title": "Editable教程",
+    "quick-start": "快速开始",
+    "install": "安装"
   }
 }

@@ -22,7 +22,7 @@ Before learning how to use `Editable`, you may need to understand some basic con
 
 ## Try Editable {/*try-editable*/}
 
-You don't need to install anything to play with Editable. Try editing this sandbox!
+Before learning, you don't need to install anything to experiment with Editable. Try editing this sandbox!
 
 <Sandpack>
 

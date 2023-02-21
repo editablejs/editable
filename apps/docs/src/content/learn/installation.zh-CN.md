@@ -1,14 +1,14 @@
 ---
-title: Installation
+title: 安装
 ---
 
 <Intro>
 
-This page will show you how to integrate the Editable editor into your React project.
+这个页面将向您展示如何将 Editable 编辑器集成到您的 React 项目中。
 
 </Intro>
 
-## Step 1: Install Editable {/*step-1*/}
+## 步骤 1: 安装 Editable {/*step-1*/}
 
 <TerminalBlock>
 
@@ -18,7 +18,7 @@ npm install @editablejs/editor
 
 </TerminalBlock>
 
-or use yarn
+或者使用 yarn
 
 <TerminalBlock>
 
@@ -28,7 +28,7 @@ yarn add @editablejs/editor
 
 </TerminalBlock>
 
-or use pnpm
+或者使用 pnpm
 
 <TerminalBlock>
 
@@ -38,7 +38,7 @@ pnpm add @editablejs/editor
 
 </TerminalBlock>
 
-You also need React as a dependency
+您还需要将 React 作为依赖项。
 
 <TerminalBlock>
 
@@ -46,33 +46,24 @@ npm install react react-dom
 
 </TerminalBlock>
 
-## Step 2: Import Editable {/*step-2*/}
+## 步骤 2: 导入 Editable {/*step-2*/}
 
 ```js
-// Import React dependencies
+
 import * as React from 'react'
-// Import the Editable package
-import {
-   createEditor,
-} from '@editablejs/models'
-// Import the Editable package
-import {
-   EditableProvider,
-   ContentEditable,
-   withEditable,
-} from '@editablejs/editor'
+import { createEditor } from '@editablejs/models'
+import { EditableProvider, ContentEditable, withEditable } from '@editablejs/editor'
 
 ```
 
-## Step 3: Create an Editor object {/*step-3*/}
+## 步骤 3: 创建一个 Editor 对象 {/*step-3*/}
 
-Before we use these imports, let's start with an empty `<App />`
+在使用这些导入之前，让我们从一个空的 `<App />` 开始。
 
-We want the editor to be stable across renders, so we use the `useRemo` hook with an empty dependency
+我们希望编辑器在渲染过程中保持稳定，因此我们使用具有空依赖项的 `useMemo` hook。
 
 ```js
 const App = () => {
-   // Create an Editable editor object that won't change across renders.
    const editor = React. useMemo(() => {
      return withEditable(createEditor())
    }, [])
@@ -81,11 +72,11 @@ const App = () => {
 
 ```
 
-Of course we're not rendering anything, so you won't see any changes.
+当然，我们没有渲染任何内容，所以您看不到任何变化。
 
-## Step 4: Use the editor's context provider `EditableProvider`
+## 步骤 4: 使用编辑器的上下文提供者 `EditableProvider` {/*step-4*/}
 
-You can think of the `<EditableProvider>` component as providing context for every component below it.
+您可以将 `<EditableProvider>` 组件视为为其下方的每个组件提供上下文。
 
 ```js
 const App = () => {
@@ -97,15 +88,15 @@ const App = () => {
 
 ```
 
-By sharing the context, you can access the editor object in other components using the `useEditable` and `useEditableStatic` hooks.
+通过共享上下文，您可以使用 `useEditable` 和 `useEditableStatic` 钩子在其他组件中访问编辑器对象。
 
-## Step 5: Render the editable area `ContentEditable`
+## Step 5: 渲染可编辑区域 `ContentEditable` {/*step-5*/}
 
-The `ContentEditable` component is an editable area that behaves like `contenteditable`.
+`ContentEditable` 组件是一个可编辑区域，其行为类似于 `contenteditable。`
 
-The difference is that we don't use the `contenteditable` attribute, and any behavior of it is expected and controllable.
+不同之处在于，我们不使用 `contenteditable` 属性，并且对其的任何行为都是可预期且可控的。
 
-Editable takes over most keystrokes and mouse events to simulate editable interactive behaviors (including input behaviors).
+`Editable` 接管了大多数按键和鼠标事件，以模拟可编辑的交互行为（包括输入行为）。
 
 ```js
 const App = () => {
@@ -119,8 +110,8 @@ const App = () => {
 
 ```
 
-Finally, you can see that there is an editable area in your page, and you can try to edit it. Also, there isn't any `contenteditable` or native editable property on the page to support it.
+最后，您可以在页面中看到一个可编辑区域，并尝试对其进行编辑。此外，页面上没有任何支持 `contenteditable` 或本地可编辑属性的元素。
 
-## Next steps {/*next-steps*/}
+## 下一步 {/*next-steps*/}
 
 TODO

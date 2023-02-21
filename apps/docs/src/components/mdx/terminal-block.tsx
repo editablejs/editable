@@ -20,15 +20,20 @@ function LevelText({ type }: { type: LogLevel }) {
   }
 }
 
-function TerminalBlock({ level = 'info', children }: TerminalBlockProps) {
-  let message: string | undefined
+const getMessages = (children: React.ReactNode): string => {
   if (typeof children === 'string') {
-    message = children
+    return children
   } else if (React.isValidElement(children) && typeof children.props.children === 'string') {
-    message = children.props.children
+    return children.props.children
+  } else if (Array.isArray(children)) {
+    return children.map(getMessages).join('\n')
   } else {
     throw Error('Expected TerminalBlock children to be a plain string.')
   }
+}
+
+function TerminalBlock({ level = 'info', children }: TerminalBlockProps) {
+  let message: string | undefined = getMessages(children)
 
   const [copied, setCopied] = React.useState(false)
   React.useEffect(() => {

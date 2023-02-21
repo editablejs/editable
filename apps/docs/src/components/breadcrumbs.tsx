@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { useRouteMeta } from 'components/layout/use-route-meta'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 function Breadcrumbs() {
   const { breadcrumbs } = useRouteMeta()
+  const { t } = useTranslation()
   if (!breadcrumbs) return null
   return (
     <div tw="flex">
@@ -14,7 +16,7 @@ function Breadcrumbs() {
               <React.Fragment key={crumb.path}>
                 <Link href={crumb.path}>
                   <a tw="text-link dark:text-link-dark mr-1 text-sm font-bold uppercase tracking-wide hover:underline">
-                    {crumb.title}
+                    {t(crumb.title)}
                   </a>
                 </Link>
                 <span tw="text-link dark:text-link-dark mr-1 inline-block text-lg">

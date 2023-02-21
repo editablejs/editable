@@ -1,5 +1,5 @@
 {
-  "title": "Learn EditableJS",
+  "title": "nav.title",
   "heading": true,
   "path": "/learn",
   "routes": [
@@ -8,34 +8,14 @@
       "path": "",
       "routes": [
         {
-          "title": "Quick Start",
+          "title": "nav.quick-start",
           "path": "/learn",
           "routes": [
             {
-              "title": "Installation",
+              "title": "nav.install",
               "path": "/learn/installation"
             }
           ]
-        },
-        {
-          "title": "Playground",
-          "hasSeparator": true,
-          "target": "_blank",
-          "path": "/playground"
-        },
-        {
-          "title": "Community",
-          "path": "/learn/community",
-          "routes": [
-            {
-              "title": "Acknowledgements",
-              "path": "/learn/acknowledgements"
-            }
-          ]
-        },
-        {
-          "title": "Blog",
-          "path": "https://editablejs.org/blog"
         }
       ]
     }

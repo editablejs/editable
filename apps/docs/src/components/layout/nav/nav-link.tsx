@@ -8,6 +8,7 @@ interface NavLinkProps {
   children: React.ReactNode
   isActive: boolean
   target?: string
+  className?: string
 }
 
 const getClasses = (isActive: boolean) => [
@@ -19,18 +20,18 @@ const getClasses = (isActive: boolean) => [
     `,
 ]
 
-export default function NavLink({ href, children, isActive, target }: NavLinkProps) {
+export default function NavLink({ href, children, isActive, target, className }: NavLinkProps) {
   const classes = getClasses(isActive)
   if (href.startsWith('https://')) {
     return (
-      <ExternalLink href={href} css={classes} target={target}>
+      <ExternalLink href={href} css={classes} className={className} target={target}>
         {children}
       </ExternalLink>
     )
   }
 
   return (
-    <NextLink href={href} target={target}>
+    <NextLink href={href} target={target} className={className}>
       <a css={classes}>{children}</a>
     </NextLink>
   )

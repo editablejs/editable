@@ -52,15 +52,9 @@ npm install react react-dom
 // Import React dependencies
 import * as React from 'react'
 // Import the Editable package
-import {
-   createEditor,
-} from '@editablejs/models'
+import { createEditor } from '@editablejs/models'
 // Import the Editable package
-import {
-   EditableProvider,
-   ContentEditable,
-   withEditable,
-} from '@editablejs/editor'
+import { EditableProvider, ContentEditable, withEditable } from '@editablejs/editor'
 
 ```
 

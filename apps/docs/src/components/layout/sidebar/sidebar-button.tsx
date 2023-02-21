@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { IconNavArrow } from 'components/icon/nav-arrow'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 interface SidebarButtonProps {
   title: string
@@ -19,6 +20,7 @@ export function SidebarButton({
   isExpanded,
   isBreadcrumb,
 }: SidebarButtonProps) {
+  const { t } = useTranslation()
   return (
     <div css={[(heading || level === 1) && tw`my-1`, level > 1 && tw`my-3`]}>
       <button
@@ -40,7 +42,7 @@ export function SidebarButton({
         ]}
         onClick={onClick}
       >
-        {title}
+        {t(title)}
         {typeof isExpanded && !heading && (
           <span tw="text-gray-30 pr-2">
             <IconNavArrow displayDirection={isExpanded ? 'down' : 'right'} />

@@ -13,9 +13,6 @@ function HomepageHero() {
           <h1 tw="dark:text-primary-dark mr-4 mt-1 flex text-5xl font-bold leading-tight text-primary">
             Editable Docs
           </h1>
-          <div tw="bg-highlight dark:bg-highlight-dark text-link dark:text-link-dark mt-1 inline-flex w-auto self-center whitespace-nowrap rounded px-2 text-base font-bold uppercase tracking-wide">
-            Beta
-          </div>
         </div>
       </div>
       <section tw="my-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:my-10 lg:grid-cols-2">

@@ -5,10 +5,10 @@ import { RouteItem, SidebarContext } from './use-route-meta'
 import { useActiveSection } from 'hooks/useActiveSection'
 import { Footer } from './footer'
 import { Toc } from './toc'
-// import SocialBanner from '../social-banner'
 import sidebarLearn from '../../sidebarLearn.json'
 import sidebarAPIs from '../../sidebarAPIs.json'
 import type { TocItem } from 'components/mdx/toc-context'
+import Header from 'components/header'
 
 interface PageProps {
   children: React.ReactNode
@@ -26,7 +26,7 @@ export function Page({ children, toc }: PageProps) {
   }
   return (
     <>
-      {/* <SocialBanner /> */}
+      <Header />
       <SidebarContext.Provider value={routeTree}>
         <div tw="grid-cols-only-content lg:grid-cols-sidebar-content 2xl:grid-cols-sidebar-content-toc grid">
           <div tw="fixed top-0 left-0 right-0 z-50 py-0 shadow lg:sticky lg:shadow-none">

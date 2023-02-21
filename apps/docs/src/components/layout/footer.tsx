@@ -18,7 +18,7 @@ export function Footer() {
           <hr tw="border-border dark:border-border-dark mx-auto max-w-7xl" />
           <div tw="m-4 flex flex-col items-center p-4">
             <p tw="dark:text-primary-dark mb-4 text-lg font-bold text-primary">
-              How do you like these docs?
+              {t('docs.like-docs')}
             </p>
             <div>
               <ButtonLink
