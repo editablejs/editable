@@ -6,10 +6,7 @@ import {
   useDragging,
   SlotComponentProps,
   useLocale,
-  Decorate,
   useIsomorphicLayoutEffect,
-  ElementDecorate,
-  DATA_EDITABLE_LEAF,
   useReadOnly,
   DATA_EDITABLE_PLACEHOLDER,
   DATA_EDITABLE_STRING,
@@ -24,7 +21,7 @@ import {
   useSideToolbarDecorateOpen,
 } from '../store'
 import { SideToolbarLocale } from '../locale'
-import tw, { styled } from 'twin.macro'
+import tw from 'twin.macro'
 import { ContextMenu } from './context-menu'
 import { clearCapturedData, getCapturedData, setCapturedData } from '../weak-map'
 import { getOptions } from '../options'
@@ -34,11 +31,6 @@ export interface SideToolbar extends SlotComponentProps {}
 const StyledTooltipContent = tw.div`text-gray-400 text-xs text-left`
 
 const StyledTooltipContentAction = tw.span`text-white mr-1`
-
-const StyledElementDecorator = styled.div(({ isVoid }: { isVoid: boolean }) => [
-  tw`rounded-md bg-blue-50 relative -mx-1 px-1`,
-  isVoid && tw`-mx-0 px-0`,
-])
 
 const findFirstElementChild = (el: DOMElement): DOMElement => {
   const child = el.firstElementChild
@@ -263,15 +255,15 @@ export const SideToolbar: React.FC<SideToolbar> = () => {
     const data = getCapturedData(editor)
 
     if (decorateOpen && data) {
-      const decorate: ElementDecorate = {
-        match: el => el === data.element,
-        renderElement: ({ children }) => (
-          <StyledElementDecorator isVoid={data.isVoid}>{children}</StyledElementDecorator>
-        ),
-      }
-      Decorate.create(editor, decorate)
+      const domElement = Editable.toDOMNode(editor, data.element)
+      const prevCssText = domElement.style.cssText
+      domElement.style.cssText = `
+    border-radius: 0.375rem;
+    background-color: rgb(239 246 255 / 1);
+    ${prevCssText}
+    `
       return () => {
-        Decorate.remove(editor, decorate)
+        domElement.style.cssText = prevCssText
       }
     }
   }, [editor, decorateOpen])
