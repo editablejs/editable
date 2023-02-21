@@ -1,5 +1,11 @@
 # @editablejs/plugin-toolbar
 
+## 1.0.0-beta.43
+
+### Patch Changes
+
+- [`2714349`](https://github.com/editablejs/editable/commit/271434922c4c6baf1eb9a109811ec16e343e441a) Thanks [@big-camel](https://github.com/big-camel)! - Optimize the shadow display of the selected row in the side menu.
+
 ## 1.0.0-beta.42
 
 ### Patch Changes
