@@ -78,7 +78,7 @@ export async function getStaticProps(context) {
   // See if we have a cached output first.
   const { FileStore, stableHash } = require('metro-cache')
   const store = new FileStore({
-    root: process.cwd() + '/node_modules/.cache/react-docs-mdx/',
+    root: process.cwd() + '/node_modules/.cache/docs-mdx/',
   })
   const hash = Buffer.from(
     stableHash({
@@ -231,7 +231,7 @@ export async function getStaticPaths(context) {
   const files = await getFiles(rootDir)
 
   const paths = files.map(file => {
-    const [paths, locale] = getSegments(file)
+    const [paths, locale = 'en-US'] = getSegments(file)
     return {
       params: {
         markdownPath: paths,
