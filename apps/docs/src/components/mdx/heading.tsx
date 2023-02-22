@@ -8,11 +8,11 @@ export interface HeadingProps {
   isPageAnchor?: boolean
   children: React.ReactNode
   id?: string
-  as?: any
+  component?: any
 }
 
 const Heading = forwardRefWithAs<HeadingProps, 'div'>(function Heading(
-  { as: Comp = 'div', className, children, id, isPageAnchor = true, ...props },
+  { component: Comp = 'div', className, children, id, isPageAnchor = true, ...props },
   ref,
 ) {
   const { t } = useTranslation()
@@ -51,12 +51,12 @@ const Heading = forwardRefWithAs<HeadingProps, 'div'>(function Heading(
 })
 
 export const H1 = ({ className, ...props }: HeadingProps) => (
-  <Heading as="h1" tw="text-5xl font-bold leading-tight" {...props} className={className} />
+  <Heading component="h1" tw="text-5xl font-bold leading-tight" {...props} className={className} />
 )
 
 export const H2 = ({ className, ...props }: HeadingProps) => (
   <Heading
-    as="h2"
+    component="h2"
     tw="dark:text-primary-dark my-6 text-3xl font-bold leading-10 text-primary"
     className={className}
     {...props}
@@ -65,7 +65,7 @@ export const H2 = ({ className, ...props }: HeadingProps) => (
 
 export const H3 = ({ className, ...props }: HeadingProps) => (
   <Heading
-    as="h3"
+    component="h3"
     tw="dark:text-primary-dark my-6 text-2xl font-bold leading-9 text-primary"
     className={className}
     {...props}
@@ -73,5 +73,5 @@ export const H3 = ({ className, ...props }: HeadingProps) => (
 )
 
 export const H4 = ({ className, ...props }: HeadingProps) => (
-  <Heading as="h4" tw="text-xl font-bold leading-9 my-4" className={className} {...props} />
+  <Heading component="h4" tw="text-xl font-bold leading-9 my-4" className={className} {...props} />
 )

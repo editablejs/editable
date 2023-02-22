@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-const TOP_OFFSET = 75
+const TOP_OFFSET = 139
 
 export function getHeaderAnchors(): HTMLAnchorElement[] {
   return Array.prototype.filter.call(

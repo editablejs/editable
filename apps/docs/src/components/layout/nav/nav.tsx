@@ -84,11 +84,6 @@ export default function Nav() {
     }
   }, [])
 
-  function handleFeedback() {
-    clearTimeout(feedbackAutohideRef.current)
-    setShowFeedback(!showFeedback)
-  }
-
   // Hide the Feedback widget on any click outside.
   React.useEffect(() => {
     if (!showFeedback) {
@@ -111,9 +106,7 @@ export default function Nav() {
   }, [showFeedback])
 
   return (
-    <div
-      css={[tw`sticky top-[64px] flex flex-col lg:bottom-0 lg:h-screen`, isOpen && tw`h-screen`]}
-    >
+    <div css={[tw`fixed top-16 flex flex-col lg:bottom-0 lg:h-screen`, isOpen && tw`h-screen`]}>
       <div
         ref={scrollParentRef}
         tw="bg-wash dark:bg-wash-dark grow overflow-y-scroll lg:w-[336px]"
