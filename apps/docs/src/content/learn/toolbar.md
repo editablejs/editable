@@ -31,7 +31,7 @@ import { ToolbarComponent, useToolbarEffect, withToolbar, Toolbar } from '@edita
 
 ## Step 3: Use `withToolbar` {/*step-3*/}
 
-工具栏是一个插件，所以我们需要使用 `withToolbar` 将其添加到编辑器中。
+Since the toolbar is a plugin, we need to use `withToolbar` to add it to the editor.
 
 ```js
 const App = () => {
@@ -50,9 +50,9 @@ const App = () => {
 
 ```
 
-## 步骤 4: 使用 `ToolbarComponent` {/*step-4*/}
+## Step 4: Use `ToolbarComponent` {/*step-4*/}
 
-`ToolbarComponent` 是一个 React 组件，它将会渲染工具栏。
+`ToolbarComponent` is a React component that will render the toolbar.
 
 ```js
 const App = () => {
@@ -72,11 +72,11 @@ const App = () => {
 
 ```
 
-## 步骤 5: 使用 `useToolbarEffect` {/*step-5*/}
+## Step 5: Use `useToolbarEffect` {/*step-5*/}
 
-`useToolbarEffect` 是一个 React Hook，在需要更新的时候会执行回调。
+`useToolbarEffect` is a React Hook that executes a callback when an update is needed.
 
-在回调的时候，我们可以通过 `Toolbar.setItems` 来更新工具栏的内容。
+In the callback, we can update the toolbar content by using `Toolbar.setItems`.
 
 ```js
 
@@ -110,17 +110,17 @@ const App = () => {
 
 ```
 
-`MarkEditor` 对象是 `@editablejs/plugin-mark` 提供的，它可以帮助我们操作文本的样式。
+The `MarkEditor` object is provided by `@editablejs/plugin-mark` and it can help us manipulate text styles.
 
-因为它也属于常用的插件，已经集合在 `@editablejs/plugins` 包中，所以你也可以从 `@editablejs/plugins` 中导入。
+Since it is also a common plugin, it is already included in the `@editablejs/plugins` package, so you can also import it from `@editablejs/plugins`.
 
 ```js
 import { withPlugins, MarkEditor } from '@editablejs/plugins'
 ```
 
-## 尝试使用工具栏 {/*try-toolbar*/}
+## Try the Toolbar {/*try-toolbar*/}
 
-下面的沙盒已经使用了 `@editablejs/plugin-toolbar`，您可以在其中尝试使用工具栏。
+The sandbox below already uses `@editablejs/plugin-toolbar` and you can try using the toolbar in it.
 
 <Sandpack deps={['@editablejs/plugins', '@editablejs/plugin-toolbar']}>
 

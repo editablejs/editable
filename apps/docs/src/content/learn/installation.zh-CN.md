@@ -92,4 +92,4 @@ const App = () => {
 
 ## 下一步 {/*next-steps*/}
 
-前往 [使用插件](/learn/plugins) 指南了解如何使用 Editable 的插件。
+前往 [使用插件](/learn/using-plugins) 指南了解如何使用 Editable 的插件。

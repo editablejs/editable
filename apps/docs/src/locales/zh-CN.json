@@ -120,11 +120,17 @@
     "recap": "回顾",
     "challenges": "挑战",
     "learn": {
+      "get-started": "开始",
       "quick-start": "快速开始",
       "install": "安装",
-      "plugins": "使用插件",
+      "using-plugins": "使用插件",
       "toolbar": "配置工具栏",
-      "context-menu": "配置上下文菜单"
+      "context-menu": "配置上下文菜单",
+      "plugins": {
+        "title": "插件",
+        "blocks": "块插件",
+        "heading": "Heading"
+      }
     }
   }
 }

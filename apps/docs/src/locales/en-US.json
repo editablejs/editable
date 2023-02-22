@@ -122,11 +122,17 @@
     "recap": "Recap",
     "challenges": "Challenges",
     "learn": {
+      "get-started": "Get Started",
       "quick-start": "Quick Start",
       "install": "Installation",
-      "plugins": "Using Plugins",
+      "using-plugins": "Using Plugins",
       "toolbar": "Configuring the Toolbar",
-      "context-menu": "Configuring the Context Menu"
+      "context-menu": "Configuring the Context Menu",
+      "plugins": {
+        "title": "Plugins",
+        "blocks": "Blocks",
+        "heading": "Heading"
+      }
     }
   }
 }

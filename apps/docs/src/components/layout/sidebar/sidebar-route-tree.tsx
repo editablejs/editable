@@ -8,6 +8,7 @@ import { SidebarLink } from './sidebar-link'
 import useCollapse from 'react-collapsed'
 import usePendingRoute from 'hooks/usePendingRoute'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 interface SidebarRouteTreeProps {
   isForceExpanded: boolean
@@ -67,12 +68,25 @@ function CollapseWrapper({
   )
 }
 
-export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: SidebarRouteTreeProps) {
+const CollapseSidebar: React.FC<
+  RouteItem & SidebarRouteTreeProps & { pagePath: string; selected: boolean }
+> = ({
+  path,
+  title,
+  group,
+  routes,
+  wip,
+  pagePath,
+  isForceExpanded,
+  routeTree,
+  level = 0,
+  target,
+  selected,
+}) => {
   const { breadcrumbs } = useRouteMeta(routeTree)
   const cleanedPath = useRouter().asPath.split(/[\?\#]/)[0]
   const pendingRoute = usePendingRoute()
 
-  const slug = cleanedPath
   const currentRoutes = routeTree.routes as RouteItem[]
   const expandedPath = currentRoutes.reduce((acc: string | undefined, curr: RouteItem) => {
     if (acc) return acc
@@ -85,16 +99,65 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
     }
     return undefined
   }, undefined)
-
   const expanded = expandedPath
+  // if route has a path and child routes, treat it as an expandable sidebar item
+  const [isExpanded, setExpanded] = React.useState(isForceExpanded || expanded === path)
+  React.useEffect(() => {
+    setExpanded(isForceExpanded || expanded === path)
+  }, [isForceExpanded, expanded, path])
+  return (
+    <li key={`${title}-${path}-${level}-heading`}>
+      <SidebarLink
+        key={`${title}-${path}-${level}-link`}
+        href={pagePath}
+        isPending={pendingRoute === pagePath}
+        selected={selected}
+        level={level}
+        title={title}
+        wip={wip}
+        isExpanded={isExpanded}
+        isBreadcrumb={expandedPath === path}
+        hideArrow={isForceExpanded}
+        target={target}
+        onClick={!pagePath ? () => setExpanded(!isExpanded) : undefined}
+      />
+      <CollapseWrapper duration={250} isExpanded={isExpanded}>
+        <SidebarRouteTree
+          isForceExpanded={isForceExpanded}
+          routeTree={{ title, routes }}
+          level={level + 1}
+        />
+      </CollapseWrapper>
+    </li>
+  )
+}
+
+export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: SidebarRouteTreeProps) {
+  const cleanedPath = useRouter().asPath.split(/[\?\#]/)[0]
+  const pendingRoute = usePendingRoute()
+  const { t } = useTranslation()
+  const slug = cleanedPath
+  const currentRoutes = routeTree.routes as RouteItem[]
+
   return (
     <ul>
-      {currentRoutes.map(({ path, title, routes, wip, heading, hasSeparator, target }) => {
+      {currentRoutes.map((item, index) => {
+        const {
+          path = '',
+          title,
+          routes,
+          wip,
+          heading,
+          hasSectionHeader,
+          sectionHeader,
+          target,
+          group,
+        } = item
         const pagePath = path && removeFromLast(path, '.')
         const selected = slug === pagePath
 
         let listItem = null
-        if (!path || !pagePath || heading) {
+        if (!group && (!path || !pagePath || heading)) {
           // if current route item has no path and children treat it as an API sidebar heading
           listItem = (
             <SidebarRouteTree
@@ -104,31 +167,17 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
             />
           )
         } else if (routes) {
-          // if route has a path and child routes, treat it as an expandable sidebar item
-          const isExpanded = isForceExpanded || expanded === path
           listItem = (
-            <li key={`${title}-${path}-${level}-heading`}>
-              <SidebarLink
-                key={`${title}-${path}-${level}-link`}
-                href={pagePath}
-                isPending={pendingRoute === pagePath}
-                selected={selected}
-                level={level}
-                title={title}
-                wip={wip}
-                isExpanded={isExpanded}
-                isBreadcrumb={expandedPath === path}
-                hideArrow={isForceExpanded}
-                target={target}
-              />
-              <CollapseWrapper duration={250} isExpanded={isExpanded}>
-                <SidebarRouteTree
-                  isForceExpanded={isForceExpanded}
-                  routeTree={{ title, routes }}
-                  level={level + 1}
-                />
-              </CollapseWrapper>
-            </li>
+            <CollapseSidebar
+              key={`${title}-${path}-${level}-link`}
+              {...item}
+              isForceExpanded={isForceExpanded}
+              routeTree={routeTree}
+              level={level}
+              group={group}
+              pagePath={pagePath}
+              selected={selected}
+            />
           )
         } else {
           // if route has a path and no child routes, treat it as a sidebar link
@@ -147,11 +196,23 @@ export function SidebarRouteTree({ isForceExpanded, routeTree, level = 0 }: Side
           )
         }
 
-        if (hasSeparator) {
+        if (hasSectionHeader) {
           return (
-            <React.Fragment key={`${title}-${path}-${level}-separator`}>
-              <li role="separator" tw="border-border dark:border-border-dark my-2 ml-5 border-b" />
-              {listItem}
+            <React.Fragment key={`${sectionHeader}-${level}-separator`}>
+              {index !== 0 && (
+                <li
+                  role="separator"
+                  tw="border-border dark:border-border-dark mt-4 mb-2 ml-5 border-b"
+                />
+              )}
+              <h3
+                css={[
+                  tw`mb-1 ml-5 text-sm font-bold text-gray-400 dark:text-gray-500`,
+                  index !== 0 && tw`mt-2`,
+                ]}
+              >
+                {sectionHeader && t(sectionHeader)}
+              </h3>
             </React.Fragment>
           )
         } else {

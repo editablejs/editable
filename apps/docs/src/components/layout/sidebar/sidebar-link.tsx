@@ -20,6 +20,7 @@ interface SidebarLinkProps {
   hideArrow?: boolean
   isPending: boolean
   target?: string
+  onClick?: () => void
 }
 
 export function SidebarLink({
@@ -34,6 +35,7 @@ export function SidebarLink({
   hideArrow,
   isPending,
   target,
+  onClick,
 }: SidebarLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const { t } = useTranslation()
@@ -67,6 +69,7 @@ export function SidebarLink({
   const classes = [
     tw`p-2 pr-2 w-full cursor-pointer rounded-none lg:rounded-r-lg text-left hover:bg-gray-5 dark:hover:bg-gray-80 relative flex items-center justify-between`,
     heading && tw`my-6`,
+    heading && !isBreadcrumb && tw`text-primary dark:text-primary-dark`,
     level > 0 && tw`pl-6 text-sm`,
     level < 2 && tw`pl-5`,
     level === 0 && tw`text-base font-bold`,
@@ -85,17 +88,21 @@ export function SidebarLink({
       </ExternalLink>
     )
   }
-  return (
-    <Link href={href}>
-      <a
-        ref={ref}
-        title={t(title) ?? ''}
-        target={target}
-        aria-current={selected ? 'page' : undefined}
-        css={classes}
-      >
-        {renderChildren()}
-      </a>
-    </Link>
+
+  const link = (
+    <a
+      ref={ref}
+      title={t(title) ?? ''}
+      target={target}
+      aria-current={selected ? 'page' : undefined}
+      css={classes}
+      onClick={onClick}
+    >
+      {renderChildren()}
+    </a>
   )
+
+  if (!href) return link
+
+  return <Link href={href}>{link}</Link>
 }

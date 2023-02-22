@@ -95,4 +95,4 @@ Finally, you can see that there is an editable area in your page, and you can tr
 
 ## Next steps {/*next-steps*/}
 
-TODO
+Go to the [Using Plugins](/learn/using-plugins) guide to learn how to use plugins for Editable.

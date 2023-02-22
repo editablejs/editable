@@ -8,6 +8,10 @@
       "path": "",
       "routes": [
         {
+          "hasSectionHeader": true,
+          "sectionHeader": "nav.learn.get-started"
+        },
+        {
           "title": "nav.learn.quick-start",
           "path": "/learn",
           "routes": [
@@ -16,8 +20,8 @@
               "path": "/learn/installation"
             },
             {
-              "title": "nav.learn.plugins",
-              "path": "/learn/plugins"
+              "title": "nav.learn.using-plugins",
+              "path": "/learn/using-plugins"
             },
             {
               "title": "nav.learn.toolbar",
@@ -26,6 +30,20 @@
             {
               "title": "nav.learn.context-menu",
               "path": "/learn/context-menu"
+            }
+          ]
+        },
+        {
+          "hasSectionHeader": true,
+          "sectionHeader": "nav.learn.plugins.title"
+        },
+        {
+          "title": "nav.learn.plugins.blocks",
+          "group": true,
+          "routes": [
+            {
+              "title": "nav.learn.plugins.heading",
+              "path": "/learn/plugin-heading"
             }
           ]
         }
