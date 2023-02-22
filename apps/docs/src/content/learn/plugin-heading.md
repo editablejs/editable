@@ -69,7 +69,7 @@ export default function App() {
 
 </Sandpack>
 
-## Heading Options {/*heading-options*/}
+## Options {/*heading-options*/}
 
 `withHeading` accepts an optional parameter to configure the `Heading` plugin.
 

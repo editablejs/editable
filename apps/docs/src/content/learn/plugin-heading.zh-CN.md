@@ -69,7 +69,7 @@ export default function App() {
 
 </Sandpack>
 
-## Heading 可选项 {/*heading-options*/}
+## 可选项 {/*heading-options*/}
 
 `withHeading` 接受一个可选的参数，用于配置 `Heading` 插件。
 
