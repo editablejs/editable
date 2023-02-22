@@ -60,7 +60,7 @@ export const useContextMenuOpen = (editor: Editable): [boolean, (open: boolean) 
     return [
       open,
       (open: boolean) => {
-        ContextMenuStore.setOpen(editor, open)
+        ContextMenu.setOpen(editor, open)
       },
     ]
   }, [editor, open])
@@ -79,7 +79,7 @@ export const useContextMenuEffect = (aciton: ContextMenuStoreAction, editor: Edi
   }, [open, editor, aciton])
 }
 
-export const ContextMenuStore = {
+export const ContextMenu = {
   setOpen(editor: Editable, open: boolean) {
     const store = getStore(editor)
     store.setState(() => ({ open }))

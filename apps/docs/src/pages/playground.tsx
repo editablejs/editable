@@ -19,12 +19,7 @@ import {
 } from '@editablejs/editor'
 import { Editor, createEditor, Range, Transforms } from '@editablejs/models'
 import { MarkdownDeserializer } from '@editablejs/deserializer/markdown'
-import {
-  withPlugins,
-  useContextMenuEffect,
-  ContextMenuStore,
-  MentionUser,
-} from '@editablejs/plugins'
+import { withPlugins, useContextMenuEffect, ContextMenu, MentionUser } from '@editablejs/plugins'
 import {
   withYHistory,
   withYjs,
@@ -338,7 +333,7 @@ export default function Playground() {
   }, [editor])
 
   useContextMenuEffect(() => {
-    ContextMenuStore.setItems(editor, createContextMenuItems(editor))
+    ContextMenu.setItems(editor, createContextMenuItems(editor))
   }, editor)
 
   useToolbarEffect(() => {

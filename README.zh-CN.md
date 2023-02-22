@@ -89,7 +89,7 @@ const App = () => {
 
 ### 常用插件
 
-- `@editablejs/plugin-context-menu` 提供了一个右键菜单，由于我们没有使用 ~~`contenteditble`~~ 原生菜单的部分功能不再起作用，所以我们需要自己定义右键菜单的功能。
+- `@editablejs/plugin-context-menu` 提供了一个上下文菜单，由于我们没有使用 ~~`contenteditble`~~ 原生菜单的部分功能不再起作用，所以我们需要自己定义上下文菜单的功能。
 - `@editablejs/plugin-align` 对齐
 - `@editablejs/plugin-blockquote` 引用块
 - `@editablejs/plugin-codeblock` 代码块

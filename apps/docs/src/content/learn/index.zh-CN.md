@@ -17,6 +17,8 @@ title: 快速开始
 - 如何安装 `Editable` npm 包
 - 如何创建编辑器实例
 - 如何使用 `React` 渲染可编辑区域
+- 如何使用插件
+- 如何配置工具栏
 
 </YouWillLearn>
 

@@ -12,9 +12,7 @@ This page will show you how to integrate the Editable editor into your React pro
 
 <TerminalBlock>
 
-npm install @editablejs/models
-
-npm install @editablejs/editor
+npm install @editablejs/models @editablejs/editor
 
 </TerminalBlock>
 
@@ -47,7 +45,7 @@ We want the editor to be stable across renders, so we use the `useRemo` hook wit
 ```js
 const App = () => {
    // Create an Editable editor object that won't change across renders.
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return null
@@ -63,7 +61,7 @@ You can think of the `<EditableProvider>` component as providing context for eve
 
 ```js
 const App = () => {
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return <EditableProvider editor={editor} />
@@ -83,7 +81,7 @@ Editable takes over most keystrokes and mouse events to simulate editable intera
 
 ```js
 const App = () => {
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return <EditableProvider editor={editor}>

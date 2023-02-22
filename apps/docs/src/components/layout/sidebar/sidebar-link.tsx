@@ -89,7 +89,7 @@ export function SidebarLink({
     <Link href={href}>
       <a
         ref={ref}
-        title={title}
+        title={t(title) ?? ''}
         target={target}
         aria-current={selected ? 'page' : undefined}
         css={classes}

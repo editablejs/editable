@@ -8,12 +8,24 @@
       "path": "",
       "routes": [
         {
-          "title": "nav.quick-start",
+          "title": "nav.learn.quick-start",
           "path": "/learn",
           "routes": [
             {
-              "title": "nav.install",
+              "title": "nav.learn.install",
               "path": "/learn/installation"
+            },
+            {
+              "title": "nav.learn.plugins",
+              "path": "/learn/plugins"
+            },
+            {
+              "title": "nav.learn.toolbar",
+              "path": "/learn/toolbar"
+            },
+            {
+              "title": "nav.learn.context-menu",
+              "path": "/learn/context-menu"
             }
           ]
         }

@@ -12,9 +12,7 @@ title: 安装
 
 <TerminalBlock>
 
-npm install @editablejs/models
-
-npm install @editablejs/editor
+npm install @editablejs/models @editablejs/editor
 
 </TerminalBlock>
 
@@ -44,7 +42,7 @@ import { EditableProvider, ContentEditable, withEditable } from '@editablejs/edi
 
 ```js
 const App = () => {
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return null
@@ -60,7 +58,7 @@ const App = () => {
 
 ```js
 const App = () => {
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return <EditableProvider editor={editor} />
@@ -80,11 +78,11 @@ const App = () => {
 
 ```js
 const App = () => {
-   const editor = React. useMemo(() => {
+   const editor = React.useMemo(() => {
      return withEditable(createEditor())
    }, [])
    return <EditableProvider editor={editor}>
-     <ContentEditable placeholder="Please enter content..." />
+     <ContentEditable />
    </EditableProvider>
 }
 
@@ -94,4 +92,4 @@ const App = () => {
 
 ## 下一步 {/*next-steps*/}
 
-TODO
+前往 [使用插件](/learn/plugins) 指南了解如何使用 Editable 的插件。

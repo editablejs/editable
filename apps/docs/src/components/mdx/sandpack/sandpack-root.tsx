@@ -9,6 +9,7 @@ type SandpackProps = {
   children: React.ReactNode
   autorun?: boolean
   showDevTools?: boolean
+  deps?: Record<string, string> | string[]
 }
 
 const sandboxStyle = `
@@ -62,7 +63,7 @@ ul {
 `.trim()
 
 function SandpackRoot(props: SandpackProps) {
-  let { children, autorun = true, showDevTools = false } = props
+  let { children, autorun = true, showDevTools = false, deps = [] } = props
   const [devToolsLoaded, setDevToolsLoaded] = React.useState(false)
   const codeSnippets = React.Children.toArray(children) as React.ReactElement[]
   const files = createFileMap(codeSnippets)
@@ -72,6 +73,14 @@ function SandpackRoot(props: SandpackProps) {
     hidden: true,
   }
 
+  let customDeps: Record<string, string> = {}
+  if (Array.isArray(deps)) {
+    deps.forEach(dep => {
+      customDeps[dep] = 'latest'
+    })
+  } else {
+    customDeps = deps
+  }
   return (
     <div tw="my-8" className="sandpack sandpack--playground">
       <SandpackProvider
@@ -90,6 +99,7 @@ function SandpackRoot(props: SandpackProps) {
             '@editablejs/editor': 'latest',
             react: 'latest',
             'react-dom': 'latest',
+            ...customDeps,
           },
         }}
       >
