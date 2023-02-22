@@ -4,6 +4,7 @@ import { removeFromLast } from 'utils/remove-from-last'
 import { IconNavArrow } from './icon/nav-arrow'
 import { RouteMeta } from './layout/use-route-meta'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 export type DocsPageFooterProps = Pick<RouteMeta, 'route' | 'nextRoute' | 'prevRoute'>
 
@@ -61,6 +62,7 @@ function FooterLink({
   title: string
   type: 'Previous' | 'Next'
 }) {
+  const { t } = useTranslation()
   return (
     <NextLink href={href}>
       <a
@@ -76,9 +78,9 @@ function FooterLink({
         />
         <span>
           <span tw="text-secondary dark:text-secondary-dark group-focus:text-link dark:group-focus:text-link-dark block text-sm font-bold uppercase tracking-wide no-underline group-focus:text-opacity-100">
-            {type}
+            {t(`docs.${type.toLowerCase()}`)}
           </span>
-          <span tw="block text-lg group-hover:underline">{title}</span>
+          <span tw="block text-lg group-hover:underline">{t(title)}</span>
         </span>
       </a>
     </NextLink>

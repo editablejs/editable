@@ -69,6 +69,7 @@
       "submitted": "Thank you for your feedback!",
       "question": "Is this page useful?"
     },
+    "previous": "Previous",
     "next": "Next",
     "example": "Example",
     "challenge": "Challenge",
@@ -112,11 +113,15 @@
     "in-this-chapter": "In this chapter",
     "you-will-learn": "You will learn",
     "search": "Search",
-    "like-docs": "How do you like these docs?"
+    "like-docs": "How do you like these docs?",
+    "on-this-page": "On this page"
   },
   "nav": {
     "title": "Learn Editable",
     "quick-start": "Quick Start",
-    "install": "Installation"
+    "install": "Installation",
+    "overview": "Overview",
+    "recap": "Recap",
+    "challenges": "Challenges"
   }
 }

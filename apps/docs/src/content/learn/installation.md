@@ -18,26 +18,6 @@ npm install @editablejs/editor
 
 </TerminalBlock>
 
-or use yarn
-
-<TerminalBlock>
-
-yarn add @editablejs/models
-
-yarn add @editablejs/editor
-
-</TerminalBlock>
-
-or use pnpm
-
-<TerminalBlock>
-
-pnpm add @editablejs/models
-
-pnpm add @editablejs/editor
-
-</TerminalBlock>
-
 You also need React as a dependency
 
 <TerminalBlock>

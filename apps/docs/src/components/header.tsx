@@ -7,6 +7,7 @@ import { ExternalLink } from './external-link'
 import NavLink from './layout/nav/nav-link'
 import { Search } from './search'
 import { useActiveSection } from 'hooks/useActiveSection'
+import { IconGitHub } from './icon/github'
 
 const darkIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
@@ -83,7 +84,7 @@ export default function Header() {
           Playground
         </NavLink>
       </div>
-      <div tw="justify-end flex flex-1 gap-4">
+      <div tw="justify-end flex flex-1 gap-4 items-center">
         <div tw="w-96">
           <Search />
         </div>
@@ -94,7 +95,7 @@ export default function Header() {
             onClick={() => {
               window.__setPreferredTheme('dark')
             }}
-            tw="hidden h-full items-center pr-2 lg:flex"
+            tw="hidden h-full items-center lg:flex"
           >
             {darkIcon}
           </button>
@@ -106,11 +107,14 @@ export default function Header() {
             onClick={() => {
               window.__setPreferredTheme('light')
             }}
-            tw="hidden h-full items-center pr-2 lg:flex"
+            tw="hidden h-full items-center lg:flex"
           >
             {lightIcon}
           </button>
         </div>
+        <ExternalLink aria-label="Editable on Github" href="https://github.com/editablejs/editable">
+          <IconGitHub />
+        </ExternalLink>
       </div>
     </div>
   )

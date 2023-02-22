@@ -1,18 +1,20 @@
 import { useTocHighlight } from './use-toc-highlight'
 import type { Toc as TocMDX } from '../mdx/toc-context'
 import tw from 'twin.macro'
+import { useTranslation } from 'react-i18next'
 
 export function Toc({ headings }: { headings: TocMDX }) {
   const { currentIndex } = useTocHighlight()
+  const { t } = useTranslation()
   // TODO: We currently have a mismatch between the headings in the document
   // and the headings we find in MarkdownPage (i.e. we don't find Recap or Challenges).
   // Select the max TOC item we have here for now, but remove this after the fix.
   const selectedIndex = Math.min(currentIndex, headings.length - 1)
   return (
-    <nav role="navigation" tw="sticky top-0 right-0 pt-[22px]">
+    <nav role="navigation" tw="sticky top-16 right-0 pt-[22px]">
       {headings.length > 0 && (
         <h2 tw="text-secondary dark:text-secondary-dark mb-3 w-full px-4 text-sm font-bold uppercase tracking-wide lg:mb-3">
-          On this page
+          {t('docs.on-this-page')}
         </h2>
       )}
       <div tw="h-full max-h-[calc(100vh-7.5rem)] overflow-y-auto pl-4">
@@ -41,7 +43,7 @@ export function Toc({ headings }: { headings: TocMDX }) {
                     ]}
                     href={h.url}
                   >
-                    {h.text}
+                    {typeof h.text === 'string' ? t(h.text) : h.text}
                   </a>
                 </li>
               )

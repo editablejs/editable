@@ -18,26 +18,6 @@ npm install @editablejs/editor
 
 </TerminalBlock>
 
-或者使用 yarn
-
-<TerminalBlock>
-
-yarn add @editablejs/models
-
-yarn add @editablejs/editor
-
-</TerminalBlock>
-
-或者使用 pnpm
-
-<TerminalBlock>
-
-pnpm add @editablejs/models
-
-pnpm add @editablejs/editor
-
-</TerminalBlock>
-
 您还需要将 React 作为依赖项。
 
 <TerminalBlock>

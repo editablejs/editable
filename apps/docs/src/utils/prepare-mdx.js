@@ -68,14 +68,14 @@ function getTableOfContents(children) {
         return {
           url: '#challenges',
           depth: 2,
-          text: 'Challenges',
+          text: 'nav.challenges',
         }
       }
       if (child.type === 'Recap') {
         return {
           url: '#recap',
           depth: 2,
-          text: 'Recap',
+          text: 'nav.recap',
         }
       }
       return {
@@ -87,7 +87,7 @@ function getTableOfContents(children) {
   if (anchors.length > 0) {
     anchors.unshift({
       url: '#',
-      text: 'Overview',
+      text: 'nav.overview',
       depth: 2,
     })
   }
