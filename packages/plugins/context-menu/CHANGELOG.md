@@ -1,5 +1,11 @@
 # @editablejs/plugin-context-menu
 
+## 1.0.0-beta.41
+
+### Patch Changes
+
+- [`d5cff1a`](https://github.com/editablejs/editable/commit/d5cff1a816cd795a40aa9bc315f4dbf95e2839c9) Thanks [@big-camel](https://github.com/big-camel)! - ContextMenuStore -> ContextMenu
+
 ## 1.0.0-beta.40
 
 ### Patch Changes
