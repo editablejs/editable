@@ -8,7 +8,7 @@ This page will show you how to use the `Heading` plugin.
 
 </Intro>
 
-## Installing Heading {/*heading-install*/}
+## Installation {/*heading-install*/}
 
 <TerminalBlock>
 
@@ -16,7 +16,7 @@ npm install @editablejs/plugin-heading
 
 </TerminalBlock>
 
-## Using Heading {/*heading-using*/}
+## Usage {/*heading-using*/}
 
 <Sandpack deps={['@editablejs/plugin-heading']}>
 

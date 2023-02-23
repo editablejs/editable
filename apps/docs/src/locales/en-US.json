@@ -133,7 +133,8 @@
         "blocks": "Blocks",
         "heading": "Heading",
         "alignment": "Alignment",
-        "blockquote": "Blockquote"
+        "blockquote": "Blockquote",
+        "code-block": "Code Block"
       }
     }
   }

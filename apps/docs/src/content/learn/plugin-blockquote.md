@@ -8,7 +8,7 @@ This page will show you how to use the `Blockquote` plugin.
 
 </Intro>
 
-## Install Blockquote {/*blockquote-install*/}
+## Installation {/*blockquote-install*/}
 
 <TerminalBlock>
 
@@ -16,7 +16,7 @@ npm install @editablejs/plugin-blockquote
 
 </TerminalBlock>
 
-## Using Blockquote {/*blockquote-using*/}
+## Usage {/*blockquote-using*/}
 
 <Sandpack deps={['@editablejs/plugin-blockquote']}>
 

@@ -52,6 +52,10 @@
             {
               "title": "nav.learn.plugins.blockquote",
               "path": "/learn/plugin-blockquote"
+            },
+            {
+              "title": "nav.learn.plugins.code-block",
+              "path": "/learn/plugin-codeblock"
             }
           ]
         }

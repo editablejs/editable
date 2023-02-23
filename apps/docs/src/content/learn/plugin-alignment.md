@@ -8,7 +8,7 @@ This page will show you how to use the `Alignment` plugin.
 
 </Intro>
 
-## Install Alignment {/*alignment-install*/}
+## Installation {/*alignment-install*/}
 
 <TerminalBlock>
 
@@ -16,7 +16,7 @@ npm install @editablejs/plugin-alignment
 
 </TerminalBlock>
 
-## Using Alignment {/*alignment-using*/}
+## Usage {/*alignment-using*/}
 
 <Sandpack deps={['@editablejs/plugin-alignment']}>
 

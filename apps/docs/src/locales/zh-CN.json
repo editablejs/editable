@@ -131,7 +131,8 @@
         "blocks": "块插件",
         "heading": "Heading",
         "alignment": "Alignment",
-        "blockquote": "Blockquote"
+        "blockquote": "Blockquote",
+        "code-block": "Code Block"
       }
     }
   }
