@@ -1,5 +1,11 @@
 # @editablejs/plugin-table
 
+## 1.0.0-beta.40
+
+### Patch Changes
+
+- [`d9e83cf`](https://github.com/editablejs/editable/commit/d9e83cfc9732c532f645cb9659f139a1c932f9b5) Thanks [@big-camel](https://github.com/big-camel)! - set table default width
+
 ## 1.0.0-beta.39
 
 ### Patch Changes
