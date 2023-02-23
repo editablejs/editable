@@ -78,6 +78,24 @@
               "path": "/learn/plugin-indent"
             }
           ]
+        },
+        {
+          "title": "nav.learn.plugins.inlines",
+          "group": true,
+          "routes": [
+            {
+              "title": "nav.learn.plugins.link",
+              "path": "/learn/plugin-link"
+            },
+            {
+              "title": "nav.learn.plugins.image",
+              "path": "/learn/plugin-image"
+            },
+            {
+              "title": "nav.learn.plugins.mention",
+              "path": "/learn/plugin-mention"
+            }
+          ]
         }
       ]
     }

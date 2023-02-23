@@ -76,7 +76,7 @@ withTaskList(editor, options)
 
 - 类型：`OrderedListHotkey` | `UnorderedListHotkey` | `TaskListHotkey`
 - 默认值: `mod+shift+7` | `mod+shift+8` | `mod+shift+9`
-  ```
+
 - 示例：
 
 ```ts

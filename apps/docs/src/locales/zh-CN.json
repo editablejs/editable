@@ -137,7 +137,11 @@
         "table": "Table",
         "list": "List",
         "hr": "Horizontal Rule",
-        "indent": "Indent"
+        "indent": "Indent",
+        "inlines": "Inline Elements",
+        "link": "Link",
+        "image": "Image",
+        "mention": "Mention"
       }
     }
   }

@@ -90,7 +90,7 @@ withIndent(editor, {
 - Type: `number`
 - Default: `32`
 
-- 示例：
+- Example:
 
 ```ts
 withIndent(editor, {

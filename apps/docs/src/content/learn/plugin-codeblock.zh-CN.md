@@ -142,6 +142,7 @@ withCodeBlock(editor, options)
 
 - 类型：`CodeBlockHotkey`
 - 默认值: `无`
+
 - 示例：
 
 ```ts

@@ -76,7 +76,7 @@ withTaskList(editor, options)
 
 - Type: `OrderedListHotkey` | `UnorderedListHotkey` | `TaskListHotkey`
 - Default:  `mod+shift+7` | `mod+shift+8` | `mod+shift+9`
-  ```
+
 - Example:
 
 ```ts

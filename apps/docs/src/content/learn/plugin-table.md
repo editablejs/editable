@@ -104,3 +104,4 @@ withTable(editor, options)
 withTable(editor, {
   shortcuts: true
 })
+```

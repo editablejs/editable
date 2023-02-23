@@ -89,7 +89,7 @@ withHr(editor, options)
 
 - Type: `HrHotkey`
 - Default: `mod+shift+e`
-  ```
+
 - Example:
 
 ```ts

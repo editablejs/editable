@@ -89,7 +89,7 @@ withHr(editor, options)
 
 - 类型：`HrHotkey`
 - 默认值: `mod+shift+e`
-  ```
+
 - 示例：
 
 ```ts

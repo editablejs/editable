@@ -139,7 +139,12 @@
         "leading": "Leading",
         "table": "Table",
         "list": "List",
-        "hr": "Horizontal Rule"
+        "hr": "Horizontal Rule",
+        "indent": "Indent",
+        "inlines": "Inline Elements",
+        "link": "Link",
+        "image": "Image",
+        "mention": "Mention"
       }
     }
   }
