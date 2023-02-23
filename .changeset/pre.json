@@ -34,7 +34,8 @@
     "@editablejs/models": "1.0.0-beta.0",
     "@editablejs/serializer": "1.0.0-beta.0",
     "@editablejs/plugin-font": "1.0.0-beta.0",
-    "@editablejs/plugin-title": "1.0.0-beta.0"
+    "@editablejs/plugin-title": "1.0.0-beta.0",
+    "@editablejs/plugin-alignment": "1.0.0-beta.0"
   },
   "changesets": [
     "afraid-roses-yawn",
@@ -61,6 +62,7 @@
     "giant-fans-grow",
     "gold-ghosts-repeat",
     "gold-tables-pull",
+    "happy-ghosts-smell",
     "happy-starfishes-vanish",
     "healthy-weeks-stare",
     "honest-peas-develop",

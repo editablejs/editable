@@ -1,5 +1,14 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.57
+
+### Patch Changes
+
+- [`651c731`](https://github.com/editablejs/editable/commit/651c73176e8396b8866a6d6e9b8d79a1396869a2) Thanks [@big-camel](https://github.com/big-camel)! - plugin-align -> plugin-alignment
+
+- Updated dependencies [[`651c731`](https://github.com/editablejs/editable/commit/651c73176e8396b8866a6d6e9b8d79a1396869a2)]:
+  - @editablejs/plugin-alignment@1.0.0-beta.1
+
 ## 1.0.0-beta.56
 
 ### Patch Changes
