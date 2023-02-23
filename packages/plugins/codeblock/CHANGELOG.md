@@ -1,5 +1,11 @@
 # @editablejs/plugin-codeblock
 
+## 1.0.0-beta.23
+
+### Patch Changes
+
+- [`884eee0`](https://github.com/editablejs/editable/commit/884eee0f7fc3ede30e8fa853ebe562c26c9978df) Thanks [@big-camel](https://github.com/big-camel)! - remove default hotkey
+
 ## 1.0.0-beta.22
 
 ### Patch Changes
