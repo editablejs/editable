@@ -99,7 +99,7 @@
   "dependencies": {
     "@editablejs/deserializer": "workspace:*",
     "@editablejs/serializer": "workspace:*",
-    "@editablejs/plugin-align": "workspace:*",
+    "@editablejs/plugin-alignment": "workspace:*",
     "@editablejs/plugin-font": "workspace:*",
     "@editablejs/plugin-blockquote": "workspace:*",
     "@editablejs/plugin-codeblock": "workspace:*",
