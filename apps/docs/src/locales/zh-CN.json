@@ -129,7 +129,8 @@
       "plugins": {
         "title": "插件",
         "blocks": "块插件",
-        "heading": "Heading"
+        "heading": "Heading",
+        "alignment": "Alignment"
       }
     }
   }

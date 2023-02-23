@@ -131,7 +131,8 @@
       "plugins": {
         "title": "Plugins",
         "blocks": "Blocks",
-        "heading": "Heading"
+        "heading": "Heading",
+        "alignment": "Alignment"
       }
     }
   }

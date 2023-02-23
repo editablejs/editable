@@ -44,6 +44,10 @@
             {
               "title": "nav.learn.plugins.heading",
               "path": "/learn/plugin-heading"
+            },
+            {
+              "title": "nav.learn.plugins.alignment",
+              "path": "/learn/plugin-alignment"
             }
           ]
         }

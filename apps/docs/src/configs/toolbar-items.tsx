@@ -254,7 +254,7 @@ export const createToolbarItems = (editor: Editable) => {
           content: (
             <div tw="flex gap-1 items-center">
               <Icon name="alignLeft" />
-              <Translation>{t => t('playground.editor.plugin.align-left')}</Translation>,
+              <Translation>{t => t('playground.editor.plugin.align-left')}</Translation>
             </div>
           ),
         },
@@ -263,7 +263,7 @@ export const createToolbarItems = (editor: Editable) => {
           content: (
             <div tw="flex gap-1 items-center">
               <Icon name="alignCenter" />
-              <Translation>{t => t('playground.editor.plugin.align-center')}</Translation>,
+              <Translation>{t => t('playground.editor.plugin.align-center')}</Translation>
             </div>
           ),
         },
@@ -272,7 +272,7 @@ export const createToolbarItems = (editor: Editable) => {
           content: (
             <div tw="flex gap-1 items-center">
               <Icon name="alignRight" />
-              <Translation>{t => t('playground.editor.plugin.align-right')}</Translation>,
+              <Translation>{t => t('playground.editor.plugin.align-right')}</Translation>
             </div>
           ),
         },
@@ -281,7 +281,7 @@ export const createToolbarItems = (editor: Editable) => {
           content: (
             <div tw="flex gap-1 items-center">
               <Icon name="alignJustify" />
-              <Translation>{t => t('playground.editor.plugin.align-justify')}</Translation>,
+              <Translation>{t => t('playground.editor.plugin.align-justify')}</Translation>
             </div>
           ),
         },
