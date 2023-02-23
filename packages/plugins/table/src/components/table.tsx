@@ -322,7 +322,7 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
         <TableColHeader editor={editor} table={element} />
         <TableRowHeader editor={editor} table={element} rowContentHeights={rowContentHeights} />
         {renderAllHeader()}
-        <table style={{ width: tableWidth }}>
+        <table style={{ width: !tableWidth ? '' : tableWidth }}>
           {renderColgroup()}
           <tbody>{children}</tbody>
         </table>

@@ -71,7 +71,7 @@ withLeading(editor, options)
 
 - Type: `LeadingHotkey`
 - Default: `{}`
-  ```
+
 - Example:
 
 ```ts

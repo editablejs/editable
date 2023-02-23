@@ -57,7 +57,8 @@
         "code-block": "Code block",
         "blockquote": "Blockquote",
         "hr": "Horizontal rule",
-        "leading": "Leading"
+        "leading": "Leading",
+        "indent": "Indent"
       }
     }
   },

@@ -72,6 +72,10 @@
             {
               "title": "nav.learn.plugins.hr",
               "path": "/learn/plugin-hr"
+            },
+            {
+              "title": "nav.learn.plugins.indent",
+              "path": "/learn/plugin-indent"
             }
           ]
         }

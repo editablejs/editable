@@ -71,7 +71,7 @@ withLeading(editor, options)
 
 - 类型：`LeadingHotkey`
 - 默认值: `{}`
-  ```
+
 - 示例：
 
 ```ts
