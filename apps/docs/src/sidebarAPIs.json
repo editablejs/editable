@@ -6,7 +6,20 @@
     {
       "heading": true,
       "path": "",
-      "routes": []
+      "routes": [
+        {
+          "hasSectionHeader": true,
+          "sectionHeader": "nav.apis.models"
+        },
+        {
+          "title": "nav.apis.readme",
+          "path": "/apis"
+        },
+        {
+          "hasSectionHeader": true,
+          "sectionHeader": "nav.apis.editor"
+        }
+      ]
     }
   ]
 }

@@ -53,10 +53,10 @@ export function Footer() {
               <FooterLink href="/learn/installation">{t('docs.learn-install')}</FooterLink>
             </div>
             <div tw="flex flex-col">
-              <FooterLink href="/apis/editor" isHeader={true}>
+              <FooterLink href="/apis" isHeader={true}>
                 {t('docs.api-reference')}
               </FooterLink>
-              <FooterLink href="/apis/editor">{t('docs.api-editor')}</FooterLink>
+              <FooterLink href="/apis">{t('docs.api-editor')}</FooterLink>
               <FooterLink href="/apis/plugins">{t('docs.api-plugin')}</FooterLink>
             </div>
             <div tw="flex flex-col sm:col-start-2 xl:col-start-4">

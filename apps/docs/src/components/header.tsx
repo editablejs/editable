@@ -77,7 +77,7 @@ export default function Header() {
         <NavLink href="/learn" isActive={section === 'learn' || section === 'home'}>
           {t('docs.learn')}
         </NavLink>
-        <NavLink href="/apis/editor" isActive={section === 'apis'}>
+        <NavLink href="/apis" isActive={section === 'apis'}>
           {t('docs.api')}
         </NavLink>
         <NavLink href="/playground" target="_blank" isActive={section === 'playground'}>

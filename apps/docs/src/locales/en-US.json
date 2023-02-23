@@ -152,6 +152,11 @@
         "history": "History",
         "plugin-title": "Doc Title"
       }
+    },
+    "apis": {
+      "models": "@editablejs/models",
+      "readme": "README",
+      "editor": "@editablejs/editor"
     }
   }
 }
