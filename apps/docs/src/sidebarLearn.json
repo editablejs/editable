@@ -48,6 +48,10 @@
             {
               "title": "nav.learn.plugins.alignment",
               "path": "/learn/plugin-alignment"
+            },
+            {
+              "title": "nav.learn.plugins.blockquote",
+              "path": "/learn/plugin-blockquote"
             }
           ]
         }

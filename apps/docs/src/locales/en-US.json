@@ -132,7 +132,8 @@
         "title": "Plugins",
         "blocks": "Blocks",
         "heading": "Heading",
-        "alignment": "Alignment"
+        "alignment": "Alignment",
+        "blockquote": "Blockquote"
       }
     }
   }

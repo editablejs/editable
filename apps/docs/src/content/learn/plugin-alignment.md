@@ -8,7 +8,7 @@ This page will show you how to use the `Alignment` plugin.
 
 </Intro>
 
-## Installation {/*alignment-install*/}
+## Install Alignment {/*alignment-install*/}
 
 <TerminalBlock>
 
