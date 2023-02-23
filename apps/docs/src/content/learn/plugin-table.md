@@ -29,24 +29,52 @@ import { withTable } from '@editablejs/plugin-table'
 const defaultValue = [
   {
     type: 'table',
-    children: [{
-      type: 'table-row',
-      children: [
-        {
-          type: 'table-cell',
-          children: [{ text: 'Cell 1' }]
-        },
-        {
-          type: 'table-cell',
-          children: [{ text: 'Cell 2' }]
-        },
-        {
-          type: 'table-cell',
-          children: [{ text: 'Cell 3' }]
-        },
+    colsWidth: [120, 120, 120],
+    children: [
+      {
+        type: 'table-row',
+        children: [
+          {
+            type: 'table-cell',
+            children: [
+              {
+                children: [
+                  {
+                    text: 'cell 1',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'table-cell',
+            children: [
+              {
+                children: [
+                  {
+                    text: 'cell 2',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'table-cell',
+            children: [
+              {
+                children: [
+                  {
+                    text: 'cell 3',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        height: 35,
+      }
       ]
-    }]
-  }
+    }
 ]
 export default function App() {
   const editor = React.useMemo(() => {

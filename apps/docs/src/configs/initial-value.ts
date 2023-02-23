@@ -335,13 +335,12 @@ export const initialValue = [
   },
   {
     type: 'table',
+    colsWidth: [239, 239, 241],
     children: [
       {
         type: 'table-row',
         children: [
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -354,8 +353,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -368,8 +365,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -383,14 +378,11 @@ export const initialValue = [
           },
         ],
         height: 35,
-        contentHeight: 36.458335876464844,
       },
       {
         type: 'table-row',
         children: [
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -403,8 +395,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -417,8 +407,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -432,14 +420,11 @@ export const initialValue = [
           },
         ],
         height: 35,
-        contentHeight: 36.458335876464844,
       },
       {
         type: 'table-row',
         children: [
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -452,8 +437,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -466,8 +449,6 @@ export const initialValue = [
             ],
           },
           {
-            colspan: 1,
-            rowspan: 1,
             type: 'table-cell',
             children: [
               {
@@ -481,10 +462,8 @@ export const initialValue = [
           },
         ],
         height: 35,
-        contentHeight: 36.458335876464844,
       },
     ],
-    colsWidth: [239, 239, 241],
   },
   {
     type: 'paragraph',

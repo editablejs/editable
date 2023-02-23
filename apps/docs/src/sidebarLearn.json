@@ -96,6 +96,20 @@
               "path": "/learn/plugin-mention"
             }
           ]
+        },
+        {
+          "title": "nav.learn.plugins.marks",
+          "group": true,
+          "routes": [
+            {
+              "title": "nav.learn.plugins.base-marks",
+              "path": "/learn/plugin-mark"
+            },
+            {
+              "title": "nav.learn.plugins.fonts",
+              "path": "/learn/plugin-font"
+            }
+          ]
         }
       ]
     }

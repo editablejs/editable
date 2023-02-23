@@ -144,7 +144,10 @@
         "inlines": "Inline Elements",
         "link": "Link",
         "image": "Image",
-        "mention": "Mention"
+        "mention": "Mention",
+        "marks": "Marks",
+        "base-marks": "Base Marks",
+        "fonts": "Fonts"
       }
     }
   }
