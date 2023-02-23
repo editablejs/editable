@@ -141,15 +141,12 @@ withCodeBlock(editor, options)
 `hotkey` 用于配置 `CodeBlock` 插件的某个居中模式的快捷键。
 
 - 类型：`CodeBlockHotkey`
-- 默认值:
-  ```ts
-  const defaultHotkey: CodeBlockHotkey = 'mod+shift+e'
-  ```
+- 默认值: `无`
 - 示例：
 
 ```ts
 withCodeBlock(editor, {
-  hotkey: 'mod+shift+e'
+  hotkey: 'mod+shift+c'
 })
 ```
 ### shortcuts {/*heading-options-shortcuts*/}

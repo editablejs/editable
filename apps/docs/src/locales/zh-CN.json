@@ -128,11 +128,15 @@
       "context-menu": "配置上下文菜单",
       "plugins": {
         "title": "插件",
-        "blocks": "块插件",
+        "blocks": "Blocks",
         "heading": "Heading",
         "alignment": "Alignment",
         "blockquote": "Blockquote",
-        "code-block": "Code Block"
+        "code-block": "Code Block",
+        "leading": "Leading",
+        "table": "Table",
+        "list": "List",
+        "hr": "Horizontal Rule"
       }
     }
   }

@@ -141,15 +141,13 @@ withCodeBlock(editor, options)
 `hotkey` is used to configure the shortcut key for a certain center mode of the `CodeBlock` plugin.
 
 - Type: `CodeBlockHotkey`
-- Default:
-  ```ts
-  const defaultHotkey: CodeBlockHotkey = 'mod+shift+e'
-  ```
+- Default: `None`
+
 - Example:
 
 ```ts
 withCodeBlock(editor, {
-  hotkey: 'mod+shift+e'
+  hotkey: 'mod+shift+c'
 })
 ```
 ### shortcuts {/*heading-options-shortcuts*/}

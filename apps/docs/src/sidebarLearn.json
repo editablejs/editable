@@ -56,6 +56,22 @@
             {
               "title": "nav.learn.plugins.code-block",
               "path": "/learn/plugin-codeblock"
+            },
+            {
+              "title": "nav.learn.plugins.leading",
+              "path": "/learn/plugin-leading"
+            },
+            {
+              "title": "nav.learn.plugins.table",
+              "path": "/learn/plugin-table"
+            },
+            {
+              "title": "nav.learn.plugins.list",
+              "path": "/learn/plugin-list"
+            },
+            {
+              "title": "nav.learn.plugins.hr",
+              "path": "/learn/plugin-hr"
             }
           ]
         }

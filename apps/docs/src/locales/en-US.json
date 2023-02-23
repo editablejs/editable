@@ -134,7 +134,11 @@
         "heading": "Heading",
         "alignment": "Alignment",
         "blockquote": "Blockquote",
-        "code-block": "Code Block"
+        "code-block": "Code Block",
+        "leading": "Leading",
+        "table": "Table",
+        "list": "List",
+        "hr": "Horizontal Rule"
       }
     }
   }

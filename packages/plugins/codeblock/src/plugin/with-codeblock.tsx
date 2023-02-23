@@ -7,7 +7,7 @@ import locale from '../locale'
 import { CodeBlockHotkey, CodeBlockOptions, setOptions } from '../options'
 import { withShortcuts } from './with-shortcuts'
 
-const defaultHotkey: CodeBlockHotkey = 'mod+shift+e'
+const defaultHotkey: CodeBlockHotkey = ''
 
 const defaultShortcuts: string[] = ['```']
 
