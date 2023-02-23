@@ -106,8 +106,22 @@
               "path": "/learn/plugin-mark"
             },
             {
-              "title": "nav.learn.plugins.fonts",
+              "title": "nav.learn.plugins.font",
               "path": "/learn/plugin-font"
+            }
+          ]
+        },
+        {
+          "title": "nav.learn.plugins.others",
+          "group": true,
+          "routes": [
+            {
+              "title": "nav.learn.plugins.history",
+              "path": "/learn/plugin-history"
+            },
+            {
+              "title": "nav.learn.plugins.plugin-title",
+              "path": "/learn/plugin-title"
             }
           ]
         }

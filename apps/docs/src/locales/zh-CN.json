@@ -144,7 +144,10 @@
         "mention": "Mention",
         "marks": "Marks",
         "base-marks": "Base Marks",
-        "fonts": "Fonts"
+        "font": "Font",
+        "others": "Others",
+        "history": "History",
+        "plugin-title": "Doc Title"
       }
     }
   }
