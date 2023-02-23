@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.0-beta.59
+
+### Patch Changes
+
+- Updated dependencies [[`d9e83cf`](https://github.com/editablejs/editable/commit/d9e83cfc9732c532f645cb9659f139a1c932f9b5)]:
+  - @editablejs/plugin-table@1.0.0-beta.40
+
 ## 1.0.0-beta.58
 
 ### Patch Changes
