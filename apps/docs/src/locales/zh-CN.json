@@ -152,7 +152,9 @@
     },
     "apis": {
       "models": "@editablejs/models",
-      "readme": "README",
+      "models-title": "Models",
+      "models-list": "List",
+      "models-grid": "Grid",
       "editor": "@editablejs/editor"
     }
   }

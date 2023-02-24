@@ -12,8 +12,18 @@
           "sectionHeader": "nav.apis.models"
         },
         {
-          "title": "nav.apis.readme",
-          "path": "/apis"
+          "title": "nav.apis.models-title",
+          "path": "/apis",
+          "routes": [
+            {
+              "title": "nav.apis.models-list",
+              "path": "/apis/list"
+            },
+            {
+              "title": "nav.apis.models-grid",
+              "path": "/apis/grid"
+            }
+          ]
         },
         {
           "hasSectionHeader": true,
