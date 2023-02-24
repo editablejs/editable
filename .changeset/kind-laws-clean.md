@@ -1,6 +1,5 @@
 ---
 '@editablejs/editor': minor
-'@editablejs/plugin-align': minor
 '@editablejs/plugin-blockquote': minor
 '@editablejs/plugin-context-menu': minor
 '@editablejs/plugin-heading': minor

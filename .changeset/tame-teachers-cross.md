@@ -4,7 +4,6 @@
 '@editablejs/plugin-image': patch
 '@editablejs/protocols': patch
 '@editablejs/plugin-yjs': patch
-'@editablejs/plugin-yjs-websocket': patch
 '@editablejs/yjs-protocols': patch
 ---
 

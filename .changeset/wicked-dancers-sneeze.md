@@ -5,7 +5,6 @@
 '@editablejs/plugins': patch
 '@editablejs/plugin-table': patch
 '@editablejs/plugin-toolbar': patch
-'@editablejs/plugin-ui': patch
 ---
 
 update ui
