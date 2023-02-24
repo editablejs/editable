@@ -28,6 +28,20 @@
         {
           "hasSectionHeader": true,
           "sectionHeader": "nav.apis.editor"
+        },
+        {
+          "title": "nav.apis.editor-title",
+          "path": "/apis/editor",
+          "routes": [
+            {
+              "title": "nav.apis.editor-components",
+              "path": "/apis/components"
+            },
+            {
+              "title": "nav.apis.editor-hooks",
+              "path": "/apis/hooks"
+            }
+          ]
         }
       ]
     }
