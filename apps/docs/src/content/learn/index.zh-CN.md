@@ -24,7 +24,7 @@ title: 快速开始
 
 ## 尝试 Editable {/*try-editable*/}
 
-在学习之前，您无需安装任何东西即可使用 Editable 进行实验。请尝试编辑这个沙盒！
+在学习之前，您无需安装任何东西即可使用 Editable 进行实验。请尝试编辑这个沙箱！
 
 <Sandpack>
 

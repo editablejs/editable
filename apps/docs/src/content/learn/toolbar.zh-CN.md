@@ -120,7 +120,7 @@ import { withPlugins, MarkEditor } from '@editablejs/plugins'
 
 ## 尝试使用工具栏 {/*try-toolbar*/}
 
-下面的沙盒已经使用了 `@editablejs/plugin-toolbar`，您可以在其中尝试使用工具栏。
+下面的沙箱已经使用了 `@editablejs/plugin-toolbar`，您可以在其中尝试使用工具栏。
 
 <Sandpack deps={['@editablejs/plugins', '@editablejs/plugin-toolbar']}>
 

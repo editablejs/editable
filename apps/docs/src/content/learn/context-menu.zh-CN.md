@@ -83,7 +83,7 @@ useContextMenuEffect(() => {
 
 ## 尝试使用上下文菜单 {/*try-context-menu*/}
 
-下面的沙盒已经使用了 `@editablejs/plugin-context-menu`，您可以在编辑器中点击鼠标`右键`尝试使用。
+下面的沙箱已经使用了 `@editablejs/plugin-context-menu`，您可以在编辑器中点击鼠标`右键`尝试使用。
 
 <Sandpack deps={['@editablejs/plugin-context-menu']}>
 

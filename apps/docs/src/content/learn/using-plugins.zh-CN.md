@@ -50,7 +50,7 @@ const App = () => {
 
 ## 尝试使用插件 {/*try-plugins*/}
 
-下面的沙盒已经使用了 `@editablejs/plugins`，您可以在其中尝试使用插件。
+下面的沙箱已经使用了 `@editablejs/plugins`，您可以在其中尝试使用插件。
 
 插件中已经实现了`快捷键`、`markdown语法` 等相关功能，你可以这样尝试：
 
