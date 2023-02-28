@@ -1,5 +1,27 @@
 # @editablejs/plugins
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`fe6f337`](https://github.com/editablejs/editable/commit/fe6f337edf559f63bc78217c969e61e6b5fb63cf)]:
+  - @editablejs/editor@1.0.1
+  - @editablejs/plugin-alignment@1.0.1
+  - @editablejs/plugin-blockquote@1.0.1
+  - @editablejs/plugin-codeblock@1.0.1
+  - @editablejs/plugin-context-menu@1.0.1
+  - @editablejs/plugin-font@1.0.1
+  - @editablejs/plugin-heading@1.0.1
+  - @editablejs/plugin-hr@1.0.1
+  - @editablejs/plugin-image@1.0.1
+  - @editablejs/plugin-indent@1.0.1
+  - @editablejs/plugin-leading@1.0.1
+  - @editablejs/plugin-link@1.0.1
+  - @editablejs/plugin-list@1.0.1
+  - @editablejs/plugin-mark@1.0.1
+  - @editablejs/plugin-mention@1.0.1
+  - @editablejs/plugin-table@1.0.1
+
 ## 1.0.0
 
 ### Major Changes
