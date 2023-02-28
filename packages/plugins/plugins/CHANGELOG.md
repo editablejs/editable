@@ -1,5 +1,12 @@
 # @editablejs/plugins
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`788290b`](https://github.com/editablejs/editable/commit/788290b00ff76c35b989cfce2db6e6432d003ad9)]:
+  - @editablejs/plugin-link@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
