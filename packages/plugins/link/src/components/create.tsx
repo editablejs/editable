@@ -38,7 +38,7 @@ export const LinkCreateComponent: FC<LinkCreateComponentProps> = () => {
 
   const rects = useSelectionDrawingRects()
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     if (rects.length > 0) {
       const rect = rects[rects.length - 1]
       const [x, y] = Editable.reverseRelativePosition(editor, rect.x, rect.bottom)
