@@ -1,5 +1,11 @@
 # @editablejs/plugin-link
 
+## 1.0.2
+
+### Patch Changes
+
+- [`788290b`](https://github.com/editablejs/editable/commit/788290b00ff76c35b989cfce2db6e6432d003ad9) Thanks [@big-camel](https://github.com/big-camel)! - Fixed an error in the calculation of the initial position during the initialization of the link plugin.
+
 ## 1.0.1
 
 ### Patch Changes
