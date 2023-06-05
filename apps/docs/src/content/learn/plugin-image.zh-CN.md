@@ -31,19 +31,17 @@ const defaultValue = [
     children: [
       { text: 'This is a' },
       {
-        {
-          url: 'https://raw.githubusercontent.com/editablejs/editable/main/assets/sparticle-logo.png',
-          state: 'done',
-          width: 386,
-          height: 82,
-          type: 'image',
-          children: [
-            {
-              text: '',
-            },
-          ],
-          percentage: 100,
-        }
+        url: 'https://raw.githubusercontent.com/editablejs/editable/main/assets/sparticle-logo.png',
+        state: 'done',
+        width: 386,
+        height: 82,
+        type: 'image',
+        children: [
+          {
+            text: '',
+          },
+        ],
+        percentage: 100,
       },
       { text: ' image.'}
     ]
