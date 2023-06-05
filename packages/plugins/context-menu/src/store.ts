@@ -71,7 +71,7 @@ type ContextMenuStoreAction = () => (() => void) | void
 export const useContextMenuEffect = (aciton: ContextMenuStoreAction, editor: Editable) => {
   const [open] = useContextMenuOpen(editor)
   useIsomorphicLayoutEffect(() => {
-    let destroy: (() => void) | void
+    let destroy: (() => void) | void = undefined;
     if (open) {
       destroy = aciton()
     }
