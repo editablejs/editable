@@ -25,8 +25,8 @@ npm install @edilistjs/plugin-list
 ```js
 import * as React from 'react'
 import { createEditor } from '@edilistjs/models'
-import { EditableProvider, ContentEditable, withEditable } from '@edilistjs/editor'
-import { withOrderedList, withUnorderedList, withTaskList } from '@edilistjs/plugin-list'
+import { EditableProvider, ContentEditable, withEditable } from '@editablejs/editor'
+import { withOrderedList, withUnorderedList, withTaskList } from '@editablejs/plugin-list'
 
 const defaultValue = [
   {
