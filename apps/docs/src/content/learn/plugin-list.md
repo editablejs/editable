@@ -14,17 +14,17 @@ The package includes three plugins: `unordered-list`, `ordered-list`, and `task-
 
 <TerminalBlock>
 
-npm install @edilistjs/plugin-list
+npm install @editablejs/plugin-list
 
 </TerminalBlock>
 
 ## Usage {/*list-using*/}
 
-<Sandpack deps={['@edilistjs/plugin-list']}>
+<Sandpack deps={['@editablejs/plugin-list']}>
 
 ```js
 import * as React from 'react'
-import { createEditor } from '@edilistjs/models'
+import { createEditor } from '@editablejs/models'
 import { EditableProvider, ContentEditable, withEditable } from '@editablejs/editor'
 import { withOrderedList, withUnorderedList, withTaskList } from '@editablejs/plugin-list'
 
