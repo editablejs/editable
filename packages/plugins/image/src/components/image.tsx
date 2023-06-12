@@ -36,7 +36,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     const [loaded, setLoaded] = useState(false)
     const [src, setSrc] = useState('')
     const [rotatedUrl, setRotatedUrl] = useState('')
-    const [imageDOMElemennt, setImageDOMElement] = useState<HTMLImageElement | null>(null)
+    const [imageDOMElement, setImageDOMElement] = useState<HTMLImageElement | null>(null)
 
     const options = useMemo(() => {
       return getOptions(editor)
@@ -79,17 +79,17 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     }, [src, state])
 
     useEffect(() => {
-      if (!imageDOMElemennt) {
+      if (!imageDOMElement) {
         return setRotatedUrl('')
       }
       if (rotate !== undefined && loaded && state === 'done' && options.allowRotate !== false) {
-        readImageElement(imageDOMElemennt.src, true).then(img => {
+        readImageElement(imageDOMElement.src, true).then(img => {
           rotateImgWithCanvas(img, rotate).then(blob => {
             setRotatedUrl(URL.createObjectURL(blob))
           })
         })
       }
-    }, [imageDOMElemennt, rotate, state, loaded, options.allowRotate])
+    }, [imageDOMElement, rotate, state, loaded, options.allowRotate])
 
     useEffect(() => {
       return () => {
