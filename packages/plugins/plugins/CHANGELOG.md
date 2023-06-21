@@ -1,5 +1,17 @@
 # @editablejs/plugins
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`020a812`](https://github.com/editablejs/editable/commit/020a812129e07500a45527975c8dec503554a8fc)]:
+  - @editablejs/plugin-codeblock@2.0.0
+  - @editablejs/plugin-hr@2.0.0
+  - @editablejs/plugin-image@2.0.0
+  - @editablejs/plugin-link@2.0.0
+  - @editablejs/plugin-list@2.0.0
+  - @editablejs/plugin-table@2.0.0
+
 ## 1.0.2
 
 ### Patch Changes

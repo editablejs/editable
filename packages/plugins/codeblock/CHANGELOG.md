@@ -1,5 +1,11 @@
 # @editablejs/plugin-codeblock
 
+## 2.0.0
+
+### Major Changes
+
+- [`020a812`](https://github.com/editablejs/editable/commit/020a812129e07500a45527975c8dec503554a8fc) Thanks [@big-camel](https://github.com/big-camel)! - refactor: update styles on readonly
+
 ## 1.0.1
 
 ### Patch Changes
