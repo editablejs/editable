@@ -118,6 +118,7 @@ export const withTaskList = <T extends Editable>(editor: T, options: TaskListOpt
         onRenderLabel: element => {
           const { checked } = element as TaskList
           const onChange = (checked: boolean) => {
+            if (Editable.isReadOnly(editor)) return
             Transforms.setNodes<TaskList>(
               editor,
               { checked },

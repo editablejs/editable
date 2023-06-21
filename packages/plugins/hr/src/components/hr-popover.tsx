@@ -1,4 +1,9 @@
-import { useIsomorphicLayoutEffect, useLocale, useNodeFocused } from '@editablejs/editor'
+import {
+  useIsomorphicLayoutEffect,
+  useLocale,
+  useNodeFocused,
+  useReadOnly,
+} from '@editablejs/editor'
 import {
   Icon,
   Popover,
@@ -24,7 +29,7 @@ export interface HrPopoverProps {
 
 export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => {
   const focused = useNodeFocused()
-
+  const [readOnly] = useReadOnly()
   const [popoverOpen, setPopoverOpen] = useState(false)
 
   const handlePopoverOpenChange = (open: boolean) => {
@@ -42,7 +47,11 @@ export const HrPopover: FC<HrPopoverProps> = ({ editor, element, children }) => 
   const { toolbar } = useLocale<HrLocale>('hr')
 
   return (
-    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
+    <Popover
+      open={readOnly ? false : popoverOpen}
+      onOpenChange={handlePopoverOpenChange}
+      trigger="hover"
+    >
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
         <Toolbar mode="inline">

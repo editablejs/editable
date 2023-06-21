@@ -1,4 +1,10 @@
-import { Editable, ElementAttributes, useLocale, useNodeFocused } from '@editablejs/editor'
+import {
+  Editable,
+  ElementAttributes,
+  useLocale,
+  useNodeFocused,
+  useReadOnly,
+} from '@editablejs/editor'
 import { Editor, Transforms } from '@editablejs/models'
 import {
   Icon,
@@ -37,7 +43,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     const [src, setSrc] = useState('')
     const [rotatedUrl, setRotatedUrl] = useState('')
     const [imageDOMElement, setImageDOMElement] = useState<HTMLImageElement | null>(null)
-
+    const [readOnly] = useReadOnly()
     const options = useMemo(() => {
       return getOptions(editor)
     }, [editor])
@@ -73,7 +79,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
             setImageDOMElement(image)
           })
           .catch(err => {
-            if (state === 'done') setErrorMsg(err.message)
+            if (state === 'done') setErrorMsg(typeof err === 'object' ? err.message : err)
           })
       }
     }, [src, state])
@@ -225,7 +231,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
     const autoSize = useMemo(() => {
       if (height === undefined || width === undefined) return undefined
       const ratio = height / width
-      if (width > maxWidth) {
+      if (width > maxWidth && maxWidth > 0) {
         return [maxWidth, maxWidth * ratio]
       }
       return [width, height]
@@ -250,7 +256,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
 
     return (
       <Popover
-        open={isDone ? popoverOpen : false}
+        open={isDone && !readOnly ? popoverOpen : false}
         onOpenChange={handlePopoverOpenChange}
         trigger="hover"
       >
@@ -270,8 +276,8 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
             <div
               tw="inline-block min-w-[24px] min-h-[24px] h-auto max-w-full"
               style={{
-                width: isError ? undefined : size[0],
-                height: loaded || isError ? undefined : size[1],
+                width: isError ? undefined : size[0] || 'auto',
+                height: loaded || isError ? undefined : size[1] || 'auto',
               }}
             >
               <div tw="inline-block" onMouseDown={handleImageDown} onClick={handleImageClick}>
@@ -282,7 +288,7 @@ export const ImageComponent = forwardRef<HTMLImageElement, ImageComponentProps>(
                 {renderError()}
                 {renderLoading()}
               </div>
-              {focused && !isError && (
+              {focused && !readOnly && !isError && (
                 <Resizer
                   onChange={handleResizeChange}
                   previewImage={isDone && loaded ? rotatedUrl || src : undefined}

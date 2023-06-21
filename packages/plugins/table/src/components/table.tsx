@@ -8,6 +8,7 @@ import {
   useNodeSelected,
   useGridSelection,
   useGridSelected,
+  useReadOnly,
 } from '@editablejs/editor'
 import {
   Grid,
@@ -308,6 +309,8 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
 
   const composedRefs = useComposedRefs(attributes.ref, tableRef)
 
+  const [readOnly] = useReadOnly()
+
   return (
     <TableContext.Provider value={store}>
       <TableStyles
@@ -319,9 +322,11 @@ const TableComponent: React.FC<TableProps> = ({ editor, element, attributes, chi
         onMouseLeave={handleMouseLeave}
         ref={composedRefs}
       >
-        <TableColHeader editor={editor} table={element} />
-        <TableRowHeader editor={editor} table={element} rowContentHeights={rowContentHeights} />
-        {renderAllHeader()}
+        {!readOnly && <TableColHeader editor={editor} table={element} />}
+        {!readOnly && (
+          <TableRowHeader editor={editor} table={element} rowContentHeights={rowContentHeights} />
+        )}
+        {!readOnly && renderAllHeader()}
         <table style={{ width: !tableWidth ? '' : tableWidth }}>
           {renderColgroup()}
           <tbody>{children}</tbody>

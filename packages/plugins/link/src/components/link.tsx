@@ -4,6 +4,7 @@ import {
   useIsomorphicLayoutEffect,
   useLocale,
   useNodeFocused,
+  useReadOnly,
 } from '@editablejs/editor'
 import { Editor, Range, Transforms } from '@editablejs/models'
 import {
@@ -78,8 +79,25 @@ export const LinkComponent = forwardRef<
 
   const locale = useLocale<LinkLocale>('link')
 
+  const [readOnly] = useReadOnly()
+
+  if (readOnly) {
+    return (
+      <a
+        tw="font-medium mb-2 mt-0 text-blue-600 underline"
+        {...props}
+        href={readOnly ? url : undefined}
+        target={readOnly ? '_blank' : undefined}
+        ref={ref}
+        onClick={() => window.open(url, '_blank')}
+        rel="noreferrer"
+      >
+        {children}
+      </a>
+    )
+  }
   return (
-    <Popover open={open} onOpenChange={state => setOpen(focused ? true : state)}>
+    <Popover open={readOnly ? false : open} onOpenChange={state => setOpen(focused ? true : state)}>
       <PopoverTrigger>
         <a tw="font-medium mb-2 mt-0 text-blue-600 underline" {...props} ref={ref}>
           {children}

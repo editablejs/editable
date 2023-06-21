@@ -1,4 +1,9 @@
-import { useIsomorphicLayoutEffect, useLocale, useNodeFocused } from '@editablejs/editor'
+import {
+  useIsomorphicLayoutEffect,
+  useLocale,
+  useNodeFocused,
+  useReadOnly,
+} from '@editablejs/editor'
 import {
   Popover,
   PopoverContent,
@@ -32,7 +37,7 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
   view,
 }) => {
   const focused = useNodeFocused()
-
+  const [readOnly] = useReadOnly()
   const [popoverOpen, setPopoverOpen] = useState(false)
 
   const handlePopoverOpenChange = (open: boolean) => {
@@ -67,7 +72,11 @@ export const CodeBlockPopover: FC<CodeBlockPopoverProps> = ({
   const language = languages.find(({ value }) => value === element.language)
 
   return (
-    <Popover open={popoverOpen} onOpenChange={handlePopoverOpenChange} trigger="hover">
+    <Popover
+      open={readOnly ? false : popoverOpen}
+      onOpenChange={handlePopoverOpenChange}
+      trigger="hover"
+    >
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent autoUpdate={true} side="top" sideOffset={5}>
         <Toolbar mode="inline">
