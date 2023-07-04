@@ -1,5 +1,13 @@
 # @editablejs/plugins
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`f5a4018`](https://github.com/editablejs/editable/commit/f5a401842f969c193c0a6880fef6abf18fe3da75)]:
+  - @editablejs/plugin-alignment@1.0.2
+  - @editablejs/plugin-leading@1.0.2
+
 ## 1.0.3
 
 ### Patch Changes
