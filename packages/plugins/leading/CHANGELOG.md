@@ -1,5 +1,11 @@
 # @editablejs/plugin-leading
 
+## 1.0.2
+
+### Patch Changes
+
+- [`f5a4018`](https://github.com/editablejs/editable/commit/f5a401842f969c193c0a6880fef6abf18fe3da75) Thanks [@big-camel](https://github.com/big-camel)! - fix html deserializer error
+
 ## 1.0.1
 
 ### Patch Changes
