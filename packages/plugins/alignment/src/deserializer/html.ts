@@ -1,15 +1,15 @@
-import { isDOMHTMLElement } from '@editablejs/models'
+import { isDOMHTMLElement, Element } from '@editablejs/models'
 import { HTMLDeserializerWithTransform } from '@editablejs/deserializer/html'
 import { Align, AlignKeys, AlignValue } from '../interfaces/align'
 export const withAlignHTMLDeserializerTransform: HTMLDeserializerWithTransform = next => {
   return (node, options = {}) => {
-    const { element } = options
-    if (isDOMHTMLElement(node)) {
+    if (isDOMHTMLElement(node) && options.element) {
       let { textAlign, justifyContent } = node.style
       if (node.nodeName === 'CENTER') {
         textAlign = 'center'
       }
-      const align: Align = element as Align
+
+      const align: Align = options.element as Align
       if (
         textAlign &&
         textAlign.toLowerCase() !== AlignValue.Left &&

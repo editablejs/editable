@@ -5,7 +5,7 @@ import { Leading } from '../interfaces/leading'
 export const withLeadingHTMLDeserializerTransform: HTMLDeserializerWithTransform = next => {
   return (node, options = {}) => {
     const { element } = options
-    if (isDOMHTMLElement(node)) {
+    if (isDOMHTMLElement(node) && element) {
       const { lineHeight } = node.style
       let leading: Partial<Leading> = element as Partial<Leading>
       if (lineHeight) {
