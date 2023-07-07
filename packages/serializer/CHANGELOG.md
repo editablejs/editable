@@ -1,5 +1,11 @@
 # @editablejs/serializer
 
+## 1.0.1
+
+### Patch Changes
+
+- [#129](https://github.com/editablejs/editable/pull/129) [`54c338e`](https://github.com/editablejs/editable/commit/54c338e43352304c3a41879f57c4ebc87f48c921) Thanks [@HuXin957](https://github.com/HuXin957)! - fix:html style
+
 ## 1.0.0
 
 ### Major Changes

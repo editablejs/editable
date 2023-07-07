@@ -1,5 +1,13 @@
 # @editablejs/plugin-leading
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`54c338e`](https://github.com/editablejs/editable/commit/54c338e43352304c3a41879f57c4ebc87f48c921)]:
+  - @editablejs/serializer@1.0.1
+  - @editablejs/editor@1.0.2
+
 ## 1.0.2
 
 ### Patch Changes
