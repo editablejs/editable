@@ -42,7 +42,7 @@
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
     "tsup": "^6.5.0",
-    "typescript": "latest"
+    "typescript": "^4.x"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

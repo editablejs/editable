@@ -100,7 +100,7 @@
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "twin.macro": "3.1.0",
-    "typescript": "latest"
+    "typescript": "^4.x"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*",

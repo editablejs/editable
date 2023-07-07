@@ -147,7 +147,7 @@
     "tsconfig": "workspace:*",
     "tsup-config": "workspace:*",
     "tsup": "^6.5.0",
-    "typescript": "latest"
+    "typescript": "^4.x"
   },
   "peerDependencies": {
     "@editablejs/models": "workspace:*",
