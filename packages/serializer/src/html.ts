@@ -75,7 +75,9 @@ export const HTMLSerializer = {
   ) {
     const attributesString = htmlAttributesToString(attributes)
     const styleString = style ? cssStyleToString(style) : ''
-    return `<${tag} ${attributesString} ${styleString}>${children}</${tag}>`
+    const lineStyle = styleString ? ` style="${styleString}"` : ""
+
+    return `<${tag} ${attributesString}${lineStyle}>${children}</${tag}>`
   },
 
   mergeOptions<T = HTMLSerializerAttributes | HTMLSerializerStyle>(
