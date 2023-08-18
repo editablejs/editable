@@ -1,5 +1,11 @@
 # @editablejs/plugin-table
 
+## 2.0.2
+
+### Patch Changes
+
+- [`7d20665`](https://github.com/editablejs/editable/commit/7d20665308953cc30042701985cd2cd752173a4a) Thanks [@big-camel](https://github.com/big-camel)! - node.nodeName judgment error
+
 ## 2.0.1
 
 ### Patch Changes
