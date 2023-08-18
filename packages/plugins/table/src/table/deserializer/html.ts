@@ -19,7 +19,7 @@ export const withTableHTMLDeserializerTransform: HTMLDeserializerWithTransform<
 > = (next, serializer, { editor }) => {
   return (node, options = {}) => {
     const { text } = options
-    if (isDOMHTMLElement(node) && node.nodeName.toLowerCase() === 'TABLE') {
+    if (isDOMHTMLElement(node) && node.nodeName === 'TABLE') {
       const children: TableRow[] = []
       for (const child of node.childNodes) {
         children.push(...(serializer.transform(child, { text, matchNewline: true }) as TableRow[]))
