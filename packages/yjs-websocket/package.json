@@ -71,7 +71,7 @@
     "yjs": "^13.5.46"
   },
   "optionalDependencies": {
-    "mongodb": "5.0.1",
+    "mongodb": "5.8.0",
     "ws": "^6.2.1",
     "y-leveldb": "^0.1.2"
   },
