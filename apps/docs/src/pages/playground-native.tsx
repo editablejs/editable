@@ -83,26 +83,29 @@ export default function PlaygroundNative() {
     <>
       <CustomStyles />
       <Seo title={t('playground.title')} />
-      <StyledHeader>
-        <div tw="flex justify-between py-3 px-6 text-base">
-          <div tw="flex text-2xl text-link flex-1 gap-3">
-            <NextLink href="/">
-              <a>
-                <IconLogo />
-              </a>
-            </NextLink>
-            <ExternalLink
-              aria-label="Editable on Github"
-              href="https://github.com/editablejs/editable/blob/main/apps/docs/src/pages/playground.tsx"
-            >
-              <IconGitHub />
-            </ExternalLink>
+        <StyledHeader>
+          <div tw="flex justify-between py-3 px-6 text-base">
+            <div tw="flex text-2xl text-link flex-1 gap-3">
+              <NextLink href="/">
+                <a>
+                  <IconLogo />
+                </a>
+              </NextLink>
+              <ExternalLink
+                aria-label="Editable on Github"
+                href="https://github.com/editablejs/editable/blob/main/apps/docs/src/pages/playground.tsx"
+              >
+                <IconGitHub />
+              </ExternalLink>
+            </div>
           </div>
-        </div>
-      </StyledHeader>
-      <StyledContainer>
-        <div ref={continaerRef} lang={local ?? 'en-US'} />
-      </StyledContainer>
+        </StyledHeader>
+        <StyledContainer>
+        <div
+          ref={continaerRef}
+            lang={local ?? 'en-US'}
+          />
+        </StyledContainer>
     </>
   )
 }
