@@ -1,10 +1,18 @@
-import { Ancestor, Selection, Element, Editor, Descendant, Range, DOMNode } from "@editablejs/models"
-import { PlaceholderRender } from "../plugin/placeholder"
-import { Editable } from "../plugin/editable"
-import { createElement } from "./element"
-import { createText } from "./text"
-import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
-import { append, fragment } from "../dom"
+import {
+  Ancestor,
+  Selection,
+  Element,
+  Editor,
+  Descendant,
+  Range,
+  DOMNode,
+} from '@editablejs/models'
+import { PlaceholderRender } from '../plugin/placeholder'
+import { Editable } from '../plugin/editable'
+import { createElement } from './element'
+import { createText } from './text'
+import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
+import { append, fragment } from '../dom'
 
 export interface CreateChildrenOptions {
   node: Ancestor
@@ -15,7 +23,7 @@ export interface CreateChildrenOptions {
 export const createNode = (editor: Editable, options: CreateChildrenOptions): DOMNode => {
   const { node, selection, renderPlaceholder } = options
   const path = Editable.findPath(editor, node)
-  const children = []
+  const children: Node[] = []
   const isLeafBlock =
     Element.isElement(node) && !editor.isInline(node) && Editor.hasInlines(editor, node)
 
@@ -32,7 +40,6 @@ export const createNode = (editor: Editable, options: CreateChildrenOptions): DO
     const focused =
       selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
 
-
     if (Element.isElement(n)) {
       const element = createElement(editor, {
         element: n,
@@ -45,13 +52,14 @@ export const createNode = (editor: Editable, options: CreateChildrenOptions): DO
         children.push(element)
       }
     } else {
-      children.push(createText(editor, {
-        isLast: isLeafBlock && i === node.children.length - 1,
-        parent: node,
-        text: n,
-        renderPlaceholder
-      }
-      ))
+      children.push(
+        createText(editor, {
+          isLast: isLeafBlock && i === node.children.length - 1,
+          parent: node,
+          text: n,
+          renderPlaceholder,
+        }),
+      )
     }
   }
 

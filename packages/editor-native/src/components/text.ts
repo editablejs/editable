@@ -4,7 +4,13 @@ import { Editable } from '../plugin/editable'
 import { Decorate } from '../plugin/decorate'
 import { createLeaf } from './leaf'
 import { append, attr, detach, element, insert } from '../dom'
-import { EDITOR_TO_KEY_TO_ELEMENT, ELEMENT_TO_NODE, NODE_TO_ELEMENT, NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
+import {
+  EDITOR_TO_KEY_TO_ELEMENT,
+  ELEMENT_TO_NODE,
+  NODE_TO_ELEMENT,
+  NODE_TO_INDEX,
+  NODE_TO_PARENT,
+} from '../utils/weak-maps'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { shallow } from '../store'
 
@@ -42,7 +48,7 @@ export const createText = (editor: Editable, options: CreateTextOptions) => {
   const leaves = SlateText.decorations(text, ranges)
   TEXT_TO_LEAVES.set(textSpan, leaves)
   const decorateKeys = decorates.map(d => d.key)
-  const children = []
+  const children: Node[] = []
   for (let i = 0; i < leaves.length; i++) {
     const leaf = leaves[i]
     let content = createLeaf(editor, {
@@ -50,7 +56,7 @@ export const createText = (editor: Editable, options: CreateTextOptions) => {
       isLast: isLast && i === leaves.length - 1,
       text,
       leaf,
-      parent
+      parent,
     })
     for (const key of decorateKeys) {
       if (key in leaf) {
@@ -63,7 +69,7 @@ export const createText = (editor: Editable, options: CreateTextOptions) => {
       }
     }
 
-    LEAF_TO_ELEMENT.set(leaf, content )
+    LEAF_TO_ELEMENT.set(leaf, content)
     children.push(content)
   }
 
@@ -77,7 +83,11 @@ export interface UpdateTextOptions {
   renderPlaceholder?: PlaceholderRender
 }
 
-export const updateText = (editor: Editable, textEntry: NodeEntry<SlateText>, options: UpdateTextOptions = {}) => {
+export const updateText = (
+  editor: Editable,
+  textEntry: NodeEntry<SlateText>,
+  options: UpdateTextOptions = {},
+) => {
   const { renderPlaceholder } = options
   const [text, path] = textEntry
 
@@ -106,7 +116,7 @@ export const updateText = (editor: Editable, textEntry: NodeEntry<SlateText>, op
   // diff leaves
   const diffLeaves = leaves.filter((l, index) => {
     const current = currentLeaves[index]
-    if(!current) return false
+    if (!current) return false
     return shallow(l, current) === false
   })
 
@@ -117,7 +127,7 @@ export const updateText = (editor: Editable, textEntry: NodeEntry<SlateText>, op
       isLast: i === leaves.length - 1,
       text,
       leaf,
-      parent
+      parent,
     })
     for (const key of decorateKeys) {
       if (key in leaf) {
@@ -131,7 +141,7 @@ export const updateText = (editor: Editable, textEntry: NodeEntry<SlateText>, op
     }
     const currentLeaftElement = LEAF_TO_ELEMENT.get(leaf)
     LEAF_TO_ELEMENT.set(leaf, content)
-    if(!currentLeaftElement) throw new Error('Cannot find leaf element')
+    if (!currentLeaftElement) throw new Error('Cannot find leaf element')
     insert(textSpan, content, currentLeaftElement)
     detach(currentLeaftElement)
   }
@@ -154,7 +164,7 @@ export const updateText = (editor: Editable, textEntry: NodeEntry<SlateText>, op
         isLast: i === leaves.length - 1,
         text,
         leaf,
-        parent
+        parent,
       })
       for (const key of decorateKeys) {
         if (key in leaf) {
