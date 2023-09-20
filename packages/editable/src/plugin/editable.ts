@@ -25,13 +25,12 @@ import {
 import {
   EDITOR_TO_ELEMENT,
   ELEMENT_TO_NODE,
-  NODE_TO_INDEX,
   NODE_TO_KEY,
-  NODE_TO_PARENT,
   EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   IS_COMPOSING,
   NODE_TO_ELEMENT,
+  NODE_TO_PATH,
 } from '../utils/weak-maps'
 import { normalizeDOMPoint, hasShadowRoot } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
@@ -287,33 +286,14 @@ export const Editable = {
   /**
    * Find the path of Editor node.
    */
-
   findPath(editor: Editor, node: Node): Path {
-    const path: Path = []
-    let child = node
+    let path = NODE_TO_PATH.get(node)
 
-    while (true) {
-      const parent = NODE_TO_PARENT.get(child)
-
-      if (parent == null) {
-        if (Editor.isEditor(child)) {
-          return path
-        } else {
-          break
-        }
-      }
-
-      const i = NODE_TO_INDEX.get(child)
-
-      if (i == null) {
-        break
-      }
-
-      path.unshift(i)
-      child = parent
+    if (!path) {
+      throw new Error(`Unable to find the path for Editor node: ${Scrubber.stringify(node)}`)
     }
 
-    throw new Error(`Unable to find the path for Editor node: ${Scrubber.stringify(node)}`)
+    return path
   },
 
   /**

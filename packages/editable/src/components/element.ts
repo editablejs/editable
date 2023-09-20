@@ -1,13 +1,12 @@
 import { Editable, ElementAttributes } from "../plugin/editable";
 import { direction } from 'direction'
-import { Editor, Node, Range, Element as SlateElement } from '@editablejs/models'
+import { Editor, Node, Path, Range, Element as SlateElement } from '@editablejs/models'
 import { Placeholder, PlaceholderRender } from "../plugin/placeholder";
 import {
   NODE_TO_ELEMENT,
   ELEMENT_TO_NODE,
-  NODE_TO_PARENT,
-  NODE_TO_INDEX,
   EDITOR_TO_KEY_TO_ELEMENT,
+  NODE_TO_PATH,
 } from '../utils/weak-maps'
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "../utils/constants";
 import { append, attr, element as createDOMElement } from '../dom'
@@ -17,15 +16,16 @@ import { createRef } from "../ref";
 import { createNode } from "./node";
 export interface CreateElementOptions {
   element: SlateElement
+  path: Path
   selection: Range | null
   renderPlaceholder?: PlaceholderRender
 }
 
 export const createElement = (editor: Editable, options: CreateElementOptions) => {
-  const { element, selection, renderPlaceholder } = options
+  const { element, selection, renderPlaceholder, path } = options
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)
-
+  NODE_TO_PATH.set(element, path)
   const currentRenderPlaceholder = Placeholder.getActiveRender(editor, element)
   let children = createNode(editor, {
     node: element,
@@ -64,21 +64,17 @@ export const createElement = (editor: Editable, options: CreateElementOptions) =
 
     const [[text]] = Node.texts(element)
 
-    NODE_TO_INDEX.set(text, 0)
-    NODE_TO_PARENT.set(text, element)
-
     const textNode = createText(editor, {
       renderPlaceholder: currentRenderPlaceholder ?? renderPlaceholder,
       isLast: false,
       parent: element,
+      path: path.concat(0),
       text,
     })
     append(node, textNode)
 
     children = node
   }
-
-  const path = Editable.findPath(editor, element)
 
   const newAttributes = editor.renderElementAttributes({ attributes, element })
 

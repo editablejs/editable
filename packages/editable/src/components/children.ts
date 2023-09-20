@@ -2,6 +2,7 @@ import { Editor } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
 import { createNode } from "./node"
 import { updateText } from "./text"
+import { NODE_TO_PATH } from "../utils/weak-maps"
 
 export interface CreateChildrenOptions {
 
@@ -18,6 +19,6 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
       }
     }
   })
-
+  NODE_TO_PATH.set(editor, [])
   return createNode(editor, { node: editor, selection: editor.selection })
 }

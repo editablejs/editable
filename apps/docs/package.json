@@ -29,7 +29,7 @@
     "@docsearch/react": "3.3.0",
     "@editablejs/deserializer": "workspace:*",
     "@editablejs/editor": "workspace:*",
-    "@editablejs/editor-native": "workspace:*",
+    "@editablejs/editable": "workspace:*",
     "@editablejs/models": "workspace:*",
     "@editablejs/plugin-codeblock": "workspace:*",
     "@editablejs/plugin-history": "workspace:*",

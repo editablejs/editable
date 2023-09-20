@@ -13,7 +13,7 @@ import {
   Editable,
   withEditable,
   parseDataTransfer,
-} from '@editablejs/editor-native'
+} from '@editablejs/editable'
 import { Editor, createEditor, Range, Transforms } from '@editablejs/models'
 
 import { initialValue } from 'configs/initial-value'
@@ -69,12 +69,13 @@ export default function PlaygroundNative() {
       ],
     })
     let i = 0
-    setInterval(() => {
+    const interval = setInterval(() => {
       Editor.insertText(editor, i.toString())
       i++
     }, 3000)
 
     return () => {
+      clearInterval(interval)
       unmount()
     }
   }, [editor])
