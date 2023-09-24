@@ -21,6 +21,8 @@ const getOrCreateFocusedStore  = (editor: Editor) => {
 
 export const Focused = {
 
+  getStore: getOrCreateFocusedStore,
+
   getState: (editor: Editor) => {
     const store = getOrCreateFocusedStore(editor)
     return store.getState().focused

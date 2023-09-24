@@ -68,14 +68,14 @@ export default function PlaygroundNative() {
         },
       ],
     })
-    let i = 0
-    const interval = setInterval(() => {
-      Editor.insertText(editor, i.toString())
-      i++
-    }, 3000)
+    // let i = 0
+    // const interval = setInterval(() => {
+    //   Editor.insertText(editor, i.toString())
+    //   i++
+    // }, 3000)
 
     return () => {
-      clearInterval(interval)
+      // clearInterval(interval)
       unmount()
     }
   }, [editor])

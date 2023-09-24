@@ -1,16 +1,16 @@
 import { Editor } from '@editablejs/models'
 import { StoreApi, createStore } from '../store'
 
-interface ReadOnlyStore {
+export interface ReadonlyStore {
   readonly: boolean
 }
 
-const EDITABLE_TO_READONLY_STORE = new WeakMap<Editor, StoreApi<ReadOnlyStore>>()
+const EDITABLE_TO_READONLY_STORE = new WeakMap<Editor, StoreApi<ReadonlyStore>>()
 
 const getOrCreateReadonlyStore = (editor: Editor) => {
   let store = EDITABLE_TO_READONLY_STORE.get(editor)
   if (!store) {
-    store = createStore<ReadOnlyStore>(() => ({
+    store = createStore<ReadonlyStore>(() => ({
       readonly: false,
     }))
     EDITABLE_TO_READONLY_STORE.set(editor, store)
@@ -20,6 +20,7 @@ const getOrCreateReadonlyStore = (editor: Editor) => {
 }
 
 export const Readonly = {
+  getStore: getOrCreateReadonlyStore,
   getState: (editor: Editor) => {
     const store = getOrCreateReadonlyStore(editor)
     return store.getState().readonly

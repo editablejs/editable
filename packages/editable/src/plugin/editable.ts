@@ -1090,7 +1090,7 @@ export const Editable = {
     })
   },
 
-  mount(editor: Editable, container: HTMLElement, options: CreateContentOptions) {
-    return createContent(editor, container, options)
+  mount(editor: Editable, root: HTMLElement, options: CreateContentOptions) {
+    return createContent(editor, root, options)
   }
 }
