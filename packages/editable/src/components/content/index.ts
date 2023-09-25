@@ -10,6 +10,7 @@ import { createSelectionDrawing } from "../selection-drawing";
 import { createSelectionCaret } from "../selection-caret";
 import { SelectionDrawing } from "../../plugin/selection-drawing";
 import { createInput } from "../input";
+import { createDragCaret } from "../drag-caret";
 
 export interface CreateContentOptions {
   initialValue?: Descendant[]
@@ -64,7 +65,7 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
   const unsubscribeSelectionDrawing = createSelectionDrawing(editor, { container: shadowRoot })
   const unsubscribeSelectionCaret = createSelectionCaret(editor, { container: shadowRoot })
   const unsubscribeInput = createInput(editor, { container: shadowRoot })
-
+  const unsubscribeDragCaret = createDragCaret(editor, { container: shadowRoot })
   return () => {
     editor.off('change', handleChange)
     const container = EDITOR_TO_ELEMENT.get(editor)
@@ -72,6 +73,7 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
     unsubscribeSelectionDrawing()
     unsubscribeSelectionCaret()
     unsubscribeInput()
+    unsubscribeDragCaret()
     if (container) {
       EDITOR_TO_WINDOW.delete(editor)
       EDITOR_TO_ELEMENT.delete(editor)

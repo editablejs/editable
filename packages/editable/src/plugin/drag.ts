@@ -49,6 +49,7 @@ const getOrCreateDragStore = (editor: Editor) => {
 }
 
 export const Drag = {
+  getStore: getOrCreateDragStore,
   getState: (editor: Editor) => {
     const store = getOrCreateDragStore(editor)
     const { activeDrag } = store.getState()
