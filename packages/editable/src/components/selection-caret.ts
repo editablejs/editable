@@ -26,20 +26,22 @@ export const createSelectionCaret = (editor: Editable, options: CreateSelectionC
     }
   }
   const selectionUnsubscribe = selectionStore.subscribe(() => {
-    updateSelectionCaret(editor, getState(), options)
+    updateSelectionCaretState(editor, getState(), options)
   })
   const focusedUnsubscribe = focusedStore.subscribe(() => {
-    updateSelectionCaret(editor, getState(), options)
+    updateSelectionCaretState(editor, getState(), options)
   })
   const readonlyUnsubscribe = readonlyStore.subscribe(() => {
-    updateSelectionCaret(editor, getState(), options)
+    updateSelectionCaretState(editor, getState(), options)
   })
-  updateSelectionCaret(editor, getState(), options)
+  createSelectionCaretComponent(editor, options)
+  updateSelectionCaretState(editor, getState(), options)
 
   return () => {
     selectionUnsubscribe()
     focusedUnsubscribe()
     readonlyUnsubscribe()
+    detachSelectionCaret(editor)
   }
 }
 
@@ -49,24 +51,53 @@ const EDITOR_TO_CARET_TIMEOUT = new WeakMap<Editable, number>()
 
 type UpdateSelectionState = SelectionDrawingStore & FocusedStore & ReadonlyStore
 
-const updateSelectionCaret = (editor: Editable, state: UpdateSelectionState, options: CreateSelectionCaretOptions) => {
-  const { container, timeout = 530 } = options
-  const { selection, readonly, enabled, style, focused } = state
-  let caretElement = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
+const detachSelectionCaret = (editor: Editable) => {
+  clearCaretTimeout(editor)
+  const caretElement = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
   if (caretElement) {
     detach(caretElement)
   }
-
-
-  const clearCaretTimeout = () => {
-    const caretTimeout = EDITOR_TO_CARET_TIMEOUT.get(editor)
-    if (caretTimeout) {
-      clearTimeout(caretTimeout)
-    }
+}
+const clearCaretTimeout = (editor: Editable) => {
+  const caretTimeout = EDITOR_TO_CARET_TIMEOUT.get(editor)
+  if (caretTimeout) {
+    clearTimeout(caretTimeout)
   }
-  clearCaretTimeout()
+}
+
+
+const setOpacity = (editor: Editable, opacity?: number) => {
+  const block = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
+  if (!block) return
+  block.style.opacity = opacity !== undefined ? String(opacity) : block.style.opacity === '1' ? '0' : '1'
+}
+
+
+const animate = (editor: Editable, timeout: number, opacity?: number) => {
+  clearCaretTimeout(editor)
+  const block = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
+  if (!block) return
+  if (IS_MOUSEDOWN.get(editor)) {
+    setOpacity(editor, 1)
+  } else {
+    setOpacity(editor, opacity)
+  }
+  const timeoutId = setTimeout(() => {
+    animate(editor, timeout)
+  }, timeout)
+  EDITOR_TO_CARET_TIMEOUT.set(editor, timeoutId)
+}
+
+const updateSelectionCaretState = (editor: Editable, state: UpdateSelectionState, options: CreateSelectionCaretOptions) => {
+  const { selection, readonly, enabled, style, focused } = state
+  const { timeout = 530 } = options
+
+  clearCaretTimeout(editor)
   if (!enabled || readonly) {
+    detachSelectionCaret(editor)
     return
+  } else if (!EDITOR_TO_SELECTION_CARET_WEAK_MAP.has(editor)) {
+    createSelectionCaretComponent(editor, options)
   }
   const rects = selection ? SelectionDrawing.toRects(editor, selection) : []
   let rect: DOMRect | null = null
@@ -76,42 +107,34 @@ const updateSelectionCaret = (editor: Editable, state: UpdateSelectionState, opt
 
   const caretWidth = isTouchDevice ? style.touchWidth : style.caretWidth
   const caretColor = isTouchDevice ? style.touchColor : style.caretColor
+
+  const block = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
+  if (!block) return
+  block.style.top = rect ? `${rect.top}px` : '0px'
+  block.style.left = rect ? `${rect.left}px` : '0px'
+  block.style.height = rect ? `${rect.height}px` : '0px'
+  block.style.width = caretWidth ? `${caretWidth}px` : '0px'
+  block.style.backgroundColor = caretColor ?? 'transparent'
+  block.style.opacity = rect ? '1' : '0'
+  if(rect) animate(editor, timeout, 1)
+}
+
+const createSelectionCaretComponent = (editor: Editable, options: CreateSelectionCaretOptions) => {
+  const { container } = options
+
   const block = createShadowBlock({
     position: {
-      top: rect?.top ?? 0,
-      left: rect?.left ?? 0,
+      top: 0,
+      left: 0,
     },
     size: {
-      width: caretWidth ?? 0,
-      height: rect?.height ?? 0,
-    },
-    bgColor: caretColor,
-    style: `will-change: opacity, transform;opacity: ${rect ? 1 : 0};`
-  })
-
-  const setOpacity = (opacity?: number) => {
-    block.style.opacity = opacity !== undefined ? String(opacity) : block.style.opacity === '1' ? '0' : '1'
-  }
-
-  const animate = (opacity?: number) => {
-    clearCaretTimeout()
-    const block = EDITOR_TO_SELECTION_CARET_WEAK_MAP.get(editor)
-    if (!rect || !block) return
-    if (IS_MOUSEDOWN.get(editor)) {
-      setOpacity(1)
-    } else {
-      setOpacity(opacity)
+      width: 0,
+      height: 0,
     }
-    const timeoutId = setTimeout(() => {
-      animate()
-    }, timeout)
-    EDITOR_TO_CARET_TIMEOUT.set(editor, timeoutId)
-  }
+  })
 
 
   append(container, block)
 
   EDITOR_TO_SELECTION_CARET_WEAK_MAP.set(editor, block)
-
-  animate()
 }

@@ -1,5 +1,5 @@
 import { Editor, Transforms, Node, Range } from '@editablejs/models'
-import getDirection from 'direction'
+import {direction} from 'direction'
 import Hotkeys from '../utils/hotkeys'
 import { getWordOffsetBackward, getWordOffsetForward } from '../utils/text'
 import { IS_PASTE_TEXT, IS_SHIFT_PRESSED } from '../utils/weak-maps'
@@ -13,7 +13,7 @@ export const withKeydown = <T extends Editor>(editor: T) => {
     if (event.defaultPrevented) return
     const { selection } = editor
     const element = editor.children[selection !== null ? selection.focus.path[0] : 0]
-    const isRTL = getDirection(Node.string(element)) === 'rtl'
+    const isRTL = direction(Node.string(element)) === 'rtl'
 
     if (Hotkeys.isShift(event)) {
       IS_SHIFT_PRESSED.set(e, true)

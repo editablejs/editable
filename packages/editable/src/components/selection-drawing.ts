@@ -31,7 +31,14 @@ export const createSelectionDrawing = (editor: Editable, options: CreateSelectio
   return () => {
     selectionUnsubscribe()
     focusedUnsubscribe()
+    detachSelectionBlocks(editor)
   }
+}
+
+const detachSelectionBlocks = (editor: Editable) => {
+  const blocks = EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.get(editor) ?? []
+
+  blocks.forEach(detach)
 }
 
 const EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP = new WeakMap<Editable, HTMLElement[]>()
@@ -41,14 +48,12 @@ type UpdateSelectionState = SelectionDrawingStore & FocusedStore
 const updateSelectionDrawing = (editor: Editable, state: UpdateSelectionState, options: CreateSelectionDrawingOptions) => {
   const { container } = options
   const { selection, enabled, style, focused } = state
-  let blocks = EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.get(editor) ?? []
-
-  blocks.forEach(detach)
+  detachSelectionBlocks(editor)
   if (!enabled || !selection || Range.isCollapsed(selection)) {
     return
   }
   const rects = selection ? SelectionDrawing.toRects(editor, selection) : []
-  blocks = []
+  const blocks = []
   for (const rect of rects) {
     const block = createShadowBlock({
       position: {

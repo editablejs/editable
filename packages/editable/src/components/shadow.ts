@@ -4,7 +4,10 @@ export const createShadow = () => {
   const container = element('div')
   attr(container, 'style', "position:absolute;top:0;left:0;z-index:2;")
   container.attachShadow({ mode: 'open' })
-  return [container, container.shadowRoot!]
+  return {
+    shadowContainer: container,
+    shadowRoot: container.shadowRoot as ShadowRoot
+  }
 }
 
 export interface CreateShadowBlockOptions {
