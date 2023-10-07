@@ -8,7 +8,8 @@ import { createText } from "./text";
 import { Decorate } from "../plugin/decorate";
 import { createRef } from "../ref";
 import { createNode } from "./node";
-import { EDITOR_TO_KEY_TO_ELEMENT, ELEMENT_TO_NODE, NODE_TO_ELEMENT, NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps";
+import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps";
+import { associateNodeAndDOM } from "../utils/associate";
 export interface CreateElementOptions {
   element: SlateElement
   path: Path
@@ -19,7 +20,6 @@ export interface CreateElementOptions {
 export const createElement = (editor: Editable, options: CreateElementOptions) => {
   const { element, selection, renderPlaceholder, path } = options
   const isInline = editor.isInline(element)
-  const key = Editable.findKey(editor, element)
   const currentRenderPlaceholder = Placeholder.getActiveRender(editor, element)
   let children = createNode(editor, {
     node: element,
@@ -79,10 +79,7 @@ export const createElement = (editor: Editable, options: CreateElementOptions) =
     throw new Error('Must set ref')
   }
 
-  const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
-  KEY_TO_ELEMENT?.set(key, ref.current)
-  NODE_TO_ELEMENT.set(element, ref.current)
-  ELEMENT_TO_NODE.set(ref.current, element)
+  associateNodeAndDOM(editor, element, ref.current)
 
   const decorates = Decorate.getElementDecorations(editor, element, path)
 

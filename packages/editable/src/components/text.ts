@@ -6,7 +6,7 @@ import { createLeaf } from './leaf'
 import { append, attr, detach, element, insert } from '../dom'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { shallow } from '../store'
-import { EDITOR_TO_KEY_TO_ELEMENT, ELEMENT_TO_NODE, NODE_TO_ELEMENT } from '../utils/weak-maps'
+import { associateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateTextOptions {
   isLast: boolean
@@ -76,15 +76,12 @@ const createLeafWithDecorate = (editor: Editable, options: CreateLeafWithDecorat
 
 export const createText = (editor: Editable, options: CreateTextOptions) => {
   const { isLast, parent, text, renderPlaceholder, path } = options
-  const key = Editable.findKey(editor, text)
+
   const textSpan = element('span')
 
   attr(textSpan, DATA_EDITABLE_NODE, 'text')
 
-  const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
-  KEY_TO_ELEMENT?.set(key, textSpan)
-  NODE_TO_ELEMENT.set(text, textSpan)
-  ELEMENT_TO_NODE.set(textSpan, text)
+  associateNodeAndDOM(editor, text, textSpan)
 
   const decorates = getDecorates(editor, [text, path])
   const leaves = getLeaves(decorates, text)
@@ -201,9 +198,8 @@ export const updateText = (
       textToLeaves.push({ leaf, node: content })
       append(textSpan, content)
     }
-  } else if (diffLeaves.length === 0) {
-    return
   }
 
+  updateNodeAndDOM(editor, text, textSpan)
   TEXT_TO_LEAVES.set(textSpan, textToLeaves)
 }

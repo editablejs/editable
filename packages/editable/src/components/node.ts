@@ -17,6 +17,7 @@ import { createElement } from './element'
 import { createText, updateText } from './text'
 import { append, fragment } from '../dom'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
+import { updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateChildrenOptions {
   node: Ancestor
@@ -91,14 +92,17 @@ export const splitNode = (editor: Editable, entry: NodeEntry, options: SplitNode
     updateText(editor, [node, path])
     return
   }
-  const parentPath = Path.parent(path)
-  const newPath = parentPath.concat(options.position)
-  const newNode = Node.get(editor, newPath) as Element
+
+  const nextEntry = Editor.next<Element>(editor, { at: path })
+  if (!nextEntry) return
+  const [newNode, newPath] = nextEntry
   const newElement = createElement(editor, {
     element: newNode,
     path: newPath,
     selection: editor.selection,
   })
   const prevElement = Editable.toDOMNode(editor, Editor.node(editor, path)[0])
-    prevElement.after(newElement)
+  prevElement.after(newElement)
+
+  updateNodeAndDOM(editor, node, prevElement)
 }

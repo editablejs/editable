@@ -1,4 +1,4 @@
-import { BaseText, Editor, NodeEntry, Path, Element } from "@editablejs/models"
+import { BaseText, Editor, NodeEntry, Element } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
 import { createNode, splitNode } from "./node"
 import { updateText } from "./text"
