@@ -1,6 +1,7 @@
 import {
   Editor,
   Node,
+  Element,
   Path,
   Operation,
   Transforms,
@@ -11,11 +12,13 @@ import {
 } from '@editablejs/models'
 import { Editable, RenderElementProps, RenderLeafProps } from './editable'
 import {
-  EDITOR_TO_KEY_TO_ELEMENT,
-  NODE_TO_KEY,
   IS_SHIFT_PRESSED,
   EDITOR_TO_INPUT,
   EDITOR_TO_SHADOW,
+  EDITOR_TO_KEY_TO_ELEMENT,
+  NODE_TO_KEY,
+  NODE_TO_INDEX,
+  NODE_TO_PARENT,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
 import { EventEmitter } from './event'
@@ -328,6 +331,10 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.onDestory = () => {
     e.emit('destory')
+  }
+
+  e.onRenderComplete = () => {
+    e.emit('rendercomplete')
   }
 
   e.renderElementAttributes = ({ attributes }) => {

@@ -1,10 +1,12 @@
-import {  Editor, Node, Key, Path } from '@editablejs/models'
+import {  Editor, Node, Key, Ancestor } from '@editablejs/models'
 
 /**
  * Two weak maps that allow us rebuild a path given a node. They are populated
  * at render time such that after a render occurs we can always backtrack.
  */
-export const NODE_TO_PATH: WeakMap<Node, Path> = new WeakMap()
+
+export const NODE_TO_INDEX: WeakMap<Node, number> = new WeakMap()
+export const NODE_TO_PARENT: WeakMap<Node, Ancestor> = new WeakMap()
 
 /**
  * Weak maps that allow us to go between Slate nodes and DOM nodes. These

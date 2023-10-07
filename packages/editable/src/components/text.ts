@@ -4,14 +4,9 @@ import { Editable } from '../plugin/editable'
 import { Decorate, TextDecorate } from '../plugin/decorate'
 import { createLeaf } from './leaf'
 import { append, attr, detach, element, insert } from '../dom'
-import {
-  EDITOR_TO_KEY_TO_ELEMENT,
-  ELEMENT_TO_NODE,
-  NODE_TO_ELEMENT,
-  NODE_TO_PATH,
-} from '../utils/weak-maps'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { shallow } from '../store'
+import { EDITOR_TO_KEY_TO_ELEMENT, ELEMENT_TO_NODE, NODE_TO_ELEMENT } from '../utils/weak-maps'
 
 export interface CreateTextOptions {
   isLast: boolean
@@ -82,12 +77,11 @@ const createLeafWithDecorate = (editor: Editable, options: CreateLeafWithDecorat
 export const createText = (editor: Editable, options: CreateTextOptions) => {
   const { isLast, parent, text, renderPlaceholder, path } = options
   const key = Editable.findKey(editor, text)
-  const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
   const textSpan = element('span')
 
   attr(textSpan, DATA_EDITABLE_NODE, 'text')
 
-  NODE_TO_PATH.set(text, path)
+  const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
   KEY_TO_ELEMENT?.set(key, textSpan)
   NODE_TO_ELEMENT.set(text, textSpan)
   ELEMENT_TO_NODE.set(textSpan, text)
@@ -139,11 +133,7 @@ export const updateText = (
   const [text, path] = textEntry
 
   const textSpan = Editable.toDOMNode(editor, text)
-  if (!textSpan) {
-    throw new Error('Cannot find text element')
-  }
 
-  NODE_TO_PATH.set(text, path)
   const [parent] = Editor.parent(editor, path)
   const isLast = parent.children[parent.children.length - 1] === text
 

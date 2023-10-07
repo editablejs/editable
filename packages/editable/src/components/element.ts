@@ -2,18 +2,13 @@ import { Editable, ElementAttributes } from "../plugin/editable";
 import { direction } from 'direction'
 import { Editor, Node, Path, Range, Element as SlateElement } from '@editablejs/models'
 import { Placeholder, PlaceholderRender } from "../plugin/placeholder";
-import {
-  NODE_TO_ELEMENT,
-  ELEMENT_TO_NODE,
-  EDITOR_TO_KEY_TO_ELEMENT,
-  NODE_TO_PATH,
-} from '../utils/weak-maps'
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "../utils/constants";
 import { append, attr, element as createDOMElement } from '../dom'
 import { createText } from "./text";
 import { Decorate } from "../plugin/decorate";
 import { createRef } from "../ref";
 import { createNode } from "./node";
+import { EDITOR_TO_KEY_TO_ELEMENT, ELEMENT_TO_NODE, NODE_TO_ELEMENT, NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps";
 export interface CreateElementOptions {
   element: SlateElement
   path: Path
@@ -25,7 +20,6 @@ export const createElement = (editor: Editable, options: CreateElementOptions) =
   const { element, selection, renderPlaceholder, path } = options
   const isInline = editor.isInline(element)
   const key = Editable.findKey(editor, element)
-  NODE_TO_PATH.set(element, path)
   const currentRenderPlaceholder = Placeholder.getActiveRender(editor, element)
   let children = createNode(editor, {
     node: element,
@@ -74,6 +68,8 @@ export const createElement = (editor: Editable, options: CreateElementOptions) =
     append(node, textNode)
 
     children = node
+    NODE_TO_INDEX.set(text, 0)
+    NODE_TO_PARENT.set(text, element)
   }
 
   const newAttributes = editor.renderElementAttributes({ attributes, element })

@@ -128,3 +128,4 @@ export function set_style(node: HTMLElement, key: string, value?: string, import
 		node.style.setProperty(key, value, important ? 'important' : '');
 	}
 }
+

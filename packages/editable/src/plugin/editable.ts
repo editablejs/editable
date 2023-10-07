@@ -24,13 +24,13 @@ import {
 
 import {
   EDITOR_TO_ELEMENT,
-  ELEMENT_TO_NODE,
-  NODE_TO_KEY,
-  EDITOR_TO_WINDOW,
   EDITOR_TO_KEY_TO_ELEMENT,
+  EDITOR_TO_WINDOW,
+  ELEMENT_TO_NODE,
   IS_COMPOSING,
-  NODE_TO_ELEMENT,
-  NODE_TO_PATH,
+  NODE_TO_INDEX,
+  NODE_TO_KEY,
+  NODE_TO_PARENT,
 } from '../utils/weak-maps'
 import { normalizeDOMPoint, hasShadowRoot } from '../utils/dom'
 import { IS_CHROME, IS_FIREFOX } from '../utils/environment'
@@ -163,6 +163,7 @@ export interface Editable extends Editor {
   onTouchHold: (event: TouchEvent) => void
   onTouchTrack: () => void
   onContextMenu: (event: MouseEvent) => void
+  onRenderComplete: () => void
   onDestory: () => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
@@ -287,13 +288,33 @@ export const Editable = {
    * Find the path of Editor node.
    */
   findPath(editor: Editor, node: Node): Path {
-    let path = NODE_TO_PATH.get(node)
+    const path: Path = []
+    let child = node
 
-    if (!path) {
-      throw new Error(`Unable to find the path for Editor node: ${Scrubber.stringify(node)}`)
+    while (true) {
+      const parent = NODE_TO_PARENT.get(child)
+
+      if (parent == null) {
+        if (Editor.isEditor(child)) {
+          return path
+        } else {
+          break
+        }
+      }
+
+      const i = NODE_TO_INDEX.get(child)
+
+      if (i == null) {
+        break
+      }
+
+      path.unshift(i)
+      child = parent
     }
 
-    return path
+    throw new Error(
+      `Unable to find the path for Slate node: ${Scrubber.stringify(node)}`
+    )
   },
 
   /**
@@ -512,7 +533,6 @@ export const Editable = {
       : domEl.closest(`[${DATA_EDITABLE_NODE}]`)
 
     const addToElements = (node: Node) => {
-      if (!NODE_TO_ELEMENT.get(node)) return
       const children = Editable.findLowestDOMElements(editor, node)
       for (const child of children) {
         if (~elements.indexOf(child)) continue

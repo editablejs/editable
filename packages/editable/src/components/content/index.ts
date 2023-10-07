@@ -1,7 +1,7 @@
 import { Descendant, getDefaultView } from "@editablejs/models";
 import { append, attr, detach, element } from "../../dom";
 import { Editable } from "../../plugin/editable";
-import { EDITOR_TO_WINDOW, EDITOR_TO_ELEMENT, NODE_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_SHADOW } from "../../utils/weak-maps";
+import { EDITOR_TO_WINDOW, EDITOR_TO_ELEMENT, EDITOR_TO_SHADOW, NODE_TO_ELEMENT, ELEMENT_TO_NODE } from "../../utils/weak-maps";
 import { createContainerEvent, createGlobalEvent, detachEventListeners } from "./event";
 import { Readonly } from "../../plugin/readonly";
 import { createChildren } from "../children";
@@ -46,16 +46,16 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
   NODE_TO_ELEMENT.set(editor, container)
   ELEMENT_TO_NODE.set(container, editor)
 
-  const handleChange = () => {
+  const handleRenderComplete = () => {
     const { selection } = editor
     SelectionDrawing.setSelection(editor, selection ? Object.assign({}, selection) : null)
   }
-  editor.on('change', handleChange)
+  editor.on('rendercomplete', handleRenderComplete)
 
   createGlobalEvent(editor)
   createContainerEvent(editor)
 
-  const children = createChildren(editor, container)
+  const {children, destroy: destroyChildren } = createChildren(editor, {})
   append(container, children)
 
   const { shadowContainer, shadowRoot} = createShadow()
@@ -67,7 +67,7 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
   const unsubscribeInput = createInput(editor, { container: shadowRoot })
   const unsubscribeDragCaret = createDragCaret(editor, { container: shadowRoot })
   return () => {
-    editor.off('change', handleChange)
+    editor.off('rendercomplete', handleRenderComplete)
     const container = EDITOR_TO_ELEMENT.get(editor)
     unsubscribeFocused()
     unsubscribeSelectionDrawing()
@@ -84,5 +84,6 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
       detach(shadowContainer)
       detach(container)
     }
+    destroyChildren()
   }
 }
