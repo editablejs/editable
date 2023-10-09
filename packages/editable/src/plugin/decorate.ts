@@ -25,13 +25,13 @@ export interface BaseDecorate {
 // Define TextDecorate interface with match and renderText functions
 export interface TextDecorate extends BaseDecorate {
   match: (node: Text, path: Path) => Range[];
-  renderText: (props: DecorateRenderProps<Text>) => DOMNode;
+  renderText: (props: DecorateRenderProps<Text>) => HTMLElement;
 }
 
 // Define ElementDecorate interface with match and renderElement functions
 export interface ElementDecorate extends BaseDecorate {
   match: (node: Element, path: Path) => boolean;
-  renderElement: (props: DecorateRenderProps<Element>) => DOMElement;
+  renderElement: (props: DecorateRenderProps<Element>) => HTMLElement;
 }
 
 // Define a type for decorations which can either be a TextDecorate or an ElementDecorate

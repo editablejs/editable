@@ -9,6 +9,8 @@ import {
   Point,
   List,
   Key,
+  NodeEntry,
+  Text
 } from '@editablejs/models'
 import { Editable, RenderElementProps, RenderLeafProps } from './editable'
 import {
@@ -17,8 +19,8 @@ import {
   EDITOR_TO_SHADOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   NODE_TO_KEY,
-  NODE_TO_INDEX,
-  NODE_TO_PARENT,
+  EDITOR_TO_BEFORE_OPERATION_NODE,
+  EDITOR_TO_AFTER_OPERATION_NODE,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
 import { EventEmitter } from './event'
@@ -131,7 +133,8 @@ export const withEditable = <T extends Editor>(editor: T) => {
       case 'remove_text':
       case 'set_node':
       case 'split_node': {
-        matches.push(...getMatches(e, op.path))
+        const matches = getMatches(e, op.path)
+        matches.push(...matches)
         break
       }
 
@@ -157,9 +160,15 @@ export const withEditable = <T extends Editor>(editor: T) => {
         break
       }
     }
-
+    const beforeNode = getOperationBeforeNode(editor, op)
+    if (beforeNode) {
+      EDITOR_TO_BEFORE_OPERATION_NODE.set(op, beforeNode)
+    }
     apply(op)
-
+    const afterNode = getOperationAfterNode(editor, op)
+    if (afterNode) {
+      EDITOR_TO_AFTER_OPERATION_NODE.set(op, afterNode)
+    }
     for (const [path, key] of matches) {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
@@ -410,4 +419,47 @@ const getMatches = (e: Editable, path: Path) => {
     matches.push([p, key])
   }
   return matches
+}
+
+const getOperationBeforeNode = (editor: Editor, operation: Operation): NodeEntry | undefined => {
+  switch (operation.type) {
+    case 'set_node':
+    case 'insert_node':
+    case 'insert_text':
+    case 'remove_text':
+    case 'split_node':
+    case 'move_node':
+      return Editor.node(editor, operation.path)
+    case 'merge_node':
+      const entry = Editor.node(editor, operation.path)
+      if (Text.isText(entry[0])) {
+        return Editor.previous(editor, { at: operation.path })
+      }
+      return Editor.node(editor, operation.path)
+    case 'remove_node':
+      return [operation.node, operation.path]
+  }
+}
+
+const getOperationAfterNode = (editor: Editor, operation: Operation): NodeEntry | undefined => {
+  switch (operation.type) {
+    case 'set_node':
+    case 'insert_node':
+    case 'insert_text':
+    case 'remove_text':
+      return Editor.node(editor, operation.path)
+    case 'split_node':
+      const split_entry = Editor.node(editor, operation.path)
+      if (Element.isElement(split_entry[0])) {
+        return Editor.next(editor, { at: operation.path })
+      }
+      return split_entry
+    case 'remove_node':
+      return [operation.node, operation.path]
+    case 'merge_node':
+      const prevPath = Path.previous(operation.path)
+      return Editor.node(editor, prevPath)
+    case 'move_node':
+      return Editor.node(editor, operation.newPath)
+  }
 }

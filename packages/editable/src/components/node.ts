@@ -15,9 +15,9 @@ import { PlaceholderRender } from '../plugin/placeholder'
 import { Editable } from '../plugin/editable'
 import { createElement } from './element'
 import { createText, updateText } from './text'
-import { append, fragment } from '../dom'
+import { append, detach, fragment } from '../dom'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
-import { updateNodeAndDOM } from '../utils/associate'
+import { dissociateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateChildrenOptions {
   node: Ancestor
@@ -81,28 +81,45 @@ export const insertNode = (editor: Editable, entry: NodeEntry) => {
 
 }
 
+export const removeNode = (editor: Editable, removeNode: NodeEntry) => {
+  const [node] = removeNode
+  const dom = Editable.toDOMNode(editor, node)
+  if (!dom) throw new Error(`Can't find dom of node: ${node}`)
+  dissociateNodeAndDOM(editor, node)
+  detach(dom)
+}
+
+export const mergeNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
+  if(Element.isElement(oldNode[0])) removeNode(editor, oldNode)
+  if (Text.isText(newNode[0])) {
+    updateText(editor, oldNode, newNode)
+    return
+  }
+}
+
 export interface SplitNodeOptions {
   position: number;
   properties: Partial<Node>;
 }
 
-export const splitNode = (editor: Editable, entry: NodeEntry, options: SplitNodeOptions) => {
-  const [node, path] = entry
+export const splitNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
+  const [node, path] = newNode
   if (Text.isText(node)) {
-    updateText(editor, [node, path])
+    updateText(editor, oldNode, newNode)
     return
   }
 
-  const nextEntry = Editor.next<Element>(editor, { at: path })
-  if (!nextEntry) return
-  const [newNode, newPath] = nextEntry
   const newElement = createElement(editor, {
-    element: newNode,
-    path: newPath,
+    element: node,
+    path: path,
     selection: editor.selection,
   })
-  const prevElement = Editable.toDOMNode(editor, Editor.node(editor, path)[0])
-  prevElement.after(newElement)
 
-  updateNodeAndDOM(editor, node, prevElement)
+  const previous = Editor.previous(editor, { at: path })
+  if (!previous) throw new Error(`Can't find previous node of node: ${node}`)
+
+  const previousElement = Editable.toDOMNode(editor, previous[0])
+  previousElement.after(newElement)
+
+  updateNodeAndDOM(editor, node, newElement)
 }

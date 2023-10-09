@@ -69,7 +69,7 @@ const createLeafWithDecorate = (editor: Editable, options: CreateLeafWithDecorat
           path,
           children: content,
         })
-        content = dec.cloneNode(true)
+        content = dec.cloneNode(true) as HTMLElement
     }
   return content
 }
@@ -123,13 +123,16 @@ export interface UpdateTextOptions {
 
 export const updateText = (
   editor: Editable,
-  textEntry: NodeEntry<SlateText>,
+  oldNode: NodeEntry,
+  newNode: NodeEntry,
   options: UpdateTextOptions = {},
 ) => {
   const { renderPlaceholder } = options
-  const [text, path] = textEntry
+  const [oldText] = oldNode
+  const [text, path] = newNode
+  if(!SlateText.isText(text)) throw new Error('newNode must be text')
 
-  const textSpan = Editable.toDOMNode(editor, text)
+  const textDOM = Editable.toDOMNode(editor, oldText)
 
   const [parent] = Editor.parent(editor, path)
   const isLast = parent.children[parent.children.length - 1] === text
@@ -137,7 +140,7 @@ export const updateText = (
   const decorates = getDecorates(editor, [text, path])
   const leaves = getLeaves(decorates, text)
 
-  const currentLeaves = TEXT_TO_LEAVES.get(textSpan) ?? []
+  const currentLeaves = TEXT_TO_LEAVES.get(textDOM) ?? []
   // diff leaves
   const diffLeaves = leaves.filter((l, index) => {
     const current = currentLeaves[index]
@@ -164,7 +167,7 @@ export const updateText = (
     })
     const currentLeaftElement = currentLeaves[i].node
     textToLeaves.push({ leaf, node: content })
-    insert(textSpan, content, currentLeaftElement)
+    insert(textDOM, content, currentLeaftElement)
     detach(currentLeaftElement)
   }
 
@@ -196,10 +199,10 @@ export const updateText = (
         renderPlaceholder,
       })
       textToLeaves.push({ leaf, node: content })
-      append(textSpan, content)
+      append(textDOM, content)
     }
   }
 
-  updateNodeAndDOM(editor, text, textSpan)
-  TEXT_TO_LEAVES.set(textSpan, textToLeaves)
+  updateNodeAndDOM(editor, text, textDOM)
+  if(leaves.length !== currentLeaves.length) TEXT_TO_LEAVES.set(textDOM, textToLeaves)
 }
