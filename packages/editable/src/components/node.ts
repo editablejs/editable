@@ -77,8 +77,50 @@ export const createNode = (editor: Editable, options: CreateChildrenOptions): DO
   return f
 }
 
-export const insertNode = (editor: Editable, entry: NodeEntry) => {
-
+export const insertNode = (editor: Editable, insertNode: NodeEntry) => {
+  const [node, path] = insertNode
+  const [parent, parentPath] = Editor.parent(editor, path)
+  // 如果父节点只有一个子节点，那么重新渲染父节点，因为不能通过 append 的方式插入，可能父节点内有其它ui组件
+  if (parent.children.length === 1) {
+    const parentDOM = Editable.toDOMNode(editor, parent)
+    const dom = createElement(editor, {
+      element: parent,
+      path: parentPath,
+      selection: editor.selection,
+    })
+    parentDOM.after(dom)
+    detach(parentDOM)
+    updateNodeAndDOM(editor, parent, dom)
+  } else {
+    let dom: HTMLElement | undefined = undefined
+    const index = path[path.length - 1]
+    if (Text.isText(node)) {
+      const isLeafBlock =
+        Element.isElement(parent) && !editor.isInline(parent) && Editor.hasInlines(editor, parent)
+      dom = createText(editor, {
+        isLast: isLeafBlock && index === parent.children.length - 1,
+        parent: parent,
+        text: node,
+        path: path,
+      })
+    } else {
+      dom = createElement(editor, {
+        element: node,
+        path: path,
+        selection: editor.selection,
+      })
+    }
+    if (index === 0) {
+      const nextNode = Editor.next(editor, { at: path })
+      const nextDom = nextNode && Editable.toDOMNode(editor, nextNode[0])
+      nextDom?.before(dom)
+    } else {
+      const prevNode = Editor.previous(editor, { at: path })
+      const prevDom = prevNode && Editable.toDOMNode(editor, prevNode[0])
+      prevDom?.after(dom)
+    }
+    updateNodeAndDOM(editor, node, dom)
+  }
 }
 
 export const removeNode = (editor: Editable, removeNode: NodeEntry) => {
@@ -90,7 +132,7 @@ export const removeNode = (editor: Editable, removeNode: NodeEntry) => {
 }
 
 export const mergeNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
-  if(Element.isElement(oldNode[0])) removeNode(editor, oldNode)
+  if (Element.isElement(oldNode[0])) removeNode(editor, oldNode)
   if (Text.isText(newNode[0])) {
     updateText(editor, oldNode, newNode)
     return

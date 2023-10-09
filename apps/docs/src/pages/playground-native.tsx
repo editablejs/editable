@@ -80,6 +80,27 @@ export default function PlaygroundNative() {
     }
   }, [editor])
 
+  const handleInsertNode = () => {
+    Transforms.insertNodes(editor, { text: '[0, 1]' }, {
+      at: [0, 1]
+    })
+    Transforms.insertNodes(editor, {
+      type: 'paragraph',
+      children: [{ text: 'New Paragraph[1]' }],
+    }, {
+      at: [1]
+    })
+    Transforms.insertNodes(editor, {
+      type: 'paragraph',
+      children: [],
+    }, {
+      at: [2]
+    })
+    Transforms.insertNodes(editor, { text: '[2, 0]' }, {
+      at: [2, 0]
+    })
+  }
+
   return (
     <>
       <CustomStyles />
@@ -99,7 +120,15 @@ export default function PlaygroundNative() {
                 <IconGitHub />
               </ExternalLink>
             </div>
+        </div>
+        <div>
+          <p tw="text-gray-20">用户测试逻辑</p>
+          <div>
+            <button onClick={handleInsertNode}>
+              插入节点
+            </button>
           </div>
+        </div>
         </StyledHeader>
         <StyledContainer>
         <div

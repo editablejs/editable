@@ -204,5 +204,5 @@ export const updateText = (
   }
 
   updateNodeAndDOM(editor, text, textDOM)
-  if(leaves.length !== currentLeaves.length) TEXT_TO_LEAVES.set(textDOM, textToLeaves)
+  if(leaves.length !== currentLeaves.length || textToLeaves.length !== 0) TEXT_TO_LEAVES.set(textDOM, textToLeaves)
 }

@@ -424,7 +424,6 @@ const getMatches = (e: Editable, path: Path) => {
 const getOperationBeforeNode = (editor: Editor, operation: Operation): NodeEntry | undefined => {
   switch (operation.type) {
     case 'set_node':
-    case 'insert_node':
     case 'insert_text':
     case 'remove_text':
     case 'split_node':
@@ -437,6 +436,7 @@ const getOperationBeforeNode = (editor: Editor, operation: Operation): NodeEntry
       }
       return Editor.node(editor, operation.path)
     case 'remove_node':
+    case 'insert_node':
       return [operation.node, operation.path]
   }
 }
