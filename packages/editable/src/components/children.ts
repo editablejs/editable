@@ -1,6 +1,6 @@
 import { BaseText, Editor, NodeEntry, Element, Operation, Node, Path } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
-import { createNode, insertNode, mergeNode, removeNode, setNode, splitNode } from "./node"
+import { createNode, insertNode, mergeNode, moveNode, removeNode, setNode, splitNode } from "./node"
 import { updateText } from "./text"
 import { PlaceholderRender } from "../plugin/placeholder"
 import { EDITOR_TO_AFTER_OPERATION_NODE, EDITOR_TO_BEFORE_OPERATION_NODE, NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
@@ -39,6 +39,11 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
           mergeNode(editor, beforeNode, afterNode)
           break
         case 'move_node':
+          updateIndexByPath(editor, beforeNode[1])
+          setParentIndex(editor, beforeNode)
+          setNextIndex(editor, beforeNode[1])
+          setNextIndex(editor, afterNode[1])
+          moveNode(editor, beforeNode, afterNode)
           break
         case 'set_node':
           setNode(editor, beforeNode, afterNode)
@@ -56,6 +61,17 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
   }
 }
 
+const updateIndexByPath = (editor: Editable, path: Path) => {
+  const node = Node.get(editor, path)
+  if(Editor.isEditor(node)) return
+  const [parent] = Editor.parent(editor, path)
+  if(!parent) throw new Error(`Can't find parent`)
+  const index = parent.children.indexOf(node)
+  if(index === -1) throw new Error(`Can't find node in parent's children`)
+  NODE_TO_INDEX.set(node, index)
+  NODE_TO_PARENT.set(node, parent)
+}
+
 const setParentIndex = (editor: Editable, entry: NodeEntry) => {
   const [node, path] = entry
   if(Editor.isEditor(node)) return
@@ -67,7 +83,7 @@ const setParentIndex = (editor: Editable, entry: NodeEntry) => {
   while (_parent) {
     NODE_TO_INDEX.set(_node, _parent.children.indexOf(_node))
     NODE_TO_PARENT.set(_node, _parent)
-    if(_path.length === 0) break
+    if(Editor.isEditor(_parent)) break
 
     const p = Editor.parent(editor, _path)
     _node = _parent

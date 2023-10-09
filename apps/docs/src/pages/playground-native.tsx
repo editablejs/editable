@@ -66,6 +66,14 @@ export default function PlaygroundNative() {
             },
           ],
         },
+        {
+          type: 'paragraph',
+          children: [
+            {
+              text: 'A line of text in a paragraph.',
+            },
+          ],
+        },
       ],
     })
     // let i = 0
@@ -107,6 +115,13 @@ export default function PlaygroundNative() {
     })
   }
 
+  const handleMoveNode = () => {
+    Transforms.moveNodes(editor, {
+      at: [0],
+      to: [1]
+    })
+  }
+
   return (
     <>
       <CustomStyles />
@@ -129,12 +144,15 @@ export default function PlaygroundNative() {
         </div>
         <div>
           <p tw="text-gray-20">用户测试逻辑</p>
-          <div>
+          <div tw="flex gap-4">
             <button onClick={handleInsertNode}>
               插入节点
             </button>
             <button onClick={handleDeleteNode}>
               删除节点
+            </button>
+            <button onClick={handleMoveNode}>
+              移动节点
             </button>
           </div>
         </div>

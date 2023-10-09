@@ -180,3 +180,9 @@ export const setNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry
 
   updateNodeAndDOM(editor, node, newElement)
 }
+
+
+export const moveNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
+  removeNode(editor, oldNode)
+  insertNode(editor, newNode)
+}
