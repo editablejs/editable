@@ -139,11 +139,6 @@ export const mergeNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEnt
   }
 }
 
-export interface SplitNodeOptions {
-  position: number;
-  properties: Partial<Node>;
-}
-
 export const splitNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
   const [node, path] = newNode
   if (Text.isText(node)) {
@@ -162,6 +157,26 @@ export const splitNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEnt
 
   const previousElement = Editable.toDOMNode(editor, previous[0])
   previousElement.after(newElement)
+
+  updateNodeAndDOM(editor, node, newElement)
+}
+
+export const setNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
+  const [node, path] = newNode
+  if (Text.isText(node)) {
+    updateText(editor, oldNode, newNode)
+    return
+  }
+
+  const newElement = createElement(editor, {
+    element: node,
+    path: path,
+    selection: editor.selection,
+  })
+
+  const oldElement = Editable.toDOMNode(editor, oldNode[0])
+  oldElement.after(newElement)
+  detach(oldElement)
 
   updateNodeAndDOM(editor, node, newElement)
 }

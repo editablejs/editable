@@ -1,6 +1,6 @@
 import { BaseText, Editor, NodeEntry, Element, Operation, Node, Path } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
-import { createNode, insertNode, mergeNode, removeNode, splitNode } from "./node"
+import { createNode, insertNode, mergeNode, removeNode, setNode, splitNode } from "./node"
 import { updateText } from "./text"
 import { PlaceholderRender } from "../plugin/placeholder"
 import { EDITOR_TO_AFTER_OPERATION_NODE, EDITOR_TO_BEFORE_OPERATION_NODE, NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
@@ -39,7 +39,9 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
           mergeNode(editor, beforeNode, afterNode)
           break
         case 'move_node':
+          break
         case 'set_node':
+          setNode(editor, beforeNode, afterNode)
           break
       }
     }
