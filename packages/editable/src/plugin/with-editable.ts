@@ -455,7 +455,11 @@ const getOperationAfterNode = (editor: Editor, operation: Operation): NodeEntry 
       }
       return split_entry
     case 'remove_node':
-      return [operation.node, operation.path]
+      const parent = Editor.parent(editor, operation.path)
+      if (parent[0].children.length === 0) {
+        return parent
+      }
+      return Editor.node(editor, operation.path)
     case 'merge_node':
       const prevPath = Path.previous(operation.path)
       return Editor.node(editor, prevPath)

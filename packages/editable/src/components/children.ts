@@ -31,8 +31,8 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
           insertNode(editor, afterNode)
           break
         case 'remove_node':
-          setNextIndex(editor, afterNode[1])
-          removeNode(editor, afterNode)
+          if(Path.equals(beforeNode[1], afterNode[1])) setNextIndex(editor, afterNode[1])
+          removeNode(editor, beforeNode)
           break
         case 'merge_node':
           setNextIndex(editor, afterNode[1])
@@ -58,7 +58,8 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
 
 const setParentIndex = (editor: Editable, entry: NodeEntry) => {
   const [node, path] = entry
-  const [parent, parentPath] = path.length === 0 ? [editor, []] : Editor.parent(editor, path)
+  if(Editor.isEditor(node)) return
+  const [parent, parentPath] = Editor.parent(editor, path)
 
   let _parent = parent
   let _path = parentPath

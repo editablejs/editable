@@ -101,6 +101,12 @@ export default function PlaygroundNative() {
     })
   }
 
+  const handleDeleteNode = () => {
+    Transforms.removeNodes(editor, {
+      at: [0]
+    })
+  }
+
   return (
     <>
       <CustomStyles />
@@ -126,6 +132,9 @@ export default function PlaygroundNative() {
           <div>
             <button onClick={handleInsertNode}>
               插入节点
+            </button>
+            <button onClick={handleDeleteNode}>
+              删除节点
             </button>
           </div>
         </div>
