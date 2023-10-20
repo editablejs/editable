@@ -1,4 +1,4 @@
-import { NodeEntry, Editor, Operation, SelectionOperation, Node, Text, Path, Element } from "@editablejs/models"
+import { NodeEntry, Editor, Operation, Node, Text, Path, Element } from "@editablejs/models"
 
 export interface BaseOperationNode {
   node: NodeEntry

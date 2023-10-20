@@ -1,6 +1,6 @@
-import { Text, Editor, NodeEntry, Element, Operation, Node, Path } from "@editablejs/models"
+import { Editor, NodeEntry, Element, Node, Path } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
-import { createNode, insertNode, mergeNode, moveNode, removeNode, setNode, splitNode, updateNode } from "./node"
+import { createNode, insertNode, removeNode, updateNode } from "./node"
 import { PlaceholderRender } from "../plugin/placeholder"
 import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
 import { transformsOperations } from "../utils/operation-node"
