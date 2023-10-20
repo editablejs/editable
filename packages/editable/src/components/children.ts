@@ -1,9 +1,9 @@
-import { BaseText, Editor, NodeEntry, Element, Operation, Node, Path } from "@editablejs/models"
+import { Text, Editor, NodeEntry, Element, Operation, Node, Path } from "@editablejs/models"
 import { Editable } from "../plugin/editable"
-import { createNode, insertNode, mergeNode, moveNode, removeNode, setNode, splitNode } from "./node"
-import { updateText } from "./text"
+import { createNode, insertNode, mergeNode, moveNode, removeNode, setNode, splitNode, updateNode } from "./node"
 import { PlaceholderRender } from "../plugin/placeholder"
-import { EDITOR_TO_AFTER_OPERATION_NODE, EDITOR_TO_BEFORE_OPERATION_NODE, NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
+import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
+import { transformsOperations } from "../utils/operation-node"
 
 export interface CreateChildrenOptions {
   renderPlaceholder?: PlaceholderRender
@@ -12,41 +12,23 @@ export interface CreateChildrenOptions {
 export const createChildren = (editor: Editable, options: CreateChildrenOptions) => {
 
   const handleChange = () => {
-    for (const operation of editor.operations) {
-      if (operation.type === 'set_selection') continue
-      const beforeNode = EDITOR_TO_BEFORE_OPERATION_NODE.get(operation)
-      const afterNode = EDITOR_TO_AFTER_OPERATION_NODE.get(operation)
-      if(!beforeNode || !afterNode) throw new Error(`Can't find after node`)
+    const operations = transformsOperations(editor, editor.operations)
+    for (const operation of operations) {
+      const { type, afterNode, beforeNode } = operation
       setChildIndex(editor, afterNode)
       setParentIndex(editor, afterNode)
-      switch (operation.type) {
-        case 'insert_text':
-        case 'remove_text':
-          updateText(editor, beforeNode, afterNode)
-          break
-        case 'split_node':
-          splitNode(editor, beforeNode, afterNode)
+      switch (type) {
+        case 'update_node':
+          updateNode(editor, beforeNode, afterNode)
           break
         case 'insert_node':
+          setNextIndex(editor, afterNode[1])
           insertNode(editor, afterNode)
           break
         case 'remove_node':
-          if(Path.equals(beforeNode[1], afterNode[1])) setNextIndex(editor, afterNode[1])
+          updateIndexByPath(editor, afterNode[1])
+          setNextIndex(editor, afterNode[1])
           removeNode(editor, beforeNode)
-          break
-        case 'merge_node':
-          setNextIndex(editor, afterNode[1])
-          mergeNode(editor, beforeNode, afterNode)
-          break
-        case 'move_node':
-          updateIndexByPath(editor, beforeNode[1])
-          setParentIndex(editor, beforeNode)
-          setNextIndex(editor, beforeNode[1])
-          setNextIndex(editor, afterNode[1])
-          moveNode(editor, beforeNode, afterNode)
-          break
-        case 'set_node':
-          setNode(editor, beforeNode, afterNode)
           break
       }
     }
@@ -62,12 +44,13 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
 }
 
 const updateIndexByPath = (editor: Editable, path: Path) => {
+  if(!Editor.hasPath(editor, path)) return
   const node = Node.get(editor, path)
   if(Editor.isEditor(node)) return
   const [parent] = Editor.parent(editor, path)
-  if(!parent) throw new Error(`Can't find parent`)
+  if(!parent) return
   const index = parent.children.indexOf(node)
-  if(index === -1) throw new Error(`Can't find node in parent's children`)
+  if(index === -1) return
   NODE_TO_INDEX.set(node, index)
   NODE_TO_PARENT.set(node, parent)
 }
@@ -108,7 +91,10 @@ const setChildIndex = (editor: Editable, entry: NodeEntry) => {
 }
 
 const setNextIndex = (editor: Editable, path: Path) => {
-  const [parent] = path.length === 0 ? [editor, []] : Editor.parent(editor, path)
+  if (path.length === 0) return
+  const [parent] = Editor.parent(editor, path)
+  if (!Editor.hasPath(editor, path)) return
+
   let nextNode: NodeEntry | undefined
   let _path = path
   while (nextNode = Editor.next(editor, { at: _path })) {
@@ -116,6 +102,7 @@ const setNextIndex = (editor: Editable, path: Path) => {
     const index = parent.children.indexOf(node)
     if (index === -1) throw new Error(`Can't find node in parent's children`)
     NODE_TO_INDEX.set(node, index)
+    NODE_TO_PARENT.set(node, parent)
     _path = path
   }
 }

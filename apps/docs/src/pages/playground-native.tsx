@@ -13,8 +13,9 @@ import {
   Editable,
   withEditable,
   parseDataTransfer,
+  RenderLeafProps,
 } from '@editablejs/editable'
-import { Editor, createEditor, Range, Transforms } from '@editablejs/models'
+import { Editor, createEditor, Range, Transforms, Text } from '@editablejs/models'
 
 import { initialValue } from 'configs/initial-value'
 import { useRouter } from 'next/router'
@@ -42,6 +43,23 @@ declare global {
   }
 }
 
+interface BoldText extends Text {
+  bold?: boolean
+}
+
+const withBold = <T extends Editable>(editor: T) => {
+  const { renderLeaf } = editor
+  editor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<BoldText>) => {
+    if (text.bold) {
+      const strongDOM = document.createElement('strong')
+      strongDOM.appendChild(children)
+      return strongDOM
+    }
+    return renderLeaf({ attributes, children, text })
+  }
+  return editor
+}
+
 export default function PlaygroundNative() {
   const router = useRouter()
   const local = router.locale
@@ -49,7 +67,7 @@ export default function PlaygroundNative() {
   const continaerRef = React.useRef<HTMLDivElement>(null)
 
   const editor = React.useMemo(() => {
-    let editor = withEditable(createEditor())
+    let editor = withBold(withEditable(createEditor()))
 
     return editor
   }, [])
@@ -122,6 +140,15 @@ export default function PlaygroundNative() {
     })
   }
 
+  const handleBold = () => {
+    const marks = Editor.marks(editor) as BoldText
+    if (marks['bold']) {
+      Editor.removeMark(editor, 'bold')
+    } else {
+      Editor.addMark(editor, 'bold', true)
+    }
+  }
+
   return (
     <>
       <CustomStyles />
@@ -153,6 +180,9 @@ export default function PlaygroundNative() {
             </button>
             <button onClick={handleMoveNode}>
               移动节点
+            </button>
+            <button onClick={handleBold}>
+              加粗
             </button>
           </div>
         </div>

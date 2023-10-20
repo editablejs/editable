@@ -39,7 +39,3 @@ export const IS_TOUCH_HOLD: WeakMap<Editor, boolean> = new WeakMap()
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
 
 export const IS_PASTE_TEXT: WeakMap<Editor, boolean> = new WeakMap()
-
-export const EDITOR_TO_BEFORE_OPERATION_NODE: WeakMap<Operation, NodeEntry> = new WeakMap()
-
-export const EDITOR_TO_AFTER_OPERATION_NODE: WeakMap<Operation, NodeEntry> = new WeakMap()

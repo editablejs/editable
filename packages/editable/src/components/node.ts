@@ -16,7 +16,7 @@ import { Editable } from '../plugin/editable'
 import { createElement } from './element'
 import { createText, updateText } from './text'
 import { append, detach, fragment } from '../dom'
-import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
+import { NODE_TO_INDEX, NODE_TO_KEY, NODE_TO_PARENT } from '../utils/weak-maps'
 import { dissociateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateChildrenOptions {
@@ -75,6 +75,23 @@ export const createNode = (editor: Editable, options: CreateChildrenOptions): DO
   }
 
   return f
+}
+
+export const updateNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
+  const [node, path] = newNode
+  if (Text.isText(node)) {
+    updateText(editor, oldNode, newNode)
+    return
+  }
+  const oldElement = Editable.toDOMNode(editor, oldNode[0])
+  const newElement = createElement(editor, {
+    element: node,
+    path: path,
+    selection: editor.selection,
+  })
+  oldElement.after(newElement)
+  detach(oldElement)
+  updateNodeAndDOM(editor, node, newElement)
 }
 
 export const insertNode = (editor: Editable, insertNode: NodeEntry) => {
@@ -143,6 +160,27 @@ export const splitNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEnt
   const [node, path] = newNode
   if (Text.isText(node)) {
     updateText(editor, oldNode, newNode)
+    let next = Editor.next(editor, { at: path })
+    const parent = Node.parent(editor, path)
+    const isLeafBlock =
+      Element.isElement(parent) && !editor.isInline(parent) && Editor.hasInlines(editor, parent)
+    let breforeDOM = Editable.toDOMNode(editor, newNode[0])
+    while (next && Text.isText(next[0])) {
+      if (!NODE_TO_KEY.has(next[0])) {
+        const dom = createText(editor, {
+          parent: parent,
+          text: next[0],
+          path: next[1],
+          isLast: isLeafBlock && next[1][next[1].length - 1] === parent.children.length - 1,
+        })
+        breforeDOM.after(dom)
+        breforeDOM = dom
+      } else {
+        const dom = Editable.toDOMNode(editor, next[0])
+        breforeDOM = dom
+      }
+      next = Editor.next(editor, { at: next[1] })
+    }
     return
   }
 

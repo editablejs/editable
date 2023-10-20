@@ -1,7 +1,6 @@
 import {
   Editor,
   Node,
-  Element,
   Path,
   Operation,
   Transforms,
@@ -9,8 +8,6 @@ import {
   Point,
   List,
   Key,
-  NodeEntry,
-  Text
 } from '@editablejs/models'
 import { Editable, RenderElementProps, RenderLeafProps } from './editable'
 import {
@@ -19,8 +16,6 @@ import {
   EDITOR_TO_SHADOW,
   EDITOR_TO_KEY_TO_ELEMENT,
   NODE_TO_KEY,
-  EDITOR_TO_BEFORE_OPERATION_NODE,
-  EDITOR_TO_AFTER_OPERATION_NODE,
 } from '../utils/weak-maps'
 import { findCurrentLineRange } from '../utils/lines'
 import { EventEmitter } from './event'
@@ -33,6 +28,7 @@ import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { Focused } from './focused'
 import { append, element as createDOMElement, set_attributes, set_style } from '../dom'
+import { setOperationAfterNode, setOperationBeforeNode, transformsOperationAfterNode, transformsOperationBeforeNode } from '../utils/operation-node'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -160,21 +156,17 @@ export const withEditable = <T extends Editor>(editor: T) => {
         break
       }
     }
-    const beforeNode = getOperationBeforeNode(editor, op)
-    if (beforeNode) {
-      EDITOR_TO_BEFORE_OPERATION_NODE.set(op, beforeNode)
-    }
+    const beforeNode = transformsOperationBeforeNode(editor, op)
+    if(beforeNode) setOperationBeforeNode(op, beforeNode)
     apply(op)
-    const afterNode = getOperationAfterNode(editor, op)
-    if (afterNode) {
-      EDITOR_TO_AFTER_OPERATION_NODE.set(op, afterNode)
-    }
+    const afterNode = transformsOperationAfterNode(editor, op)
+    if (afterNode) setOperationAfterNode(op, afterNode)
     for (const [path, key] of matches) {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
     }
     if (!Focused.getState(e) && canForceTakeFocus()) {
-      e.focus()
+      // e.focus()
     }
   }
 
@@ -419,51 +411,4 @@ const getMatches = (e: Editable, path: Path) => {
     matches.push([p, key])
   }
   return matches
-}
-
-const getOperationBeforeNode = (editor: Editor, operation: Operation): NodeEntry | undefined => {
-  switch (operation.type) {
-    case 'set_node':
-    case 'insert_text':
-    case 'remove_text':
-    case 'split_node':
-    case 'move_node':
-      return Editor.node(editor, operation.path)
-    case 'merge_node':
-      const entry = Editor.node(editor, operation.path)
-      if (Text.isText(entry[0])) {
-        return Editor.previous(editor, { at: operation.path })
-      }
-      return Editor.node(editor, operation.path)
-    case 'remove_node':
-    case 'insert_node':
-      return [operation.node, operation.path]
-  }
-}
-
-const getOperationAfterNode = (editor: Editor, operation: Operation): NodeEntry | undefined => {
-  switch (operation.type) {
-    case 'set_node':
-    case 'insert_node':
-    case 'insert_text':
-    case 'remove_text':
-      return Editor.node(editor, operation.path)
-    case 'split_node':
-      const split_entry = Editor.node(editor, operation.path)
-      if (Element.isElement(split_entry[0])) {
-        return Editor.next(editor, { at: operation.path })
-      }
-      return split_entry
-    case 'remove_node':
-      const parent = Editor.parent(editor, operation.path)
-      if (parent[0].children.length === 0) {
-        return parent
-      }
-      return Editor.node(editor, operation.path)
-    case 'merge_node':
-      const prevPath = Path.previous(operation.path)
-      return Editor.node(editor, prevPath)
-    case 'move_node':
-      return Editor.node(editor, operation.newPath)
-  }
 }
