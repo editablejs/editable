@@ -1,5 +1,4 @@
 import { HTMLDeserializer } from '@editablejs/deserializer/html'
-import { withMarkHTMLDeserializerTransform } from '@editablejs/plugin-mark/deserializer/html'
 import { withFontSizeHTMLDeserializerTransform } from '@editablejs/plugin-font/size/deserializer/html'
 import { withFontColorHTMLDeserializerTransform } from '@editablejs/plugin-font/color/deserializer/html'
 import { withBackgroundColorHTMLDeserializerTransform } from '@editablejs/plugin-font/background-color/deserializer/html'
@@ -38,7 +37,6 @@ export const withHTMLDeserializerTransform = (editor: Editor) => {
   withEditor(editor, withFontSizeHTMLDeserializerTransform, {})
   withEditor(editor, withFontColorHTMLDeserializerTransform, {})
   withEditor(editor, withBackgroundColorHTMLDeserializerTransform, {})
-  withEditor(editor, withMarkHTMLDeserializerTransform, {})
   withEditor(editor, withIndentHTMLDeserializerTransform, {})
   withEditor(editor, withLinkHTMLDeserializerTransform, {})
   withEditor(editor, withImageHTMLDeserializerTransform, { editor })

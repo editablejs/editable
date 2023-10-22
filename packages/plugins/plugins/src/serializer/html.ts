@@ -1,5 +1,4 @@
 import { HTMLSerializer } from '@editablejs/serializer/html'
-import { withMarkHTMLSerializerTransform } from '@editablejs/plugin-mark/serializer/html'
 import { withFontSizeHTMLSerializerTransform } from '@editablejs/plugin-font/size/serializer/html'
 import { withFontColorHTMLSerializerTransform } from '@editablejs/plugin-font/color/serializer/html'
 import { withBackgroundColorHTMLSerializerTransform } from '@editablejs/plugin-font/background-color/serializer/html'
@@ -38,7 +37,6 @@ export const withHTMLSerializerTransform = (editor: Editor) => {
   withEditor(editor, withFontSizeHTMLSerializerTransform, {})
   withEditor(editor, withFontColorHTMLSerializerTransform, {})
   withEditor(editor, withBackgroundColorHTMLSerializerTransform, {})
-  withEditor(editor, withMarkHTMLSerializerTransform, {})
   withEditor(editor, withIndentHTMLSerializerTransform, {})
   withEditor(editor, withLinkHTMLSerializerTransform, {})
   withEditor(editor, withImageHTMLSerializerTransform, {})

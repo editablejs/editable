@@ -53,7 +53,7 @@ import { getPrimaryEvent, isTouch } from '../utils/event'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Focused } from './focused'
 import { Readonly } from './readonly'
-import { RefObject } from '../ref'
+import { RefObject } from '@editablejs/dom-utils'
 import { CreateContentOptions, createContent } from '../components/content'
 
 export type BaseAttributes = Record<string, any>

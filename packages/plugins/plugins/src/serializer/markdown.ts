@@ -1,9 +1,5 @@
 import { MarkdownSerializer } from '@editablejs/serializer/markdown'
 import { Editor } from '@editablejs/models'
-import {
-  withMarkMarkdownSerializerTransform,
-  withMarkMarkdownSerializerPlugin,
-} from '@editablejs/plugin-mark/serializer/markdown'
 import { withBlockquoteMarkdownSerializerTransform } from '@editablejs/plugin-blockquote/serializer/markdown'
 import { withCodeBlockMarkdownSerializerTransform } from '@editablejs/plugin-codeblock/serializer/markdown'
 import { withHeadingMarkdownSerializerTransform } from '@editablejs/plugin-heading/serializer/markdown'
@@ -40,7 +36,6 @@ export const withMarkdownSerializerTransform = (editor: Editor) => {
   withEditor(editor, withBlockquoteMarkdownSerializerTransform, {})
   withEditor(editor, withImageMarkdownSerializerTransform, {})
   withEditor(editor, withLinkMarkdownSerializerTransform, {})
-  withEditor(editor, withMarkMarkdownSerializerTransform, {})
 }
 
 export const withMarkdownSerializerPlugin = (editor: Editor) => {
@@ -48,5 +43,4 @@ export const withMarkdownSerializerPlugin = (editor: Editor) => {
   withEditorPlugin(editor, withTableMarkdownSerializerPlugin)
   withEditorPlugin(editor, withTaskListMarkdownSerializerPlugin)
   withEditorPlugin(editor, withLinkMarkdownSerializerPlugin)
-  withEditorPlugin(editor, withMarkMarkdownSerializerPlugin)
 }

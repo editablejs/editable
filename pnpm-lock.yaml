@@ -28,7 +28,7 @@ importers:
       prettier: 3.0.3
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
-      turbo: 1.10.14
+      turbo: 1.10.16
 
   apps/docs:
     specifiers:
@@ -52,6 +52,7 @@ importers:
       '@editablejs/models': workspace:*
       '@editablejs/plugin-codeblock': workspace:*
       '@editablejs/plugin-history': workspace:*
+      '@editablejs/plugin-mark': workspace:*
       '@editablejs/plugin-title': workspace:*
       '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/plugin-yjs': workspace:*
@@ -127,6 +128,7 @@ importers:
       '@editablejs/models': link:../../packages/models
       '@editablejs/plugin-codeblock': link:../../packages/plugins/codeblock
       '@editablejs/plugin-history': link:../../packages/plugins/history
+      '@editablejs/plugin-mark': link:../../packages/plugins/mark
       '@editablejs/plugin-title': link:../../packages/plugins/title
       '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/plugin-yjs': link:../../packages/plugins/yjs
@@ -266,7 +268,7 @@ importers:
       eslint: 7.32.0
       eslint-config-next: 12.2.2_jofidmxrjzhj7l6vknpw5ecvfe
       eslint-config-prettier: 8.5.0_eslint@7.32.0
-      eslint-config-turbo: 1.10.14_eslint@7.32.0
+      eslint-config-turbo: 1.10.16_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
 
   packages/config/jest-presets:
@@ -341,10 +343,33 @@ importers:
       tsup-config: link:../config/tsup-config
       typescript: 4.9.5
 
+  packages/dom-utils:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^6.5.0
+      tsup-config: workspace:*
+      typescript: ^4.x
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 6.5.0_typescript@4.9.5
+      tsup-config: link:../config/tsup-config
+      typescript: 4.9.5
+
   packages/editable:
     specifiers:
       '@editablejs/breaker': workspace:*
       '@editablejs/deserializer': workspace:*
+      '@editablejs/dom-utils': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/serializer': workspace:*
       '@types/direction': 2.0.0
@@ -366,6 +391,7 @@ importers:
     dependencies:
       '@editablejs/breaker': link:../breaker
       '@editablejs/deserializer': link:../deserializer
+      '@editablejs/dom-utils': link:../dom-utils
       '@editablejs/serializer': link:../serializer
       direction: 2.0.1
       is-hotkey: 0.1.8
@@ -1088,21 +1114,17 @@ importers:
   packages/plugins/mark:
     specifiers:
       '@editablejs/deserializer': workspace:*
-      '@editablejs/editor': workspace:*
+      '@editablejs/dom-utils': workspace:1.0.0
+      '@editablejs/editable': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/serializer': workspace:*
       '@types/mdast': 3.0.10
-      '@types/react': ^18.x
-      '@types/react-dom': ^18.x
-      '@types/styled-components': 5.1.26
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       mdast-util-gfm-strikethrough: 1.0.3
       micromark-extension-gfm-strikethrough: 1.0.4
       prettier-config: workspace:*
-      react: ^18.x
-      react-dom: ^18.x
       styled-components: 5.3.6
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
@@ -1113,23 +1135,19 @@ importers:
       typescript: ^4.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
+      '@editablejs/dom-utils': link:../../dom-utils
       '@editablejs/serializer': link:../../serializer
       mdast-util-gfm-strikethrough: 1.0.3
       micromark-extension-gfm-strikethrough: 1.0.4
       styled-components: 5.3.6_pumtretovylab5lwhztzjp2kuy
     devDependencies:
-      '@editablejs/editor': link:../../editor
+      '@editablejs/editable': link:../../editable
       '@editablejs/models': link:../../models
       '@types/mdast': 3.0.10
-      '@types/react': 18.0.25
-      '@types/react-dom': 18.0.9
-      '@types/styled-components': 5.1.26
       eslint-config-editable: link:../../config/eslint-config-editable
       jest: 27.5.1
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
@@ -1208,7 +1226,6 @@ importers:
       '@editablejs/plugin-leading': workspace:*
       '@editablejs/plugin-link': workspace:*
       '@editablejs/plugin-list': workspace:*
-      '@editablejs/plugin-mark': workspace:*
       '@editablejs/plugin-mention': workspace:*
       '@editablejs/plugin-table': workspace:*
       '@editablejs/serializer': workspace:*
@@ -1238,7 +1255,6 @@ importers:
       '@editablejs/plugin-leading': link:../leading
       '@editablejs/plugin-link': link:../link
       '@editablejs/plugin-list': link:../list
-      '@editablejs/plugin-mark': link:../mark
       '@editablejs/plugin-mention': link:../mention
       '@editablejs/plugin-table': link:../table
       '@editablejs/serializer': link:../../serializer
@@ -5799,13 +5815,13 @@ packages:
       eslint: 7.32.0
     dev: true
 
-  /eslint-config-turbo/1.10.14_eslint@7.32.0:
-    resolution: {integrity: sha512-ZeB+IcuFXy1OICkLuAplVa0euoYbhK+bMEQd0nH9+Lns18lgZRm33mVz/iSoH9VdUzl/1ZmFmoK+RpZc+8R80A==}
+  /eslint-config-turbo/1.10.16_eslint@7.32.0:
+    resolution: {integrity: sha512-O3NQI72bQHV7FvSC6lWj66EGx8drJJjuT1kuInn6nbMLOHdMBhSUX/8uhTAlHRQdlxZk2j9HtgFCIzSc93w42g==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 1.10.14_eslint@7.32.0
+      eslint-plugin-turbo: 1.10.16_eslint@7.32.0
     dev: true
 
   /eslint-import-resolver-node/0.3.6:
@@ -5944,8 +5960,8 @@ packages:
       string.prototype.matchall: 4.0.7
     dev: true
 
-  /eslint-plugin-turbo/1.10.14_eslint@7.32.0:
-    resolution: {integrity: sha512-sBdBDnYr9AjT1g4lR3PBkZDonTrMnR4TvuGv5W0OiF7z9az1rI68yj2UHJZvjkwwcGu5mazWA1AfB0oaagpmfg==}
+  /eslint-plugin-turbo/1.10.16_eslint@7.32.0:
+    resolution: {integrity: sha512-ZjrR88MTN64PNGufSEcM0tf+V1xFYVbeiMeuIqr0aiABGomxFLo4DBkQ7WI4WzkZtWQSIA2sP+yxqSboEfL9MQ==}
     peerDependencies:
       eslint: '>6.6.0'
     dependencies:
@@ -11042,64 +11058,64 @@ packages:
       yargs: 15.4.1
     dev: true
 
-  /turbo-darwin-64/1.10.14:
-    resolution: {integrity: sha512-I8RtFk1b9UILAExPdG/XRgGQz95nmXPE7OiGb6ytjtNIR5/UZBS/xVX/7HYpCdmfriKdVwBKhalCoV4oDvAGEg==}
+  /turbo-darwin-64/1.10.16:
+    resolution: {integrity: sha512-+Jk91FNcp9e9NCLYlvDDlp2HwEDp14F9N42IoW3dmHI5ZkGSXzalbhVcrx3DOox3QfiNUHxzWg4d7CnVNCuuMg==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64/1.10.14:
-    resolution: {integrity: sha512-KAdUWryJi/XX7OD0alOuOa0aJ5TLyd4DNIYkHPHYcM6/d7YAovYvxRNwmx9iv6Vx6IkzTnLeTiUB8zy69QkG9Q==}
+  /turbo-darwin-arm64/1.10.16:
+    resolution: {integrity: sha512-jqGpFZipIivkRp/i+jnL8npX0VssE6IAVNKtu573LXtssZdV/S+fRGYA16tI46xJGxSAivrZ/IcgZrV6Jk80bw==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64/1.10.14:
-    resolution: {integrity: sha512-BOBzoREC2u4Vgpap/WDxM6wETVqVMRcM8OZw4hWzqCj2bqbQ6L0wxs1LCLWVrghQf93JBQtIGAdFFLyCSBXjWQ==}
+  /turbo-linux-64/1.10.16:
+    resolution: {integrity: sha512-PpqEZHwLoizQ6sTUvmImcRmACyRk9EWLXGlqceogPZsJ1jTRK3sfcF9fC2W56zkSIzuLEP07k5kl+ZxJd8JMcg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64/1.10.14:
-    resolution: {integrity: sha512-D8T6XxoTdN5D4V5qE2VZG+/lbZX/89BkAEHzXcsSUTRjrwfMepT3d2z8aT6hxv4yu8EDdooZq/2Bn/vjMI32xw==}
+  /turbo-linux-arm64/1.10.16:
+    resolution: {integrity: sha512-TMjFYz8to1QE0fKVXCIvG/4giyfnmqcQIwjdNfJvKjBxn22PpbjeuFuQ5kNXshUTRaTJihFbuuCcb5OYFNx4uw==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64/1.10.14:
-    resolution: {integrity: sha512-zKNS3c1w4i6432N0cexZ20r/aIhV62g69opUn82FLVs/zk3Ie0GVkSB6h0rqIvMalCp7enIR87LkPSDGz9K4UA==}
+  /turbo-windows-64/1.10.16:
+    resolution: {integrity: sha512-+jsf68krs0N66FfC4/zZvioUap/Tq3sPFumnMV+EBo8jFdqs4yehd6+MxIwYTjSQLIcpH8KoNMB0gQYhJRLZzw==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64/1.10.14:
-    resolution: {integrity: sha512-rkBwrTPTxNSOUF7of8eVvvM+BkfkhA2OvpHM94if8tVsU+khrjglilp8MTVPHlyS9byfemPAmFN90oRIPB05BA==}
+  /turbo-windows-arm64/1.10.16:
+    resolution: {integrity: sha512-sKm3hcMM1bl0B3PLG4ifidicOGfoJmOEacM5JtgBkYM48ncMHjkHfFY7HrJHZHUnXM4l05RQTpLFoOl/uIo2HQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo/1.10.14:
-    resolution: {integrity: sha512-hr9wDNYcsee+vLkCDIm8qTtwhJ6+UAMJc3nIY6+PNgUTtXcQgHxCq8BGoL7gbABvNWv76CNbK5qL4Lp9G3ZYRA==}
+  /turbo/1.10.16:
+    resolution: {integrity: sha512-2CEaK4FIuSZiP83iFa9GqMTQhroW2QryckVqUydmg4tx78baftTOS0O+oDAhvo9r9Nit4xUEtC1RAHoqs6ZEtg==}
     hasBin: true
     optionalDependencies:
-      turbo-darwin-64: 1.10.14
-      turbo-darwin-arm64: 1.10.14
-      turbo-linux-64: 1.10.14
-      turbo-linux-arm64: 1.10.14
-      turbo-windows-64: 1.10.14
-      turbo-windows-arm64: 1.10.14
+      turbo-darwin-64: 1.10.16
+      turbo-darwin-arm64: 1.10.16
+      turbo-linux-64: 1.10.16
+      turbo-linux-arm64: 1.10.16
+      turbo-windows-64: 1.10.16
+      turbo-windows-arm64: 1.10.16
     dev: true
 
   /twin.macro/3.1.0_tailwindcss@3.2.4:

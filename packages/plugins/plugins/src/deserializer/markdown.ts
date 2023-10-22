@@ -1,9 +1,5 @@
 import { MarkdownDeserializer } from '@editablejs/deserializer/markdown'
 import {
-  withMarkMarkdownDeserializerTransform,
-  withMarkMarkdownDeserializerPlugin,
-} from '@editablejs/plugin-mark/deserializer/markdown'
-import {
   withBlockquoteMarkdownDeserializerTransform,
   withBlockquoteMarkdownDeserializerPlugin,
 } from '@editablejs/plugin-blockquote/deserializer/markdown'
@@ -56,7 +52,6 @@ export const withMarkdownDeserializerPlugin = (editor: Editor) => {
   withEditorPlugin(editor, withBlockquoteMarkdownDeserializerPlugin)
   withEditorPlugin(editor, withImageMarkdownDeserializerPlugin)
   withEditorPlugin(editor, withLinkMarkdownDeserializerPlugin)
-  withEditorPlugin(editor, withMarkMarkdownDeserializerPlugin)
 }
 
 export const withMarkdownDeserializerTransform = (editor: Editor) => {
@@ -73,5 +68,4 @@ export const withMarkdownDeserializerTransform = (editor: Editor) => {
   withEditor(editor, withBlockquoteMarkdownDeserializerTransform, {})
   withEditor(editor, withImageMarkdownDeserializerTransform, {})
   withEditor(editor, withLinkMarkdownDeserializerTransform, {})
-  withEditor(editor, withMarkMarkdownDeserializerTransform, {})
 }

@@ -1,4 +1,4 @@
-import { attr, element } from "../dom";
+import { attr, element } from "@editablejs/dom-utils";
 
 export const createShadow = () => {
   const container = element('div')

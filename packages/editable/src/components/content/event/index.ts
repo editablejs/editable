@@ -1,4 +1,4 @@
-import { listen } from "../../../dom";
+import { listen } from "@editablejs/dom-utils";
 import { Editable } from "../../../plugin/editable";
 import { isTouchDevice } from "../../../utils/environment";
 import { EDITOR_TO_ELEMENT } from "../../../utils/weak-maps";

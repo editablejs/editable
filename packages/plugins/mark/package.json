@@ -79,18 +79,13 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@editablejs/editor": "workspace:*",
+    "@editablejs/editable": "workspace:*",
     "@editablejs/models": "workspace:*",
     "@types/mdast": "3.0.10",
-    "@types/react": "^18.x",
-    "@types/react-dom": "^18.x",
-    "@types/styled-components": "5.1.26",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^18.x",
-    "react-dom": "^18.x",
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
@@ -100,11 +95,12 @@
     "typescript": "^4.x"
   },
   "peerDependencies": {
-    "@editablejs/editor": "workspace:*",
+    "@editablejs/editable": "workspace:*",
     "@editablejs/models": "workspace:*"
   },
   "dependencies": {
     "@editablejs/deserializer": "workspace:*",
+    "@editablejs/dom-utils": "workspace:1.0.0",
     "@editablejs/serializer": "workspace:*",
     "mdast-util-gfm-strikethrough": "1.0.3",
     "micromark-extension-gfm-strikethrough": "1.0.4",

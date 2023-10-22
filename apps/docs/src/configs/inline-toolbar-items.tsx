@@ -6,8 +6,6 @@ import {
   HeadingEditor,
   OrderedListEditor,
   UnorderedListEditor,
-  MarkFormat,
-  MarkEditor,
   TaskListEditor,
   TableEditor,
   ImageEditor,
@@ -17,6 +15,7 @@ import {
   AlignKeys,
   LinkEditor,
 } from '@editablejs/plugins'
+import { MarkEditor, MarkFormat } from '@editablejs/plugin-mark'
 import { Icon } from '@editablejs/ui'
 import { Translation } from 'react-i18next'
 import { defaultFontColor, defaultBackgroundColor, AlignDropdown } from './toolbar-items'

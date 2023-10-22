@@ -4,7 +4,7 @@ import { SelectionDrawing, SelectionDrawingStore } from "../plugin/selection-dra
 import { createShadowBlock } from "./shadow";
 import { isTouchDevice } from "../utils/environment";
 import { Focused, FocusedStore } from "../plugin/focused";
-import { append, detach } from "../dom";
+import { append, detach } from "@editablejs/dom-utils";
 
 export interface CreateSelectionDrawingOptions {
   container: HTMLElement| ShadowRoot

@@ -1,5 +1,4 @@
 import { Editable } from '@editablejs/editor'
-import { MarkEditor, MarkOptions, withMark } from '@editablejs/plugin-mark'
 import { FontSizeEditor, FontSizeOptions, withFontSize } from '@editablejs/plugin-font/size'
 import { FontColorEditor, FontColorOptions, withFontColor } from '@editablejs/plugin-font/color'
 import {
@@ -37,7 +36,6 @@ import {
 
 export interface PluginOptions {
   contextMenu?: ContextMenuOptions
-  mark?: MarkOptions
   fontSize?: FontSizeOptions
   fontColor?: FontColorOptions
   backgroundColor?: BackgroundColorOptions
@@ -60,7 +58,6 @@ export interface PluginOptions {
 export const withPlugins = <T extends Editable>(editor: T, options: PluginOptions = {}) => {
   let newEditor = withContextMenu(editor)
   newEditor = withIndent(newEditor, options.indent)
-  newEditor = withMark(newEditor, options.mark)
   newEditor = withFontSize(newEditor, options.fontSize)
   newEditor = withFontColor(newEditor, options.fontColor)
   newEditor = withBackgroundColor(newEditor, options.backgroundColor)
@@ -79,7 +76,6 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
   newEditor = withCodeBlock(newEditor, options.codeBlock)
   return newEditor as T &
     ContextMenuEditor &
-    MarkEditor &
     HeadingEditor &
     FontSizeEditor &
     BlockquoteEditor &
@@ -99,7 +95,6 @@ export const withPlugins = <T extends Editable>(editor: T, options: PluginOption
     CodeBlockEditor
 }
 
-export * from '@editablejs/plugin-mark'
 export * from '@editablejs/plugin-font/size'
 export * from '@editablejs/plugin-font/color'
 export * from '@editablejs/plugin-font/background-color'

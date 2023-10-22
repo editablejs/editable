@@ -111,7 +111,6 @@
     "@editablejs/plugin-leading": "workspace:*",
     "@editablejs/plugin-link": "workspace:*",
     "@editablejs/plugin-list": "workspace:*",
-    "@editablejs/plugin-mark": "workspace:*",
     "@editablejs/plugin-mention": "workspace:*",
     "@editablejs/plugin-table": "workspace:*"
   },

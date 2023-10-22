@@ -3,10 +3,9 @@ import { direction } from 'direction'
 import { Editor, Node, Path, Range, Element as SlateElement } from '@editablejs/models'
 import { Placeholder, PlaceholderRender } from "../plugin/placeholder";
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "../utils/constants";
-import { append, attr, element as createDOMElement } from '../dom'
+import { append, attr, element as createDOMElement, createRef } from '@editablejs/dom-utils'
 import { createText } from "./text";
 import { Decorate } from "../plugin/decorate";
-import { createRef } from "../ref";
 import { createNode } from "./node";
 import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps";
 import { associateNodeAndDOM } from "../utils/associate";

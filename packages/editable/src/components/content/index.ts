@@ -1,5 +1,5 @@
 import { Descendant, getDefaultView } from "@editablejs/models";
-import { append, attr, detach, element } from "../../dom";
+import { append, attr, detach, element } from "@editablejs/dom-utils";
 import { Editable } from "../../plugin/editable";
 import { EDITOR_TO_WINDOW, EDITOR_TO_ELEMENT, EDITOR_TO_SHADOW, NODE_TO_ELEMENT, ELEMENT_TO_NODE } from "../../utils/weak-maps";
 import { createContainerEvent, createGlobalEvent, detachEventListeners } from "./event";

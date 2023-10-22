@@ -4,7 +4,7 @@ import { Focused } from "../plugin/focused";
 import { Readonly } from "../plugin/readonly";
 import { SelectionDrawing } from "../plugin/selection-drawing";
 import { createShadowBlock } from "./shadow";
-import { append, detach, element, listen, set_attributes } from "../dom";
+import { append, detach, element, listen, setAttributes } from "@editablejs/dom-utils";
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT, IS_TOUCHING } from "../utils/weak-maps";
 import { composeEventHandlers } from "../utils/event";
 
@@ -176,7 +176,7 @@ const createInputComponent = (editor: Editable, options: CreateInputOptions) => 
     style: `opacity:0;outline:none;caret-color:transparent;overflow:hidden;`
   })
   const textarea = element('textarea')
-  set_attributes(textarea, {
+  setAttributes(textarea, {
     rows: 1,
     style: 'font-size:inherit;line-height:1px;padding:0;white-space:nowrap;width:1em;overflow:auto;resize:vertical;',
   })

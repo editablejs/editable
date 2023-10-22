@@ -1,6 +1,6 @@
-import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editor'
+import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editable'
 import { Editor } from '@editablejs/models'
-import tw, { styled, css } from 'twin.macro'
+import { append, attr, element } from '@editablejs/dom-utils'
 import { MarkFormat, Mark } from '../interfaces/mark'
 import { MarkHotkey, MarkOptions, setOptions } from '../options'
 import { MarkEditor } from './mark-editor'
@@ -25,26 +25,26 @@ const defaultShortcuts: Record<string, MarkFormat> = {
   '~': 'sub',
 }
 
-const SubBaseStyles = styled.span(() => [
-  tw`relative align-baseline`,
-  css`
-    font-size: 75%;
-  `,
-])
+// const SubBaseStyles = styled.span(() => [
+//   tw`relative align-baseline`,
+//   css`
+//     font-size: 75%;
+//   `,
+// ])
 
-const SubStyles = tw(SubBaseStyles)`-bottom-1`
+// const SubStyles = tw(SubBaseStyles)`-bottom-1`
 
-const SupStyles = tw(SubBaseStyles)`-top-2`
+// const SupStyles = tw(SubBaseStyles)`-top-2`
 
-const CodeStyles = styled.code(() => [
-  tw`bg-black bg-opacity-8 break-words indent-0 rounded`,
-  css`
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
-    font-size: inherit;
-    padding: 0 2px;
-    line-height: inherit;
-  `,
-])
+// const CodeStyles = styled.code(() => [
+//   tw`bg-black bg-opacity-8 break-words indent-0 rounded`,
+//   css`
+//     font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
+//     font-size: inherit;
+//     padding: 0 2px;
+//     line-height: inherit;
+//   `,
+// ])
 
 export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
   const newEditor = editor as T & MarkEditor
@@ -74,19 +74,19 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
   }
 
   newEditor.renderLeaf = ({ attributes, children, text }: RenderLeafProps<Mark>) => {
-    const style: React.CSSProperties = attributes.style ?? {}
+    const style = attributes.style ?? {}
     if (text.bold && MarkEditor.isEnabled(editor, 'bold')) {
-      style.fontWeight = typeof text.bold === 'string' ? text.bold : 'bold'
+      style['font-weight'] = typeof text.bold === 'string' ? text.bold : 'bold'
     } else {
-      style.fontWeight = undefined
+      style['font-weight'] = undefined
     }
 
     if (text.italic && MarkEditor.isEnabled(editor, 'italic')) {
-      style.fontStyle = 'italic'
+      style['font-style'] = 'italic'
     }
 
     if (text.underline && MarkEditor.isEnabled(editor, 'underline')) {
-      style.textDecoration = 'underline'
+      style['text-decoration'] = 'underline'
     }
 
     if (text.strikethrough && MarkEditor.isEnabled(editor, 'strikethrough')) {
@@ -94,20 +94,25 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
         ? style.textDecoration + ' line-through'
         : 'line-through'
     }
-
+    let baseElement = null
     const enabledSub = text.sub && MarkEditor.isEnabled(editor, 'sub')
-    if (enabledSub) {
-      children = <SubStyles>{children}</SubStyles>
-    }
     const enabledSup = text.sup && MarkEditor.isEnabled(editor, 'sup')
+    if (enabledSub) {
+      baseElement = element('sub')
+      append(baseElement, children)
+      children = baseElement
+    }
     if (enabledSup) {
-      children = <SupStyles>{children}</SupStyles>
+      baseElement = element('sup')
+      append(baseElement, children)
+      children = baseElement
     }
-
     if (text.code && MarkEditor.isEnabled(editor, 'code')) {
-      children = <CodeStyles>{children}</CodeStyles>
+      baseElement = element('code')
+      append(baseElement, children)
+      children = baseElement
     }
-
+    if (children instanceof HTMLElement) attr(children, 'style', style)
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 

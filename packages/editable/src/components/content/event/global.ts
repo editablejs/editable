@@ -1,5 +1,5 @@
 import { getDefaultView } from "@editablejs/models";
-import { listen } from "../../../dom";
+import { listen } from "@editablejs/dom-utils";
 import { Editable } from "../../../plugin/editable";
 import { EDITOR_TO_ELEMENT, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "../../../utils/weak-maps";
 import { attachEventListeners } from "./utils";

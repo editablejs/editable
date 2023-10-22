@@ -3,7 +3,7 @@ import { Drag, DragStore } from "../plugin/drag"
 import { Editable } from "../plugin/editable"
 import { SelectionDrawing, SelectionDrawingStore } from "../plugin/selection-drawing"
 import { createShadowBlock } from "./shadow"
-import { append, detach } from "../dom"
+import { append, detach } from "@editablejs/dom-utils"
 import { shallow } from "../store"
 
 export interface CreateDragCaretOptions {

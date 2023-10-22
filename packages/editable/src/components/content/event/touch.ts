@@ -5,7 +5,7 @@ import { EDITOR_TO_ELEMENT, IS_MOUSEDOWN, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_
 import { clearTouchHoldTimer, startTouchHoldTimer } from "./touch-hold";
 import { Focused } from "../../../plugin/focused";
 import { attachEventListeners } from "./utils";
-import { listen } from "../../../dom";
+import { listen } from "@editablejs/dom-utils";
 import { handleSelectionEnd, handleSelectionStart } from "./selection";
 
 

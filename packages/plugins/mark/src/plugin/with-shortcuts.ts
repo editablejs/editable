@@ -1,4 +1,4 @@
-import { Editable, Hotkey } from '@editablejs/editor'
+import { Editable, Hotkey } from '@editablejs/editable'
 import { Editor, Element, Text, Range, Path, Point, Transforms } from '@editablejs/models'
 import { MarkFormat } from '../interfaces/mark'
 

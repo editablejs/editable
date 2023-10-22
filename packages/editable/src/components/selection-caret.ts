@@ -1,5 +1,5 @@
 import { Range } from "@editablejs/models";
-import { append, detach } from "../dom";
+import { append, detach } from "@editablejs/dom-utils";
 import { Editable } from "../plugin/editable";
 import { Focused, FocusedStore } from "../plugin/focused";
 import { SelectionDrawing, SelectionDrawingStore } from "../plugin/selection-drawing";

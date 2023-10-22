@@ -1,5 +1,5 @@
 import { Text, Element, Path, Node, CompositionText, Editor } from "@editablejs/models"
-import { append, element, fragment, set_attributes, text } from "../dom"
+import { append, element, fragment, setAttributes, text } from "@editablejs/dom-utils"
 import { Editable } from "../plugin/editable"
 import { DATA_EDITABLE_COMPOSITION, DATA_EDITABLE_LENGTH, DATA_EDITABLE_STRING, DATA_EDITABLE_ZERO_WIDTH } from "../utils/constants"
 
@@ -10,7 +10,7 @@ export interface CreateZeroWidthStringOptions {
 export const createZeroWidthString = (options: CreateZeroWidthStringOptions) => {
   const { length = 0, isLineBreak = false } = options
   const span = element('span')
-  set_attributes(span, {
+  setAttributes(span, {
     [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z',
     [DATA_EDITABLE_LENGTH]: length
   })
@@ -21,7 +21,7 @@ export const createZeroWidthString = (options: CreateZeroWidthStringOptions) => 
 
 export const createCompositionString = (value: string) => {
   const u = element('u')
-  set_attributes(u, {
+  setAttributes(u, {
    [DATA_EDITABLE_COMPOSITION]: true
   })
   append(u, text(value))
@@ -36,7 +36,7 @@ export interface CreateTextStringOptions {
 export const createTextString = (options: CreateTextStringOptions) => {
   const { text: _value = '', isTrailing = false } = options
   const span = element('span')
-  set_attributes(span, {
+  setAttributes(span, {
     [DATA_EDITABLE_STRING]: true,
   })
   append(span, text(`${_value}${isTrailing ? '\n' : ''}`))

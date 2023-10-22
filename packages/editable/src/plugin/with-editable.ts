@@ -27,7 +27,7 @@ import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { Focused } from './focused'
-import { append, element as createDOMElement, set_attributes, set_style } from '../dom'
+import { append, element as createDOMElement, setAttributes, setStyle } from '@editablejs/dom-utils'
 import { setOperationAfterNode, setOperationBeforeNode, transformsOperationAfterNode, transformsOperationBeforeNode } from '../utils/operation-node'
 
 /**
@@ -354,7 +354,7 @@ export const withEditable = <T extends Editor>(editor: T) => {
     if (ref) {
       ref.current = node
     }
-    set_attributes(node, attr)
+    setAttributes(node, attr)
     append(node, children)
     return node
   }
@@ -362,17 +362,17 @@ export const withEditable = <T extends Editor>(editor: T) => {
   e.renderLeaf = (props: RenderLeafProps) => {
     const { attributes, children } = props
     const node = createDOMElement('span')
-    set_attributes(node, attributes)
+    setAttributes(node, attributes)
     append(node, children)
     return node
   }
 
   e.renderPlaceholder = ({ attributes, children }) => {
     const span = createDOMElement('span')
-    set_style(span, 'pointer-events: none; user-select: none; width: 100%;')
+    setStyle(span, 'pointer-events: none; user-select: none; width: 100%;')
     const placeholder = createDOMElement('span')
-    set_style(placeholder, 'position: absolute; opacity: 0.333; width: fit-content; white-space: nowrap; text-indent: initial; text-overflow: ellipsis; max-width: 100%; overflow: hidden;')
-    set_attributes(placeholder, attributes)
+    setStyle(placeholder, 'position: absolute; opacity: 0.333; width: fit-content; white-space: nowrap; text-indent: initial; text-overflow: ellipsis; max-width: 100%; overflow: hidden;')
+    setAttributes(placeholder, attributes)
     append(placeholder, children)
     append(span, placeholder)
     return span

@@ -11,11 +11,11 @@ import {
   Text,
   Path
 } from '@editablejs/models'
+import { append, detach, fragment } from '@editablejs/dom-utils'
 import { PlaceholderRender } from '../plugin/placeholder'
 import { Editable } from '../plugin/editable'
 import { createElement } from './element'
 import { createText, updateText } from './text'
-import { append, detach, fragment } from '../dom'
 import { NODE_TO_INDEX, NODE_TO_KEY, NODE_TO_PARENT } from '../utils/weak-maps'
 import { dissociateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 

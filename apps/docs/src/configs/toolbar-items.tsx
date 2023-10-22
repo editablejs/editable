@@ -10,8 +10,6 @@ import {
   OrderedListEditor,
   UnorderedListEditor,
   HeadingType,
-  MarkFormat,
-  MarkEditor,
   TaskListEditor,
   TableEditor,
   LinkEditor,
@@ -23,6 +21,7 @@ import {
   CodeBlockEditor,
 } from '@editablejs/plugins'
 import { HistoryEditor } from '@editablejs/plugin-history'
+import { MarkEditor, MarkFormat } from '@editablejs/plugin-mark'
 import { ToolbarItem } from '@editablejs/plugin-toolbar'
 import { Icon, IconMap } from '@editablejs/ui'
 import { Translation } from 'react-i18next'

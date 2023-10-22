@@ -1,5 +1,5 @@
 {
-  "name": "@editablejs/editable",
+  "name": "@editablejs/dom-utils",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "exports": {
@@ -28,21 +28,9 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@editablejs/breaker": "workspace:*",
-    "@editablejs/dom-utils": "workspace:*",
-    "@editablejs/deserializer": "workspace:*",
-    "@editablejs/serializer": "workspace:*",
-    "direction": "^2.0.0",
-    "is-hotkey": "^0.1.6",
-    "lodash.merge": "^4.6.2",
-    "scroll-into-view-if-needed": "2.2.29"
   },
   "devDependencies": {
-    "@editablejs/models": "workspace:*",
-    "@types/direction": "2.0.0",
-    "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "@types/lodash.merge": "^4.6.7",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
@@ -51,9 +39,6 @@
     "tsup": "^6.5.0",
     "tsup-config": "workspace:*",
     "typescript": "^4.x"
-  },
-  "peerDependencies": {
-    "@editablejs/models": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

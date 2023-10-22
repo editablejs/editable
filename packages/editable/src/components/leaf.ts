@@ -3,7 +3,7 @@ import { PlaceholderRender } from "../plugin/placeholder";
 import { createString } from "./string";
 import { Editable, TextAttributes } from "../plugin/editable";
 import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from "../utils/constants";
-import { append, fragment } from "../dom";
+import { append, fragment } from "@editablejs/dom-utils";
 
 export interface CreateLeafOptions {
   isLast: boolean

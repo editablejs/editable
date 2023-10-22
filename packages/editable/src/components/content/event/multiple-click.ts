@@ -1,5 +1,5 @@
 import { isDOMNode, Range } from "@editablejs/models";
-import { listen } from "../../../dom";
+import { listen } from "@editablejs/dom-utils";
 import { Editable } from "../../../plugin/editable";
 import { createMultipleClickHandler } from "../../../utils/multiple-click";
 import { attachEventListeners } from "./utils";
