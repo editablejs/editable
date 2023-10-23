@@ -225,9 +225,11 @@ export const transformsOperations = (editor: Editor, operations: Operation[]) =>
   }
 
   const addRemoveOperation = (before: NodeEntry, after: NodeEntry) => {
-    const insertIndex = findOpNodeIndex(before[0], 'insert_node')
+    let insertIndex = findOpNodeIndex(before[0], 'insert_node'), updateIndex = -1
     if (~insertIndex) {
       domOperations.splice(insertIndex, 1)
+    } else if (updateIndex = findOpNodeIndex(before[0], 'update_node')) {
+      domOperations.splice(updateIndex, 1)
     } else if (!~findOpNodeIndex(before[0], 'remove_node') && !~containsOpBeforePathIndex(before[1], 'remove_node')) {
       const opIndex = containsOpAfterPathIndex(before[1], 'update_node', 'insert_node')
       if (~opIndex) {
