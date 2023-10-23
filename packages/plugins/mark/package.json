@@ -105,7 +105,7 @@
   },
   "dependencies": {
     "@editablejs/deserializer": "workspace:*",
-    "@editablejs/dom-utils": "workspace:1.0.0",
+    "@editablejs/dom-utils": "workspace:*",
     "@editablejs/serializer": "workspace:*",
     "@emotion/css": "11.11.2",
     "mdast-util-gfm-strikethrough": "1.0.3",
