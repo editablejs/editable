@@ -1,6 +1,8 @@
 import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editable'
 import { Editor } from '@editablejs/models'
 import { append, attr, element } from '@editablejs/dom-utils'
+import tw, { css } from 'twin.macro'
+import { cx } from '@emotion/css'
 import { MarkFormat, Mark } from '../interfaces/mark'
 import { MarkHotkey, MarkOptions, setOptions } from '../options'
 import { MarkEditor } from './mark-editor'
@@ -25,26 +27,18 @@ const defaultShortcuts: Record<string, MarkFormat> = {
   '~': 'sub',
 }
 
-// const SubBaseStyles = styled.span(() => [
-//   tw`relative align-baseline`,
-//   css`
-//     font-size: 75%;
-//   `,
-// ])
+const subClass = css`
+${tw`relative align-baseline`}
+font-size: 75%;`
 
-// const SubStyles = tw(SubBaseStyles)`-bottom-1`
+const supClass = cx(subClass, css`${tw`-top-2`}`)
 
-// const SupStyles = tw(SubBaseStyles)`-top-2`
-
-// const CodeStyles = styled.code(() => [
-//   tw`bg-black bg-opacity-8 break-words indent-0 rounded`,
-//   css`
-//     font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
-//     font-size: inherit;
-//     padding: 0 2px;
-//     line-height: inherit;
-//   `,
-// ])
+const codeClass = css`${tw`bg-black bg-opacity-8 break-words indent-0 rounded`}
+font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
+    font-size: inherit;
+    padding: 0 2px;
+    line-height: inherit;
+`
 
 export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
   const newEditor = editor as T & MarkEditor
@@ -100,19 +94,22 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     if (enabledSub) {
       baseElement = element('sub')
       append(baseElement, children)
+      attr(baseElement, 'class', subClass)
       children = baseElement
     }
     if (enabledSup) {
       baseElement = element('sup')
       append(baseElement, children)
+
+      attr(baseElement, 'class', supClass)
       children = baseElement
     }
     if (text.code && MarkEditor.isEnabled(editor, 'code')) {
       baseElement = element('code')
       append(baseElement, children)
+      attr(baseElement, 'class', codeClass)
       children = baseElement
     }
-    if (children instanceof HTMLElement) attr(children, 'style', style)
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })
   }
 

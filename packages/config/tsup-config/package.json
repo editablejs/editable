@@ -4,6 +4,7 @@
   "private": true,
   "main": "tsup.config.js",
   "devDependencies": {
-    "esbuild-plugin-styled-components": "workspace:*"
+    "esbuild-plugin-styled-components": "workspace:*",
+    "esbuild-plugin-emotion": "workspace:*"
   }
 }
