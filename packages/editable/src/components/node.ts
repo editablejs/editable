@@ -8,15 +8,14 @@ import {
   DOMNode,
   Node,
   NodeEntry,
-  Text,
-  Path
+  Text
 } from '@editablejs/models'
 import { append, detach, fragment } from '@editablejs/dom-utils'
 import { PlaceholderRender } from '../plugin/placeholder'
 import { Editable } from '../plugin/editable'
 import { createElement } from './element'
 import { createText, updateText } from './text'
-import { NODE_TO_INDEX, NODE_TO_KEY, NODE_TO_PARENT } from '../utils/weak-maps'
+import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
 import { dissociateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateChildrenOptions {
@@ -77,6 +76,10 @@ export const createNode = (editor: Editable, options: CreateChildrenOptions): DO
   return f
 }
 
+const hasDOMNode = (editor: Editable, node: Node) => {
+  return !!Editable.findDOMNode(editor, node)
+}
+
 export const updateNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEntry) => {
   const [node, path] = newNode
   if (Text.isText(node)) {
@@ -89,61 +92,73 @@ export const updateNode = (editor: Editable, oldNode: NodeEntry, newNode: NodeEn
     path: path,
     selection: editor.selection,
   })
-  oldElement.after(newElement)
-  detach(oldElement)
+  if (Editor.isEditor(oldNode[0])) {
+    append(oldElement, newElement)
+  } else {
+    oldElement.after(newElement)
+    detach(oldElement)
+  }
   updateNodeAndDOM(editor, node, newElement)
 }
 
-export const insertNode = (editor: Editable, insertNode: NodeEntry) => {
+export const insertNode = (editor: Editable, beforeParent: NodeEntry, insertNode: NodeEntry) => {
   const [node, path] = insertNode
-  const [parent, parentPath] = Editor.parent(editor, path)
-  // 如果父节点只有一个子节点，那么重新渲染父节点，因为不能通过 append 的方式插入，可能父节点内有其它ui组件
-  if (parent.children.length === 1) {
-    const parentDOM = Editable.toDOMNode(editor, parent)
-    const dom = createElement(editor, {
-      element: parent,
-      path: parentPath,
+  if (hasDOMNode(editor, node)) return
+
+  const parentEntry = Editor.parent(editor, path)
+  const index = path[path.length - 1]
+  let nextDom: HTMLElement | undefined = undefined
+  let prevDom: HTMLElement | undefined = undefined
+  if (index === 0) {
+    let nextNode = Editor.next(editor, { at: path })
+    while (nextNode) {
+      nextDom = Editable.findDOMNode(editor, nextNode[0])
+      if (nextDom) break
+      nextNode = Editor.next(editor, { at: nextNode[1] })
+    }
+  } else {
+    let prevNode = Editor.previous(editor, { at: path })
+    while (prevNode) {
+      prevDom = Editable.findDOMNode(editor, prevNode[0])
+      if (prevDom) break
+      prevNode = Editor.previous(editor, { at: prevNode[1] })
+    }
+  }
+  if (!nextDom && !prevDom) {
+    updateNode(editor, beforeParent, parentEntry)
+    return
+  }
+
+  let dom: HTMLElement | undefined = undefined
+  if (Text.isText(node)) {
+    const [parent] = parentEntry
+    const isLeafBlock =
+      Element.isElement(parent) && !editor.isInline(parent) && Editor.hasInlines(editor, parent)
+    dom = createText(editor, {
+      isLast: isLeafBlock && index === parent.children.length - 1,
+      parent: parent,
+      text: node,
+      path: path,
+    })
+  } else {
+    dom = createElement(editor, {
+      element: node,
+      path: path,
       selection: editor.selection,
     })
-    parentDOM.after(dom)
-    detach(parentDOM)
-    updateNodeAndDOM(editor, parent, dom)
-  } else {
-    let dom: HTMLElement | undefined = undefined
-    const index = path[path.length - 1]
-    if (Text.isText(node)) {
-      const isLeafBlock =
-        Element.isElement(parent) && !editor.isInline(parent) && Editor.hasInlines(editor, parent)
-      dom = createText(editor, {
-        isLast: isLeafBlock && index === parent.children.length - 1,
-        parent: parent,
-        text: node,
-        path: path,
-      })
-    } else {
-      dom = createElement(editor, {
-        element: node,
-        path: path,
-        selection: editor.selection,
-      })
-    }
-    if (index === 0) {
-      const nextNode = Editor.next(editor, { at: path })
-      const nextDom = nextNode && Editable.toDOMNode(editor, nextNode[0])
-      nextDom?.before(dom)
-    } else {
-      const prevNode = Editor.previous(editor, { at: path })
-      const prevDom = prevNode && Editable.toDOMNode(editor, prevNode[0])
-      prevDom?.after(dom)
-    }
-    updateNodeAndDOM(editor, node, dom)
   }
+
+  if (nextDom) {
+    nextDom.before(dom)
+  } else if (prevDom) {
+    prevDom.after(dom)
+  }
+  updateNodeAndDOM(editor, node, dom)
 }
 
 export const removeNode = (editor: Editable, removeNode: NodeEntry) => {
   const [node] = removeNode
   const dom = Editable.toDOMNode(editor, node)
-  if (!dom) throw new Error(`Can't find dom of node: ${node}`)
   dissociateNodeAndDOM(editor, node)
   detach(dom)
 }

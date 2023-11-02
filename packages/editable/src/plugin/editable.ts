@@ -398,16 +398,19 @@ export const Editable = {
     return targetEl.closest(`[${DATA_EDITABLE_NODE}="editor"]`) === editorEl
   },
 
+  findDOMNode(editor: Editor, node: Node): HTMLElement | undefined {
+    const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
+    return Editor.isEditor(node)
+      ? EDITOR_TO_ELEMENT.get(editor)
+      : KEY_TO_ELEMENT?.get(Editable.findKey(editor, node))
+  },
+
   /**
    * Find the native DOM element from a Editor node.
    */
 
   toDOMNode(editor: Editor, node: Node): HTMLElement {
-    const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
-    const offsetNode = Editor.isEditor(node)
-      ? EDITOR_TO_ELEMENT.get(editor)
-      : KEY_TO_ELEMENT?.get(Editable.findKey(editor, node))
-
+    const offsetNode = Editable.findDOMNode(editor, node)
     if (!offsetNode) {
       throw new Error(`Cannot resolve a DOM node from Editor node: ${Scrubber.stringify(node)}`)
     }

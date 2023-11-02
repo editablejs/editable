@@ -3,7 +3,7 @@ import { Editable } from "../plugin/editable"
 import { createNode, insertNode, removeNode, updateNode } from "./node"
 import { PlaceholderRender } from "../plugin/placeholder"
 import { NODE_TO_INDEX, NODE_TO_PARENT } from "../utils/weak-maps"
-import { transformsOperations } from "../utils/operation-node"
+import { transformsDOMOperations } from "../utils/transforms"
 
 export interface CreateChildrenOptions {
   renderPlaceholder?: PlaceholderRender
@@ -12,24 +12,35 @@ export interface CreateChildrenOptions {
 export const createChildren = (editor: Editable, options: CreateChildrenOptions) => {
 
   const handleChange = () => {
-    const operations = transformsOperations(editor, editor.operations)
-    for (const operation of operations) {
-      const { type, afterNode, beforeNode } = operation
-      setChildIndex(editor, afterNode)
-      setParentIndex(editor, afterNode)
+    const domOperations = transformsDOMOperations(editor)
+    console.log(domOperations)
+    for (const operation of domOperations) {
+      const { type, node  } = operation
       switch (type) {
-        case 'update_node':
-          updateNode(editor, beforeNode, afterNode)
+        case 'update_node':{
+          const { before } = operation
+          setChildIndex(editor, node)
+          setParentIndex(editor, node)
+          updateNode(editor, before, node)
           break
-        case 'insert_node':
-          setNextIndex(editor, afterNode[1])
-          insertNode(editor, afterNode)
+        }
+        case 'insert_node':{
+          setChildIndex(editor, node)
+          setParentIndex(editor, node)
+          setNextIndex(editor, node[1])
+          insertNode(editor, operation.beforeParent, node)
           break
-        case 'remove_node':
-          updateIndexByPath(editor, afterNode[1])
-          setNextIndex(editor, afterNode[1])
-          removeNode(editor, beforeNode)
+        }
+        case 'remove_node': {
+          const parentPath = Path.parent(node[1])
+          if (parentPath.length > 0) {
+            setParentIndex(editor, Editor.node(editor, parentPath))
+          }
+          updateIndexByPath(editor, node[1])
+          setNextIndex(editor, node[1])
+          removeNode(editor, node)
           break
+        }
       }
     }
     editor.emit('rendercomplete')

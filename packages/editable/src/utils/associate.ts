@@ -38,6 +38,7 @@ const updateParentNodeAndDOM = (editor: Editable, dom: HTMLElement) => {
  */
 export const updateNodeAndDOM = (editor: Editable, node: Node, dom: HTMLElement) => {
   associateNodeAndDOM(editor, node, dom)
+  if(Editor.isEditor(node)) return
   updateParentNodeAndDOM(editor, dom)
 }
 

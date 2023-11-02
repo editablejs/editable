@@ -28,7 +28,7 @@ import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { Focused } from './focused'
 import { append, element as createDOMElement, setAttributes, setStyle } from '@editablejs/dom-utils'
-import { setOperationAfterNode, setOperationBeforeNode, transformsOperationAfterNode, transformsOperationBeforeNode } from '../utils/operation-node'
+import { cacheBeforeOperationNodes } from '../utils/transforms'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -156,11 +156,9 @@ export const withEditable = <T extends Editor>(editor: T) => {
         break
       }
     }
-    const beforeNode = transformsOperationBeforeNode(editor, op)
-    if(beforeNode) setOperationBeforeNode(op, beforeNode)
+    cacheBeforeOperationNodes(editor, op)
     apply(op)
-    const afterNode = transformsOperationAfterNode(editor, op)
-    if (afterNode) setOperationAfterNode(op, afterNode)
+    // transformsOperationAfterNode(editor, op)
     for (const [path, key] of matches) {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
