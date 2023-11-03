@@ -13,7 +13,6 @@ export const createChildren = (editor: Editable, options: CreateChildrenOptions)
 
   const handleChange = () => {
     const domOperations = transformsDOMOperations(editor)
-    console.log(domOperations)
     for (const operation of domOperations) {
       const { type, node  } = operation
       switch (type) {

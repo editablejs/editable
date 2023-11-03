@@ -158,14 +158,13 @@ export const withEditable = <T extends Editor>(editor: T) => {
     }
     cacheBeforeOperationNodes(editor, op)
     apply(op)
-    // transformsOperationAfterNode(editor, op)
     for (const [path, key] of matches) {
       const [node] = Editor.node(e, path)
       NODE_TO_KEY.set(node, key)
     }
-    if (!Focused.getState(e) && canForceTakeFocus()) {
-      // e.focus()
-    }
+    // if (!Focused.getState(e) && canForceTakeFocus()) {
+    //   e.focus()
+    // }
   }
 
   e.on = (type, handler, prepend) => {

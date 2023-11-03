@@ -62,10 +62,13 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
   root.style.position = 'relative'
   EDITOR_TO_SHADOW.set(editor, shadowRoot)
   append(root, shadowContainer)
-  const unsubscribeSelectionDrawing = createSelectionDrawing(editor, { container: shadowRoot })
-  const unsubscribeSelectionCaret = createSelectionCaret(editor, { container: shadowRoot })
-  const unsubscribeInput = createInput(editor, { container: shadowRoot })
-  const unsubscribeDragCaret = createDragCaret(editor, { container: shadowRoot })
+  const shadowSelectionRoot = element('div')
+  attr(shadowSelectionRoot, 'style', 'pointer-events:none;')
+  append(shadowRoot, shadowSelectionRoot)
+  const unsubscribeSelectionDrawing = createSelectionDrawing(editor, { container: shadowSelectionRoot })
+  const unsubscribeSelectionCaret = createSelectionCaret(editor, { container: shadowSelectionRoot })
+  const unsubscribeInput = createInput(editor, { container: shadowSelectionRoot })
+  const unsubscribeDragCaret = createDragCaret(editor, { container: shadowSelectionRoot })
   return () => {
     editor.off('rendercomplete', handleRenderComplete)
     const container = EDITOR_TO_ELEMENT.get(editor)
