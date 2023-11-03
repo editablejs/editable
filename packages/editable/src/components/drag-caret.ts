@@ -47,7 +47,7 @@ type UpdateDragCaretState = DragStore & SelectionDrawingStore
 const getDragCaretRects = (editor: Editable, state: UpdateDragCaretState) => {
   const { activeDrag } = state
   if (!activeDrag || !activeDrag.to) return null
-  if (activeDrag.type === 'text') {
+  if (activeDrag.type !== 'block') {
     return SelectionDrawing.toRects(editor, Editor.range(editor, activeDrag.to))
   }
   const entry = Editor.above(editor, {
@@ -105,15 +105,15 @@ const updateDragCaretState = (editor: Editable, state: UpdateDragCaretState, opt
   }
   const block = EDITOR_TO_DRAG_BLOCK_WEAK_MAP.get(editor)
   if (!block) return
-
   const rect = rects[0]
   block.style.top = `${rect.top}px`
   block.style.left = `${rect.left}px`
   block.style.height = `${rect.height}px`
-  block.style.width = `${rect.width}px`
-  block.style.color = style.dragColor || 'transparent'
-  if (activeDrag.type === "text") {
+  block.style.backgroundColor = style.dragColor || 'transparent'
+  if (activeDrag.type !== "block") {
     block.style.width = `${style.caretWidth ?? 0}px`
+  } else {
+    block.style.width = `${rect.width}px`
   }
 }
 
