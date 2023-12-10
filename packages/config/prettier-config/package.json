@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo && rm -rf node_modules"
+    "clean": "rimraf .turbo && rimraf node_modules"
   },
   "devDependencies": {
     "prettier": "2.8.8",

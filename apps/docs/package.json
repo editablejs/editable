@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -rf .next"
+    "clean": "rimraf .turbo && rimraf dist && rimraf node_modules  && rimraf .next"
   },
   "babelMacros": {
     "twin": {
@@ -39,6 +39,8 @@
     "@editablejs/serializer": "workspace:*",
     "@editablejs/ui": "workspace:*",
     "@editablejs/yjs-websocket": "workspace:*",
+    "@editablejs/theme": "workspace:*",
+    "rezon": "workspace:*",
     "@faker-js/faker": "7.5.0",
     "@headlessui/react": "1.7.4",
     "@mdx-js/react": "2.1.5",
@@ -92,7 +94,7 @@
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
     "twin.macro": "3.1.0",
-    "typescript": "^4.x",
+    "typescript": "^5.x",
     "unist-util-visit": "^2.0.3"
   },
   "lint-staged": {

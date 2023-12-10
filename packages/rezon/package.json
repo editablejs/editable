@@ -1,0 +1,277 @@
+{
+  "name": "rezon",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "directives/*": [
+        "./dist/directives/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist/**"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./directives/async-append": {
+      "import": {
+        "types": "./dist/directives/async-append.d.mts",
+        "default": "./dist/directives/async-append.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/async-append.d.ts",
+        "default": "./dist/directives/async-append.js"
+      }
+    },
+    "./directives/async-replace": {
+      "import": {
+        "types": "./dist/directives/async-replace.d.mts",
+        "default": "./dist/directives/async-replace.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/async-replace.d.ts",
+        "default": "./dist/directives/async-replace.js"
+      }
+    },
+    "./directives/cache": {
+      "import": {
+        "types": "./dist/directives/cache.d.mts",
+        "default": "./dist/directives/cache.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/cache.d.ts",
+        "default": "./dist/directives/cache.js"
+      }
+    },
+    "./directives/choose": {
+      "import": {
+        "types": "./dist/directives/choose.d.mts",
+        "default": "./dist/directives/choose.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/class-map.d.ts",
+        "default": "./dist/directives/class-map.js"
+      }
+    },
+    "./directives/class-map": {
+      "import": {
+        "types": "./dist/directives/class-map.d.mts",
+        "default": "./dist/directives/class-map.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/class-map.d.ts",
+        "default": "./dist/directives/class-map.js"
+      }
+    },
+    "./directives/guard": {
+      "import": {
+        "types": "./dist/directives/guard.d.mts",
+        "default": "./dist/directives/guard.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/guard.d.ts",
+        "default": "./dist/directives/guard.js"
+      }
+    },
+    "./directives/if-defined": {
+      "import": {
+        "types": "./dist/directives/if-defined.d.mts",
+        "default": "./dist/directives/if-defined.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/if-defined.d.ts",
+        "default": "./dist/directives/if-defined.js"
+      }
+    },
+    "./directives/join": {
+      "import": {
+        "types": "./dist/directives/join.d.mts",
+        "default": "./dist/directives/join.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/join.d.ts",
+        "default": "./dist/directivesjoin.js"
+      }
+    },
+    "./directives/keyed": {
+      "import": {
+        "types": "./dist/directives/keyed.d.mts",
+        "default": "./dist/directives/keyed.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/keyed.d.ts",
+        "default": "./dist/directives/keyed.js"
+      }
+    },
+    "./directives/live": {
+      "import": {
+        "types": "./dist/directives/live.d.mts",
+        "default": "./dist/directives/live.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/live.d.ts",
+        "default": "./dist/directives/live.js"
+      }
+    },
+    "./directives/map": {
+      "import": {
+        "types": "./dist/directives/map.d.mts",
+        "default": "./dist/directives/map.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/map.d.ts",
+        "default": "./dist/directives/map.js"
+      }
+    },
+    "./directives/range": {
+      "import": {
+        "types": "./dist/directives/range.d.mts",
+        "default": "./dist/directives/range.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/range.d.ts",
+        "default": "./dist/directives/range.js"
+      }
+    },
+    "./directives/ref": {
+      "import": {
+        "types": "./dist/directives/ref.d.mts",
+        "default": "./dist/directives/ref.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/ref.d.ts",
+        "default": "./dist/directives/ref.js"
+      }
+    },
+    "./directives/repeat": {
+      "import": {
+        "types": "./dist/directives/repeat.d.mts",
+        "default": "./dist/directives/repeat.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/repeat.d.ts",
+        "default": "./dist/directives/repeat.js"
+      }
+    },
+    "./directives/spread": {
+      "import": {
+        "types": "./dist/directives/spread.d.mts",
+        "default": "./dist/directives/spread.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/spread.d.ts",
+        "default": "./dist/directives/spread.js"
+      }
+    },
+    "./directives/style-map": {
+      "import": {
+        "types": "./dist/directives/style-map.d.mts",
+        "default": "./dist/directives/style-map.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/style-map.d.ts",
+        "default": "./dist/directives/style-map.js"
+      }
+    },
+    "./directives/template-content": {
+      "import": {
+        "types": "./dist/directives/template-content.d.mts",
+        "default": "./dist/directives/template-content.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/template-content.d.ts",
+        "default": "./dist/directives/template-content.js"
+      }
+    },
+    "./directives/unsafe-html": {
+      "import": {
+        "types": "./dist/directives/unsafe-html.d.mts",
+        "default": "./dist/directives/unsafe-html.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/unsafe-html.d.ts",
+        "default": "./dist/directives/unsafe-html.js"
+      }
+    },
+    "./directives/unsafe-svg": {
+      "import": {
+        "types": "./dist/directives/unsafe-svg.d.mts",
+        "default": "./dist/directives/unsafe-svg.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/unsafe-svg.d.ts",
+        "default": "./dist/directives/unsafe-svg.js"
+      }
+    },
+    "./directives/until": {
+      "import": {
+        "types": "./dist/directives/until.d.mts",
+        "default": "./dist/directives/until.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/until.d.ts",
+        "default": "./dist/directives/until.js"
+      }
+    },
+    "./directives/when": {
+      "import": {
+        "types": "./dist/directives/when.d.mts",
+        "default": "./dist/directives/when.mjs"
+      },
+      "require": {
+        "types": "./dist/directives/when.d.ts",
+        "default": "./dist/directives/when.js"
+      }
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rimraf .turbo && rimraf dist && rimraf node_modules "
+  },
+  "engines": {
+    "node": ">=16.20.1"
+  },
+  "dependencies": {
+    "@lit/reactive-element": "^2.0.2",
+    "lit-html": "^3.1.0",
+    "@editablejs/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^7.x",
+    "tsup-config": "workspace:*",
+    "typescript": "^5.x"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

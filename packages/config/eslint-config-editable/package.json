@@ -5,14 +5,16 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo && rm -rf node_modules"
+    "clean": "rimraf .turbo && rimraf node_modules"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-next": "^12.0.8",
-    "eslint-config-prettier": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "eslint-config-prettier": "latest",
     "eslint-config-turbo": "latest",
-    "eslint-plugin-react": "7.31.0"
+    "eslint-plugin-react": "latest"
   },
   "publishConfig": {
     "access": "public"

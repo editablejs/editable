@@ -9,7 +9,7 @@
     "eslint-preset.js"
   ],
   "scripts": {
-    "clean": "rm -rf .turbo && rm -rf node_modules"
+    "clean": "rimraf .turbo && rimraf node_modules"
   },
   "dependencies": {
     "jest": "^27.5.1",

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "extends": "tsconfig/vanilla.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules", "tsup.config.ts"]
+}

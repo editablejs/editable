@@ -1,0 +1,166 @@
+{
+  "name": "@editablejs/theme",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "icon": [
+        "./dist/icon.d.ts"
+      ],
+      "button": [
+        "./dist/button.d.ts"
+      ],
+      "dropdown": [
+        "./dist/dropdown.d.ts"
+      ],
+      "toolbar": [
+        "./dist/toolbar.d.ts"
+      ],
+      "context-menu": [
+        "./dist/context-menu.d.ts"
+      ],
+      "tooltip": [
+        "./dist/tooltip.d.ts"
+      ],
+      "popover": [
+        "./dist/popover.d.ts"
+      ],
+      "portal": [
+        "./dist/portal.d.ts"
+      ],
+      "menu": [
+        "./dist/menu.d.ts"
+      ],
+      "slot": [
+        "./dist/slot.d.ts"
+      ],
+      "direction": [
+        "./dist/direction.d.ts"
+      ],
+      "switch": [
+        "./dist/switch.d.ts"
+      ],
+      "color-picker": [
+        "./dist/color-picker.d.ts"
+      ],
+      "resizer": [
+        "./dist/resizer.d.ts"
+      ],
+      "scroll-area": [
+        "./dist/scroll-area.d.ts"
+      ],
+      "avatar": [
+        "./dist/avatar.d.ts"
+      ],
+      "select": [
+        "./dist/select.d.ts"
+      ],
+      "use-callback-ref": [
+        "./dist/use-callback-ref.d.ts"
+      ],
+      "use-escape-keydown": [
+        "./dist/use-escape-keydown.d.ts"
+      ],
+      "use-id": [
+        "./dist/use-id.d.ts"
+      ],
+      "use-rect": [
+        "./dist/use-rect.d.ts"
+      ],
+      "use-size": [
+        "./dist/use-size.d.ts"
+      ],
+      "use-controllable-state": [
+        "./dist/use-controllable-state.d.ts"
+      ],
+      "use-previous": [
+        "./dist/use-previous.d.ts"
+      ],
+      "use-file-picker": [
+        "./dist/use-file-picker.d.ts"
+      ],
+      "use-isomorphic-layout-effect": [
+        "./dist/use-isomorphic-layout-effect.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.mts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "babelMacros": {
+    "twin": {
+      "css": "@emotion/css",
+      "styled": "@emotion/css",
+      "global": {
+        "import": "injectGlobal",
+        "from": "@emotion/css"
+      }
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rimraf .turbo && rimraf dist && rimraf node_modules "
+  },
+  "dependencies": {
+    "@emotion/css": "11.11.2",
+    "@floating-ui/dom": "1.5.3",
+    "@editablejs/utils": "workspace:*",
+    "colord": "2.9.0"
+  },
+  "peerDependencies": {
+    "rezon": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^7.x",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.1.0",
+    "typescript": "^5.x",
+    "rezon": "workspace:*"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}
