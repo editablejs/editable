@@ -1,16 +1,16 @@
-import * as React from 'react'
 import { Path, Grid, GridSelection } from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
 import { useGrid } from './use-grid'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 import { useNodeFocused } from './use-node-focused'
+import { useState } from 'rezon'
 
 const useGridSelection = () => {
   const editor = useEditableStatic()
   const grid = useGrid()
   // selection
-  const [selection, setSelection] = React.useState<GridSelection | null>(null)
+  const [selection, setSelection] = useState<GridSelection | null>(null)
   const nodeFocused = useNodeFocused()
 
   useIsomorphicLayoutEffect(() => {
@@ -47,7 +47,6 @@ const useGridSelection = () => {
       }
     }
     setSelection(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, editor.selection, nodeFocused])
 
   return selection

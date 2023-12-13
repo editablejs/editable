@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Range } from '@editablejs/models'
 import { useEditableStatic } from '../hooks/use-editable'
 import { useFocused } from '../hooks/use-focused'
@@ -13,19 +12,20 @@ import {
 import { isTouchDevice } from '../utils/environment'
 import { useReadOnly } from '../hooks/use-read-only'
 import { ShadowBlock } from './shadow'
+import { useCallback, useMemo, useRef, virtual } from 'rezon'
 
 interface CaretProps {
   timeout?: number | false
 }
 
-const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
+const CaretComponent = virtual<CaretProps>(({ timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()
 
-  const timer = React.useRef<number>()
+  const timer = useRef<number>()
 
-  const ref = React.useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
 
   const [readOnly] = useReadOnly()
 
@@ -37,12 +37,12 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
   const caretWidth = isTouchDevice ? style.touchWidth : style.caretWidth
   const caretColor = isTouchDevice ? style.touchColor : style.caretColor
 
-  const rect = React.useMemo(() => {
+  const rect = useMemo(() => {
     if (!selection || rects.length === 0 || !focused || !Range.isCollapsed(selection)) return null
     return rects[0].toJSON()
   }, [focused, rects, selection])
 
-  const clearActive = React.useCallback(() => {
+  const clearActive = useCallback(() => {
     clearTimeout(timer.current)
   }, [])
 
@@ -54,7 +54,7 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
     }
   }
 
-  const active = React.useCallback(
+  const active = useCallback(
     (opacity?: number) => {
       clearActive()
       if (!rect || timeout === false) return
@@ -79,17 +79,12 @@ const CaretComponent: React.FC<CaretProps> = React.memo(({ timeout = 530 }) => {
 
   if (!enabled || readOnly) return null
 
-  return (
-    <ShadowBlock
-      rect={
-        rect
-          ? Object.assign({}, rect, { width: caretWidth, color: caretColor })
-          : { width: 0, height: 0, top: 0, left: 0 }
-      }
-      ref={ref}
-      style={{ willChange: 'opacity, transform', opacity: rect ? 1 : 0 }}
-    />
-  )
-})
-CaretComponent.displayName = 'CaretComponent'
+  return ShadowBlock({
+    rect: rect
+      ? Object.assign({}, rect, { width: caretWidth, color: caretColor })
+      : { width: 0, height: 0, top: 0, left: 0 },
+    ref,
+    style: { willChange: 'opacity, transform', opacity: rect ? 1 : 0 },
+  })
+}, true)
 export { CaretComponent }

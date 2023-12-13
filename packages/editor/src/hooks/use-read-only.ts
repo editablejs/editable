@@ -1,5 +1,5 @@
 import { Editor } from '@editablejs/models'
-import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
+import { create, StoreApi, UseBoundStore, useStore } from 'rezon-store'
 import { useEditableStatic } from './use-editable'
 
 interface ReadOnlyStore {

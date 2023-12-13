@@ -1,9 +1,9 @@
-import * as React from 'react'
 import { GridSelected, Grid } from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
 import { useGrid } from './use-grid'
 import { useGridSelection } from './use-grid-selection'
+import { useMemo } from 'rezon'
 
 const defaultSelected = {
   rows: [],
@@ -22,7 +22,7 @@ const useGridSelected = () => {
 
   const selection = useGridSelection()
 
-  const selected: GridSelected = React.useMemo(() => {
+  const selected: GridSelected = useMemo(() => {
     if (!grid) return defaultSelected
     const sel = Grid.getSelected(editor, Editable.findPath(editor, grid), selection ?? undefined)
     return sel ?? defaultSelected

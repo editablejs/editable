@@ -1,13 +1,13 @@
-import * as React from 'react'
-import { StoreApi, UseBoundStore, useStore } from 'zustand'
+import { StoreApi, UseBoundStore, useStore } from 'rezon-store'
 import { Editable } from '../plugin/editable'
+import { useContext, createContext } from 'rezon'
 
 export interface EditableStore {
   editor: [Editable]
 }
 
 export const useEditableStore = () => {
-  const contenxt = React.useContext(EditableStoreContext)
+  const contenxt = useContext(EditableStoreContext)
   if (!contenxt) {
     throw new Error(
       `The \`useEditableStore\` hook must be used inside the <EditableProvider> component's context.`,
@@ -22,14 +22,14 @@ export interface EditableStoreContext {
   editor: Editable
 }
 
-export const EditableStoreContext = React.createContext<EditableStoreContext | null>(null)
+export const EditableStoreContext = createContext<EditableStoreContext | null>(null)
 
 /**
  * 静态的编辑器对象
  * @returns
  */
 export const useEditableStatic = (): Editable => {
-  const contenxt = React.useContext(EditableStoreContext)
+  const contenxt = useContext(EditableStoreContext)
 
   if (!contenxt) {
     throw new Error(

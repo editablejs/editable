@@ -1,8 +1,6 @@
-
 import { useSyncExternalStoreWithSelector } from './use-sync-external-store-with-selector'
 import { createStore } from './vanilla.js'
 import type { Mutate, StateCreator, StoreApi, StoreMutatorIdentifier } from './vanilla.js'
-
 
 type ExtractState<S> = S extends { getState: () => infer T } ? T : never
 
@@ -21,11 +19,7 @@ export function useStore<TState, StateSlice>(
   api: WithRezon<StoreApi<TState>>,
   selector: (state: TState) => StateSlice = api.getState as any,
 ) {
-  const slice = useSyncExternalStoreWithSelector(
-    api.subscribe,
-    api.getState,
-    selector,
-  )
+  const slice = useSyncExternalStoreWithSelector(api.subscribe, api.getState, selector)
   return slice
 }
 
@@ -56,3 +50,4 @@ const createImpl = <T>(createState: StateCreator<T, [], []>) => {
 export const create = (<T>(createState: StateCreator<T, [], []> | undefined) =>
   createState ? createImpl(createState) : createImpl) as Create
 
+export { StoreApi }

@@ -1,4 +1,4 @@
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Selection, Range, Editor } from '@editablejs/models'
 import { getLineRectsByRange } from '../utils/selection'
 import { Editable } from './editable'

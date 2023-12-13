@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom'
 import {
   Editor,
   Node,
@@ -29,6 +28,9 @@ import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { ReadOnly } from '../hooks/use-read-only'
+import { html } from 'rezon'
+import { spread } from 'rezon/directives/spread'
+import { styleMap } from 'rezon/directives/style-map'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -341,41 +343,24 @@ export const withEditable = <T extends Editor>(editor: T) => {
 
   e.renderElement = (props: RenderElementProps) => {
     const { attributes, children, element } = props
-    const Tag = e.isInline(element) ? 'span' : 'div'
-    return <Tag {...attributes}>{children}</Tag>
+    return e.isInline(element)
+      ? html`<span ${spread(attributes)}>${children}</span>`
+      : html`<div ${spread(attributes)}>${children}</div>`
   }
 
   e.renderLeaf = (props: RenderLeafProps) => {
     const { attributes, children } = props
-    return <span {...attributes}>{children}</span>
+    return html`<span ${spread(attributes)}>${children}</span>`
   }
 
   e.renderPlaceholder = ({ attributes, children }) => {
-    return (
+    return html`<span style="pointer-events:none;user-select:none;width:100%;">
       <span
-        style={{
-          pointerEvents: 'none',
-          userSelect: 'none',
-          width: '100%',
-        }}
+        style="position:absolute;opacity:0.333;width:fit-content;white-space:nowrap;text-indent:initial;text-overflow:ellipsis;max-width:100%;overflow:hidden;"
+        ${spread(attributes)}
+        >${children}</span
       >
-        <span
-          style={{
-            position: 'absolute',
-            opacity: '0.333',
-            width: 'fit-content',
-            whiteSpace: 'nowrap',
-            textIndent: 'initial',
-            textOverflow: 'ellipsis',
-            maxWidth: '100%',
-            overflow: 'hidden',
-          }}
-          {...attributes}
-        >
-          {children}
-        </span>
-      </span>
-    )
+    </span>`
   }
 
   const { insertBreak } = e

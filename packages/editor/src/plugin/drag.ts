@@ -1,4 +1,4 @@
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editor, Range, Element, Path, Selection } from '@editablejs/models'
 import { Editable } from './editable'
 
@@ -37,6 +37,9 @@ const getDragStore = (editor: Editor) => {
   return store
 }
 
+export type SetDragOptions =
+  | (Partial<Omit<NonNullable<DragStore['drag']>, 'data'>> & { data?: DataTransfer | null })
+  | null
 /**
  * 拖拽相关状态操作
  */
@@ -49,11 +52,11 @@ export const Drag = {
     return drag
   },
 
-  setDrag: (editor: Editor, drag: Partial<DragStore['drag']>) => {
+  setDrag: (editor: Editor, drag: SetDragOptions) => {
     const store = getDragStore(editor)
     store.setState(state => {
       return {
-        drag: drag === null ? null : Object.assign({}, state.drag, drag),
+        drag: drag == null ? null : Object.assign({}, state.drag, drag),
       }
     })
   },

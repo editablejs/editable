@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useRef } from 'rezon'
 
 export interface CellablePromise<T> {
   promise: Promise<T>
@@ -26,7 +26,7 @@ const noop = () => {}
 const delay = (n: number) => new Promise(resolve => setTimeout(resolve, n))
 
 const useCancellablePromises = <T>() => {
-  const pendingPromises = React.useRef<CellablePromise<T>[]>([])
+  const pendingPromises = useRef<CellablePromise<T>[]>([])
 
   const appendPendingPromise = (promise: CellablePromise<T>) =>
     (pendingPromises.current = [...pendingPromises.current, promise])

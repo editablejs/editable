@@ -54,15 +54,16 @@ import {
 import { getNativeEvent, isTouch } from '../utils/event'
 import { ReadOnly } from '../hooks/use-read-only'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import { HTMLAttributes, MutableRefObject } from 'rezon'
 
-export type BaseAttributes = Omit<React.HTMLAttributes<HTMLElement>, 'children'>
+export type BaseAttributes = Omit<HTMLAttributes<HTMLElement>, 'children'>
 
-export interface ElementAttributes<T extends any = any> extends BaseAttributes {
+export interface ElementAttributes<T extends any = any> extends Omit<BaseAttributes, 'ref'> {
   [DATA_EDITABLE_NODE]: 'element'
   [DATA_EDITABLE_INLINE]?: true
   [DATA_EDITABLE_VOID]?: true
   dir?: 'rtl'
-  ref: React.MutableRefObject<T>
+  ref: MutableRefObject<T>
 }
 
 export interface TextAttributes extends BaseAttributes {
@@ -165,9 +166,9 @@ export interface Editable extends Editor {
   onDestory: () => void
   renderElementAttributes: (props: RenderElementAttributes) => ElementAttributes
   renderLeafAttributes: (props: RenderLeafAttributes) => TextAttributes
-  renderElement: (props: RenderElementProps) => JSX.Element
-  renderLeaf: (props: RenderLeafProps) => JSX.Element
-  renderPlaceholder: (props: RenderPlaceholderProps) => JSX.Element | void | null
+  renderElement: (props: RenderElementProps) => unknown
+  renderLeaf: (props: RenderLeafProps) => unknown
+  renderPlaceholder: (props: RenderPlaceholderProps) => unknown
   toDataTransfer: (range?: Range) => DataTransfer | null
 }
 

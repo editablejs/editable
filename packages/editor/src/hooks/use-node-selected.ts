@@ -1,10 +1,10 @@
-import * as React from 'react'
+import { createContext, useContext } from 'rezon'
 
-export const NodeSelectedContext = React.createContext<boolean>(false)
+export const NodeSelectedContext = createContext<boolean>(false)
 
 /**
  * Get the current `selected` state of an element.
  */
 export const useNodeSelected = (): boolean => {
-  return React.useContext(NodeSelectedContext)
+  return useContext(NodeSelectedContext)
 }

@@ -1,7 +1,3 @@
-import * as React from 'react'
-
-export const IS_REACT_VERSION_17_OR_ABOVE = parseInt(React.version.split('.')[0], 10) >= 17
-
 export const IS_IOS =
   typeof navigator !== 'undefined' &&
   typeof window !== 'undefined' &&
@@ -23,8 +19,6 @@ export const IS_EDGE_LEGACY =
 
 export const IS_CHROME = typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent)
 
-// Native `beforeInput` events don't work well with react on Chrome 75
-// and older, Chrome 76+ can use `beforeInput` though.
 export const IS_CHROME_LEGACY =
   typeof navigator !== 'undefined' &&
   /Chrome?\/(?:[0-7][0-5]|[0-6][0-9])(?:\.)/i.test(navigator.userAgent)
@@ -47,7 +41,6 @@ export const IS_WECHATBROWSER =
   typeof navigator !== 'undefined' && /.*Wechat/.test(navigator.userAgent)
 
 // Check if DOM is available as React does internally.
-// https://github.com/facebook/react/blob/master/packages/shared/ExecutionEnvironment.js
 export const CAN_USE_DOM = !!(
   typeof window !== 'undefined' &&
   typeof window.document !== 'undefined' &&

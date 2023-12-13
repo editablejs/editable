@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Editor, Element, Path, GridCell } from '@editablejs/models'
 import { useDragPosition, useDragTo, useDragType } from '../hooks/use-drag'
 import { useEditableStatic } from '../hooks/use-editable'
@@ -6,13 +5,14 @@ import { useSelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { Editable } from '../plugin/editable'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { ShadowBlock } from './shadow'
+import { useMemo, virtual } from 'rezon'
 
-export const DragCaretComponent = React.memo(() => {
+export const DragCaretComponent = virtual(() => {
   const editor = useEditableStatic()
   const dragTo = useDragTo()
   const dragType = useDragType()
   const dragPosition = useDragPosition()
-  const rects = React.useMemo(() => {
+  const rects = useMemo(() => {
     if (!dragTo || !dragPosition) return null
     if (dragType === 'block') {
       const entry = Editor.above(editor, {
@@ -64,22 +64,16 @@ export const DragCaretComponent = React.memo(() => {
   const { dragColor, caretWidth } = useSelectionDrawingStyle()
   if (!rects || rects.length === 0) return null
   if (dragType === 'block') {
-    return (
-      <ShadowBlock
-        rect={Object.assign({}, rects[0].toJSON(), {
-          color: dragColor,
-        })}
-      />
-    )
-  }
-  return (
-    <ShadowBlock
-      rect={Object.assign({}, rects[0].toJSON(), {
-        width: caretWidth,
+    return ShadowBlock({
+      rect: Object.assign({}, rects[0].toJSON(), {
         color: dragColor,
-      })}
-    />
-  )
-})
-
-DragCaretComponent.displayName = 'DragCaretComponent'
+      }),
+    })
+  }
+  return ShadowBlock({
+    rect: Object.assign({}, rects[0].toJSON(), {
+      width: caretWidth,
+      color: dragColor,
+    }),
+  })
+}, true)

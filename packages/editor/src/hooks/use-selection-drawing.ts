@@ -1,13 +1,13 @@
-import * as React from 'react'
-import { useStore } from 'zustand'
+import { useStore } from 'rezon-store'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { EDITOR_TO_SELECTION_RECTS } from '../utils/weak-maps'
 import { useEditableStatic } from './use-editable'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
+import { useMemo, useState } from 'rezon'
 
 export const useSelectionDrawingStore = () => {
   const editor = useEditableStatic()
-  return React.useMemo(() => {
+  return useMemo(() => {
     return SelectionDrawing.getStore(editor)
   }, [editor])
 }
@@ -25,7 +25,7 @@ export const useSelectionDrawingSelection = () => {
 export const useSelectionDrawingRects = () => {
   const editor = useEditableStatic()
   const selection = useSelectionDrawingSelection()
-  const [rects, setRects] = React.useState<DOMRect[]>([])
+  const [rects, setRects] = useState<DOMRect[]>([])
   useIsomorphicLayoutEffect(() => {
     const rects = selection ? SelectionDrawing.toRects(editor, selection) : []
     EDITOR_TO_SELECTION_RECTS.set(editor, rects)

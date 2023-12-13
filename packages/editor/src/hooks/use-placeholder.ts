@@ -1,14 +1,14 @@
-import * as React from 'react'
 import { Editor, Node } from '@editablejs/models'
-import { useStore } from 'zustand'
+import { useStore } from 'rezon-store'
 import { Placeholder } from '../plugin/placeholder'
 import { useEditableStatic } from './use-editable'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
 import { Editable } from '../plugin/editable'
+import { useMemo } from 'rezon'
 
 export const usePlaceholderStore = () => {
   const editor = useEditableStatic()
-  return React.useMemo(() => {
+  return useMemo(() => {
     return Placeholder.getStore(editor)
   }, [editor])
 }
@@ -36,7 +36,7 @@ export const usePlaceholder = (node: Node) => {
     }
   }, [store, node, editor])
 
-  return React.useMemo(() => {
+  return useMemo(() => {
     return actives.find(d => d.entry[0] === node)?.render
   }, [actives, node])
 }

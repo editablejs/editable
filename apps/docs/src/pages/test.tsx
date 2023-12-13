@@ -1,22 +1,50 @@
-import { useEffect as useReactEffect, useRef as useReactRef, useState as useReactState } from 'react'
-import { render, html, useState, define, flushSync, useRef, useEffect, virtual, HTMLAttributes, createContext, useContext, custom } from 'rezon'
+import {
+  useEffect as useReactEffect,
+  useRef as useReactRef,
+  useState as useReactState,
+} from 'react'
+import {
+  render,
+  html,
+  useState,
+  define,
+  flushSync,
+  useRef,
+  useEffect,
+  virtual,
+  HTMLAttributes,
+  createContext,
+  useContext,
+  custom,
+} from 'rezon'
 import { spread } from 'rezon/directives/spread'
-import { Button, Icon, Avatar, AvatarImage, Slot, Portal, Popover, PopoverAnchor, PopoverPortal, PopoverContent } from '@editablejs/theme'
+import {
+  Button,
+  Icon,
+  Avatar,
+  AvatarImage,
+  Slot,
+  Portal,
+  Popover,
+  PopoverAnchor,
+  PopoverPortal,
+  PopoverContent,
+} from '@editablejs/theme'
 import ReactDOM from 'react-dom'
+import { html as _html, render as _render } from '../utils/lit-html'
 
 interface TestProps extends HTMLAttributes<HTMLDivElement> {
   value?: string
 }
-const TestVirtual = virtual<TestProps>((props) => {
-  console.log('TestVirtual',props)
+const TestVirtual = virtual<TestProps>(props => {
+  console.log('TestVirtual', props)
   if (props.value) return html`<div>value: ${props.value}</div>`
   return html`<div ${spread(props)}></div>`
 })
 
 const PortalContext = createContext<{ count: number }>({ count: 0 })
 
-
-const CountContext = createContext<{ count: number, setCount: (value: number) => void }>({} as any)
+const CountContext = createContext<{ count: number; setCount: (value: number) => void }>({} as any)
 
 const TestPortalContent = virtual(() => {
   const { count } = useContext(PortalContext)
@@ -24,30 +52,40 @@ const TestPortalContent = virtual(() => {
 })
 
 const TestPortal = virtual(() => {
-  return html`<div>TestPortal${Portal({
-    children: TestPortalContent()
-  })}</div>`
+  return html`<div>
+    TestPortal${Portal({
+      children: TestPortalContent(),
+    })}
+  </div>`
 })
 
 const TestCount = virtual(() => {
   const { count, setCount } = useContext(CountContext)
-  return html`<div @click=${() => setCount(count + 1)}>${count}</div>`
+  return html`<div @click=${() => setCount(count + 1)}>TestCount: ${count}</div>`
 })
 
-const MyContainer = custom((el) => {
-  console.log(el)
-  return html`<div>MyContainer</div>`
-}, {
-  useShadowDOM: false
-})
+const MyContainer = custom(
+  el => {
+    console.log(el)
+    return html`<div>MyContainer</div>`
+  },
+  {
+    useShadowDOM: false,
+  },
+)
 
 let t: any = null
-const TestContainer = virtual(function ({ children }: { children: unknown}) {
+const TestContainer = virtual(function ({ children }: { children: unknown }) {
   const el = this as any
   if (!t) {
     t = el
   }
-  console.log(children, this, this === t, el['_$parent']['_$parts'].map((part: any) => part === this))
+  console.log(
+    children,
+    this,
+    this === t,
+    el['_$parent']['_$parts'].map((part: any) => part === this),
+  )
   return children
 })
 
@@ -61,15 +99,15 @@ ${PortalContext.Provider({
 })}
  */
 
-const _PopoverAnchor = virtual((props) => {
+const _PopoverAnchor = virtual(props => {
   return html`<div ${spread(props)}>PopoverAnchor</div>`
 })
 
-const _PopoverContent = virtual((props) => {
+const _PopoverContent = virtual(props => {
   return html`<div ${spread(props)}>PopoverContent</div>`
 })
 
-const MyApp = () => {
+const MyApp = virtual(() => {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLButtonElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)
@@ -78,15 +116,13 @@ const MyApp = () => {
   }, [])
 
   return html`<div>
-    ${
-      TestContainer({
-        children: count === 2 && TestVirtual({ value: count.toString() })
-      })
-    }
-    <input type="checkbox" ?checked=${false} />
+    ${CountContext.Provider({
+      value: { count, setCount },
+      children: TestCount(),
+    })}
     <button @click=${() => setCount(count + 1)}>${count}</button>
   </div>`
-}
+})
 
 /**
  * ${Slot({
@@ -116,13 +152,12 @@ const MyApp = () => {
     </div>
  */
 
-
 export default function Test() {
   const ref = useReactRef<HTMLDivElement>(null)
 
   useReactEffect(() => {
     if (ref.current) {
-      render(virtual(MyApp)(), ref.current, {})
+      render(MyApp(), ref.current, {})
     }
   }, [])
 
@@ -133,8 +168,21 @@ export default function Test() {
       <br />
       React Component:
       <ReactTest />
+      Custom HTML:
+      <CustomHTML />
     </div>
   )
+}
+
+const CustomHTML = () => {
+  const ref = useReactRef<HTMLDivElement>(null)
+  useReactEffect(() => {
+    if (ref.current) {
+      debugger
+      _render(_html`<div>CustomHTML</div>`, ref.current)
+    }
+  }, [])
+  return <div ref={ref}></div>
 }
 
 const ReactButton = () => {
@@ -146,13 +194,15 @@ const ReactButton = () => {
   console.log(count)
   return (
     <div>
-      <button onClick={() => {
-        ReactDOM.flushSync(() => {
-
-        })
-        setCount(2)
-        setCount(1)
-      }}>{count}</button>
+      <button
+        onClick={() => {
+          ReactDOM.flushSync(() => {})
+          setCount(2)
+          setCount(1)
+        }}
+      >
+        {count}
+      </button>
     </div>
   )
 }
@@ -162,7 +212,9 @@ const ReactTest = () => {
 
   return (
     <div>
-      <div><ReactButton /></div>
+      <div>
+        <ReactButton />
+      </div>
       <div>
         <button onClick={() => setCount(count + 1)}>{count}</button>
       </div>

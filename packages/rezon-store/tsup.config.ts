@@ -7,7 +7,8 @@ export default defineConfig(options => ({
     'src/vanilla.ts',
     'src/shallow.ts',
     'src/use-sync-external-store-with-selector.ts',
-    'src/use-sync-external-store.ts'
+    'src/use-sync-external-store.ts',
+    "src/use-store-with-equality-fn.ts"
   ],
   esbuildOptions(options) {
     options.external = ['rezon']

@@ -1,5 +1,5 @@
 import merge from 'lodash.merge'
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editor } from '@editablejs/models'
 export interface Locale {
   locale: string

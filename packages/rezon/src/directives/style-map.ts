@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import { AttributePart, noChange } from 'lit-html';
+import { AttributePart, noChange } from 'lit-html'
 import {
   directive,
   Directive,
   DirectiveParameters,
   PartInfo,
   PartType,
-} from 'lit-html/directive.js';
-import { formatStyle, toStyleString } from './utils/style';
+} from 'lit-html/directive.js'
+import { StyleInfo, toStyleString, updateStyleProperty } from './utils/style'
 
 /**
  * A key-value set of CSS properties and values.
@@ -21,21 +21,12 @@ import { formatStyle, toStyleString } from './utils/style';
  * `'background-color'`, or a valid JavaScript camel case property name
  * for CSSStyleDeclaration like `backgroundColor`.
  */
-export interface StyleInfo {
-  [name: string]: string | number | undefined | null;
-}
-
-const important = 'important';
-// The leading space is important
-const importantFlag = ' !' + important;
-// How many characters to remove from a value, as a negative number
-const flagTrim = 0 - importantFlag.length;
 
 class StyleMapDirective extends Directive {
-  private _previousStyleProperties?: Set<string>;
+  private _previousStyleProperties?: Set<string>
 
   constructor(partInfo: PartInfo) {
-    super(partInfo);
+    super(partInfo)
     if (
       partInfo.type !== PartType.ATTRIBUTE ||
       partInfo.name !== 'style' ||
@@ -43,61 +34,41 @@ class StyleMapDirective extends Directive {
     ) {
       throw new Error(
         'The `styleMap` directive must be used in the `style` attribute ' +
-        'and must be the only part in the attribute.'
-      );
+          'and must be the only part in the attribute.',
+      )
     }
   }
 
   render(styleInfo: Readonly<StyleInfo>) {
-    return toStyleString(styleInfo);
+    return toStyleString(styleInfo)
   }
 
   override update(part: AttributePart, [styleInfo]: DirectiveParameters<this>) {
-    const { style } = part.element as HTMLElement;
+    const { style } = part.element as HTMLElement
 
     if (this._previousStyleProperties === undefined) {
-      this._previousStyleProperties = new Set(Object.keys(styleInfo));
-      return this.render(styleInfo);
+      this._previousStyleProperties = new Set(Object.keys(styleInfo))
+      return this.render(styleInfo)
     }
 
     // Remove old properties that no longer exist in styleInfo
     for (const name of this._previousStyleProperties) {
       // If the name isn't in styleInfo or it's null/undefined
       if (styleInfo[name] == null) {
-        this._previousStyleProperties!.delete(name);
-        if (name.includes('-')) {
-          style.removeProperty(name);
-        } else {
-          (style as any)[name] = null;
-        }
+        this._previousStyleProperties!.delete(name)
+        updateStyleProperty(style, name, null)
       }
     }
 
     // Add or update properties
     for (const prop in styleInfo) {
-      const value = styleInfo[prop];
+      const value = styleInfo[prop]
       if (value != null) {
-        this._previousStyleProperties.add(prop);
-        const arr = formatStyle(prop, value);
-        if (!arr) continue
-        const [name, val] = arr
-        const isImportant =
-          typeof val === 'string' && val.endsWith(importantFlag);
-        if (name.includes('-') || isImportant) {
-          style.setProperty(
-            name,
-            isImportant
-              ? (val as string).slice(0, flagTrim)
-              : (val as string),
-            isImportant ? important : ''
-          );
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (style as any)[name] = val;
-        }
+        this._previousStyleProperties.add(prop)
+        updateStyleProperty(style, prop, value)
       }
     }
-    return noChange;
+    return noChange
   }
 }
 
@@ -121,10 +92,10 @@ class StyleMapDirective extends Directive {
  * @param styleInfo
  * @see {@link https://lit.dev/docs/templates/directives/#stylemap styleMap code samples on Lit.dev}
  */
-export const styleMap = directive(StyleMapDirective);
+export const styleMap = directive(StyleMapDirective)
 
 /**
  * The type of the class that powers this directive. Necessary for naming the
  * directive's return type.
  */
-export type { StyleMapDirective };
+export type { StyleMapDirective, StyleInfo }

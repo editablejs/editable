@@ -1,14 +1,14 @@
 import merge from 'lodash.merge'
-import * as React from 'react'
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editor } from '@editablejs/models'
+import { VirtualDirectiveComponent } from 'rezon'
 
 export interface SlotComponentProps {
   active?: boolean
 }
 
 export interface SlotState<T extends SlotComponentProps> {
-  component: React.FC
+  component: VirtualDirectiveComponent<T>
   props: T
 }
 
@@ -35,18 +35,25 @@ const getStore = (editor: Editor) => {
 export const Slot = {
   getStore,
 
-  mount<T extends SlotComponentProps>(editor: Editor, component: React.FC<T>, props: T = {} as T) {
+  mount<T extends SlotComponentProps>(
+    editor: Editor,
+    component: VirtualDirectiveComponent<T>,
+    props: T = {} as T,
+  ) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
       if (components.some(c => c.component === component)) return state
       return {
-        components: [...components, { component, props } as SlotState<T>],
+        components: [
+          ...components,
+          { component, props } as unknown as SlotState<SlotComponentProps>,
+        ],
       }
     })
   },
 
-  unmount(editor: Editor, component: React.FC) {
+  unmount(editor: Editor, component: VirtualDirectiveComponent) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -60,7 +67,7 @@ export const Slot = {
   update: <T extends SlotComponentProps>(
     editor: Editor,
     props: Partial<T>,
-    predicate: (value: React.FC<T>, index: number) => boolean = () => true,
+    predicate: (value: VirtualDirectiveComponent<T>, index: number) => boolean = () => true,
   ) => {
     const store = getStore(editor)
     store.setState(state => {

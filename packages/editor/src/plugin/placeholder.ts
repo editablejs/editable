@@ -1,12 +1,11 @@
-import * as React from 'react'
 import { Editor, Node, NodeEntry, Range } from '@editablejs/models'
-import create, { UseBoundStore, StoreApi } from 'zustand'
+import { create, UseBoundStore, StoreApi } from 'rezon-store'
 import { Editable } from './editable'
 
 export interface RenderPlaceholderProps {
   node: Node
 }
-export type PlaceholderRender = (props: RenderPlaceholderProps) => React.ReactNode
+export type PlaceholderRender = (props: RenderPlaceholderProps) => unknown
 
 export type PlaceholderSubscribe = (entry: NodeEntry) => PlaceholderRender | void
 

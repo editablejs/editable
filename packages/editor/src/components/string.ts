@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Editor, Text, Path, Element, Node, CompositionText } from '@editablejs/models'
 
 import { Editable } from '../plugin/editable'
@@ -9,26 +8,29 @@ import {
   DATA_EDITABLE_STRING,
   DATA_EDITABLE_ZERO_WIDTH,
 } from '../utils/constants'
+import { html, virtual } from 'rezon'
+import { when } from 'rezon/directives/when'
+import { spread } from 'rezon/directives/spread'
 
-/**
- * Leaf content strings.
- */
-const String: React.FC<{
+interface StringProps {
   isLast: boolean
   parent: Element
   text: Text
 
   leaf: Text
-}> = props => {
+}
+/**
+ * Leaf content strings.
+ */
+const String = virtual<StringProps>(props => {
   const { isLast, parent, text, leaf } = props
   const editor = useEditableStatic()
   const path = Editable.findPath(editor, text)
   const parentPath = Path.parent(path)
-
   // COMPAT: Render text inside void nodes with a zero-width space.
   // So the node can contain selection but the text is not visible.
   if (editor.isVoid(parent)) {
-    return <ZeroWidthString length={Node.string(parent).length} />
+    return ZeroWidthString({ length: Node.string(parent).length })
   }
 
   if (CompositionText.isCompositionText(text)) {
@@ -36,13 +38,11 @@ const String: React.FC<{
     const content = text.text
     const left = content.substring(0, offset)
     const right = content.substring(offset)
-    return (
-      <>
-        {left && <TextString text={left} />}
-        <CompositionString text={compositionText} />
-        {right && <TextString text={right} />}
-      </>
-    )
+    return [
+      when(left, () => TextString({ text: left })),
+      CompositionString({ text: compositionText }),
+      when(right, () => TextString({ text: right })),
+    ]
   }
   // COMPAT: If this is the last text node in an empty block, render a zero-
   // width space that will convert into a line break when copying and pasting
@@ -53,56 +53,55 @@ const String: React.FC<{
     !editor.isInline(parent) &&
     Editor.string(editor, parentPath) === ''
   ) {
-    return <ZeroWidthString isLineBreak />
+    return ZeroWidthString({ isLineBreak: true })
   }
 
   // COMPAT: If the text is empty, it's because it's on the edge of an inline
   // node, so we render a zero-width space so that the selection can be
   // inserted next to it still.
   if (leaf.text === '') {
-    return <ZeroWidthString />
+    return ZeroWidthString({})
   }
 
   // COMPAT: Browsers will collapse trailing new lines at the end of blocks,
   // so we need to add an extra trailing new lines to prevent that.
   if (isLast && leaf.text.slice(-1) === '\n') {
-    return <TextString isTrailing text={leaf.text} />
+    return TextString({ isTrailing: true, text: leaf.text })
   }
-  return <TextString text={leaf.text} />
-}
+  return TextString({ text: leaf.text })
+})
 
 /**
  * Leaf strings with text in them.
  */
-const TextString = (props: { text: string; isTrailing?: boolean }) => {
+const TextString = virtual<{ text: string; isTrailing?: boolean }>(props => {
   const { text, isTrailing = false } = props
-
   const getTextContent = () => {
     return `${text ?? ''}${isTrailing ? '\n' : ''}`
   }
 
-  return <span {...{ [DATA_EDITABLE_STRING]: true }}>{getTextContent()}</span>
-}
+  return html`<span ${spread({ [DATA_EDITABLE_STRING]: true })}>${getTextContent()}</span>`
+})
 
-const CompositionString = (props: { text: string }) => {
+const CompositionString = virtual<{ text: string }>(props => {
   const { text } = props
-  return <u {...{ [DATA_EDITABLE_COMPOSITION]: true }}>{text}</u>
-}
+  return html`<u ${spread({ [DATA_EDITABLE_COMPOSITION]: true })}>${text}</u>`
+})
 
 /**
  * Leaf strings without text, render as zero-width strings.
  */
 
-const ZeroWidthString = (props: { length?: number; isLineBreak?: boolean }) => {
+const ZeroWidthString = virtual<{ length?: number; isLineBreak?: boolean }>(props => {
   const { length = 0, isLineBreak = false } = props
-  return (
-    <span
-      {...{ [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z', [DATA_EDITABLE_LENGTH]: length }}
-    >
-      {'\uFEFF'}
-      {isLineBreak ? <br /> : null}
-    </span>
-  )
-}
+  return html`<span
+    ${spread({
+      [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z',
+      [DATA_EDITABLE_LENGTH]: length,
+    })}
+  >
+    ﻿ ${isLineBreak ? html`<br />` : null}
+  </span>`
+})
 
 export default String

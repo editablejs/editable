@@ -1,3 +1,8 @@
+import { html, render, virtual } from 'rezon'
+import { Editable } from './plugin/editable'
+import { EditableProvider } from './components/editable'
+import { ContentEditable } from './components/content'
+
 // Constants
 export * from './utils/constants'
 
@@ -62,3 +67,22 @@ export type {
 export { useCancellablePromises, cancellablePromise } from './hooks/use-cancellable-promises'
 
 export { Hotkey } from './utils/hotkeys'
+
+const Root = virtual<{ editor: Editable }>(({ editor }) => {
+  return EditableProvider({
+    editor,
+    value: [
+      {
+        type: 'paragraph',
+        children: [{ text: 'Hello EditableJS' }],
+      },
+    ],
+    children: ContentEditable({
+      placeholder: 'Enter some text...',
+    }),
+  })
+})
+
+export const renderEditor = (editor: Editable, container: HTMLElement) => {
+  render(Root({ editor }), container)
+}

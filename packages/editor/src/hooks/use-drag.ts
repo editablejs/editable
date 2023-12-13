@@ -1,11 +1,11 @@
-import * as React from 'react'
 import { useEditableStatic } from './use-editable'
-import { Drag, DragStore } from '../plugin/drag'
-import { useStore } from 'zustand'
+import { Drag, DragStore, SetDragOptions } from '../plugin/drag'
+import { useStore } from 'rezon-store'
+import { useMemo, useCallback } from 'rezon'
 
 export const useDragStore = () => {
   const editor = useEditableStatic()
-  const store = React.useMemo(() => {
+  const store = useMemo(() => {
     return Drag.getStore(editor)
   }, [editor])
   return store
@@ -20,7 +20,7 @@ export const useDragging = () => {
 
   const drag = useStore(store, state => state.drag !== null)
 
-  return React.useMemo(() => drag, [drag])
+  return useMemo(() => drag, [drag])
 }
 
 export const useDragType = () => {
@@ -28,7 +28,7 @@ export const useDragType = () => {
 
   const type = useStore(store, state => state.drag?.type ?? null)
 
-  return React.useMemo(() => type, [type])
+  return useMemo(() => type, [type])
 }
 
 /**
@@ -39,7 +39,7 @@ export const useDragTo = () => {
   const store = useDragStore()
   const drag = useStore(store, state => state.drag)
 
-  return React.useMemo(() => drag?.to ?? null, [drag])
+  return useMemo(() => drag?.to ?? null, [drag])
 }
 
 /**
@@ -50,7 +50,7 @@ export const useDragPosition = () => {
   const store = useDragStore()
   const drag = useStore(store, state => state.drag)
 
-  return React.useMemo(() => drag?.position ?? null, [drag])
+  return useMemo(() => drag?.position ?? null, [drag])
 }
 
 /**
@@ -61,22 +61,22 @@ export const useDragData = () => {
   const store = useDragStore()
   const drag = useStore(store, state => state.drag)
 
-  return React.useMemo(() => drag?.data ?? 0, [drag])
+  return useMemo(() => drag?.data ?? 0, [drag])
 }
 
 export const useDragMethods = () => {
   const editor = useEditableStatic()
 
-  const setDrag = React.useCallback(
-    (drag: Partial<DragStore['drag']>) => {
+  const setDrag = useCallback(
+    (drag: SetDragOptions) => {
       Drag.setDrag(editor, drag)
     },
     [editor],
   )
 
-  const getDrag = React.useCallback(() => {
+  const getDrag = useCallback(() => {
     return Drag.getDrag(editor)
   }, [editor])
 
-  return React.useMemo(() => ({ setDrag, getDrag }), [setDrag, getDrag])
+  return useMemo(() => ({ setDrag, getDrag }), [setDrag, getDrag])
 }

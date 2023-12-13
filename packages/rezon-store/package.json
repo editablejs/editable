@@ -15,6 +15,9 @@
       ],
       "use-sync-external-store-with-selector": [
         "./dist/use-sync-external-store-with-selector.d.ts"
+      ],
+      "use-store-with-equality-fn": [
+        "./dist/use-store-with-equality-fn.d.ts"
       ]
     }
   },
@@ -67,6 +70,16 @@
       "require": {
         "types": "./dist/use-sync-external-store-with-selector.d.ts",
         "default": "./dist/use-sync-external-store-with-selector.js"
+      }
+    },
+    "./use-store-with-equality-fn": {
+      "import": {
+        "types": "./dist/use-store-with-equality-fn.d.mts",
+        "default": "./dist/use-store-with-equality-fn.mjs"
+      },
+      "require": {
+        "types": "./dist/use-store-with-equality-fn.d.ts",
+        "default": "./dist/use-store-with-equality-fn.js"
       }
     }
   },

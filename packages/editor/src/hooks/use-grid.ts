@@ -1,8 +1,8 @@
-import * as React from 'react'
 import { Grid } from '@editablejs/models'
+import { createContext, useContext } from 'rezon'
 
-export const GridContext = React.createContext<Grid | null>(null)
+export const GridContext = createContext<Grid | null>(null)
 
 export const useGrid = (): Grid | null => {
-  return React.useContext(GridContext)
+  return useContext(GridContext)
 }

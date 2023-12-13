@@ -1,17 +1,16 @@
-import * as React from 'react'
-
+import { useRef } from 'rezon'
 import { cancellablePromise, useCancellablePromises } from './use-cancellable-promises'
 
 const useMultipleClick = (options: {
-  onClick?: (event: React.MouseEvent) => void
-  onMultipleClick: (event: React.MouseEvent, count: number) => boolean | void
+  onClick?: (event: MouseEvent) => void
+  onMultipleClick: (event: MouseEvent, count: number) => boolean | void
 }) => {
   const { onClick, onMultipleClick } = options
   const api = useCancellablePromises()
-  const pointRef = React.useRef<{ x: number; y: number }>()
-  const countRef = React.useRef(0)
+  const pointRef = useRef<{ x: number; y: number }>()
+  const countRef = useRef(0)
 
-  const isSamePoint = (event: React.MouseEvent | MouseEvent | Touch) => {
+  const isSamePoint = (event: MouseEvent | MouseEvent | Touch) => {
     const point = pointRef.current
     return point
       ? Math.abs(event.clientY - point.y) < 10 && Math.abs(event.clientX - point.x) < 10
@@ -23,7 +22,7 @@ const useMultipleClick = (options: {
     pointRef.current = undefined
   }
 
-  const handleMultipleClick = (event: React.MouseEvent) => {
+  const handleMultipleClick = (event: MouseEvent) => {
     if (event.button === 2) return
     const point = pointRef.current
     if (point) {

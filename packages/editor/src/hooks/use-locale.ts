@@ -1,11 +1,11 @@
-import * as React from 'react'
-import { useStore } from 'zustand'
+import { useStore } from 'rezon-store'
 import { Editable } from '../plugin/editable'
 import { Locale, LocaleComponentName } from '../plugin/locale'
 import { useEditableStatic } from './use-editable'
+import { useMemo } from 'rezon'
 
 export const useLocaleStore = (editor: Editable) => {
-  return React.useMemo(() => {
+  return useMemo(() => {
     return Locale.getStore(editor)
   }, [editor])
 }
@@ -27,7 +27,7 @@ export const useLocale = <
   const localeContext = useLocales<L>(editor, lang)
   const componentLocaleContext = localeContext[componentName]
 
-  const componentLocale = React.useMemo(() => {
+  const componentLocale = useMemo(() => {
     const locale = componentLocaleContext || defaultLocale
     return {
       ...(locale instanceof Function ? locale() : locale),

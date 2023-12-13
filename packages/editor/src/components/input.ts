@@ -1,5 +1,4 @@
 import { Range } from '@editablejs/models'
-import * as React from 'react'
 import { Editable } from '../plugin/editable'
 import {
   EDITOR_TO_INPUT,
@@ -18,19 +17,20 @@ import {
 } from '../hooks/use-selection-drawing'
 import { ReadOnly, useReadOnly } from '../hooks/use-read-only'
 import { composeEventHandlers } from '../utils/event'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState, virtual, TargetedEvent, html } from 'rezon'
+import { ref } from 'rezon/directives/ref'
 
 interface InputProps {
   autoFocus?: boolean
 }
 
-const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
+const InputComponent = virtual<InputProps>(({ autoFocus }) => {
   const editor = useEditableStatic()
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const [focused, setFocused] = useFocused()
   const [readOnly] = useReadOnly()
 
-  const [rect, setRect] = React.useState<ShadowRect | null>(null)
+  const [rect, setRect] = useState<ShadowRect | null>(null)
 
   useIsomorphicLayoutEffect(() => {
     if (inputRef.current) EDITOR_TO_INPUT.set(editor, inputRef.current)
@@ -41,26 +41,24 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
 
   useEffect(() => {
     if (autoFocus) {
-      editor.focus()
-      Editable.scrollIntoView(editor)
+      // editor.focus()
+      // Editable.scrollIntoView(editor)
     }
   }, [editor, autoFocus])
 
-  const handleKeydown = (event: React.KeyboardEvent) => {
-    const { nativeEvent } = event
-    if (Editable.isComposing(editor) && nativeEvent.isComposing === false) {
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (Editable.isComposing(editor) && event.isComposing === false) {
       IS_COMPOSING.set(editor, false)
     }
 
     if (event.defaultPrevented || Editable.isComposing(editor)) {
       return
     }
-    editor.onKeydown(nativeEvent)
+    editor.onKeydown(event)
   }
 
-  const handleKeyup = (event: React.KeyboardEvent) => {
-    const { nativeEvent } = event
-    editor.onKeyup(nativeEvent)
+  const handleKeyup = (event: KeyboardEvent) => {
+    editor.onKeyup(event)
   }
 
   const handleBlur = () => {
@@ -71,14 +69,14 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
     setFocused(true)
   }
 
-  const handleBeforeInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
+  const handleBeforeInput = (event: TargetedEvent<HTMLTextAreaElement>) => {
     const textarea = event.target
     if (!(textarea instanceof HTMLTextAreaElement)) return
     const { value } = textarea
     editor.onBeforeInput(value)
   }
 
-  const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
+  const handleInput = (event: TargetedEvent<HTMLTextAreaElement>) => {
     const textarea = event.target
     if (!(textarea instanceof HTMLTextAreaElement)) return
     const value = textarea.value
@@ -88,12 +86,12 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
     editor.onInput(value)
   }
 
-  const handleCompositionStart = (ev: React.CompositionEvent) => {
-    const { data } = ev.nativeEvent
+  const handleCompositionStart = (ev: CompositionEvent) => {
+    const { data } = ev
     editor.onCompositionStart(data)
   }
 
-  const handleCompositionEnd = (event: React.CompositionEvent) => {
+  const handleCompositionEnd = (event: CompositionEvent) => {
     const textarea = event.target
     if (!(textarea instanceof HTMLTextAreaElement)) return
     const value = textarea.value
@@ -101,18 +99,17 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
     editor.onCompositionEnd(value)
   }
 
-  const handlePaste = (event: React.ClipboardEvent) => {
+  const handlePaste = (event: ClipboardEvent) => {
     composeEventHandlers(
-      (event: React.ClipboardEvent) => {
+      (event: ClipboardEvent) => {
         if (ReadOnly.is(editor)) {
           event.preventDefault()
         }
       },
       event => {
-        const { nativeEvent } = event
         const isPasteText = IS_PASTE_TEXT.get(editor)
         event.preventDefault()
-        const e = new ClipboardEvent(isPasteText ? 'pasteText' : 'paste', nativeEvent)
+        const e = new ClipboardEvent(isPasteText ? 'pasteText' : 'paste', event)
         editor.onPaste(e)
       },
     )(event)
@@ -132,37 +129,25 @@ const InputComponent: React.FC<InputProps> = ({ autoFocus }) => {
     }
   }, [focused, rects, selection])
 
-  return (
-    <ShadowBlock
-      rect={Object.assign({}, rect, { color: 'transparent', width: 1 })}
-      style={{ opacity: 0, outline: 'none', caretColor: 'transparent', overflow: 'hidden' }}
-    >
-      <textarea
-        ref={inputRef}
-        rows={1}
-        style={{
-          fontSize: 'inherit',
-          lineHeight: 1,
-          padding: 0,
-          border: 'none',
-          whiteSpace: 'nowrap',
-          width: '1em',
-          overflow: 'auto',
-          resize: 'vertical',
-        }}
-        readOnly={readOnly}
-        onKeyDown={handleKeydown}
-        onKeyUp={handleKeyup}
-        onBeforeInput={handleBeforeInput}
-        onInput={handleInput}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        onPaste={handlePaste}
-      />
-    </ShadowBlock>
-  )
-}
+  return ShadowBlock({
+    rect: Object.assign({}, rect, { color: 'transparent', width: 1 }),
+    style: { opacity: 0, outline: 'none', caretColor: 'transparent', overflow: 'hidden' },
+    children: html`<textarea
+      ref=${ref(inputRef)}
+      rows="1"
+      style="font-size:inherit;line-height:1;padding:0;border:none;white-space:nowrap;width:1em;overflow:auto;resize:vertical;"
+      ?readonly=${readOnly}
+      @keydown=${handleKeydown}
+      @keyip=${handleKeyup}
+      @beforeinput=${handleBeforeInput}
+      @input=${handleInput}
+      @compositionstart=${handleCompositionStart}
+      @compositionend=${handleCompositionEnd}
+      @blur=${handleBlur}
+      @focus=${handleFocus}
+      @paste=${handlePaste}
+    />`,
+  })
+})
 
 export { InputComponent }

@@ -1,15 +1,14 @@
 // Import necessary dependencies and models from @editablejs
-import * as React from 'react'
 import { Editor, Range, Node, Path, Text, Element } from '@editablejs/models'
 
 // Import the create and StoreApi from zustand
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 
 // Define interface for properties passed to the render function of a text decoration
 export interface DecorateRenderProps<T = Node> {
   node: T
   path: Path
-  children: React.ReactElement
+  children: unknown
 }
 
 // Define BaseDecorate interface with a key property that is optional
@@ -20,13 +19,13 @@ export interface BaseDecorate {
 // Define TextDecorate interface with match and renderText functions
 export interface TextDecorate extends BaseDecorate {
   match: (node: Text, path: Path) => Range[]
-  renderText: (props: DecorateRenderProps<Text>) => React.ReactElement
+  renderText: (props: DecorateRenderProps<Text>) => unknown
 }
 
 // Define ElementDecorate interface with match and renderElement functions
 export interface ElementDecorate extends BaseDecorate {
   match: (node: Element, path: Path) => boolean
-  renderElement: (props: DecorateRenderProps<Element>) => React.ReactElement
+  renderElement: (props: DecorateRenderProps<Element>) => unknown
 }
 
 // Define a type for decorations which can either be a TextDecorate or an ElementDecorate

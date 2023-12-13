@@ -1,24 +1,24 @@
-import React from 'react'
-import { useStore } from 'zustand'
-import shallow from 'zustand/shallow'
+import { shallow } from 'rezon-store/shallow'
+import { useStoreWithEqualityFn } from 'rezon-store/use-store-with-equality-fn'
 import { Slot } from '../plugin/solt'
 import { useEditableStatic } from './use-editable'
+import { useMemo, FC } from 'rezon'
 
 export const useSlotStore = () => {
   const editor = useEditableStatic()
-  return React.useMemo(() => Slot.getStore(editor), [editor])
+  return useMemo(() => Slot.getStore(editor), [editor])
 }
 
 export const useSlotComponents = () => {
   const store = useSlotStore()
-  return useStore(store, state => state.components, shallow)
+  return useStoreWithEqualityFn(store, state => state.components, shallow)
 }
 
-export const useSlotActive = (component: React.FC) => {
+export const useSlotActive = (component: FC) => {
   const components = useSlotComponents()
   const editor = useEditableStatic()
   const slot = components.find(c => c.component === component)
-  return React.useMemo(() => {
+  return useMemo(() => {
     return [
       slot?.props.active ?? false,
       (active: boolean) => {

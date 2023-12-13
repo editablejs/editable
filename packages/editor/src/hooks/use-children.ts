@@ -35,36 +35,30 @@ const useChildren = (props: {
       selection && Range.includes(range, selection.anchor) && Range.includes(range, selection.focus)
 
     if (Element.isElement(n)) {
-      const element = (
-        <NodeSelectedContext.Provider key={`selected-provider-${key.id}`} value={!!sel}>
-          <NodeFocusedContext.Provider key={`focused-provider-${key.id}`} value={focused ?? false}>
-            <ElementComponent
-              element={n}
-              key={key.id}
-              selection={sel}
-              renderPlaceholder={renderPlaceholder}
-            />
-          </NodeFocusedContext.Provider>
-        </NodeSelectedContext.Provider>
-      )
+      const element = NodeSelectedContext.Provider({
+        value: !!sel,
+        children: NodeFocusedContext.Provider({
+          value: focused ?? false,
+          children: ElementComponent({
+            element: n,
+            selection: sel,
+            renderPlaceholder,
+          }),
+        }),
+      })
       if (Editor.isGrid(editor, n)) {
-        children.push(
-          <GridContext.Provider key={`grid-provider-${key.id}`} value={n}>
-            {element}
-          </GridContext.Provider>,
-        )
+        children.push(GridContext.Provider({ value: n, children: element }))
       } else {
         children.push(element)
       }
     } else {
       children.push(
-        <TextComponent
-          renderPlaceholder={renderPlaceholder}
-          key={key.id}
-          isLast={isLeafBlock && i === node.children.length - 1}
-          parent={node}
-          text={n}
-        />,
+        TextComponent({
+          renderPlaceholder,
+          isLast: isLeafBlock && i === node.children.length - 1,
+          parent: node,
+          text: n,
+        }),
       )
     }
 

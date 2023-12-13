@@ -1,10 +1,10 @@
-import * as React from 'react'
 import { GridCell, Grid } from '@editablejs/models'
 import { Editable } from '../plugin/editable'
 import { useEditableStatic } from './use-editable'
 import { useGrid } from './use-grid'
 import { useGridSelection } from './use-grid-selection'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect'
+import { useState } from 'rezon'
 
 const useGridSelectionRect = () => {
   const editor = useEditableStatic()
@@ -13,7 +13,7 @@ const useGridSelectionRect = () => {
 
   const selection = useGridSelection()
 
-  const [rect, setRect] = React.useState<DOMRect | null>(null)
+  const [rect, setRect] = useState<DOMRect | null>(null)
 
   useIsomorphicLayoutEffect(() => {
     if (!selection || !grid) return setRect(null)

@@ -1,18 +1,20 @@
-import * as React from 'react'
 import { Descendant, Node, Editor, Scrubber } from '@editablejs/models'
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editable } from '../plugin/editable'
 import { EditableStore, EditableStoreContext } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { useMemo, virtual } from 'rezon'
 
 const EDITABLE_TO_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<EditableStore>>>()
 
-export const EditableProvider = (props: {
+interface EditableProviderProps {
   editor: Editable
   value?: Descendant[]
-  children: React.ReactNode
+  children: unknown
   onChange?: (value: Descendant[]) => void
-}) => {
+}
+
+export const EditableProvider = virtual<EditableProviderProps>(props => {
   const {
     editor,
     children,
@@ -21,7 +23,7 @@ export const EditableProvider = (props: {
     ...rest
   } = props
 
-  const store = React.useMemo(() => {
+  const store = useMemo(() => {
     const store = EDITABLE_TO_STORE.get(editor)
     if (store) {
       return store
@@ -60,14 +62,11 @@ export const EditableProvider = (props: {
     }
   }, [editor, onChange])
 
-  return (
-    <EditableStoreContext.Provider
-      value={{
-        store,
-        editor,
-      }}
-    >
-      {children}
-    </EditableStoreContext.Provider>
-  )
-}
+  return EditableStoreContext.Provider({
+    value: {
+      store,
+      editor,
+    },
+    children,
+  })
+})
