@@ -1,6 +1,6 @@
-import { nothing, Part, ElementPart, render } from 'lit-html'
-import { AsyncDirective } from 'lit-html/async-directive.js'
-import { directive } from 'lit-html/directive.js'
+import { nothing, Part, ElementPart, render } from '../lit-html/html'
+import { AsyncDirective } from '../lit-html/async-directive'
+import { directive } from '../lit-html/directive'
 import { Ref } from '../use-ref'
 import { toStyleString, updateStyle } from './utils/style'
 

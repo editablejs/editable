@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/unsafe-svg.js';
+export * from '../lit-html/directives/unsafe-svg'

@@ -113,8 +113,8 @@ export namespace LitUnstable {
 
     export interface CommitNothingToChildEntry {
       kind: 'commit nothing to child'
-      start: ChildNode
-      end: ChildNode | null
+      start: ChildNode | ChildPart | null
+      end: ChildNode | ChildPart | ChildTemplatePart | null
       parent: Disconnectable | undefined
       options: RenderOptions | undefined
     }
@@ -128,7 +128,7 @@ export namespace LitUnstable {
 
     export interface CommitNode {
       kind: 'commit node'
-      start: Node
+      start: ChildNode | ChildPart | null
       parent: Disconnectable | undefined
       value: Node
       options: RenderOptions | undefined
@@ -195,6 +195,7 @@ interface DebugLoggingWindow {
 const debugLogEvent = DEV_MODE
   ? (event: LitUnstable.DebugLog.Entry) => {
       const shouldEmit = (global as unknown as DebugLoggingWindow).emitLitDebugLogEvents
+      console.log(event)
       if (!shouldEmit) {
         return
       }
@@ -882,8 +883,7 @@ const getTemplateHtml = (
         : s + marker + (attrNameEndIndex === -2 ? i : end)
   }
 
-  const htmlResult: string | TrustedHTML =
-    html + (strings[l] || '<?>') + (type === SVG_RESULT ? '</svg>' : '')
+  const htmlResult: string | TrustedHTML = html + strings[l] + (type === SVG_RESULT ? '</svg>' : '')
 
   // Returned as an array for terseness
   return [trustFromTemplateString(strings, htmlResult), attrNames]
@@ -994,7 +994,7 @@ class Template {
             // normalized when cloning in IE (could simplify when
             // IE is no longer supported)
             for (let i = 0; i < lastIndex; i++) {
-              ;(node as Element).append(strings[i], createMarker())
+              ;(node as Element).append(strings[i])
               // Walk past the marker node we just added
               walker.nextNode()
               parts.push({ type: CHILD_PART, index: ++nodeIndex })
@@ -1002,13 +1002,14 @@ class Template {
             // Note because this marker is added after the walker's current
             // node, it will be walked to in the outer loop (and ignored), so
             // we don't need to adjust nodeIndex here
-            ;(node as Element).append(strings[lastIndex], createMarker())
+            ;(node as Element).append(strings[lastIndex])
           }
         }
       } else if (node.nodeType === 8) {
         const data = (node as Comment).data
         if (data === markerMatch) {
-          parts.push({ type: CHILD_PART, index: nodeIndex })
+          const templatePart: ChildTemplatePart = { type: CHILD_PART, index: nodeIndex }
+          parts.push(templatePart)
         } else {
           let i = -1
           while ((i = (node as Comment).data.indexOf(marker, i + 1)) !== -1) {
@@ -1103,6 +1104,8 @@ function resolveDirective(
 }
 
 export type { TemplateInstance }
+
+const TEMPLATE_PART_TO_CHILD_PART_WEAKMAP = new WeakMap<TemplatePart, ChildPart>()
 /**
  * An updateable instance of a Template. Holds references to the Parts used to
  * update the template instance.
@@ -1141,16 +1144,43 @@ class TemplateInstance implements Disconnectable {
     const fragment = (options?.creationScope ?? d).importNode(content, true)
     walker.currentNode = fragment
 
-    let node = walker.nextNode()!
+    let node: Element | Comment = walker.nextNode() as Element | Comment
     let nodeIndex = 0
     let partIndex = 0
     let templatePart = parts[0]
-
+    const NEXT_TO_PREVPART_WEAKMAP = new WeakMap<Node, ChildNode | ChildPart | null>()
     while (templatePart !== undefined) {
+      let nextNode: Element | Comment | null = null
       if (nodeIndex === templatePart.index) {
         let part: Part | undefined
         if (templatePart.type === CHILD_PART) {
-          part = new ChildPart(node as HTMLElement, node.nextSibling, this, options)
+          let startNode: ChildNode | ChildPart | null =
+            NEXT_TO_PREVPART_WEAKMAP.get(node) ?? node.previousElementSibling
+          const _next = node.nextElementSibling
+          let endNode: ChildNode | ChildPart | ChildTemplatePart | null = _next
+          if (endNode && endNode.nodeType === 8 && (endNode as Comment).data === markerMatch) {
+            let nextTemplatePart: ChildTemplatePart | null = null
+            for (let i = partIndex + 1; i < parts.length; i++) {
+              if (parts[i].type === CHILD_PART) {
+                nextTemplatePart = parts[i] as ChildTemplatePart
+                break
+              }
+            }
+            if (nextTemplatePart && nextTemplatePart.type === 2) {
+              endNode = nextTemplatePart as ChildTemplatePart
+            }
+          }
+
+          nextNode = walker.nextNode() as Element | Comment | null
+
+          const parentNode = node.parentNode
+          node.parentNode!.removeChild(node)
+
+          part = new ChildPart(startNode, endNode, parentNode as HTMLElement, this, options)
+
+          if (nextNode) NEXT_TO_PREVPART_WEAKMAP.set(nextNode, part)
+
+          TEMPLATE_PART_TO_CHILD_PART_WEAKMAP.set(templatePart, part)
         } else if (templatePart.type === ATTRIBUTE_PART) {
           part = new templatePart.ctor(
             node as HTMLElement,
@@ -1161,12 +1191,15 @@ class TemplateInstance implements Disconnectable {
           )
         } else if (templatePart.type === ELEMENT_PART) {
           part = new ElementPart(node as HTMLElement, this, options)
+          const nextNode = node.nextSibling
+          if (nextNode) NEXT_TO_PREVPART_WEAKMAP.set(nextNode, node as ChildNode)
         }
+
         this._$parts.push(part)
         templatePart = parts[++partIndex]
       }
       if (nodeIndex !== templatePart?.index) {
-        node = walker.nextNode()!
+        node = nextNode ? nextNode : (walker.nextNode() as Element | Comment)
         nodeIndex++
       }
     }
@@ -1248,6 +1281,32 @@ export type Part =
   | EventPart
 
 export type { ChildPart }
+
+const partToNode = (
+  value: ChildNode | Disconnectable | ChildTemplatePart | null,
+  firstNode = true,
+): Node | null => {
+  if (value == null || value instanceof Node) return value
+  if (value instanceof ChildPart) {
+    const node = firstNode ? value._$lastChild : value._$firstChild
+
+    if (!node) {
+      if (value instanceof TemplateInstance) return partToNode(value._$parent, firstNode)
+      const nextNode = firstNode ? value._$startNode : value._$endNode
+      return partToNode(nextNode, firstNode)
+    }
+    return node ?? null
+  } else if ('type' in value) {
+    const childPart = TEMPLATE_PART_TO_CHILD_PART_WEAKMAP.get(value)
+    if (childPart) {
+      return partToNode(childPart, firstNode)
+    }
+    return null
+  } else if (value._$parent) {
+    return partToNode(value._$parent, firstNode)
+  }
+  return null
+}
 class ChildPart implements Disconnectable {
   readonly type = CHILD_PART
   readonly options: RenderOptions | undefined
@@ -1255,9 +1314,12 @@ class ChildPart implements Disconnectable {
   /** @internal */
   __directive?: Directive
   /** @internal */
-  _$startNode: ChildNode
+  _$startNode: ChildNode | ChildPart | null
   /** @internal */
-  _$endNode: ChildNode | null
+  _$endNode: ChildNode | ChildPart | ChildTemplatePart | null
+  _$parentNode: HTMLElement | DocumentFragment | null
+  _$firstChild: Node | null = null
+  _$lastChild: Node | null = null
   private _textSanitizer: ValueSanitizer | undefined
   /** @internal */
   _$parent: Disconnectable | undefined
@@ -1289,13 +1351,15 @@ class ChildPart implements Disconnectable {
   _$reparentDisconnectables?(parent: Disconnectable): void
 
   constructor(
-    startNode: ChildNode,
-    endNode: ChildNode | null,
+    startNode: ChildNode | ChildPart | null,
+    endNode: ChildNode | ChildPart | ChildTemplatePart | null,
+    parentNode: HTMLElement | DocumentFragment | null,
     parent: TemplateInstance | ChildPart | undefined,
     options: RenderOptions | undefined,
   ) {
     this._$startNode = startNode
     this._$endNode = endNode
+    this._$parentNode = parentNode
     this._$parent = parent
     this.options = options
     // Note __isConnected is only ever accessed on RootParts (i.e. when there is
@@ -1327,15 +1391,20 @@ class ChildPart implements Disconnectable {
    * consists of all child nodes of `.parentNode`.
    */
   get parentNode(): Node {
-    let parentNode: Node = wrap(this._$startNode).parentNode!
+    let parentNode: Node | null = this.startNode
+      ? wrap(this.startNode).parentNode
+      : this._$parentNode
     const parent = this._$parent
-    if (parent !== undefined && parentNode?.nodeType === 11 /* Node.DOCUMENT_FRAGMENT */) {
+    if (
+      parent !== undefined &&
+      (parentNode?.nodeType === 11 || !parentNode) /* Node.DOCUMENT_FRAGMENT */
+    ) {
       // If the parentNode is a DocumentFragment, it may be because the DOM is
       // still in the cloned fragment during initial render; if so, get the real
       // parentNode the part will be committed into by asking the parent.
       parentNode = (parent as ChildPart | TemplateInstance).parentNode
     }
-    return parentNode
+    return parentNode!
   }
 
   /**
@@ -1343,7 +1412,17 @@ class ChildPart implements Disconnectable {
    * information.
    */
   get startNode(): Node | null {
-    return this._$startNode
+    return partToNode(this._$startNode, true)
+  }
+
+  set startNode(value: ChildNode | ChildPart | null) {
+    this._$startNode = value
+    if (Array.isArray(this._$committedValue)) {
+      const part = this._$committedValue[0]
+      if (part instanceof ChildPart) {
+        part.startNode = value
+      }
+    }
   }
 
   /**
@@ -1351,7 +1430,17 @@ class ChildPart implements Disconnectable {
    * information.
    */
   get endNode(): Node | null {
-    return this._$endNode
+    return partToNode(this._$endNode, false)
+  }
+
+  set endNode(value: ChildNode | ChildPart | ChildTemplatePart | null) {
+    this._$endNode = value
+    if (Array.isArray(this._$committedValue)) {
+      const part = this._$committedValue[this._$committedValue.length - 1]
+      if (part instanceof ChildPart) {
+        part.endNode = value
+      }
+    }
   }
 
   _$setValue(value: unknown, directiveParent: DirectiveParent = this): void {
@@ -1410,14 +1499,27 @@ class ChildPart implements Disconnectable {
   }
 
   private _insert<T extends Node>(node: T) {
-    return wrap(wrap(this._$startNode).parentNode!).insertBefore(node, this._$endNode)
+    try {
+      const parentNode = this.startNode ? wrap(this.startNode).parentNode! : this._$parentNode!
+      const endNode = this.endNode
+      if (node instanceof DocumentFragment) {
+        this._$firstChild = node.firstChild
+        this._$lastChild = node.lastChild
+      } else {
+        this._$firstChild = this._$lastChild = node
+      }
+      return parentNode.insertBefore(node, endNode)
+    } catch (error) {
+      console.error(error)
+      debugger
+    }
   }
 
   private _commitNode(value: Node): void {
     if (this._$committedValue !== value) {
       this._$clear()
       if (ENABLE_EXTRA_SECURITY_HOOKS && sanitizerFactoryInternal !== noopSanitizer) {
-        const parentNodeName = this._$startNode.parentNode?.nodeName
+        const parentNodeName = this.parentNode?.nodeName
         if (parentNodeName === 'STYLE' || parentNodeName === 'SCRIPT') {
           let message = 'Forbidden'
           if (DEV_MODE) {
@@ -1457,7 +1559,9 @@ class ChildPart implements Disconnectable {
     // the previous render, and we know that this._$startNode.nextSibling is a
     // Text node. We can now just replace the text content (.data) of the node.
     if (this._$committedValue !== nothing && isPrimitive(this._$committedValue)) {
-      const node = wrap(this._$startNode).nextSibling as Text
+      const node = (
+        this.startNode ? wrap(this.startNode).nextSibling : this.parentNode?.firstChild
+      ) as Text
       if (ENABLE_EXTRA_SECURITY_HOOKS) {
         if (this._textSanitizer === undefined) {
           this._textSanitizer = createSanitizer(node, 'data', 'property')
@@ -1497,7 +1601,9 @@ class ChildPart implements Disconnectable {
         debugLogEvent &&
           debugLogEvent({
             kind: 'commit text',
-            node: wrap(this._$startNode).nextSibling as Text,
+            node: (this.startNode
+              ? wrap(this.startNode).nextSibling
+              : this.parentNode?.firstChild) as Text,
             value,
             options: this.options,
           })
@@ -1548,6 +1654,27 @@ class ChildPart implements Disconnectable {
           values,
         })
       instance._update(values)
+
+      let previousPart: ChildPart | null = null
+      let startPart: ChildPart | null = null
+      for (const part of instance._$parts) {
+        if (part instanceof ChildPart) {
+          if (part._$parentNode === fragment) {
+            if (instance.parentNode) part._$parentNode = instance.parentNode as HTMLElement
+            if (!previousPart && !part._$startNode) {
+              part.startNode = this._$startNode
+              startPart = part
+            }
+          }
+          previousPart = part
+        }
+      }
+      if (
+        previousPart &&
+        (previousPart._$parentNode === fragment || previousPart === startPart) &&
+        !previousPart._$endNode
+      )
+        previousPart.endNode = this._$endNode
       debugLogEvent &&
         debugLogEvent({
           kind: 'template instantiated and updated',
@@ -1594,33 +1721,44 @@ class ChildPart implements Disconnectable {
     const itemParts = this._$committedValue as ChildPart[]
     let partIndex = 0
     let itemPart: ChildPart | undefined
-
+    let previousPart: ChildPart | null = null
     //@ts-ignore
     for (const item of value) {
+      previousPart = itemParts[partIndex - 1]
       if (partIndex === itemParts.length) {
         // If no existing part, create a new one
         // TODO (justinfagnani): test perf impact of always creating two parts
         // instead of sharing parts between nodes
         // https://github.com/lit/lit/issues/1266
-        itemParts.push(
-          (itemPart = new ChildPart(
-            this._insert(createMarker()),
-            this._insert(createMarker()),
-            this,
-            this.options,
-          )),
+        // const currentPart = this instanceof TemplateInstance ? this._$parent : this
+        itemPart = new ChildPart(
+          previousPart ?? this._$startNode,
+          this._$endNode,
+          this._$parentNode,
+          this,
+          this.options,
         )
+        itemParts.push(itemPart)
       } else {
         // Reuse an existing part
         itemPart = itemParts[partIndex]
       }
+      if (previousPart && itemPart) {
+        previousPart.endNode = itemPart
+      }
       itemPart._$setValue(item)
+      if (itemPart._$parentNode?.nodeType === 11 /* Node.DOCUMENT_FRAGMENT */) {
+        const parent = itemPart._$parent
+        if (parent instanceof TemplateInstance || parent instanceof ChildPart) {
+          itemPart._$parentNode = parent.parentNode as HTMLElement
+        }
+      }
       partIndex++
     }
 
     if (partIndex < itemParts.length) {
       // itemParts always have end nodes
-      this._$clear(itemPart && wrap(itemPart._$endNode!).nextSibling, partIndex)
+      this._$clear(itemPart && wrap(itemPart.endNode!).nextSibling, partIndex)
       // Truncate the parts array so _value reflects the current state
       itemParts.length = partIndex
     }
@@ -1637,9 +1775,12 @@ class ChildPart implements Disconnectable {
    *
    * @internal
    */
-  _$clear(start: ChildNode | null = wrap(this._$startNode).nextSibling, from?: number) {
+  _$clear(
+    start: ChildNode | null = this.startNode ? wrap(this.startNode).nextSibling : null,
+    from?: number,
+  ) {
     this._$notifyConnectionChanged?.(false, true, from)
-    while (start && start !== this._$endNode) {
+    while (start && start !== this.endNode) {
       const n = wrap(start!).nextSibling
       ;(wrap(start!) as Element).remove()
       start = n
@@ -2112,6 +2253,9 @@ export const render = (
   }
   const renderId = DEV_MODE ? debugLogRenderId++ : 0
   const partOwnerNode = options?.renderBefore ?? container
+  // if (value === 'PopoverContent') {
+  //   debugger
+  // }
   // This property needs to remain unminified.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let part: ChildPart = (partOwnerNode as any)['_$litPart$']
@@ -2129,8 +2273,9 @@ export const render = (
     // This property needs to remain unminified.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(partOwnerNode as any)['_$litPart$'] = part = new ChildPart(
-      container.insertBefore(createMarker(), endNode),
+      endNode ? endNode?.previousSibling ?? null : container.lastChild,
       endNode,
+      container,
       undefined,
       options ?? {},
     )

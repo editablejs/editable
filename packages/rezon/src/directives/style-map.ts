@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import { AttributePart, noChange } from 'lit-html'
+import { AttributePart, noChange } from '../lit-html/html'
 import {
   directive,
   Directive,
   DirectiveParameters,
   PartInfo,
   PartType,
-} from 'lit-html/directive.js'
+} from '../lit-html/directive'
 import { StyleInfo, toStyleString, updateStyleProperty } from './utils/style'
 
 /**

@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/map.js';
+export * from '../lit-html/directives/map'

@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/keyed.js'
+export * from '../lit-html/directives/keyed'

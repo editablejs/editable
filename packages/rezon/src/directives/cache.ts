@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/cache.js'
+export * from '../lit-html/directives/cache'

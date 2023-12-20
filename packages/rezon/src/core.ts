@@ -1,5 +1,5 @@
 import { makeComponent, CustomCreator, makeDefine, DefineCreator } from './component'
-import { ChildPart } from 'lit-html'
+import { ChildPart } from './lit-html/html'
 
 type Component<P> = HTMLElement & P
 

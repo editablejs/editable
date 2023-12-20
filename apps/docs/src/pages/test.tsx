@@ -31,7 +31,6 @@ import {
   PopoverContent,
 } from '@editablejs/theme'
 import ReactDOM from 'react-dom'
-import { html as _html, render as _render } from '../utils/lit-html'
 
 interface TestProps extends HTMLAttributes<HTMLDivElement> {
   value?: string
@@ -106,6 +105,9 @@ const _PopoverAnchor = virtual(props => {
 const _PopoverContent = virtual(props => {
   return html`<div ${spread(props)}>PopoverContent</div>`
 })
+const _TestValue = virtual(() => {
+  return 123
+})
 
 const MyApp = virtual(() => {
   const [count, setCount] = useState(0)
@@ -116,13 +118,58 @@ const MyApp = virtual(() => {
   }, [])
 
   return html`<div>
-    ${CountContext.Provider({
-      value: { count, setCount },
-      children: TestCount(),
+    ${Slot({
+      ref: slotRef,
+      children: TestVirtual({
+        children: Avatar({
+          children: AvatarImage({
+            width: 32,
+            height: 32,
+            src: 'https://avatars.githubusercontent.com/u/10251037?s=60&v=4',
+          }),
+        }),
+      }),
     })}
-    <button @click=${() => setCount(count + 1)}>${count}</button>
+    <div>
+      ${Button({
+        icon: Icon({
+          name: 'bold',
+        }),
+        children: count,
+        onClick: () => setCount(count + 1),
+        ref,
+      })}
+    </div>
+    <div>
+      <button
+        @click=${() => {
+          flushSync(() => setCount(2))
+          setCount(1)
+        }}
+      >
+        flushSync: ${count}
+      </button>
+    </div>
   </div>`
 })
+/**
+ * ${Popover({
+    open: true,
+    children: [
+      PopoverAnchor({
+        children: Button({
+          children: 'PopoverAnchor',
+          ref,
+        }),
+      }),
+      PopoverPortal({
+        children: PopoverContent({
+          children: 'PopoverContent',
+        }),
+      }),
+    ],
+})}
+ */
 
 /**
  * ${Slot({
@@ -168,25 +215,13 @@ export default function Test() {
       <br />
       React Component:
       <ReactTest />
-      Custom HTML:
-      <CustomHTML />
     </div>
   )
 }
 
-const CustomHTML = () => {
-  const ref = useReactRef<HTMLDivElement>(null)
-  useReactEffect(() => {
-    if (ref.current) {
-      debugger
-      _render(_html`<div>CustomHTML</div>`, ref.current)
-    }
-  }, [])
-  return <div ref={ref}></div>
-}
-
 const ReactButton = () => {
   const [count, setCount] = useReactState(0)
+  const [count1, setCount1] = useReactState(0)
   useReactEffect(() => {
     console.log('ReactButton mounted')
     return () => console.log('ReactButton unmounted')
@@ -202,6 +237,7 @@ const ReactButton = () => {
         }}
       >
         {count}
+        {count1}
       </button>
     </div>
   )

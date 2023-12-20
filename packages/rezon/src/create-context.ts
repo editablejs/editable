@@ -1,6 +1,8 @@
-import { ChildPart, html } from 'lit-html'
+import { ChildPart, html } from './lit-html/html'
 import { useContext } from './use-context'
 import { useEffect } from './use-effect'
+import { useLayoutEffect } from './use-layout-effect'
+import { useMemo } from './use-memo'
 import { VirtualDirectiveComponent, virtual } from './virtual'
 
 // interface ConsumerProps<T> {
@@ -91,7 +93,6 @@ import { VirtualDirectiveComponent, virtual } from './virtual'
 //   }
 // }
 
-
 export interface ContextProviderProps<T = {}> {
   value: T
   children: unknown
@@ -107,7 +108,6 @@ export interface Context<T = {}> {
   defaultValue: T
 }
 
-
 export interface ContextListener<T> {
   Context: Context<T>
   subscribe(callback: (value: T) => void): T
@@ -118,7 +118,8 @@ const CHILD_PART_TO_CONTEXT_LISTENER = new WeakMap<ChildPart, ContextListener<an
 
 export const hasContextListener = (part: ChildPart) => CHILD_PART_TO_CONTEXT_LISTENER.has(part)
 
-export const setContextListener = (part: ChildPart, listener: ContextListener<any>) => CHILD_PART_TO_CONTEXT_LISTENER.set(part, listener)
+export const setContextListener = (part: ChildPart, listener: ContextListener<any>) =>
+  CHILD_PART_TO_CONTEXT_LISTENER.set(part, listener)
 
 export const getContextListener = (part: ChildPart) => CHILD_PART_TO_CONTEXT_LISTENER.get(part)
 
@@ -133,27 +134,32 @@ export const createContext = <T = {}>(defaultValue: T) => {
     },
     unsubscribe: (callback: (value: T) => void) => {
       listeners.delete(callback)
-    }
+    },
   }
   const Context: Context<T> = {
     Provider: virtual<ContextProviderProps<T>>(function (props) {
       const { children, value } = props
       currentValue = value
-      if (!hasContextListener(this)) {
+      const isInitialRender = !hasContextListener(this)
+      if (isInitialRender) {
         contextListener.Context = Context
         setContextListener(this, contextListener)
       }
 
-      for (const callback of listeners) {
-        callback(value)
-      }
+      useLayoutEffect(() => {
+        if (isInitialRender) return
+        for (const callback of listeners) {
+          callback(value)
+        }
+      }, [value])
 
       useEffect(() => {
         return () => {
           listeners.clear()
         }
       }, [])
-      return html`${children}`
+
+      return children
     }),
     Consumer: (render: (value: T) => unknown) => {
       return virtual(function () {

@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/choose.js';
+export * from '../lit-html/directives/choose'

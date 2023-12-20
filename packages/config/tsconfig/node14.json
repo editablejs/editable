@@ -3,9 +3,9 @@
   "display": "Node 14",
   "extends": "./base.json",
   "compilerOptions": {
-    "lib": ["es2020"],
+    "lib": ["ESNext"],
     "module": "commonjs",
-    "target": "es2020",
+    "target": "ESNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

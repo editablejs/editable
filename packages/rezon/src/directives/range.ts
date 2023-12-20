@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/range.js';
+export * from '../lit-html/directives/range'

@@ -69,6 +69,7 @@
     "babel-plugin-styled-components": "2.0.7",
     "babel-plugin-twin": "1.0.2",
     "eslint-config-editable": "workspace:*",
+    "fs": "0.0.1-security",
     "gray-matter": "4.0.3",
     "mdast-util-to-string": "^1.1.0",
     "metro-cache": "0.73.4",

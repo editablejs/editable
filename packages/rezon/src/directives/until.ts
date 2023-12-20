@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/until.js';
+export * from '../lit-html/directives/until'

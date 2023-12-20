@@ -1,5 +1,6 @@
-import { nothing, render } from "lit-html"
-import { virtual } from "./virtual"
+import { nothing, render } from './lit-html/html'
+import { useMemo } from './use-memo'
+import { virtual } from './virtual'
 
 export interface CreatePortal {
   container: HTMLElement | DocumentFragment
@@ -8,7 +9,7 @@ export interface CreatePortal {
 
 const createPortal = virtual<CreatePortal>(function (props) {
   const { container, children } = props
-  const rootPart = render(children, container)
+  const rootPart = useMemo(() => render(children, container), [children, container])
   // @ts-ignore
   rootPart._$parent = this
   return nothing

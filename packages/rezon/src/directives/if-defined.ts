@@ -1,1 +1,1 @@
-export * from 'lit-html/directives/if-defined.js';
+export * from '../lit-html/directives/if-defined'

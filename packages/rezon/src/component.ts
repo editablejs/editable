@@ -1,4 +1,4 @@
-import { ChildPart } from 'lit-html/async-directive.js'
+import { ChildPart } from './lit-html/async-directive'
 import { FunctionComponent, RenderFunction } from './core'
 import { Scheduler, createScheduler } from './scheduler'
 import { isServer, BaseElement as _BaseElement } from './utils'
@@ -91,7 +91,6 @@ const makeComponent = (render: RenderFunction): Creator => {
 
     let _scheduler: ComponentScheduler<P>
     class Element extends BaseElement {
-
       static get observedAttributes(): (keyof P)[] {
         return renderer.observedAttributes || observedAttributes || []
       }

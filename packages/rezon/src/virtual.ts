@@ -1,7 +1,11 @@
-import { directive, DirectiveParameters, ChildPart, PartInfo } from 'lit-html/directive.js'
-import { getDirectiveClass, isDirectiveResult, isTemplateResult } from 'lit-html/directive-helpers.js'
-import { noChange } from 'lit-html'
-import { AsyncDirective } from 'lit-html/async-directive.js'
+import { directive, DirectiveParameters, ChildPart, PartInfo } from './lit-html/directive'
+import {
+  getDirectiveClass,
+  isDirectiveResult,
+  isTemplateResult,
+} from './lit-html/directive-helpers'
+import { noChange } from './lit-html/html'
+import { AsyncDirective } from './lit-html/async-directive'
 import { shallow } from '@editablejs/utils/shallow'
 import { createScheduler, Scheduler } from './scheduler'
 import { FC } from './core'
@@ -13,8 +17,14 @@ interface VirtualScheduler<P = {}> extends Scheduler<P, ChildPart, ChildPart> {
   shouldReturnCachedResult?: boolean
 }
 
-const RENDERER_TO_CHILDPART: WeakMap<Function, WeakMap<ChildPart, VirtualScheduler<any>>> = new WeakMap()
-const RENDERER_TO_SCHEDULER: WeakMap<Function, WeakMap<VirtualScheduler<any>, ChildPart>> = new WeakMap()
+const RENDERER_TO_CHILDPART: WeakMap<
+  Function,
+  WeakMap<ChildPart, VirtualScheduler<any>>
+> = new WeakMap()
+const RENDERER_TO_SCHEDULER: WeakMap<
+  Function,
+  WeakMap<VirtualScheduler<any>, ChildPart>
+> = new WeakMap()
 
 const createVirtualScheduler = <P = {}, C extends FC<P> = FC<P>>(
   renderer: C,
@@ -48,10 +58,15 @@ const createVirtualScheduler = <P = {}, C extends FC<P> = FC<P>>(
 
 export type VirtualDirectiveResult<P extends unknown[]> = (...args: P) => unknown
 
-export type VirtualDirectiveComponent<P = {}> = VirtualDirectiveResult<keyof P extends never ? [] : Parameters<FC<P>>>
+export type VirtualDirectiveComponent<P = {}> = VirtualDirectiveResult<
+  keyof P extends never ? [] : Parameters<FC<P>>
+>
 
 export interface VirtualCreator {
-  <P = {}>(renderer: FC<P, ChildPart>, propsAreEqual?: PropsAreEqual<P>,): VirtualDirectiveComponent<P>
+  <P = {}>(
+    renderer: FC<P, ChildPart>,
+    propsAreEqual?: PropsAreEqual<P>,
+  ): VirtualDirectiveComponent<P>
 }
 
 export function virtual<P = {}>(
@@ -67,19 +82,27 @@ export function virtual<P = {}>(
     }
 
     update(part: ChildPart, args: DirectiveParameters<this>) {
-      virtualScheduler = RENDERER_TO_CHILDPART.get(renderer)?.get(part) as VirtualScheduler<P> | null
+      virtualScheduler = RENDERER_TO_CHILDPART.get(renderer)?.get(
+        part,
+      ) as VirtualScheduler<P> | null
       if (!virtualScheduler || prevRenderer !== renderer) {
         prevRenderer = renderer
         virtualScheduler = createVirtualScheduler(renderer, part, this.setValue.bind(this))
         isRendered = false
         if (!RENDERER_TO_CHILDPART.has(renderer)) RENDERER_TO_CHILDPART.set(renderer, new WeakMap())
-        const partToScheduler = RENDERER_TO_CHILDPART.get(renderer) as WeakMap<ChildPart, VirtualScheduler<any>>
+        const partToScheduler = RENDERER_TO_CHILDPART.get(renderer) as WeakMap<
+          ChildPart,
+          VirtualScheduler<any>
+        >
         partToScheduler.set(part, virtualScheduler)
         if (!RENDERER_TO_SCHEDULER.has(renderer)) RENDERER_TO_SCHEDULER.set(renderer, new WeakMap())
-        const schedulerToPart = RENDERER_TO_SCHEDULER.get(renderer) as WeakMap<VirtualScheduler<any>, ChildPart>
+        const schedulerToPart = RENDERER_TO_SCHEDULER.get(renderer) as WeakMap<
+          VirtualScheduler<any>,
+          ChildPart
+        >
         schedulerToPart.set(virtualScheduler, part)
       }
-      const prevProps = virtualScheduler.props ?? ({}) as P
+      const prevProps = virtualScheduler.props ?? ({} as P)
       const nextProps = (args[0] ?? {}) as P
       let shouldReturnCachedResult = false
       virtualScheduler.props = nextProps
@@ -130,12 +153,14 @@ export interface TemplateStringsResult {
 
 export const isTemplateStringsResult = (component: unknown): component is TemplateStringsResult => {
   if (isTemplateResult(component)) {
-    return "strings" in component && "values" in component
+    return 'strings' in component && 'values' in component
   }
   return false
 }
 
-export const getVaildVirtualFromTemplateResult = <P = unknown>(component: TemplateStringsResult): VirtualResult<P>[] => {
+export const getVaildVirtualFromTemplateResult = <P = unknown>(
+  component: TemplateStringsResult,
+): VirtualResult<P>[] => {
   const { strings, values } = component
   const virtuals: VirtualResult<P>[] = []
   for (let i = 0; i < values.length; i++) {

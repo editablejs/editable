@@ -9,15 +9,15 @@ import {
   EffectsSymbols,
 } from './symbols'
 import { CustomComponentOrVirtualComponent } from './core'
-import { ChildPart } from 'lit-html'
+import { ChildPart } from './lit-html/html'
+import { isFlushing, setFlushing } from './interface'
 
 const defer = Promise.resolve().then.bind(Promise.resolve())
 
-let isFlushing = false
 export const flushSync = (cb: VoidFunction) => {
-  isFlushing = true
+  setFlushing(true)
   cb()
-  isFlushing = false
+  setFlushing(false)
 }
 
 const runner = () => {
@@ -79,13 +79,13 @@ export const createScheduler = <
   }
   let _updateQueued = false
   const update = () => {
+    if (_updateQueued) return
     if (isFlushing) {
       const result = handlePhase(updateSymbol)
       handlePhase(commitSymbol, result)
       handlePhase(effectsSymbol)
       return
     }
-    if (_updateQueued) return
     read(() => {
       let result = handlePhase(updateSymbol)
       write(() => {
