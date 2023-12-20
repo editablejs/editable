@@ -252,8 +252,7 @@
   "dependencies": {
     "@editablejs/utils": "workspace:*",
     "@lit/reactive-element": "^2.0.2",
-    "@types/trusted-types": "2.0.7",
-    "lit-html": "^3.1.0"
+    "@types/trusted-types": "2.0.7"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
