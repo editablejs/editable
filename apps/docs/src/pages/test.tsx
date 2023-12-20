@@ -2,6 +2,9 @@ import {
   useEffect as useReactEffect,
   useRef as useReactRef,
   useState as useReactState,
+  createContext as createReactContext,
+  useContext as useReactContext,
+  memo,
 } from 'react'
 import {
   render,
@@ -105,9 +108,15 @@ const _PopoverAnchor = virtual(props => {
 const _PopoverContent = virtual(props => {
   return html`<div ${spread(props)}>PopoverContent</div>`
 })
+
 const _TestValue = virtual(() => {
   return 123
 })
+
+const TestMemo = virtual(() => {
+  const [count, setCount] = useState(0)
+  return html`<div>MemoButton: <button @click=${() => setCount(count + 1)}>${count}</button></div>`
+}, true)
 
 const MyApp = virtual(() => {
   const [count, setCount] = useState(0)
@@ -118,38 +127,7 @@ const MyApp = virtual(() => {
   }, [])
 
   return html`<div>
-    ${Slot({
-      ref: slotRef,
-      children: TestVirtual({
-        children: Avatar({
-          children: AvatarImage({
-            width: 32,
-            height: 32,
-            src: 'https://avatars.githubusercontent.com/u/10251037?s=60&v=4',
-          }),
-        }),
-      }),
-    })}
-    <div>
-      ${Button({
-        icon: Icon({
-          name: 'bold',
-        }),
-        children: count,
-        onClick: () => setCount(count + 1),
-        ref,
-      })}
-    </div>
-    <div>
-      <button
-        @click=${() => {
-          flushSync(() => setCount(2))
-          setCount(1)
-        }}
-      >
-        flushSync: ${count}
-      </button>
-    </div>
+    ${TestMemo()}<button @click=${() => setCount(count + 1)}>Count Button: ${count}</button>
   </div>`
 })
 /**
@@ -218,6 +196,22 @@ export default function Test() {
     </div>
   )
 }
+Test.displayName = 'Test'
+
+const ReactTestContext = createReactContext(0)
+
+const ReactMemo = memo(
+  () => {
+    const value = useReactContext(ReactTestContext)
+    console.log('ReactMemo', value)
+    return <span>{value}</span>
+  },
+  () => {
+    debugger
+    return false
+  },
+)
+ReactMemo.displayName = 'ReactMemo'
 
 const ReactButton = () => {
   const [count, setCount] = useReactState(0)
@@ -239,9 +233,13 @@ const ReactButton = () => {
         {count}
         {count1}
       </button>
+      <ReactTestContext.Provider value={count}>
+        <ReactMemo />
+      </ReactTestContext.Provider>
     </div>
   )
 }
+ReactButton.displayName = 'ReactButton'
 
 const ReactTest = () => {
   const [count, setCount] = useReactState(0)
@@ -257,3 +255,4 @@ const ReactTest = () => {
     </div>
   )
 }
+ReactTest.displayName = 'ReactTest'

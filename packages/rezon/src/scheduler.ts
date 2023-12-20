@@ -52,7 +52,7 @@ export interface Scheduler<
   state: State<H>
   [phaseSymbol]: Phase | null
   update(): void
-  render(): unknown
+  render(force?: boolean): unknown
   commit(result: unknown): void
   teardown(): void
 }
@@ -64,7 +64,7 @@ export const createScheduler = <
 >(
   host: H,
 ) => {
-  const handlePhase = (phase: Phase, arg?: unknown) => {
+  const handlePhase = (phase: Phase, arg?: unknown, force?: boolean) => {
     scheduler[phaseSymbol] = phase
     switch (phase) {
       case commitSymbol:
@@ -72,32 +72,38 @@ export const createScheduler = <
         runEffects(layoutEffectsSymbol)
         return
       case updateSymbol:
-        return scheduler.render()
+        return scheduler.render(force)
       case effectsSymbol:
         return runEffects(effectsSymbol)
     }
   }
   let _updateQueued = false
-  const update = () => {
+  let _updateForce = false
+  const update = (force?: boolean) => {
+    if (force) _updateForce = true
     if (_updateQueued) return
     if (isFlushing) {
-      const result = handlePhase(updateSymbol)
-      handlePhase(commitSymbol, result)
+      _updateQueued = true
+      const result = handlePhase(updateSymbol, undefined, _updateForce)
+      handlePhase(commitSymbol, result, _updateForce)
       handlePhase(effectsSymbol)
-      return
-    }
-    read(() => {
-      let result = handlePhase(updateSymbol)
-      write(() => {
-        handlePhase(commitSymbol, result)
-
-        write(() => {
-          handlePhase(effectsSymbol)
-        })
-      })
+      _updateForce = false
       _updateQueued = false
-    })
-    _updateQueued = true
+    } else {
+      read(() => {
+        let result = handlePhase(updateSymbol, undefined, _updateForce)
+        write(() => {
+          handlePhase(commitSymbol, result, _updateForce)
+
+          write(() => {
+            handlePhase(effectsSymbol)
+          })
+        })
+        _updateForce = false
+        _updateQueued = false
+      })
+      _updateQueued = true
+    }
   }
   const state = createState(update, host)
 

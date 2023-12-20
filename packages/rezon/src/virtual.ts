@@ -34,8 +34,8 @@ const createVirtualScheduler = <P = {}, C extends FC<P> = FC<P>>(
   const scheduler = createScheduler<P, ChildPart, ChildPart>(part) as VirtualScheduler<P>
   scheduler.state.virtual = true
   let prevResult: unknown
-  scheduler.render = (): unknown => {
-    if (scheduler.shouldReturnCachedResult) {
+  scheduler.render = (force): unknown => {
+    if (!force && scheduler.shouldReturnCachedResult) {
       return prevResult
     }
     prevResult = scheduler.state.run(() => renderer.apply(part, [scheduler.props]))

@@ -7,8 +7,10 @@ export interface Callable {
   call: (state: State) => void
 }
 
+export type StateUpdate = (force?: boolean) => void
+
 export interface State<H = unknown> {
-  update: VoidFunction
+  update: StateUpdate
   host: H
   virtual?: boolean
   [hookSymbol]: Map<number, Hook>
@@ -21,7 +23,7 @@ export interface State<H = unknown> {
   teardown(): void
 }
 
-export const createState = <H = unknown>(update: VoidFunction, host: H): State<H> => {
+export const createState = <H = unknown>(update: StateUpdate, host: H): State<H> => {
   const _runEffects = (phase: EffectsSymbols): void => {
     let effects = state[phase]
     setCurrent(state)

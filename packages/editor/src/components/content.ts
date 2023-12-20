@@ -636,7 +636,7 @@ export const ContentEditable = virtual<EditableProps>(props => {
           // Prevent the default outline styles.
           outline: 'none',
           // Preserve adjacent whitespace and new lines.
-          whiteSpace: 'pre-wrap',
+          whiteSpace: 'nowrap',
           // Allow words to break if they are too long.
           wordBreak: 'break-word',
           // Disable the default user-select behavior.

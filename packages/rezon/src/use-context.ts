@@ -33,7 +33,7 @@ const create = <T>() => {
 
     const _updater = (_value: T): void => {
       value = _value
-      state.update()
+      state.update(true)
     }
 
     const _subscribe = (Context: Context<T>): void => {
@@ -58,10 +58,6 @@ const create = <T>() => {
       id,
       state,
       update: nextContext => {
-        if (hook.state.virtual) {
-          // throw new Error("can't be used with virtual components")
-        }
-
         if (Context !== nextContext) {
           _subscribe(nextContext)
           Context = nextContext

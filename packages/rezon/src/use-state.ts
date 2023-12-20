@@ -2,8 +2,8 @@ import { CreateHook, hook, Hook } from './hook'
 import { State } from './state'
 import { isFunction } from './utils'
 
-export type StateUpdater<S> = (value: S | ((prevState: S) => S)) => void;
-export type SetStateAction<S> = S | ((prevState: S) => S);
+export type StateUpdater<S> = (value: S | ((prevState: S) => S)) => void
+export type SetStateAction<S> = S | ((prevState: S) => S)
 
 const create = <T>() => {
   const _create: CreateHook<[T], readonly [T, StateUpdater<T>]> = (
@@ -29,7 +29,7 @@ const create = <T>() => {
       }
 
       makeArgs(value)
-      state.update()
+      state.update(true)
     }
 
     const makeArgs = (value: T): void => {
@@ -52,10 +52,11 @@ const create = <T>() => {
   return _create
 }
 
-export function useState<S>(initialState: S | (() => S)): readonly [S, StateUpdater<S>];
+export function useState<S>(initialState: S | (() => S)): readonly [S, StateUpdater<S>]
 export function useState<S = undefined>(): readonly [S | undefined, StateUpdater<S | undefined>]
-export function useState<S = undefined>(initialState: S | undefined = undefined): readonly [S | undefined, StateUpdater<S | undefined>] {
+export function useState<S = undefined>(
+  initialState: S | undefined = undefined,
+): readonly [S | undefined, StateUpdater<S | undefined>] {
   // @ts-ignore
   return hook(create<S>())(initialState)
 }
-

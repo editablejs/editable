@@ -1121,8 +1121,8 @@ class TemplateInstance implements Disconnectable {
         let part: Part | undefined
         if (templatePart.type === CHILD_PART) {
           let startNode: ChildNode | ChildPart | null =
-            NEXT_TO_PREVPART_WEAKMAP.get(node) ?? node.previousElementSibling
-          const _next = node.nextElementSibling
+            NEXT_TO_PREVPART_WEAKMAP.get(node) ?? node.previousSibling
+          const _next = node.nextSibling
           let endNode: ChildNode | ChildPart | ChildTemplatePart | null = _next
           if (endNode && endNode.nodeType === 8 && (endNode as Comment).data === markerMatch) {
             let nextTemplatePart: ChildTemplatePart | null = null
@@ -1144,7 +1144,7 @@ class TemplateInstance implements Disconnectable {
 
           part = new ChildPart(startNode, endNode, parentNode as HTMLElement, this, options)
 
-          if (nextNode) NEXT_TO_PREVPART_WEAKMAP.set(nextNode, part)
+          if (_next) NEXT_TO_PREVPART_WEAKMAP.set(_next, part)
 
           TEMPLATE_PART_TO_CHILD_PART_WEAKMAP.set(templatePart, part)
         } else if (templatePart.type === ATTRIBUTE_PART) {
