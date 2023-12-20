@@ -9,7 +9,7 @@ import {
   EffectsSymbols,
 } from './symbols'
 import { CustomComponentOrVirtualComponent } from './core'
-import { ChildPart } from './lit-html/html'
+import { ChildPart, Disconnectable } from './lit-html/html'
 import { isFlushing, setFlushing } from './interface'
 
 const defer = Promise.resolve().then.bind(Promise.resolve())
@@ -57,6 +57,101 @@ export interface Scheduler<
   teardown(): void
 }
 
+const CHILDPART_TO_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction[]> = new WeakMap()
+const CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
+  Disconnectable,
+  Set<Scheduler<unknown, unknown, unknown>>
+> = new WeakMap()
+
+const CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction[]> = new WeakMap()
+const CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
+  Disconnectable,
+  Set<Scheduler<unknown, unknown, unknown>>
+> = new WeakMap()
+
+const handleEffects = (
+  host: ChildPart,
+  phase: EffectsSymbols,
+  run: (phase: EffectsSymbols) => void,
+) => {
+  const schedulers =
+    phase === effectsSymbol
+      ? CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP.get(host)
+      : CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP.get(host)
+  if (schedulers && schedulers.size > 0) {
+    let effects =
+      phase === effectsSymbol
+        ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
+        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
+    if (!effects) {
+      effects = []
+      phase === effectsSymbol
+        ? CHILDPART_TO_EFFECT_WEAKMAP.set(host, effects)
+        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.set(host, effects)
+    }
+    effects.push(() => {
+      return run(phase)
+    })
+  } else {
+    return run(phase)
+  }
+}
+
+const handleEffectScheduler = (
+  host: ChildPart,
+  scheduler: Scheduler<unknown, unknown, unknown>,
+) => {
+  ;[CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP, CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP].forEach(
+    map => {
+      let schedulers = map.get(host)
+      if (!schedulers) {
+        schedulers = new Set()
+        map.set(host, schedulers)
+      }
+      schedulers.add(scheduler)
+    },
+  )
+}
+
+const handleRunEffects = (
+  host: ChildPart,
+  phase: EffectsSymbols,
+  scheduler?: Scheduler<unknown, unknown, unknown>,
+) => {
+  const schedulers =
+    phase === effectsSymbol
+      ? CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP.get(host)
+      : CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP.get(host)
+
+  if (schedulers && scheduler) {
+    schedulers.delete(scheduler)
+  }
+  if (!schedulers || schedulers.size === 0) {
+    const effects =
+      phase === effectsSymbol
+        ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
+        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
+    if (effects) {
+      for (let i = 0, len = effects.length; i < len; i++) {
+        effects[i]()
+      }
+      effects.length = 0
+    }
+    const parent = getParent(host)
+    if (parent) {
+      handleRunEffects(parent, phase)
+    }
+  }
+}
+
+const getParent = (host: ChildPart): ChildPart | null => {
+  let parent = host._$parent
+  while (parent && (parent as ChildPart).type !== 2) {
+    parent = parent._$parent
+  }
+  return parent as ChildPart
+}
+
 export const createScheduler = <
   P = {},
   T = HTMLElement | ChildPart,
@@ -69,17 +164,31 @@ export const createScheduler = <
     switch (phase) {
       case commitSymbol:
         scheduler.commit(arg)
-        runEffects(layoutEffectsSymbol)
+        if (state.virtual) {
+          handleEffects(host as ChildPart, layoutEffectsSymbol, runEffects)
+        } else {
+          runEffects(layoutEffectsSymbol)
+        }
         return
       case updateSymbol:
         return scheduler.render(force)
       case effectsSymbol:
-        return runEffects(effectsSymbol)
+        if (state.virtual) {
+          handleEffects(host as ChildPart, effectsSymbol, runEffects)
+        } else {
+          runEffects(effectsSymbol)
+        }
     }
   }
   let _updateQueued = false
   let _updateForce = false
   const update = (force?: boolean) => {
+    if (state.virtual) {
+      const parent = getParent(host as ChildPart)
+      if (parent) {
+        handleEffectScheduler(parent, scheduler)
+      }
+    }
     if (force) _updateForce = true
     if (_updateQueued) return
     if (isFlushing) {
@@ -109,6 +218,11 @@ export const createScheduler = <
 
   const runEffects = (phase: EffectsSymbols): void => {
     state._runEffects(phase)
+    if (!state.virtual) return
+    const parent = getParent(host as ChildPart)
+    if (parent) {
+      handleRunEffects(parent, phase, scheduler)
+    }
   }
 
   const scheduler: Scheduler<P, T, H> = {

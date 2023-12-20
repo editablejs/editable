@@ -32,8 +32,9 @@ const TouchPointComponent = virtual<TouchPointProps>(
       !selection ||
       IS_TOUCHING.get(editor) ||
       (!IS_TOUCHMOVING.get(editor) && Range.isCollapsed(selection))
-    )
+    ) {
       return null
+    }
     const anchor = rects[0]
     const focus = rects[rects.length - 1]
 

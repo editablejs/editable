@@ -4,7 +4,7 @@ import {
   isDirectiveResult,
   isTemplateResult,
 } from './lit-html/directive-helpers'
-import { noChange } from './lit-html/html'
+import { html, noChange } from './lit-html/html'
 import { AsyncDirective } from './lit-html/async-directive'
 import { shallow } from '@editablejs/utils/shallow'
 import { createScheduler, Scheduler } from './scheduler'
@@ -42,7 +42,7 @@ const createVirtualScheduler = <P = {}, C extends FC<P> = FC<P>>(
     return prevResult
   }
   scheduler.commit = (result: unknown): void => {
-    setValue(result)
+    setValue(isDirectiveResult(result) ? html`${result}` : result)
   }
   const superTeardown = scheduler.teardown
   scheduler.teardown = (): void => {

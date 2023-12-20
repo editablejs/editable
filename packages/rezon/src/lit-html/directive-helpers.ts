@@ -97,8 +97,6 @@ export const getDirectiveClass = (value: unknown): DirectiveClass | undefined =>
 export const isSingleExpression = (part: PartInfo) =>
   (part as AttributePartInfo).strings === undefined
 
-const createMarker = () => document.createComment('')
-
 /**
  * Inserts a ChildPart into the given container ChildPart's DOM, either at the
  * end of the container ChildPart, or before the optional `refPart`.

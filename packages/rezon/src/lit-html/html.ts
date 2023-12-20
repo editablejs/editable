@@ -329,9 +329,6 @@ const d =
       } as unknown as Document)
     : document
 
-// Creates a dynamic marker. We never have to search for these in the DOM.
-const createMarker = () => d.createComment('')
-
 // https://tc39.github.io/ecma262/#sec-typeof-operator
 type Primitive = null | undefined | boolean | number | string | symbol | bigint
 const isPrimitive = (value: unknown): value is Primitive =>
