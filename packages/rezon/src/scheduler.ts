@@ -57,13 +57,13 @@ export interface Scheduler<
   teardown(): void
 }
 
-const CHILDPART_TO_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction[]> = new WeakMap()
+const CHILDPART_TO_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction> = new WeakMap()
 const CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
   Disconnectable,
   Set<Scheduler<unknown, unknown, unknown>>
 > = new WeakMap()
 
-const CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction[]> = new WeakMap()
+const CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction> = new WeakMap()
 const CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
   Disconnectable,
   Set<Scheduler<unknown, unknown, unknown>>
@@ -84,14 +84,11 @@ const handleEffects = (
         ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
         : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
     if (!effects) {
-      effects = []
+      effects = () => run(phase)
       phase === effectsSymbol
         ? CHILDPART_TO_EFFECT_WEAKMAP.set(host, effects)
         : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.set(host, effects)
     }
-    effects.push(() => {
-      return run(phase)
-    })
   } else {
     return run(phase)
   }
@@ -132,14 +129,10 @@ const handleRunEffects = (
         ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
         : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
     if (effects) {
-      for (let i = 0, len = effects.length; i < len; i++) {
-        effects[i]()
-      }
-      effects.length = 0
-    }
-    const parent = getParent(host)
-    if (parent) {
-      handleRunEffects(parent, phase)
+      effects()
+      phase === effectsSymbol
+        ? CHILDPART_TO_EFFECT_WEAKMAP.delete(host)
+        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.delete(host)
     }
   }
 }
