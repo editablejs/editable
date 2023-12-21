@@ -1446,7 +1446,9 @@ class ChildPart implements Disconnectable {
 
   private _insert<T extends Node>(node: T) {
     try {
-      const parentNode = this.startNode ? wrap(this.startNode).parentNode! : this._$parentNode!
+      const parentNode = this.startNode
+        ? wrap(this.startNode).parentNode! ?? this._$parentNode!
+        : this._$parentNode!
       const endNode = this.endNode
       if (node instanceof DocumentFragment) {
         this._$firstChild = node.firstChild
@@ -1667,8 +1669,12 @@ class ChildPart implements Disconnectable {
     from?: number,
   ) {
     this._$notifyConnectionChanged?.(false, true, from)
+    if (!this._$startNode) {
+      start = this._$parentNode!.firstChild
+    }
+
     while (start && start !== this.endNode) {
-      const n = wrap(start!).nextSibling
+      const n: ChildNode | null = wrap(start!).nextSibling
       ;(wrap(start!) as Element).remove()
       start = n
     }
