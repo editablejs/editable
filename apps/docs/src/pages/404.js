@@ -1,14 +1,14 @@
 import { Page } from 'components/layout/page'
 import { MarkdownPage } from 'components/layout/markdown-page'
-import { MDXComponents } from 'components/mdx/mdx-components'
+// import { MDXComponents } from 'components/mdx/mdx-components'
 
-const { Intro, MaxWidth, p: P, a: A } = MDXComponents
+// const { Intro, MaxWidth, p: P, a: A } = MDXComponents
 
 export default function NotFound() {
   return (
     <Page toc={[]}>
       <MarkdownPage toc={[]} meta={{ title: 'Not Found' }}>
-        <MaxWidth>
+        {/* <MaxWidth>
           <Intro>
             <P>This page doesn’t exist.</P>
             <P>
@@ -17,7 +17,7 @@ export default function NotFound() {
             </P>
             <P>Please check back later.</P>
           </Intro>
-        </MaxWidth>
+        </MaxWidth> */}
       </MarkdownPage>
     </Page>
   )

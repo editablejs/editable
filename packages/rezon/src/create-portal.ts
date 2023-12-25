@@ -9,7 +9,10 @@ export interface CreatePortal {
 
 const createPortal = virtual<CreatePortal>(function (props) {
   const { container, children } = props
-  const rootPart = useMemo(() => render(children, container), [children, container])
+  const rootPart = useMemo(
+    () => render(children, container, this.currentOptions),
+    [children, container],
+  )
   // @ts-ignore
   rootPart._$parent = this
   return nothing

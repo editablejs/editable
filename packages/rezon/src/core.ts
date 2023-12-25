@@ -8,7 +8,7 @@ type CustomComponentOrVirtualComponent<P = {}, T = HTMLElement | ChildPart> = T 
   : ChildPart
 
 type FunctionComponent<P = {}, T = HTMLElement | ChildPart> = (
-  this: CustomComponentOrVirtualComponent<P, T>,
+  this: CustomComponentOrVirtualComponent<P, T> & { currentOptions?: Record<string, unknown> },
   props: T extends HTMLElement ? Component<P> : P,
 ) => unknown | void
 

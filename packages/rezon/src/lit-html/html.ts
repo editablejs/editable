@@ -15,175 +15,9 @@ const NODE_MODE = false
 // Allows minifiers to rename references to globalThis
 const global = globalThis
 
-/**
- * Contains types that are part of the unstable debug API.
- *
- * Everything in this API is not stable and may change or be removed in the future,
- * even on patch releases.
- */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace LitUnstable {
-  /**
-   * When Lit is running in dev mode and `window.emitLitDebugLogEvents` is true,
-   * we will emit 'lit-debug' events to window, with live details about the update and render
-   * lifecycle. These can be useful for writing debug tooling and visualizations.
-   *
-   * Please be aware that running with window.emitLitDebugLogEvents has performance overhead,
-   * making certain operations that are normally very cheap (like a no-op render) much slower,
-   * because we must copy data and dispatch events.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  export namespace DebugLog {
-    export type Entry =
-      | TemplatePrep
-      | TemplateInstantiated
-      | TemplateInstantiatedAndUpdated
-      | TemplateUpdating
-      | BeginRender
-      | EndRender
-      | CommitPartEntry
-      | SetPartValue
-    export interface TemplatePrep {
-      kind: 'template prep'
-      template: Template
-      strings: TemplateStringsArray
-      clonableTemplate: HTMLTemplateElement
-      parts: TemplatePart[]
-    }
-    export interface BeginRender {
-      kind: 'begin render'
-      id: number
-      value: unknown
-      container: HTMLElement | DocumentFragment
-      options: RenderOptions | undefined
-      part: ChildPart | undefined
-    }
-    export interface EndRender {
-      kind: 'end render'
-      id: number
-      value: unknown
-      container: HTMLElement | DocumentFragment
-      options: RenderOptions | undefined
-      part: ChildPart
-    }
-    export interface TemplateInstantiated {
-      kind: 'template instantiated'
-      template: Template | CompiledTemplate
-      instance: TemplateInstance
-      options: RenderOptions | undefined
-      fragment: Node
-      parts: Array<Part | undefined>
-      values: unknown[]
-    }
-    export interface TemplateInstantiatedAndUpdated {
-      kind: 'template instantiated and updated'
-      template: Template | CompiledTemplate
-      instance: TemplateInstance
-      options: RenderOptions | undefined
-      fragment: Node
-      parts: Array<Part | undefined>
-      values: unknown[]
-    }
-    export interface TemplateUpdating {
-      kind: 'template updating'
-      template: Template | CompiledTemplate
-      instance: TemplateInstance
-      options: RenderOptions | undefined
-      parts: Array<Part | undefined>
-      values: unknown[]
-    }
-    export interface SetPartValue {
-      kind: 'set part'
-      part: Part
-      value: unknown
-      valueIndex: number
-      values: unknown[]
-      templateInstance: TemplateInstance
-    }
-
-    export type CommitPartEntry =
-      | CommitNothingToChildEntry
-      | CommitText
-      | CommitNode
-      | CommitAttribute
-      | CommitProperty
-      | CommitBooleanAttribute
-      | CommitEventListener
-      | CommitToElementBinding
-
-    export interface CommitNothingToChildEntry {
-      kind: 'commit nothing to child'
-      start: ChildNode | ChildPart | null
-      end: ChildNode | ChildPart | ChildTemplatePart | null
-      parent: Disconnectable | undefined
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitText {
-      kind: 'commit text'
-      node: Text
-      value: unknown
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitNode {
-      kind: 'commit node'
-      start: ChildNode | ChildPart | null
-      parent: Disconnectable | undefined
-      value: Node
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitAttribute {
-      kind: 'commit attribute'
-      element: Element
-      name: string
-      value: unknown
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitProperty {
-      kind: 'commit property'
-      element: Element
-      name: string
-      value: unknown
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitBooleanAttribute {
-      kind: 'commit boolean attribute'
-      element: Element
-      name: string
-      value: boolean
-      options: RenderOptions | undefined
-    }
-
-    export interface CommitEventListener {
-      kind: 'commit event listener'
-      element: Element
-      name: string
-      value: unknown
-      oldListener: unknown
-      options: RenderOptions | undefined
-      // True if we're removing the old event listener (e.g. because settings changed, or value is nothing)
-      removeListener: boolean
-      // True if we're adding a new event listener (e.g. because first render, or settings changed)
-      addListener: boolean
-    }
-
-    export interface CommitToElementBinding {
-      kind: 'commit to element binding'
-      element: Element
-      value: unknown
-      options: RenderOptions | undefined
-    }
-  }
-}
-
 // Used for connecting beginRender and endRender events when there are nested
 // renders when errors are thrown preventing an endRender event from being
 // called.
-let debugLogRenderId = 0
 
 let issueWarning: (code: string, warning: string) => void
 
@@ -624,7 +458,7 @@ const templateCache = new WeakMap<TemplateStringsArray, Template>()
  * the lifetime of renders to that unique `container` + `renderBefore`
  * combination.
  */
-export interface RenderOptions {
+export interface RenderOptions extends Record<string, unknown> {
   /**
    * An object to use as the `this` value for event listeners. It's often
    * useful to set this to the host component rendering a template.
@@ -1025,6 +859,7 @@ function resolveDirective(
   part: ChildPart | AttributePart | ElementPart,
   value: unknown,
   parent: DirectiveParent = part,
+  options?: Record<string, unknown>,
   attributeIndex?: number,
 ): unknown {
   // Bail early if the value is explicitly noChange. Note, this means any
@@ -1058,8 +893,9 @@ function resolveDirective(
   if (currentDirective !== undefined) {
     value = resolveDirective(
       part,
-      currentDirective._$resolve(part, (value as DirectiveResult).values),
+      currentDirective._$resolve(part, (value as DirectiveResult).values, options),
       currentDirective,
+      options,
       attributeIndex,
     )
   }
@@ -1173,18 +1009,18 @@ class TemplateInstance implements Disconnectable {
     return fragment
   }
 
-  _update(values: Array<unknown>) {
+  _update(values: Array<unknown>, options?: Record<string, unknown>) {
     let i = 0
     for (const part of this._$parts) {
       if (part !== undefined) {
         if ((part as AttributePart).strings !== undefined) {
-          ;(part as AttributePart)._$setValue(values, part as AttributePart, i)
+          ;(part as AttributePart)._$setValue(values, options, part as AttributePart, i)
           // The number of values the part consumes is part.strings.length - 1
           // since values are in between template spans. We increment i by 1
           // later in the loop, so increment it by part.strings.length - 2 here
           i += (part as AttributePart).strings!.length - 2
         } else {
-          part._$setValue(values[i])
+          part._$setValue(values[i], options)
         }
       }
       i++
@@ -1248,6 +1084,8 @@ const partToNode = (
       if (value instanceof TemplateInstance) return partToNode(value._$parent, firstNode)
       const nextNode = firstNode ? value._$startNode : value._$endNode
       return partToNode(nextNode, firstNode)
+    } else if (node instanceof ChildPart) {
+      return partToNode(node, firstNode)
     }
     return node ?? null
   } else if ('type' in value) {
@@ -1272,8 +1110,8 @@ class ChildPart implements Disconnectable {
   /** @internal */
   _$endNode: ChildNode | ChildPart | ChildTemplatePart | null
   _$parentNode: HTMLElement | DocumentFragment | null
-  _$firstChild: Node | null = null
-  _$lastChild: Node | null = null
+  _$firstChild: Node | ChildPart | null = null
+  _$lastChild: Node | ChildPart | null = null
   private _textSanitizer: ValueSanitizer | undefined
   /** @internal */
   _$parent: Disconnectable | undefined
@@ -1397,13 +1235,17 @@ class ChildPart implements Disconnectable {
     }
   }
 
-  _$setValue(value: unknown, directiveParent: DirectiveParent = this): void {
+  _$setValue(
+    value: unknown,
+    options?: Record<string, unknown>,
+    directiveParent: DirectiveParent = this,
+  ): void {
     if (DEV_MODE && this.parentNode === null) {
       throw new Error(
         `This \`ChildPart\` has no \`parentNode\` and therefore cannot accept a value. This likely means the element containing the part was manipulated in an unsupported way outside of Lit's control such that the part's marker nodes were ejected from DOM. For example, setting the element's \`innerHTML\` or \`textContent\` can do this.`,
       )
     }
-    value = resolveDirective(this, value, directiveParent)
+    value = resolveDirective(this, value, directiveParent, options)
     if (isPrimitive(value)) {
       // Non-rendering child values. It's important that these do not render
       // empty text nodes to avoid issues with preventing default <slot>
@@ -1418,7 +1260,7 @@ class ChildPart implements Disconnectable {
       }
       // This property needs to remain unminified.
     } else if ((value as TemplateResult)['_$litType$'] !== undefined) {
-      this._commitTemplateResult(value as TemplateResult)
+      this._commitTemplateResult(value as TemplateResult, options)
     } else if ((value as Node).nodeType !== undefined) {
       if (DEV_MODE && this.options?.host === value) {
         this._commitText(
@@ -1437,7 +1279,7 @@ class ChildPart implements Disconnectable {
       }
       this._commitNode(value as Node)
     } else if (isIterable(value)) {
-      this._commitIterable(value)
+      this._commitIterable(value, options)
     } else {
       // Fallback, will render the string representation
       this._commitText(value)
@@ -1529,7 +1371,10 @@ class ChildPart implements Disconnectable {
     this._$committedValue = value
   }
 
-  private _commitTemplateResult(result: TemplateResult | CompiledTemplateResult): void {
+  private _commitTemplateResult(
+    result: TemplateResult | CompiledTemplateResult,
+    options?: Record<string, unknown>,
+  ): void {
     // This property needs to remain unminified.
     const { values, ['_$litType$']: type } = result
     // If $litType$ is a number, result is a plain TemplateResult and we get
@@ -1547,12 +1392,12 @@ class ChildPart implements Disconnectable {
           type)
 
     if ((this._$committedValue as TemplateInstance)?._$template === template) {
-      ;(this._$committedValue as TemplateInstance)._update(values)
+      ;(this._$committedValue as TemplateInstance)._update(values, options)
     } else {
       const instance = new TemplateInstance(template as Template, this)
       const fragment = instance._clone(this.options)
 
-      instance._update(values)
+      instance._update(values, options)
 
       let previousPart: ChildPart | null = null
       let startPart: ChildPart | null = null
@@ -1575,6 +1420,12 @@ class ChildPart implements Disconnectable {
       )
         previousPart.endNode = this._$endNode
       this._commitNode(fragment)
+      if (!this._$firstChild) {
+        this._$firstChild = startPart
+      }
+      if (!this._$lastChild) {
+        this._$lastChild = previousPart
+      }
       this._$committedValue = instance
     }
   }
@@ -1589,7 +1440,7 @@ class ChildPart implements Disconnectable {
     return template
   }
 
-  private _commitIterable(value: Iterable<unknown>): void {
+  private _commitIterable(value: Iterable<unknown>, options?: Record<string, unknown>): void {
     // For an Iterable, we create a new InstancePart per item, then set its
     // value to the item. This is a little bit of overhead for every item in
     // an Iterable, but it lets us recurse easily and efficiently update Arrays
@@ -1635,7 +1486,7 @@ class ChildPart implements Disconnectable {
       if (previousPart && itemPart) {
         previousPart.endNode = itemPart
       }
-      itemPart._$setValue(item)
+      itemPart._$setValue(item, options)
       if (itemPart._$parentNode?.nodeType === 11 /* Node.DOCUMENT_FRAGMENT */) {
         const parent = itemPart._$parent
         if (parent instanceof TemplateInstance || parent instanceof ChildPart) {
@@ -1804,6 +1655,7 @@ class AttributePart implements Disconnectable {
    */
   _$setValue(
     value: unknown | Array<unknown>,
+    options?: Record<string, unknown>,
     directiveParent: DirectiveParent = this,
     valueIndex?: number,
     noCommit?: boolean,
@@ -1815,7 +1667,7 @@ class AttributePart implements Disconnectable {
 
     if (strings === undefined) {
       // Single-value binding case
-      value = resolveDirective(this, value, directiveParent, 0)
+      value = resolveDirective(this, value, directiveParent, options, 0)
       change = !isPrimitive(value) || (value !== this._$committedValue && value !== noChange)
       if (change) {
         this._$committedValue = value
@@ -1827,7 +1679,7 @@ class AttributePart implements Disconnectable {
 
       let i, v
       for (i = 0; i < strings.length - 1; i++) {
-        v = resolveDirective(this, values[valueIndex! + i], directiveParent, i)
+        v = resolveDirective(this, values[valueIndex! + i], directiveParent, options, i)
 
         if (v === noChange) {
           // If the user-provided value is `noChange`, use the previous value
@@ -1931,8 +1783,12 @@ class EventPart extends AttributePart {
   // EventPart does not use the base _$setValue/_resolveValue implementation
   // since the dirty checking is more complex
   /** @internal */
-  override _$setValue(newListener: unknown, directiveParent: DirectiveParent = this) {
-    newListener = resolveDirective(this, newListener, directiveParent, 0) ?? nothing
+  override _$setValue(
+    newListener: unknown,
+    options?: Record<string, unknown>,
+    directiveParent: DirectiveParent = this,
+  ) {
+    newListener = resolveDirective(this, newListener, directiveParent, options, 0) ?? nothing
     if (newListener === noChange) {
       return
     }
@@ -2003,8 +1859,8 @@ class ElementPart implements Disconnectable {
     return this._$parent._$isConnected
   }
 
-  _$setValue(value: unknown): void {
-    resolveDirective(this, value)
+  _$setValue(value: unknown, options?: Record<string, unknown>): void {
+    resolveDirective(this, value, undefined, options)
   }
 }
 
@@ -2093,7 +1949,7 @@ if (DEV_MODE && global.litHtmlVersions.length > 1) {
 export const render = (
   value: unknown,
   container: HTMLElement | DocumentFragment,
-  options?: RenderOptions,
+  options: RenderOptions = {},
 ): RootPart => {
   if (DEV_MODE && container == null) {
     // Give a clearer error message than
@@ -2102,15 +1958,13 @@ export const render = (
     // which reads like an internal Lit error.
     throw new TypeError(`The container to render into may not be ${container}`)
   }
-  const partOwnerNode = options?.renderBefore ?? container
-  // if (value === 'PopoverContent') {
-  //   debugger
-  // }
+  const { host, renderBefore, creationScope, isConnected, ...rest } = options
+  const partOwnerNode = renderBefore ?? container
   // This property needs to remain unminified.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let part: ChildPart = (partOwnerNode as any)['_$litPart$']
   if (part === undefined) {
-    const endNode = options?.renderBefore ?? null
+    const endNode = renderBefore ?? null
     // This property needs to remain unminified.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(partOwnerNode as any)['_$litPart$'] = part = new ChildPart(
@@ -2118,10 +1972,10 @@ export const render = (
       endNode,
       container,
       undefined,
-      options ?? {},
+      options,
     )
   }
-  part._$setValue(value)
+  part._$setValue(value, rest)
   return part as RootPart
 }
 

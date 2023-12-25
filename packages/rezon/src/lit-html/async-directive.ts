@@ -350,9 +350,9 @@ export abstract class AsyncDirective extends Directive {
    * @param directive The directive to update
    * @param value The value to set
    */
-  setValue(value: unknown) {
+  setValue(value: unknown, options?: Record<string, unknown>) {
     if (isSingleExpression(this.__part as unknown as PartInfo)) {
-      this.__part._$setValue(value, this)
+      this.__part._$setValue(value, options, this)
     } else {
       // this.__attributeIndex will be defined in this case, but
       // assert it in dev mode
@@ -361,7 +361,7 @@ export abstract class AsyncDirective extends Directive {
       }
       const newValues = [...(this.__part._$committedValue as Array<unknown>)]
       newValues[this.__attributeIndex!] = value
-      ;(this.__part as AttributePart)._$setValue(newValues, this, 0)
+      ;(this.__part as AttributePart)._$setValue(newValues, options, this, 0)
     }
   }
 

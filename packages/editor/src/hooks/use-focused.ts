@@ -38,7 +38,7 @@ export const useFocused = (): [boolean, (isFocused: boolean) => void] => {
   return [
     isFocused,
     (isFocused: boolean) => {
-      store.setState({ isFocused })
+      store.setState(state => (state.isFocused === isFocused ? state : { isFocused }))
     },
   ]
 }

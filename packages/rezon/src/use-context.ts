@@ -33,7 +33,9 @@ const create = <T>() => {
 
     const _updater = (_value: T): void => {
       value = _value
-      state.update(true)
+      state.update({
+        force: true,
+      })
     }
 
     const _subscribe = (Context: Context<T>): void => {

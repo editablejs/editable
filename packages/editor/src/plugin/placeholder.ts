@@ -1,6 +1,7 @@
 import { Editor, Node, NodeEntry, Range } from '@editablejs/models'
 import { create, UseBoundStore, StoreApi } from 'rezon-store'
 import { Editable } from './editable'
+import { shallow } from 'rezon-store/shallow'
 
 export interface RenderPlaceholderProps {
   node: Node
@@ -123,18 +124,26 @@ export const Placeholder = {
           return Placeholder.update(editor, entry)
         }
       }
-      store.setState(({ actives }) => {
+      store.setState(state => {
+        const { actives } = state
+        const new_actives = actives.filter(d => {
+          if (!d.alone) return false
+          return Editor.isEmpty(editor, d.entry[0])
+        })
         return {
-          actives: actives.filter(d => {
-            if (!d.alone) return false
-            return Editor.isEmpty(editor, d.entry[0])
-          }),
+          ...state,
+          actives: shallow(actives, new_actives) ? actives : new_actives,
         }
       })
     } else {
-      store.setState(({ actives }) => ({
-        actives: actives.filter(d => d.alone),
-      }))
+      store.setState(state => {
+        const { actives } = state
+        const new_actives = actives.filter(d => d.alone)
+        return {
+          ...state,
+          actives: shallow(actives, new_actives) ? actives : new_actives,
+        }
+      })
     }
   },
 }

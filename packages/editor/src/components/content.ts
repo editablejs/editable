@@ -62,10 +62,10 @@ import { styleMap } from 'rezon/directives/style-map'
 import { spread } from 'rezon/directives/spread'
 import { ref } from 'rezon/directives/ref'
 
-const Children = (props: Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>) => {
+const Children = virtual<Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>>(props => {
   const editor = useEditable()
   return useChildren({ ...props, node: editor, selection: editor.selection })
-}
+})
 
 /**
  * `EditableProps` are passed to the `<Editable>` component.
@@ -665,14 +665,27 @@ export const ContentEditable = virtual<EditableProps>(props => {
           InputComponent({ autoFocus }),
         ],
       })}
-      ${TouchPointComponent({
-        onAnchorTouchStart: handleAnchorTouchPointStart,
-        onFocusTouchStart: handleFocusTouchPointStart,
-      })}
-      ${rendered ? Slots() : null}
     </div>
   `
 })
+//
+/**
+ *
+${ShadowContainer({
+    ref: current => EDITOR_TO_SHADOW.set(editor, current),
+    children: [
+      CaretComponent({}),
+      DragCaretComponent(),
+      SelectionComponent(),
+      InputComponent({ autoFocus }),
+    ],
+  })}
+${TouchPointComponent({
+    onAnchorTouchStart: handleAnchorTouchPointStart,
+    onFocusTouchStart: handleFocusTouchPointStart,
+  })}
+      ${rendered ? Slots() : null}
+ */
 
 const isSelectedOnCurrentSelection = (
   editor: Editor,

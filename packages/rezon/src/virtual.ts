@@ -7,7 +7,7 @@ import {
 import { html, noChange } from './lit-html/html'
 import { AsyncDirective } from './lit-html/async-directive'
 import { shallow } from '@editablejs/utils/shallow'
-import { createScheduler, Scheduler } from './scheduler'
+import { createScheduler, Scheduler, SchedulerUpdateOptions } from './scheduler'
 import { FC } from './core'
 
 type PropsAreEqual<P> = ((prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) | true
@@ -29,20 +29,26 @@ const RENDERER_TO_SCHEDULER: WeakMap<
 const createVirtualScheduler = <P = {}, C extends FC<P> = FC<P>>(
   renderer: C,
   part: ChildPart,
-  setValue: Function,
+  setValue: AsyncDirective['setValue'],
 ) => {
   const scheduler = createScheduler<P, ChildPart, ChildPart>(part) as VirtualScheduler<P>
   scheduler.state.virtual = true
-  let prevResult: unknown
-  scheduler.render = (force): unknown => {
-    if (!force && scheduler.shouldReturnCachedResult) {
-      return prevResult
+  scheduler.render = (options = {}): unknown => {
+    if (!options.force && scheduler.shouldReturnCachedResult) {
+      return noChange
     }
-    prevResult = scheduler.state.run(() => renderer.apply(part, [scheduler.props]))
-    return prevResult
+    return scheduler.state.run(() => {
+      const rendererThis = part as ChildPart & { currentOptions?: Record<string, unknown> }
+      rendererThis.currentOptions = options as Record<string, unknown>
+      return renderer.apply(rendererThis, [scheduler.props])
+    })
   }
-  scheduler.commit = (result: unknown): void => {
-    setValue(isDirectiveResult(result) ? html`${result}` : result)
+  scheduler.commit = (result: unknown, options): void => {
+    delete options?.force
+    setValue(
+      isDirectiveResult(result) ? html`${result}` : result,
+      options as Record<string, unknown>,
+    )
   }
   const superTeardown = scheduler.teardown
   scheduler.teardown = (): void => {
@@ -81,7 +87,7 @@ export function virtual<P = {}>(
       super(partInfo)
     }
 
-    update(part: ChildPart, args: DirectiveParameters<this>) {
+    update(part: ChildPart, args: DirectiveParameters<this>, options: SchedulerUpdateOptions = {}) {
       virtualScheduler = RENDERER_TO_CHILDPART.get(renderer)?.get(
         part,
       ) as VirtualScheduler<P> | null
@@ -114,7 +120,7 @@ export function virtual<P = {}>(
       }
       virtualScheduler.shouldReturnCachedResult = shouldReturnCachedResult
       isRendered = true
-      virtualScheduler.update()
+      virtualScheduler.update(options)
       return this.render(args)
     }
 

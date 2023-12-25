@@ -29,7 +29,9 @@ const create = <T>() => {
       }
 
       makeArgs(value)
-      state.update(true)
+      state.update({
+        force: true,
+      })
     }
 
     const makeArgs = (value: T): void => {

@@ -1,5 +1,5 @@
 import { Hook } from './hook'
-import { setCurrent, clear } from './interface'
+import { setCurrent, clear, BatchId } from './interface'
 import { hookSymbol, effectsSymbol, layoutEffectsSymbol, EffectsSymbols } from './symbols'
 import { isFunction } from './utils'
 
@@ -7,7 +7,12 @@ export interface Callable {
   call: (state: State) => void
 }
 
-export type StateUpdate = (force?: boolean) => void
+export interface StateUpdateOptions {
+  force?: boolean
+  batchId?: BatchId
+}
+
+export type StateUpdate = (options?: StateUpdateOptions) => void
 
 export interface State<H = unknown> {
   update: StateUpdate

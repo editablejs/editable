@@ -1,4 +1,4 @@
-import { State, createState } from './state'
+import { StateUpdateOptions, State, createState } from './state'
 import {
   commitSymbol,
   phaseSymbol,
@@ -9,8 +9,15 @@ import {
   EffectsSymbols,
 } from './symbols'
 import { CustomComponentOrVirtualComponent } from './core'
-import { ChildPart, Disconnectable } from './lit-html/html'
-import { isFlushing, setFlushing } from './interface'
+import { ChildPart, Disconnectable, noChange } from './lit-html/html'
+import {
+  BatchId,
+  RootStateMap,
+  createBatchId,
+  createRootStateMap,
+  isFlushing,
+  setFlushing,
+} from './interface'
 
 const defer = Promise.resolve().then.bind(Promise.resolve())
 
@@ -44,6 +51,10 @@ const runner = () => {
 const read = runner()
 const write = runner()
 
+export interface SchedulerUpdateOptions extends StateUpdateOptions {
+  state?: State<unknown>
+}
+
 export interface Scheduler<
   P = {},
   T = HTMLElement | ChildPart,
@@ -51,98 +62,229 @@ export interface Scheduler<
 > {
   state: State<H>
   [phaseSymbol]: Phase | null
-  update(): void
-  render(force?: boolean): unknown
-  commit(result: unknown): void
+  update(options?: SchedulerUpdateOptions): void
+  render(options?: SchedulerUpdateOptions): unknown
+  commit(result: unknown, options?: SchedulerUpdateOptions): void
   teardown(): void
 }
 
-const CHILDPART_TO_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction> = new WeakMap()
-const CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
-  Disconnectable,
-  Set<Scheduler<unknown, unknown, unknown>>
-> = new WeakMap()
-
-const CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP: WeakMap<Disconnectable, VoidFunction> = new WeakMap()
-const CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP: WeakMap<
-  Disconnectable,
-  Set<Scheduler<unknown, unknown, unknown>>
-> = new WeakMap()
-
 const handleEffects = (
-  host: ChildPart,
+  batchId: BatchId,
+  state: State,
   phase: EffectsSymbols,
-  run: (phase: EffectsSymbols) => void,
+  run: (phase: EffectsSymbols, noChange?: boolean) => void,
+  noChange = false,
 ) => {
-  const schedulers =
-    phase === effectsSymbol
-      ? CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP.get(host)
-      : CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP.get(host)
-  if (schedulers && schedulers.size > 0) {
-    let effects =
-      phase === effectsSymbol
-        ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
-        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
-    if (!effects) {
-      effects = () => run(phase)
-      phase === effectsSymbol
-        ? CHILDPART_TO_EFFECT_WEAKMAP.set(host, effects)
-        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.set(host, effects)
-    }
-  } else {
-    return run(phase)
+  const children = getChildrenFromStateMap(batchId, phase, state)
+  addEffectsToStateMap(batchId, phase, state, () => run(phase, noChange))
+  if (!children || children.size === 0) {
+    finishStateMap(batchId, phase, state)
   }
 }
 
-const handleEffectScheduler = (
-  host: ChildPart,
-  scheduler: Scheduler<unknown, unknown, unknown>,
-) => {
-  ;[CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP, CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP].forEach(
-    map => {
-      let schedulers = map.get(host)
-      if (!schedulers) {
-        schedulers = new Set()
-        map.set(host, schedulers)
-      }
-      schedulers.add(scheduler)
-    },
-  )
+const BATCHID_TO_ROOTSTATE_WEAKMAP: WeakMap<BatchId, RootStateMap> = new WeakMap()
+
+const BATCHID_TO_STATE_WEAKMAP: WeakMap<
+  BatchId,
+  WeakMap<EffectsSymbols, WeakMap<State, Map<State, boolean>>>
+> = new WeakMap()
+
+const BATCHID_TO_STATE_PARENT_WEAKMAP: WeakMap<
+  BatchId,
+  WeakMap<EffectsSymbols, WeakMap<State, State>>
+> = new WeakMap()
+
+const BATCHID_TO_EFFECTS_WEAKMAP: WeakMap<
+  BatchId,
+  WeakMap<EffectsSymbols, WeakMap<State, VoidFunction[]>>
+> = new WeakMap()
+
+const getStateMapFromBatchId = (batchId: BatchId, effectsSymbols: EffectsSymbols) => {
+  let batchIdToState = BATCHID_TO_STATE_WEAKMAP.get(batchId)
+  if (!batchIdToState) {
+    batchIdToState = new WeakMap()
+    BATCHID_TO_STATE_WEAKMAP.set(batchId, batchIdToState)
+  }
+  let effectsToState = batchIdToState.get(effectsSymbols)
+  if (!effectsToState) {
+    effectsToState = new WeakMap()
+    batchIdToState.set(effectsSymbols, effectsToState)
+  }
+  return effectsToState
 }
 
-const handleRunEffects = (
-  host: ChildPart,
-  phase: EffectsSymbols,
-  scheduler?: Scheduler<unknown, unknown, unknown>,
-) => {
-  const schedulers =
-    phase === effectsSymbol
-      ? CHILDPART_TO_EFFECT_SCHEDULER_WEAKMAP.get(host)
-      : CHILDPART_TO_LAYOUT_EFFECT_SCHEDULER_WEAKMAP.get(host)
-
-  if (schedulers && scheduler) {
-    schedulers.delete(scheduler)
+const getStateParentMapFromBatchId = (batchId: BatchId, effectsSymbols: EffectsSymbols) => {
+  let batchIdToState = BATCHID_TO_STATE_PARENT_WEAKMAP.get(batchId)
+  if (!batchIdToState) {
+    batchIdToState = new WeakMap()
+    BATCHID_TO_STATE_PARENT_WEAKMAP.set(batchId, batchIdToState)
   }
-  if (!schedulers || schedulers.size === 0) {
-    const effects =
-      phase === effectsSymbol
-        ? CHILDPART_TO_EFFECT_WEAKMAP.get(host)
-        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.get(host)
+  let effectsToState = batchIdToState.get(effectsSymbols)
+  if (!effectsToState) {
+    effectsToState = new WeakMap()
+    batchIdToState.set(effectsSymbols, effectsToState)
+  }
+  return effectsToState
+}
+
+const deleteStateMapFromBatchId = (batchId: BatchId, effectsSymbols: EffectsSymbols) => {
+  const batchIdToState = BATCHID_TO_STATE_WEAKMAP.get(batchId)
+  if (batchIdToState) {
+    batchIdToState.delete(effectsSymbols)
+  }
+}
+
+const deleteStateParentMapFromBatchId = (batchId: BatchId, effectsSymbols: EffectsSymbols) => {
+  const batchIdToState = BATCHID_TO_STATE_PARENT_WEAKMAP.get(batchId)
+  if (batchIdToState) {
+    batchIdToState.delete(effectsSymbols)
+  }
+}
+
+const addChildrenToStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  state: State,
+  child: State,
+) => {
+  const stateMap = getStateMapFromBatchId(batchId, effectsSymbols)
+  let children = stateMap.get(state)
+  if (!children) {
+    children = new Map()
+    stateMap.set(state, children)
+  }
+  children.set(child, false)
+  const stateParentMap = getStateParentMapFromBatchId(batchId, effectsSymbols)
+  if (!stateParentMap.has(child)) {
+    stateParentMap.set(child, state)
+  }
+}
+
+const getChildrenFromStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  state: State,
+) => {
+  const stateMap = getStateMapFromBatchId(batchId, effectsSymbols)
+  return stateMap.get(state)
+}
+
+const deleteChildrenFromStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  parent: State,
+  state: State,
+) => {
+  const stateMap = getStateMapFromBatchId(batchId, effectsSymbols)
+  const children = stateMap.get(parent)
+  if (children) {
+    children.delete(state)
+  }
+}
+
+const deleteParentFromStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  state: State,
+) => {
+  const parentMap = getStateParentMapFromBatchId(batchId, effectsSymbols)
+  parentMap.delete(state)
+}
+
+const getEffectsFromStateMap = (batchId: BatchId, effectsSymbols: EffectsSymbols, state: State) => {
+  let batchIdToEffects = BATCHID_TO_EFFECTS_WEAKMAP.get(batchId)
+  if (!batchIdToEffects) {
+    batchIdToEffects = new WeakMap()
+    BATCHID_TO_EFFECTS_WEAKMAP.set(batchId, batchIdToEffects)
+  }
+  let effects = batchIdToEffects.get(effectsSymbols)
+  if (!effects) {
+    effects = new WeakMap()
+    batchIdToEffects.set(effectsSymbols, effects)
+  }
+  let stateToEffects = effects.get(state)
+  if (!stateToEffects) {
+    stateToEffects = []
+    effects.set(state, stateToEffects)
+  }
+  return stateToEffects
+}
+
+const addEffectsToStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  state: State,
+  effect: VoidFunction,
+) => {
+  const effects = getEffectsFromStateMap(batchId, effectsSymbols, state)
+  effects.push(effect)
+}
+
+const deleteEffectsFromStateMap = (
+  batchId: BatchId,
+  effectsSymbols: EffectsSymbols,
+  state: State,
+) => {
+  const batchIdToEffects = BATCHID_TO_EFFECTS_WEAKMAP.get(batchId)
+  if (batchIdToEffects) {
+    const effects = batchIdToEffects.get(effectsSymbols)
     if (effects) {
-      effects()
-      phase === effectsSymbol
-        ? CHILDPART_TO_EFFECT_WEAKMAP.delete(host)
-        : CHILDPART_TO_LAYOUT_EFFECT_WEAKMAP.delete(host)
+      effects.delete(state)
     }
   }
 }
 
-const getParent = (host: ChildPart): ChildPart | null => {
-  let parent = host._$parent
-  while (parent && (parent as ChildPart).type !== 2) {
-    parent = parent._$parent
+const finishStateMap = (batchId: BatchId, effectsSymbols: EffectsSymbols, state: State) => {
+  const parentState = getStateParentMapFromBatchId(batchId, effectsSymbols).get(state)
+  if (!parentState) {
+    const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
+    if (rootStateMap) {
+      let allFinished = true
+      for (const [rootState, value] of rootStateMap) {
+        if (rootState === state) {
+          value[effectsSymbols] = true
+          if (!allFinished) break
+        } else {
+          allFinished = allFinished && value[effectsSymbols]
+        }
+      }
+      if (allFinished) {
+        for (const [rootState] of rootStateMap) {
+          const effects = getEffectsFromStateMap(batchId, effectsSymbols, rootState)
+          for (const effect of effects) {
+            effect()
+          }
+          deleteEffectsFromStateMap(batchId, effectsSymbols, rootState)
+        }
+        deleteStateMapFromBatchId(batchId, effectsSymbols)
+        deleteStateParentMapFromBatchId(batchId, effectsSymbols)
+      }
+    }
+    return
   }
-  return parent as ChildPart
+  const children = getChildrenFromStateMap(batchId, effectsSymbols, parentState)
+  if (children) {
+    let allFinished = true
+    for (const [child, finish] of children) {
+      if (child === state) {
+        children.set(child, true)
+        if (!allFinished) break
+      } else {
+        allFinished = allFinished && finish
+      }
+    }
+    if (allFinished) {
+      const effects = getEffectsFromStateMap(batchId, effectsSymbols, parentState)
+      for (const [child] of children) {
+        const childEffects = getEffectsFromStateMap(batchId, effectsSymbols, child)
+        effects.unshift(...childEffects)
+        deleteEffectsFromStateMap(batchId, effectsSymbols, child)
+        deleteChildrenFromStateMap(batchId, effectsSymbols, parentState, child)
+        deleteParentFromStateMap(batchId, effectsSymbols, child)
+      }
+      finishStateMap(batchId, effectsSymbols, parentState)
+    }
+  }
 }
 
 export const createScheduler = <
@@ -152,22 +294,22 @@ export const createScheduler = <
 >(
   host: H,
 ) => {
-  const handlePhase = (phase: Phase, arg?: unknown, force?: boolean) => {
+  const handlePhase = (phase: Phase, arg?: unknown, options: SchedulerUpdateOptions = {}) => {
     scheduler[phaseSymbol] = phase
     switch (phase) {
       case commitSymbol:
-        scheduler.commit(arg)
+        scheduler.commit(arg, options)
         if (state.virtual) {
-          handleEffects(host as ChildPart, layoutEffectsSymbol, runEffects)
+          handleEffects(options.batchId!, state, layoutEffectsSymbol, runEffects, arg === noChange)
         } else {
           runEffects(layoutEffectsSymbol)
         }
         return
       case updateSymbol:
-        return scheduler.render(force)
+        return scheduler.render(options)
       case effectsSymbol:
         if (state.virtual) {
-          handleEffects(host as ChildPart, effectsSymbol, runEffects)
+          handleEffects(options.batchId!, state, effectsSymbol, runEffects, arg === noChange)
         } else {
           runEffects(effectsSymbol)
         }
@@ -175,31 +317,55 @@ export const createScheduler = <
   }
   let _updateQueued = false
   let _updateForce = false
-  const update = (force?: boolean) => {
-    if (state.virtual) {
-      const parent = getParent(host as ChildPart)
-      if (parent) {
-        handleEffectScheduler(parent, scheduler)
-      }
-    }
+  const update = (options: SchedulerUpdateOptions = {}) => {
+    let { force = false, batchId, state: parentState } = options
+
     if (force) _updateForce = true
     if (_updateQueued) return
+    if (!batchId) {
+      batchId = createBatchId()
+      BATCHID_TO_ROOTSTATE_WEAKMAP.set(batchId, createRootStateMap(state))
+    }
+    if (state.virtual) {
+      const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
+      if (rootStateMap && rootStateMap.has(state)) {
+        const rootState = rootStateMap.get(state)!
+        if (rootState.started) return
+        rootState.started = true
+      }
+
+      if (parentState) {
+        addChildrenToStateMap(batchId, layoutEffectsSymbol, parentState, state)
+        addChildrenToStateMap(batchId, effectsSymbol, parentState, state)
+      }
+    }
+
     if (isFlushing) {
       _updateQueued = true
-      const result = handlePhase(updateSymbol, undefined, _updateForce)
-      handlePhase(commitSymbol, result, _updateForce)
-      handlePhase(effectsSymbol)
+      const options = {
+        force: _updateForce,
+        batchId,
+        state,
+      }
+      const result = handlePhase(updateSymbol, undefined, options)
+      handlePhase(commitSymbol, result, options)
+      handlePhase(effectsSymbol, result, options)
       _updateForce = false
       _updateQueued = false
     } else {
       read(() => {
-        let result = handlePhase(updateSymbol, undefined, _updateForce)
+        const options = {
+          force: _updateForce,
+          batchId,
+          state,
+        }
+        const result = handlePhase(updateSymbol, undefined, options)
         write(() => {
-          handlePhase(commitSymbol, result, _updateForce)
-
+          handlePhase(commitSymbol, result, options)
           write(() => {
-            handlePhase(effectsSymbol)
+            handlePhase(effectsSymbol, result, options)
           })
+          return result
         })
         _updateForce = false
         _updateQueued = false
@@ -209,13 +375,8 @@ export const createScheduler = <
   }
   const state = createState(update, host)
 
-  const runEffects = (phase: EffectsSymbols): void => {
-    state._runEffects(phase)
-    if (!state.virtual) return
-    const parent = getParent(host as ChildPart)
-    if (parent) {
-      handleRunEffects(parent, phase, scheduler)
-    }
+  const runEffects = (phase: EffectsSymbols, noChange = false): void => {
+    if (!noChange) state._runEffects(phase)
   }
 
   const scheduler: Scheduler<P, T, H> = {

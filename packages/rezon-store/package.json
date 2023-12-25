@@ -108,6 +108,7 @@
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
+    "rezon": "workspace:*",
     "tsconfig": "workspace:*",
     "tsup": "^7.x",
     "tsup-config": "workspace:*",

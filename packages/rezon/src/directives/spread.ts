@@ -44,7 +44,7 @@ export class SpreadPropsDirective extends AsyncDirective {
   render(_spreadData: object) {
     return nothing
   }
-  update(part: Part, [spreadData]: Parameters<this['render']>) {
+  update(part: Part, [spreadData]: Parameters<this['render']>, options?: Record<string, unknown>) {
     if (this.element !== (part as ElementPart).element) {
       this.element = (part as ElementPart).element
     }
@@ -69,7 +69,7 @@ export class SpreadPropsDirective extends AsyncDirective {
         continue
       }
       if (name === 'children') {
-        const rootPart = render(value, this.element as unknown as HTMLElement)
+        const rootPart = render(value, this.element as unknown as HTMLElement, options)
         // @ts-ignore
         rootPart._$parent = part
         continue

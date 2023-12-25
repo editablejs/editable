@@ -36,6 +36,7 @@ import {
   PopoverContent,
 } from '@editablejs/theme'
 import ReactDOM from 'react-dom'
+import { use } from 'i18next'
 
 interface TestProps extends HTMLAttributes<HTMLDivElement> {
   value?: string
@@ -52,10 +53,18 @@ const CountContext = createContext<{ count: number; setCount: (value: number) =>
 
 const TestPortalContent = virtual(() => {
   const { count } = useContext(PortalContext)
+  useLayoutEffect(() => {
+    console.log('TestPortalContent LayoutEffect')
+    return () => console.log('TestPortalContent LayoutEffect unmounted')
+  })
   return html`<div>Portal${count}</div>`
 })
 
 const TestPortal = virtual(() => {
+  useLayoutEffect(() => {
+    console.log('TestPortal LayoutEffect')
+    return () => console.log('TestPortal LayoutEffect unmounted')
+  })
   return html`<div>
     TestPortal${Portal({
       children: TestPortalContent(),
@@ -121,12 +130,12 @@ const TestChild = virtual(() => {
     console.log('TestChild LayoutEffect')
     return () => console.log('TestChild LayoutEffect unmounted')
   })
-  useEffect(() => {
-    console.log('TestChild Effect')
-    return () => console.log('TestChild Effect unmounted')
-  }, [])
+  // useEffect(() => {
+  //   console.log('TestChild Effect')
+  //   return () => console.log('TestChild Effect unmounted')
+  // })
   return html`<div>TestChild: <button @click=${() => setCount(count + 1)}>${count}</button></div>`
-}, true)
+})
 
 const TestMemo = virtual(() => {
   const [count, setCount] = useState(0)
@@ -135,12 +144,26 @@ const TestMemo = virtual(() => {
     console.log('TestMemo LayoutEffect')
     return () => console.log('TestMemo LayoutEffect unmounted')
   })
-  useEffect(() => {
-    console.log('TestMemo Effect')
-    return () => console.log('TestMemo Effect unmounted')
-  }, [])
+  // useEffect(() => {
+  //   console.log('TestMemo Effect')
+  //   return () => console.log('TestMemo Effect unmounted')
+  // })
   return TestChild()
-}, true)
+})
+
+const TestChild1 = virtual(() => {
+  const [count, setCount] = useState(0)
+
+  useLayoutEffect(() => {
+    console.log('TestChild1 LayoutEffect')
+    return () => console.log('TestChild1 LayoutEffect unmounted')
+  })
+  // useEffect(() => {
+  //   console.log('TestChild Effect')
+  //   return () => console.log('TestChild Effect unmounted')
+  // })
+  return html`<div>TestChild1</div>`
+})
 
 const MyApp = virtual(() => {
   const [count, setCount] = useState(0)
@@ -152,14 +175,17 @@ const MyApp = virtual(() => {
 
     return () => console.log('MyApp LayoutEffect unmounted')
   })
-  useEffect(() => {
-    console.log('MyApp Effect')
+  // useEffect(() => {
+  //   console.log('MyApp Effect')
 
-    return () => console.log('MyApp Effect unmounted')
-  }, [])
+  //   return () => console.log('MyApp Effect unmounted')
+  // })
 
   return html`<div>
-    ${TestMemo()}<button @click=${() => setCount(count + 1)}>Count Button: ${count}</button>
+    ${PortalContext.Provider({
+      value: { count },
+      children: TestPortal(),
+    })}<button @click=${() => setCount(count + 1)}>Count Button: ${count}</button>
   </div>`
 })
 /**
@@ -232,17 +258,16 @@ Test.displayName = 'Test'
 
 const ReactTestContext = createReactContext(0)
 
-const ReactMemo = memo(
-  () => {
-    const value = useReactContext(ReactTestContext)
-    console.log('ReactMemo', value)
-    return <span>{value}</span>
-  },
-  () => {
-    debugger
-    return false
-  },
-)
+const ReactMemo = () => {
+  const value = useReactContext(ReactTestContext)
+  console.log('ReactMemo', value)
+  useReactLayoutEffect(() => {
+    console.log('ReactMemo LayoutEffect')
+    return () => console.log('ReactMemo LayoutEffect unmounted')
+  })
+  return <span>{value}</span>
+}
+
 ReactMemo.displayName = 'ReactMemo'
 
 const ReactButton = () => {
@@ -252,12 +277,12 @@ const ReactButton = () => {
   useReactLayoutEffect(() => {
     console.log('ReactButton LayoutEffect')
     return () => console.log('ReactButton LayoutEffect unmounted')
-  }, [])
+  })
 
-  useReactEffect(() => {
-    console.log('ReactButton Effect')
-    return () => console.log('ReactButton Effect unmounted')
-  }, [])
+  // useReactEffect(() => {
+  //   console.log('ReactButton Effect')
+  //   return () => console.log('ReactButton Effect unmounted')
+  // })
 
   return (
     <div>
@@ -279,6 +304,26 @@ const ReactButton = () => {
 }
 ReactButton.displayName = 'ReactButton'
 
+const ReactButton1 = () => {
+  useReactLayoutEffect(() => {
+    console.log('ReactButton1 LayoutEffect')
+    return () => console.log('ReactButton1 LayoutEffect unmounted')
+  })
+
+  return <div>React Button 1</div>
+}
+ReactButton.displayName = 'ReactButton1'
+
+const ReactButton2 = () => {
+  useReactLayoutEffect(() => {
+    console.log('ReactButton2 LayoutEffect')
+    return () => console.log('ReactButton2 LayoutEffect unmounted')
+  })
+
+  return <div>React Button 1</div>
+}
+ReactButton.displayName = 'ReactButton2'
+
 const ReactTest = () => {
   const [count, setCount] = useReactState(0)
 
@@ -286,16 +331,17 @@ const ReactTest = () => {
     console.log('ReactTest LayoutEffect')
 
     return () => console.log('ReactTest LayoutEffect unmounted')
-  }, [])
+  })
 
-  useReactEffect(() => {
-    console.log('ReactTest Effect')
-    return () => console.log('ReactTest Effect unmounted')
-  }, [])
+  // useReactEffect(() => {
+  //   console.log('ReactTest Effect')
+  //   return () => console.log('ReactTest Effect unmounted')
+  // })
   return (
     <div>
       <div>
         <ReactButton />
+        <ReactButton1 />
       </div>
       <div>
         <button onClick={() => setCount(count + 1)}>{count}</button>

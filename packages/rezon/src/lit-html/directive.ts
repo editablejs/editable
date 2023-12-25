@@ -126,13 +126,13 @@ export abstract class Directive implements Disconnectable {
     this.__attributeIndex = attributeIndex
   }
   /** @internal */
-  _$resolve(part: Part, props: Array<unknown>): unknown {
-    return this.update(part, props)
+  _$resolve(part: Part, props: Array<unknown>, options?: Record<string, unknown>): unknown {
+    return this.update(part, props, options)
   }
 
   abstract render(...props: Array<unknown>): unknown
 
-  update(_part: Part, props: Array<unknown>): unknown {
+  update(_part: Part, props: Array<unknown>, options?: Record<string, unknown>): unknown {
     return this.render(...props)
   }
 }
