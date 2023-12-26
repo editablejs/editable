@@ -9,7 +9,7 @@ import {
 import { isTouchDevice } from '../utils/environment'
 import { IS_TOUCHING, IS_TOUCHMOVING } from '../utils/weak-maps'
 import { ShadowBlock } from './shadow'
-import { CSSProperties, html, virtual } from 'rezon'
+import { CSSProperties, html, c } from 'rezon'
 import { styleMap } from 'rezon/directives/style-map'
 
 interface TouchPointProps {
@@ -17,7 +17,7 @@ interface TouchPointProps {
   onFocusTouchStart?: (e: TouchEvent) => void
 }
 
-const TouchPointComponent = virtual<TouchPointProps>(
+const TouchPointComponent = c<TouchPointProps>(
   ({ onAnchorTouchStart, onFocusTouchStart }) => {
     const selection = useSelectionDrawingSelection()
     const rects = useSelectionDrawingRects()
@@ -60,10 +60,10 @@ const TouchPointComponent = virtual<TouchPointProps>(
         children: html`<div
           @touchstart=${onAnchorTouchStart}
           style=${styleMap({
-            ...baseStyle,
-            top: -10,
-            left: -5,
-          })}
+          ...baseStyle,
+          top: -10,
+          left: -5,
+        })}
         ></div>`,
       }),
       ShadowBlock({
@@ -78,10 +78,10 @@ const TouchPointComponent = virtual<TouchPointProps>(
         children: html`<div
           @touchstart=${onFocusTouchStart}
           style=${styleMap({
-            ...baseStyle,
-            bottom: -10,
-            right: -5,
-          })}
+          ...baseStyle,
+          bottom: -10,
+          right: -5,
+        })}
         ></div>`,
       }),
     ]

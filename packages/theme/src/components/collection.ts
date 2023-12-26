@@ -1,5 +1,5 @@
 
-import { RefObject, createContext, useContext, virtual, useRef, useEffect, useCallback, define, html } from 'rezon'
+import { RefObject, createContext, useContext, c, useRef, useEffect, useCallback, define, html } from 'rezon'
 import { useComposedRefs } from './compose-refs'
 import { Slot, SlotProps } from './slot'
 
@@ -31,7 +31,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
 
   const useCollectionContext = () => useContext(CollectionContext)
 
-  const CollectionProvider = virtual<{ children?: unknown }>(props => {
+  const CollectionProvider = c<{ children?: unknown }>(props => {
     const { children } = props
     const ref = useRef<CollectionElement>(null)
     const itemMap = useRef<ContextValue['itemMap']>(new Map()).current
@@ -45,7 +45,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
    * CollectionSlot
    * ---------------------------------------------------------------------------------------------*/
 
-  const CollectionSlot = virtual<CollectionProps>(
+  const CollectionSlot = c<CollectionProps>(
     (props) => {
       const { ref, children } = props
       const context = useCollectionContext()
@@ -65,7 +65,7 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     ref?: RefObject<ItemElement>
   }
 
-  const CollectionItemSlot = virtual<CollectionItemSlotProps>(
+  const CollectionItemSlot = c<CollectionItemSlotProps>(
     (props) => {
       const { children, ref: refProp, ...itemData } = props
       const ref = useRef<ItemElement>(null)

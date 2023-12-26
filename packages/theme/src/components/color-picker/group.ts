@@ -1,5 +1,5 @@
 
-import { html, virtual } from 'rezon'
+import { html, c } from 'rezon'
 import { ColorPickerItem } from './item'
 import { Palette } from './palette'
 import tw, { css } from 'twin.macro'
@@ -12,10 +12,10 @@ export interface ColorPickerGroupProps {
   onSelect?: (color: string, event: MouseEvent) => void
 }
 
-export const ColorPickerGroup = virtual<ColorPickerGroupProps>(({ colors, ...props }) => {
+export const ColorPickerGroup = c<ColorPickerGroupProps>(({ colors, ...props }) => {
   return html`<span class="${css([
-        tw`flex w-full h-auto relative`,
-        css`
+    tw`flex w-full h-auto relative`,
+    css`
           :nth-child(1) {
             ${tw`mb-1.5`}
           }

@@ -12,7 +12,7 @@ import {
   MenuSubTrigger,
 } from './menu'
 import { useIsomorphicLayoutEffect } from '@/hooks/use-isomorphic-layout-effect'
-import { HTMLAttributes, createContext, html, useCallback, useContext, useEffect, useRef, useState, virtual } from 'rezon'
+import { HTMLAttributes, createContext, html, useCallback, useContext, useEffect, useRef, useState, c } from 'rezon'
 import { when } from 'rezon/directives/when'
 
 export interface ContextMenuItemProps {
@@ -56,7 +56,7 @@ const rightCls = (disabled?: boolean, size?: ContextMenuSize) => [
   ...disabledCls(disabled),
 ]
 
-export const ContextMenuItem = virtual<ContextMenuItemProps>(({
+export const ContextMenuItem = c<ContextMenuItemProps>(({
   icon,
   rightText,
   children,
@@ -86,7 +86,7 @@ export interface ContextMenuSubProps extends Omit<ContextMenuItemProps, 'rightTe
   title?: unknown
 }
 
-export const ContextMenuSub = virtual<ContextMenuSubProps>(({ title, icon, children, disabled }) => {
+export const ContextMenuSub = c<ContextMenuSubProps>(({ title, icon, children, disabled }) => {
   return MenuSub({
     children: html`${MenuSubTrigger({
       disabled,
@@ -111,7 +111,7 @@ export interface ContextMenuSeparatorProps {
   className?: string
 }
 
-export const ContextMenuSeparator = virtual<HTMLAttributes<HTMLDivElement>>(({
+export const ContextMenuSeparator = c<HTMLAttributes<HTMLDivElement>>(({
   className,
 }) => {
   return MenuSeparator({
@@ -119,7 +119,7 @@ export const ContextMenuSeparator = virtual<HTMLAttributes<HTMLDivElement>>(({
   })
 })
 
-export const ContextMenuLabel = virtual<Omit<HTMLAttributes<HTMLDivElement>, 'title'>>(({
+export const ContextMenuLabel = c<Omit<HTMLAttributes<HTMLDivElement>, 'title'>>(({
   children,
   className,
 }) => {
@@ -163,7 +163,7 @@ const useContextMenuSize = () => {
   return context.size
 }
 
-export const ContextMenu = virtual<ContextMenuProps>(({
+export const ContextMenu = c<ContextMenuProps>(({
   container = document.body,
   className,
   open: openProps,

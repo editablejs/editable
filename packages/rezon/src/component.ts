@@ -1,262 +1,186 @@
-import { ChildPart } from './lit-html/async-directive'
-import { FunctionComponent, RenderFunction } from './core'
-import { Scheduler, createScheduler } from './scheduler'
-import { isServer, BaseElement as _BaseElement } from './utils'
+import { directive, DirectiveParameters, ChildPart, PartInfo } from './lit-html/directive'
+import {
+  getDirectiveClass,
+  isDirectiveResult,
+  isTemplateResult,
+} from './lit-html/directive-helpers'
+import { html, noChange } from './lit-html/html'
+import { AsyncDirective } from './lit-html/async-directive'
+import { shallow } from '@editablejs/utils/shallow'
+import { createScheduler, Scheduler, SchedulerUpdateOptions } from './scheduler'
+import { Component } from './core'
 
-const toCamelCase = (val = ''): string =>
-  val.replace(/-+([a-z])?/g, (_, char) => (char ? char.toUpperCase() : ''))
+type PropsAreEqual<P> = ((prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) | true
 
-type HTMLComponent<P = {}> = HTMLElement & P
-
-export interface CustomComponent<P = {}> extends FunctionComponent<P, HTMLComponent<P>> {
-  observedAttributes?: (keyof P)[]
+interface ComponentScheduler<P = {}> extends Scheduler<P, ChildPart, ChildPart> {
+  props: P
+  shouldReturnCachedResult?: boolean
 }
 
-type CustomConstructor<P = {}> = new (...args: unknown[]) => HTMLComponent<P>
+const RENDERER_TO_CHILDPART: WeakMap<
+  Function,
+  WeakMap<ChildPart, ComponentScheduler<any>>
+> = new WeakMap()
+const RENDERER_TO_SCHEDULER: WeakMap<
+  Function,
+  WeakMap<ComponentScheduler<any>, ChildPart>
+> = new WeakMap()
 
-interface Creator {
-  <P = {}>(renderer: CustomComponent<P>): CustomConstructor<P>
-  <P = {}>(renderer: CustomComponent<P>, options: Options<P>): CustomConstructor<P>
-  <P = {}>(
-    renderer: CustomComponent<P>,
-    baseElement: CustomConstructor<{}>,
-    options: Omit<Options<P>, 'baseElement'>,
-  ): CustomConstructor<P>
-}
+const createComponentScheduler = <P = {}, C extends Component<P> = Component<P>>(
+  renderer: C,
+  part: ChildPart,
+  setValue: AsyncDirective['setValue'],
+) => {
+  const scheduler = createScheduler<P, ChildPart, ChildPart>(part) as ComponentScheduler<P>
 
-interface Options<P> {
-  baseElement?: CustomConstructor<{}>
-  observedAttributes?: (keyof P)[]
-  useShadowDOM?: boolean
-  shadowRootInit?: ShadowRootInit
-}
-
-interface ComponentScheduler<P = {}> extends Scheduler<P, HTMLElement, HTMLComponent<P>> {
-  frag: DocumentFragment | HTMLElement
-  renderResult?: ChildPart
-}
-
-const makeComponent = (render: RenderFunction): Creator => {
-  function createComponentScheduler<P = {}>(
-    renderer: CustomComponent<P>,
-    frag: DocumentFragment,
-    host: HTMLElement,
-  ): ComponentScheduler<P>
-  function createComponentScheduler<P = {}>(
-    renderer: CustomComponent<P>,
-    host: HTMLElement,
-  ): ComponentScheduler<P>
-  function createComponentScheduler<P = {}>(
-    renderer: CustomComponent<P>,
-    frag: DocumentFragment | HTMLElement,
-    host?: HTMLElement,
-  ): ComponentScheduler<P> {
-    const component = (host || frag) as HTMLComponent<P>
-    const scheduler = createScheduler<P, HTMLElement, HTMLComponent<P>>(
-      component,
-    ) as ComponentScheduler<P>
-    scheduler.commit = (result: unknown): void => {
-      scheduler.renderResult = render(result, frag)
+  scheduler.render = (options = {}): unknown => {
+    if (!options.force && scheduler.shouldReturnCachedResult) {
+      return noChange
     }
-
-    scheduler.render = () => {
-      return scheduler.state.run(() => renderer.call(component, component))
-    }
-
-    return scheduler
-  }
-
-  function component<P = {}>(renderer: CustomComponent<P>): CustomConstructor<P>
-  function component<P = {}>(
-    renderer: CustomComponent<P>,
-    options: Options<P>,
-  ): CustomConstructor<P>
-  function component<P = {}>(
-    renderer: CustomComponent<P>,
-    baseElement: CustomConstructor<P>,
-    options: Omit<Options<P>, 'baseElement'>,
-  ): CustomConstructor<P>
-  function component<P = {}>(
-    renderer: CustomComponent<P>,
-    baseElementOrOptions?: CustomConstructor<P> | Options<P>,
-    options?: Options<P>,
-  ): CustomConstructor<P> {
-    const BaseElement =
-      (options || (baseElementOrOptions as Options<P>) || {}).baseElement || _BaseElement
-    const {
-      observedAttributes = [],
-      useShadowDOM = true,
-      shadowRootInit = {},
-    } = options || (baseElementOrOptions as Options<P>) || {}
-
-    let _scheduler: ComponentScheduler<P>
-    class Element extends BaseElement {
-      static get observedAttributes(): (keyof P)[] {
-        return renderer.observedAttributes || observedAttributes || []
-      }
-
-      constructor() {
-        super()
-        if (useShadowDOM === false) {
-          _scheduler = createComponentScheduler(renderer, this)
-        } else {
-          this.attachShadow({ mode: 'open', ...shadowRootInit })
-          _scheduler = createComponentScheduler(renderer, this.shadowRoot!, this)
-        }
-      }
-
-      connectedCallback(): void {
-        _scheduler?.update()
-        //@ts-ignore
-        _scheduler.renderResult?.setConnected(true)
-      }
-
-      disconnectedCallback(): void {
-        _scheduler?.teardown()
-        //@ts-ignore
-        _scheduler.renderResult?.setConnected(false)
-      }
-
-      attributeChangedCallback(name: string, oldValue: unknown, newValue: unknown): void {
-        if (oldValue === newValue) {
-          return
-        }
-        let val = newValue === '' ? true : newValue
-        Reflect.set(this, toCamelCase(name), val)
-      }
-    }
-
-    const reflectiveProp = <T>(initialValue: T): Readonly<PropertyDescriptor> => {
-      let value = initialValue
-      let isSetup = false
-      return Object.freeze({
-        enumerable: true,
-        configurable: true,
-        get(): T {
-          return value
-        },
-        set(this: Element, newValue: T): void {
-          // Avoid scheduling update when prop value hasn't changed
-          if (isSetup && value === newValue) return
-          isSetup = true
-          value = newValue
-          _scheduler?.update()
-        },
-      })
-    }
-
-    const proto = new Proxy(BaseElement.prototype, {
-      getPrototypeOf(target) {
-        return target
-      },
-
-      set(target, key: string, value, receiver): boolean {
-        let desc: PropertyDescriptor | undefined
-        if (key in target) {
-          desc = Object.getOwnPropertyDescriptor(target, key)
-          if (desc && desc.set) {
-            desc.set.call(receiver, value)
-            return true
-          }
-
-          Reflect.set(target, key, value, receiver)
-          return true
-        }
-
-        if (typeof key === 'symbol' || key[0] === '_') {
-          desc = {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value,
-          }
-        } else {
-          desc = reflectiveProp(value)
-        }
-        Object.defineProperty(receiver, key, desc)
-
-        if (desc.set) {
-          desc.set.call(receiver, value)
-        }
-
-        return true
-      },
+    return scheduler.state.run(() => {
+      const rendererThis = part as ChildPart & { currentOptions?: Record<string, unknown> }
+      rendererThis.currentOptions = options as Record<string, unknown>
+      return renderer.apply(rendererThis, [scheduler.props])
     })
-
-    Object.setPrototypeOf(Element.prototype, proto)
-
-    return Element as unknown as CustomConstructor<P>
+  }
+  scheduler.commit = (result: unknown, options): void => {
+    delete options?.force
+    setValue(
+      isDirectiveResult(result) ? html`${result}` : result,
+      options as Record<string, unknown>,
+    )
+  }
+  const superTeardown = scheduler.teardown
+  scheduler.teardown = (): void => {
+    superTeardown()
+    const schedulerToPart = RENDERER_TO_SCHEDULER.get(renderer)
+    const partToScheduler = RENDERER_TO_CHILDPART.get(renderer)
+    const part = schedulerToPart?.get(scheduler)
+    if (part) partToScheduler?.delete(part)
   }
 
-  return component
+  return scheduler
 }
 
-export { makeComponent }
-export type { HTMLComponent, CustomConstructor, Creator as CustomCreator }
+export type DirectiveResult<P extends unknown[]> = (...args: P) => unknown
 
-export interface DefineCreator {
-  <P = {}>(renderer: CustomConstructor<P>, name: string): void
-  <P = {}>(renderer: CustomComponent<P>, name: string): void
-  <P = {}>(renderer: CustomComponent<P>, options: DefineOptions<P>): void
+export type ComponentDirective<P = {}> = DirectiveResult<
+  keyof P extends never ? [] : Parameters<Component<P>>
+>
+
+export interface ComponentCreator {
   <P = {}>(
-    renderer: CustomComponent<P>,
-    baseElement: CustomConstructor<P>,
-    options: Omit<DefineOptions<P>, 'baseElement'>,
-  ): void
+    renderer: Component<P>,
+    propsAreEqual?: PropsAreEqual<P>,
+  ): ComponentDirective<P>
 }
 
-const isCustomConstructor = <P = {}>(
-  component: CustomComponent<P> | CustomConstructor<P>,
-): component is CustomConstructor<P> => {
-  return component.prototype instanceof Element
-}
+export function component<P = {}>(
+  renderer: Component<P>,
+  propsAreEqual?: PropsAreEqual<P>,
+): ComponentDirective<P> {
+  let prevRenderer: Component<P> | null = null
+  let componentScheduler: ComponentScheduler<P> | null = null
+  let isRendered = false
+  class AsyncDirectiveComponent extends AsyncDirective {
+    constructor(partInfo: PartInfo) {
+      super(partInfo)
+    }
 
-interface DefineOptions<P = {}> extends Options<P> {
-  name: string
-}
-
-const makeDefine = (component: Creator) => {
-  function define<P = {}>(renderer: CustomConstructor<P>, name: string): void
-  function define<P = {}>(renderer: CustomComponent<P>, name: string): void
-  function define<P = {}>(renderer: CustomComponent<P>, options: DefineOptions<P>): void
-  function define<P = {}>(
-    renderer: CustomComponent<P>,
-    baseElement: CustomConstructor<P>,
-    options: Omit<DefineOptions<P>, 'baseElement'>,
-  ): void
-  function define<P = {}>(
-    renderer: CustomComponent<P> | CustomConstructor<P>,
-    baseElementOrOptions?: CustomConstructor<P> | DefineOptions<P> | string,
-    options?: DefineOptions<P>,
-  ): void {
-    if (isServer) return
-    if (isCustomConstructor(renderer)) {
-      let name: string | undefined = baseElementOrOptions as string
-      if (typeof baseElementOrOptions !== 'string') {
-        name = (baseElementOrOptions as DefineOptions<P>).name
+    update(part: ChildPart, args: DirectiveParameters<this>, options: SchedulerUpdateOptions = {}) {
+      componentScheduler = RENDERER_TO_CHILDPART.get(renderer)?.get(
+        part,
+      ) as ComponentScheduler<P> | null
+      if (!componentScheduler || prevRenderer !== renderer) {
+        prevRenderer = renderer
+        componentScheduler = createComponentScheduler(renderer, part, this.setValue.bind(this))
+        isRendered = false
+        if (!RENDERER_TO_CHILDPART.has(renderer)) RENDERER_TO_CHILDPART.set(renderer, new WeakMap())
+        const partToScheduler = RENDERER_TO_CHILDPART.get(renderer) as WeakMap<
+          ChildPart,
+          ComponentScheduler<any>
+        >
+        partToScheduler.set(part, componentScheduler)
+        if (!RENDERER_TO_SCHEDULER.has(renderer)) RENDERER_TO_SCHEDULER.set(renderer, new WeakMap())
+        const schedulerToPart = RENDERER_TO_SCHEDULER.get(renderer) as WeakMap<
+          ComponentScheduler<any>,
+          ChildPart
+        >
+        schedulerToPart.set(componentScheduler, part)
       }
-      if (!!customElements.get(name)) return
-      customElements.define(name, renderer)
-    } else {
-      const _options = options || (baseElementOrOptions as DefineOptions<P>) || {}
-      let name: string | undefined = undefined
-      if (typeof _options === 'string') {
-        options = undefined
-        baseElementOrOptions = undefined
-        name = _options
-      } else {
-        name = _options.name
+      const prevProps = componentScheduler.props ?? ({} as P)
+      const nextProps = (args[0] ?? {}) as P
+      let shouldReturnCachedResult = false
+      componentScheduler.props = nextProps
+      if (isRendered && propsAreEqual) {
+        if (typeof propsAreEqual === 'function' && propsAreEqual(prevProps, nextProps))
+          shouldReturnCachedResult = true
+        else if (propsAreEqual === true && shallow(prevProps, nextProps))
+          shouldReturnCachedResult = true
       }
-      if (!!customElements.get(name)) return
-      const Element = component(
-        renderer,
-        baseElementOrOptions as CustomConstructor,
-        options as Options<P>,
-      )
-      customElements.define(name, Element)
+      componentScheduler.shouldReturnCachedResult = shouldReturnCachedResult
+      isRendered = true
+      componentScheduler.update(options)
+      return this.render(args)
+    }
+
+    render(args: unknown) {
+      return noChange
+    }
+
+    protected disconnected(): void {
+      if (componentScheduler) {
+        componentScheduler.teardown()
+        componentScheduler = null
+      }
     }
   }
-
-  return define
+  return directive(AsyncDirectiveComponent) as ComponentDirective<P>
 }
-export { makeDefine }
+
+export const c = component
+export interface ComponentValue<P = {}> {
+  values: keyof P extends never ? [] : Parameters<Component<P>>
+  _$litDirective$: typeof AsyncDirective
+}
+
+export const isVaildComponent = <P = {}>(component: unknown): component is ComponentValue<P> => {
+  if (isDirectiveResult(component)) {
+    const directiveClass = getDirectiveClass(component)
+    return directiveClass?.prototype instanceof AsyncDirective
+  }
+  return false
+}
+
+export interface TemplateStringsValue {
+  strings: TemplateStringsArray
+  values: unknown[]
+}
+
+export const isTemplateStringsValue = (component: unknown): component is TemplateStringsValue => {
+  if (isTemplateResult(component)) {
+    return 'strings' in component && 'values' in component
+  }
+  return false
+}
+
+export const getVaildComponentFromTemplateValue = <P = unknown>(
+  component: TemplateStringsValue,
+): ComponentValue<P>[] => {
+  const { strings, values } = component
+  const components: ComponentValue<P>[] = []
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i]
+    if (isVaildComponent(value)) {
+      if (strings[i + 1] === '') {
+        components.push(value as ComponentValue<P>)
+      }
+    }
+  }
+  return components
+}
+
+export const getPropsFromComponentValue = <P = {}>(component: ComponentValue<P>): P => {
+  const { values } = component
+  return (values.length > 0 ? values[0] : {}) as P
+}

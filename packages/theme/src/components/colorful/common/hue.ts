@@ -6,7 +6,7 @@ import { Pointer } from "./pointer";
 import { hsvaToHslString } from "../utils/convert";
 import { clamp } from "../utils/clamp";
 import { round } from "../utils/round";
-import { html, virtual } from "rezon";
+import { html, c } from "rezon";
 import { cx } from "@emotion/css";
 import { alphaClassName } from "../styles";
 import { css } from "twin.macro";
@@ -17,7 +17,7 @@ interface Props {
   onChange: (newHue: { h: number }) => void;
 }
 
-export const Hue = virtual<Props>(({ className, hue, onChange }) => {
+export const Hue = c<Props>(({ className, hue, onChange }) => {
   const handleMove = (interaction: Interaction) => {
     onChange({ h: 360 * interaction.left });
   };

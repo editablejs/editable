@@ -10,7 +10,7 @@ import {
   MenuItem,
   MenuProps,
 } from './menu'
-import { Ref, nothing, useEffect, useMemo, useState, virtual } from 'rezon'
+import { Ref, nothing, useEffect, useMemo, useState, c } from 'rezon'
 import { size } from '@floating-ui/dom'
 import { ref } from 'rezon/directives/ref'
 import { repeat } from 'rezon/directives/repeat'
@@ -46,7 +46,7 @@ const sizeCls = (size: DropdownSize = 'default', align: 'left' | 'right' = 'left
   size === 'large' && (align === 'left' ? tw`py-3 pr-5 pl-12` : tw`py-3 pr-12 pl-5`),
 ]
 
-export const Dropdown = virtual<DropdownProps>(
+export const Dropdown = c<DropdownProps>(
   (
     {
       children,

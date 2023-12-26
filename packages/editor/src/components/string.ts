@@ -8,7 +8,7 @@ import {
   DATA_EDITABLE_STRING,
   DATA_EDITABLE_ZERO_WIDTH,
 } from '../utils/constants'
-import { html, virtual } from 'rezon'
+import { html, c } from 'rezon'
 import { when } from 'rezon/directives/when'
 import { spread } from 'rezon/directives/spread'
 
@@ -22,7 +22,7 @@ interface StringProps {
 /**
  * Leaf content strings.
  */
-const String = virtual<StringProps>(props => {
+const String = c<StringProps>(props => {
   const { isLast, parent, text, leaf } = props
   const editor = useEditableStatic()
   const path = Editable.findPath(editor, text)
@@ -74,7 +74,7 @@ const String = virtual<StringProps>(props => {
 /**
  * Leaf strings with text in them.
  */
-const TextString = virtual<{ text: string; isTrailing?: boolean }>(props => {
+const TextString = c<{ text: string; isTrailing?: boolean }>(props => {
   const { text, isTrailing = false } = props
   const getTextContent = () => {
     return `${text ?? ''}${isTrailing ? '\n' : ''}`
@@ -83,7 +83,7 @@ const TextString = virtual<{ text: string; isTrailing?: boolean }>(props => {
   return html`<span ${spread({ [DATA_EDITABLE_STRING]: true })}>${getTextContent()}</span>`
 })
 
-const CompositionString = virtual<{ text: string }>(props => {
+const CompositionString = c<{ text: string }>(props => {
   const { text } = props
   return html`<u ${spread({ [DATA_EDITABLE_COMPOSITION]: true })}>${text}</u>`
 })
@@ -92,13 +92,13 @@ const CompositionString = virtual<{ text: string }>(props => {
  * Leaf strings without text, render as zero-width strings.
  */
 
-const ZeroWidthString = virtual<{ length?: number; isLineBreak?: boolean }>(props => {
+const ZeroWidthString = c<{ length?: number; isLineBreak?: boolean }>(props => {
   const { length = 0, isLineBreak = false } = props
   return html`<span
     ${spread({
-      [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z',
-      [DATA_EDITABLE_LENGTH]: length,
-    })}
+    [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z',
+    [DATA_EDITABLE_LENGTH]: length,
+  })}
   >
     ﻿ ${isLineBreak ? html`<br />` : null}
   </span>`

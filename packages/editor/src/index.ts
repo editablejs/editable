@@ -1,4 +1,4 @@
-import { html, render, virtual } from 'rezon'
+import { html, render, c } from 'rezon'
 import { Editable } from './plugin/editable'
 import { EditableProvider } from './components/editable'
 import { ContentEditable } from './components/content'
@@ -68,7 +68,7 @@ export { useCancellablePromises, cancellablePromise } from './hooks/use-cancella
 
 export { Hotkey } from './utils/hotkeys'
 
-const Root = virtual<{ editor: Editable }>(({ editor }) => {
+const Root = c<{ editor: Editable }>(({ editor }) => {
   return EditableProvider({
     editor,
     value: [

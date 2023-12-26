@@ -3,7 +3,7 @@ import { Saturation } from "./saturation";
 
 import { ColorModel, ColorPickerBaseProps, AnyColor } from "../types";
 import { useColorManipulation } from "../hooks/use-color-manipulation";
-import { html, virtual } from "rezon";
+import { html, c } from "rezon";
 import { spread } from "rezon/directives/spread";
 import { colorfulClassName, colorfulLastControlClassName } from "../styles";
 
@@ -11,7 +11,7 @@ interface Props<T extends AnyColor> extends Partial<ColorPickerBaseProps<T>> {
   colorModel: ColorModel<T>;
 }
 
-export const ColorPicker = <T extends AnyColor>(props: Props<T>) => virtual<Props<T>>(({
+export const ColorPicker = <T extends AnyColor>(props: Props<T>) => c<Props<T>>(({
   className,
   colorModel,
   color = colorModel.defaultColor,

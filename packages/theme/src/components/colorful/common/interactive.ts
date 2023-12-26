@@ -1,6 +1,6 @@
 
 
-import { useRef, useMemo, useEffect, html, virtual, HTMLAttributes } from "rezon";
+import { useRef, useMemo, useEffect, html, c, HTMLAttributes } from "rezon";
 import { clamp } from "../utils/clamp";
 import { useCallbackRef } from "@/hooks/use-callback-ref";
 import { spread } from "rezon/directives/spread";
@@ -64,7 +64,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   children: unknown;
 }
 
-export const Interactive = virtual<Props>(({ onMove, onKey, ...rest }) => {
+export const Interactive = c<Props>(({ onMove, onKey, ...rest }) => {
   const container = useRef<HTMLDivElement>(null);
   const onMoveCallback = useCallbackRef(onMove);
   const onKeyCallback = useCallbackRef(onKey);

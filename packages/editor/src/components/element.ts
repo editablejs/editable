@@ -16,7 +16,7 @@ import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from '..
 import { useElementDecorations } from '../hooks/use-decorate'
 import { PlaceholderRender } from '../plugin/placeholder'
 import { usePlaceholder } from '../hooks/use-placeholder'
-import { html, useRef, virtual } from 'rezon'
+import { html, useRef, c } from 'rezon'
 
 interface ElementProps {
   element: SlateElement
@@ -26,7 +26,7 @@ interface ElementProps {
 /**
  * Element.
  */
-const Element = virtual<ElementProps>(
+const Element = c<ElementProps>(
   props => {
     const { element, selection, renderPlaceholder } = props
     const ref = useRef<HTMLElement>(null)

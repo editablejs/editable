@@ -22,7 +22,7 @@ You can see a demo here: https://docs.editablejs.com/playground
 
   In my ideal frontend framework for rich text, it should be like this:
 
-  1. No virtual DOM
+  1. No c DOM
   2. No diff algorithm
   3. No proxy object
 

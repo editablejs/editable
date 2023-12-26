@@ -5,9 +5,9 @@ import { useSelectionDrawingStyle } from '../hooks/use-selection-drawing'
 import { Editable } from '../plugin/editable'
 import { SelectionDrawing } from '../plugin/selection-drawing'
 import { ShadowBlock } from './shadow'
-import { useMemo, virtual } from 'rezon'
+import { useMemo, c } from 'rezon'
 
-export const DragCaretComponent = virtual(() => {
+export const DragCaretComponent = c(() => {
   const editor = useEditableStatic()
   const dragTo = useDragTo()
   const dragType = useDragType()

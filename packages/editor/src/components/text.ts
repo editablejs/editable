@@ -8,7 +8,7 @@ import { Editable } from '../plugin/editable'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
 import { useTextDecorations } from '../hooks/use-decorate'
 import { PlaceholderRender } from '../plugin/placeholder'
-import { html, useRef, virtual } from 'rezon'
+import { html, useRef, c } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 
 interface TextProps {
@@ -20,7 +20,7 @@ interface TextProps {
 /**
  * Text.
  */
-const Text = virtual<TextProps>(
+const Text = c<TextProps>(
   props => {
     const { isLast, parent, text, renderPlaceholder } = props
     const editor = useEditableStatic()

@@ -91,7 +91,7 @@ const PopperAnchor = React.forwardRef<PopperAnchorElement, PopperAnchorProps>(
     React.useEffect(() => {
       // Consumer can anchor the popper to something that isn't
       // a DOM node e.g. pointer position, so we override the
-      // `anchorRef` with their virtual ref in this case.
+      // `anchorRef` with their c ref in this case.
       context.onAnchorChange(virtualRef?.current || ref.current)
     })
 

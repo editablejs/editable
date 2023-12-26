@@ -1,14 +1,14 @@
 import merge from 'lodash.merge'
 import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editor } from '@editablejs/models'
-import { VirtualDirectiveComponent } from 'rezon'
+import { ComponentDirective } from 'rezon'
 
 export interface SlotComponentProps {
   active?: boolean
 }
 
 export interface SlotState<T extends SlotComponentProps> {
-  component: VirtualDirectiveComponent<T>
+  component: ComponentDirective<T>
   props: T
 }
 
@@ -37,7 +37,7 @@ export const Slot = {
 
   mount<T extends SlotComponentProps>(
     editor: Editor,
-    component: VirtualDirectiveComponent<T>,
+    component: ComponentDirective<T>,
     props: T = {} as T,
   ) {
     const store = getStore(editor)
@@ -53,7 +53,7 @@ export const Slot = {
     })
   },
 
-  unmount(editor: Editor, component: VirtualDirectiveComponent) {
+  unmount(editor: Editor, component: ComponentDirective) {
     const store = getStore(editor)
     store.setState(state => {
       const { components } = state
@@ -67,7 +67,7 @@ export const Slot = {
   update: <T extends SlotComponentProps>(
     editor: Editor,
     props: Partial<T>,
-    predicate: (value: VirtualDirectiveComponent<T>, index: number) => boolean = () => true,
+    predicate: (value: ComponentDirective<T>, index: number) => boolean = () => true,
   ) => {
     const store = getStore(editor)
     store.setState(state => {

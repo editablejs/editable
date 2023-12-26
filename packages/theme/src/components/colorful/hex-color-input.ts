@@ -3,7 +3,7 @@ import { ColorInputBaseProps } from "./types";
 
 import { validHex } from "./utils/validate";
 import { ColorInput } from "./common/color-input";
-import { useCallback, virtual } from "rezon";
+import { useCallback, c } from "rezon";
 
 interface HexColorInputProps extends ColorInputBaseProps {
   /** Enables `#` prefix displaying */
@@ -15,7 +15,7 @@ interface HexColorInputProps extends ColorInputBaseProps {
 /** Adds "#" symbol to the beginning of the string */
 const prefix = (value: string) => "#" + value;
 
-export const HexColorInput = virtual<HexColorInputProps>((props) => {
+export const HexColorInput = c<HexColorInputProps>((props) => {
   const { prefixed, alpha, ...rest } = props;
 
   /** Escapes all non-hexadecimal characters including "#" */

@@ -1,40 +1,17 @@
-import { makeComponent, CustomCreator, makeDefine, DefineCreator } from './component'
 import { ChildPart } from './lit-html/html'
 
-type Component<P> = HTMLElement & P
-
-type CustomComponentOrVirtualComponent<P = {}, T = HTMLElement | ChildPart> = T extends HTMLElement
-  ? Component<P>
-  : ChildPart
-
-type FunctionComponent<P = {}, T = HTMLElement | ChildPart> = (
-  this: CustomComponentOrVirtualComponent<P, T> & { currentOptions?: Record<string, unknown> },
-  props: T extends HTMLElement ? Component<P> : P,
+type Component<P = {}> = (
+  this: ChildPart & { currentOptions?: Record<string, unknown> },
+  props: P,
 ) => unknown | void
 
-type FC<P = {}, T = HTMLElement | ChildPart> = FunctionComponent<P, T>
+type Render = (result: unknown, container: DocumentFragment | HTMLElement) => ChildPart
 
-type RenderFunction = (result: unknown, container: DocumentFragment | HTMLElement) => ChildPart
-
-interface Options {
-  render: RenderFunction
+interface RenderOptions {
+  render: Render
 }
 
-const create = ({
-  render,
-}: Options): {
-  define: DefineCreator
-  custom: CustomCreator
-} => {
-  const custom = makeComponent(render)
-  const define = makeDefine(custom)
-
-  return { define, custom }
-}
-
-export default create
-
-export type { Options, RenderFunction, CustomComponentOrVirtualComponent, FunctionComponent, FC }
+export type { RenderOptions, Render, Component }
 export { useCallback } from './use-callback'
 export { useController } from './use-controller'
 export { useEffect } from './use-effect'

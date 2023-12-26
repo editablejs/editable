@@ -24,13 +24,13 @@ const ENABLE_SHADYDOM_NOPATCH = true
 
 const wrap =
   ENABLE_SHADYDOM_NOPATCH &&
-  !isServer &&
-  // @ts-ignore
-  window.ShadyDOM?.inUse &&
-  // @ts-ignore
-  window.ShadyDOM?.noPatch === true
+    !isServer &&
+    // @ts-ignore
+    window.ShadyDOM?.inUse &&
+    // @ts-ignore
+    window.ShadyDOM?.noPatch === true
     ? // @ts-ignore
-      window.ShadyDOM!.wrap
+    window.ShadyDOM!.wrap
     : (node: Node) => node
 
 /**
@@ -62,7 +62,7 @@ export const isTemplateResult: IsTemplateResult = (
 ): value is UncompiledTemplateResult =>
   type === undefined
     ? // This property needs to remain unminified.
-      (value as UncompiledTemplateResult)?.['_$litType$'] !== undefined
+    (value as UncompiledTemplateResult)?.['_$litType$'] !== undefined
     : (value as UncompiledTemplateResult)?.['_$litType$'] === type
 
 /**
@@ -176,9 +176,10 @@ export const insertPart = (
 export const setChildPartValue = <T extends ChildPart>(
   part: T,
   value: unknown,
+  options?: Record<string, unknown>,
   directiveParent: DirectiveParent = part,
 ): T => {
-  part._$setValue(value, directiveParent)
+  part._$setValue(value, options ?? (value as ChildPart & { currentOptions?: Record<string, unknown> }).currentOptions, directiveParent)
   return part
 }
 
@@ -227,7 +228,7 @@ export const removePart = (part: ChildPart) => {
   const end: ChildNode | null = wrap(part.endNode!).nextSibling
   while (start !== end) {
     const n: ChildNode | null = wrap(start!).nextSibling
-    ;(wrap(start!) as ChildNode).remove()
+      ; (wrap(start!) as ChildNode).remove()
     start = n
   }
 }

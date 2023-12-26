@@ -1,8 +1,8 @@
 import { useSlotComponents } from '../hooks/use-slot'
-import { virtual } from 'rezon'
+import { c } from 'rezon'
 import { repeat } from 'rezon/directives/repeat'
 
-export const Slots = virtual(() => {
+export const Slots = c(() => {
   const slots = useSlotComponents()
   return repeat(
     slots,

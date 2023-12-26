@@ -17,14 +17,14 @@ import {
 } from '../hooks/use-selection-drawing'
 import { ReadOnly, useReadOnly } from '../hooks/use-read-only'
 import { composeEventHandlers } from '../utils/event'
-import { useEffect, useRef, useState, virtual, TargetedEvent, html } from 'rezon'
+import { useEffect, useRef, useState, c, TargetedEvent, html } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 
 interface InputProps {
   autoFocus?: boolean
 }
 
-const InputComponent = virtual<InputProps>(({ autoFocus }) => {
+const InputComponent = c<InputProps>(({ autoFocus }) => {
   const editor = useEditableStatic()
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [focused, setFocused] = useFocused()

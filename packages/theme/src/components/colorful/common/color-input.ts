@@ -2,7 +2,7 @@
 
 import { useCallbackRef } from "@/hooks/use-callback-ref";
 import { ColorInputBaseProps } from "../types";
-import { useState, useCallback, useEffect, html, virtual, TargetedFocusEvent, TargetedEvent } from "rezon";
+import { useState, useCallback, useEffect, html, c, TargetedFocusEvent, TargetedEvent } from "rezon";
 import { spread } from "rezon/directives/spread";
 
 interface Props extends ColorInputBaseProps {
@@ -16,7 +16,7 @@ interface Props extends ColorInputBaseProps {
   process?: (value: string) => string;
 }
 HTMLInputElement
-export const ColorInput = virtual<Props>((props) => {
+export const ColorInput = c<Props>((props) => {
   const { color = "", onChange, onBlur, escape, validate, format, process, ...rest } = props;
   const [value, setValue] = useState(() => escape(color));
   const onChangeCallback = useCallbackRef(onChange);

@@ -4,7 +4,7 @@ import { useEditableStatic } from '../hooks/use-editable'
 import { TextAttributes } from '../plugin/editable'
 import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from '../utils/constants'
 import { PlaceholderRender } from '../plugin/placeholder'
-import { html, virtual } from 'rezon'
+import { html, c } from 'rezon'
 
 interface LeafProps {
   isLast: boolean
@@ -16,7 +16,7 @@ interface LeafProps {
 /**
  * Individual leaves in a text node with unique formatting.
  */
-const Leaf = virtual<LeafProps>(
+const Leaf = c<LeafProps>(
   props => {
     const { isLast, text, leaf, parent, renderPlaceholder } = props
 

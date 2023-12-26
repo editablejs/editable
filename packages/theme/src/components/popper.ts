@@ -15,7 +15,7 @@ import { useComposedRefs } from './compose-refs'
 import { Measurable } from '@/observe-element-rect'
 import { useIsomorphicLayoutEffect } from '@/hooks/use-isomorphic-layout-effect'
 import { Arrow, ArrowProps } from './arrow'
-import { createContext, useContext, useState, RefObject, useRef, useEffect, define, html, virtual, HTMLAttributes } from 'rezon'
+import { createContext, useContext, useState, RefObject, useRef, useEffect, html, c, HTMLAttributes } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { styleMap } from 'rezon/directives/style-map'
 import { when } from 'rezon/directives/when'
@@ -50,7 +50,7 @@ interface PopperProps {
   children?: unknown
 }
 
-const Popper = virtual<PopperProps>((props) => {
+const Popper = c<PopperProps>((props) => {
   const { children } = props
   const [anchor, setAnchor] = useState<Measurable | null>(null)
   return html`${PopperContenxt.Provider({
@@ -71,7 +71,7 @@ interface PopperAnchorProps extends HTMLAttributes<HTMLDivElement> {
   dispatchRefreshCustomEvent?: string
 }
 
-const PopperAnchor = virtual<PopperAnchorProps>(
+const PopperAnchor = c<PopperAnchorProps>(
   (props: PopperAnchorProps) => {
     const { virtualRef, dispatchRefreshCustomEvent, ...anchorProps } = props
     const context = usePopperContext()
@@ -81,7 +81,7 @@ const PopperAnchor = virtual<PopperAnchorProps>(
     useEffect(() => {
       // Consumer can anchor the popper to something that isn't
       // a DOM node e.g. pointer position, so we override the
-      // `anchorRef` with their virtual ref in this case.
+      // `anchorRef` with their c ref in this case.
       context.onAnchorChange(virtualRef?.current || ref.current)
     })
 
@@ -159,7 +159,7 @@ export interface PopperContentProps extends HTMLAttributes<HTMLDivElement> {
   autoUpdate?: boolean
 }
 
-const PopperContent = virtual<PopperContentProps>(
+const PopperContent = c<PopperContentProps>(
   (props) => {
     const {
       strategy: strategyProp = 'absolute',
@@ -325,7 +325,7 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
 
 interface PopperArrowProps extends ArrowProps { }
 
-const PopperArrow = virtual<PopperArrowProps>((
+const PopperArrow = c<PopperArrowProps>((
   props,
 ) => {
   const { ref: forwardedRef, ...arrowProps } = props

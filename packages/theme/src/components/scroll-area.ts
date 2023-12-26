@@ -6,7 +6,7 @@ import { useStateMachine } from '@/hooks/use-state-machine'
 import { Presence } from './presence'
 import { useIsomorphicLayoutEffect } from '@/hooks/use-isomorphic-layout-effect'
 import { clamp, composeEventHandlers } from '@/utils'
-import { createContext, useContext, useState, useRef, useEffect, useCallback, HTMLAttributes, virtual, html } from 'rezon'
+import { createContext, useContext, useState, useRef, useEffect, useCallback, HTMLAttributes, c, html } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { spread } from 'rezon/directives/spread'
 import { styleMap } from 'rezon/directives/style-map'
@@ -69,7 +69,7 @@ interface ScrollAreaProps extends PrimitiveDivProps {
   scrollHideDelay?: number
 }
 
-const ScrollArea = virtual<ScrollAreaProps>(
+const ScrollArea = c<ScrollAreaProps>(
   (props) => {
     const {
       type = 'hover',
@@ -131,7 +131,7 @@ const ScrollArea = virtual<ScrollAreaProps>(
 type ScrollAreaViewportElement = HTMLDivElement
 interface ScrollAreaViewportProps extends PrimitiveDivProps { }
 
-const ScrollAreaViewport = virtual<ScrollAreaViewportProps>(
+const ScrollAreaViewport = c<ScrollAreaViewportProps>(
   (props) => {
     const { children, ref: forwardedRef, ...viewportProps } = props
     const context = useScrollAreaContext()
@@ -186,7 +186,7 @@ const scrollbarStyles = [
   `,
 ]
 
-const ScrollAreaScrollbar = virtual<ScrollAreaScrollbarProps>((props) => {
+const ScrollAreaScrollbar = c<ScrollAreaScrollbarProps>((props) => {
   const { forceMount, ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const { onScrollbarXEnabledChange, onScrollbarYEnabledChange } = context
@@ -226,7 +226,7 @@ interface ScrollAreaScrollbarHoverProps extends ScrollAreaScrollbarAutoProps {
   forceMount?: true
 }
 
-const ScrollAreaScrollbarHover = virtual<ScrollAreaScrollbarHoverProps>((props) => {
+const ScrollAreaScrollbarHover = c<ScrollAreaScrollbarHoverProps>((props) => {
   const { forceMount, ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const [visible, setVisible] = useState(false)
@@ -266,7 +266,7 @@ interface ScrollAreaScrollbarScrollProps extends ScrollAreaScrollbarVisibleProps
   forceMount?: true
 }
 
-const ScrollAreaScrollbarScroll = virtual<ScrollAreaScrollbarScrollProps>((props) => {
+const ScrollAreaScrollbarScroll = c<ScrollAreaScrollbarScrollProps>((props) => {
   const { forceMount, ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const isHorizontal = props.orientation === 'horizontal'
@@ -334,7 +334,7 @@ interface ScrollAreaScrollbarAutoProps extends ScrollAreaScrollbarVisibleProps {
   forceMount?: true
 }
 
-const ScrollAreaScrollbarAuto = virtual<ScrollAreaScrollbarAutoProps>((props) => {
+const ScrollAreaScrollbarAuto = c<ScrollAreaScrollbarAutoProps>((props) => {
   const context = useScrollAreaContext()
   const { forceMount, ref: forwardedRef, ...scrollbarProps } = props
   const [visible, setVisible] = useState(false)
@@ -368,7 +368,7 @@ interface ScrollAreaScrollbarVisibleProps
   orientation?: 'horizontal' | 'vertical'
 }
 
-const ScrollAreaScrollbarVisible = virtual<ScrollAreaScrollbarVisibleProps>((props) => {
+const ScrollAreaScrollbarVisible = c<ScrollAreaScrollbarVisibleProps>((props) => {
   const { orientation = 'vertical', ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const thumbRef = useRef<ScrollAreaThumbElement | null>(null)
@@ -457,7 +457,7 @@ interface ScrollAreaScrollbarAxisProps
   extends Omit<ScrollAreaScrollbarImplProps, keyof ScrollAreaScrollbarImplPrivateProps>,
   ScrollAreaScrollbarAxisPrivateProps { }
 
-const ScrollAreaScrollbarX = virtual<ScrollAreaScrollbarAxisProps>((props) => {
+const ScrollAreaScrollbarX = c<ScrollAreaScrollbarAxisProps>((props) => {
   const { sizes, onSizesChange, ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const [computedStyle, setComputedStyle] = useState<CSSStyleDeclaration>()
@@ -508,7 +508,7 @@ const ScrollAreaScrollbarX = virtual<ScrollAreaScrollbarAxisProps>((props) => {
   })
 })
 
-const ScrollAreaScrollbarY = virtual<ScrollAreaScrollbarAxisProps>((props) => {
+const ScrollAreaScrollbarY = c<ScrollAreaScrollbarAxisProps>((props) => {
   const { sizes, onSizesChange, ref: forwardedRef, ...scrollbarProps } = props
   const context = useScrollAreaContext()
   const [computedStyle, setComputedStyle] = useState<CSSStyleDeclaration>()
@@ -588,7 +588,7 @@ type ScrollAreaScrollbarImplPrivateProps = {
 }
 type ScrollAreaScrollbarImplProps = PrimitiveDivProps & ScrollAreaScrollbarImplPrivateProps
 
-const ScrollAreaScrollbarImpl = virtual<
+const ScrollAreaScrollbarImpl = c<
   ScrollAreaScrollbarImplProps
 >((props) => {
   const {
@@ -697,7 +697,7 @@ interface ScrollAreaThumbProps extends ScrollAreaThumbImplProps {
   forceMount?: true
 }
 
-const ScrollAreaThumb = virtual<ScrollAreaThumbProps>(
+const ScrollAreaThumb = c<ScrollAreaThumbProps>(
   (props) => {
     const { forceMount, ref: forwardedRef, ...thumbProps } = props
     const scrollbarContext = useScrollbarContext()
@@ -733,7 +733,7 @@ const ScrollAreaThumb = virtual<ScrollAreaThumbProps>(
 type ScrollAreaThumbImplElement = HTMLDivElement
 interface ScrollAreaThumbImplProps extends PrimitiveDivProps { }
 
-const ScrollAreaThumbImpl = virtual<ScrollAreaThumbImplProps>(
+const ScrollAreaThumbImpl = c<ScrollAreaThumbImplProps>(
   (props) => {
     const { style, ref: forwardedRef, ...thumbProps } = props
     const scrollAreaContext = useScrollAreaContext()
@@ -798,7 +798,7 @@ const ScrollAreaThumbImpl = virtual<ScrollAreaThumbImplProps>(
 
 interface ScrollAreaCornerProps extends ScrollAreaCornerImplProps { }
 
-const ScrollAreaCorner = virtual<ScrollAreaCornerProps>(
+const ScrollAreaCorner = c<ScrollAreaCornerProps>(
   (props) => {
     const context = useScrollAreaContext()
     const hasBothScrollbarsVisible = Boolean(context.scrollbarX && context.scrollbarY)
@@ -812,7 +812,7 @@ const ScrollAreaCorner = virtual<ScrollAreaCornerProps>(
 type ScrollAreaCornerImplElement = HTMLDivElement
 interface ScrollAreaCornerImplProps extends PrimitiveDivProps { }
 
-const ScrollAreaCornerImpl = virtual<ScrollAreaCornerImplProps>((props) => {
+const ScrollAreaCornerImpl = c<ScrollAreaCornerImplProps>((props) => {
   const context = useScrollAreaContext()
   const [width, setWidth] = useState(0)
   const [height, setHeight] = useState(0)

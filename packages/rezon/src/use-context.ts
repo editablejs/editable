@@ -1,7 +1,7 @@
 import { ChildPart, Disconnectable, TemplateInstance } from './lit-html/html'
 import { Context, getContextListener } from './create-context'
 import { CreateHook, hook, Hook } from './hook'
-import { Callable, State } from './state'
+import { Callable } from './state'
 import { setEffects } from './use-effect'
 
 type CreateContextHook<T = unknown> = CreateHook<[Context<T>], T, Element | ChildPart>
@@ -39,21 +39,19 @@ const create = <T>() => {
     }
 
     const _subscribe = (Context: Context<T>): void => {
-      if (hook.state.virtual) {
-        const childPart = state.host as ChildWithParent<ChildPart>
-        let parent: Disconnectable | undefined = childPart
-        while (parent) {
-          const contextListener = getContextListener(parent as ChildPart)
-          if (contextListener?.Context === Context) {
-            value = contextListener.subscribe(_updater)
-            _unsubscribe = () => contextListener.unsubscribe(_updater)
-            break
-          }
-          parent = parent._$parent
+      const childPart = state.host as ChildWithParent<ChildPart>
+      let parent: Disconnectable | undefined = childPart
+      while (parent) {
+        const contextListener = getContextListener(parent as ChildPart)
+        if (contextListener?.Context === Context) {
+          value = contextListener.subscribe(_updater)
+          _unsubscribe = () => contextListener.unsubscribe(_updater)
+          break
         }
-        if (!_unsubscribe) {
-          value = Context.defaultValue
-        }
+        parent = parent._$parent
+      }
+      if (!_unsubscribe) {
+        value = Context.defaultValue
       }
     }
     const hook: ContextHook<T> = {

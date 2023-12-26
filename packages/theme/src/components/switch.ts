@@ -4,7 +4,7 @@ import { useControllableState } from '@/hooks/use-controllable-state'
 import { usePrevious } from '@/hooks/use-previous'
 import { useSize } from '@/hooks/use-size'
 import { composeEventHandlers } from '@/utils'
-import { createContext, useContext, useState, useRef, useEffect, HTMLAttributes, virtual, ButtonHTMLAttributes, html, InputHTMLAttributes } from 'rezon'
+import { createContext, useContext, useState, useRef, useEffect, HTMLAttributes, c, ButtonHTMLAttributes, html, InputHTMLAttributes } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { spread } from 'rezon/directives/spread'
 import { styleMap } from 'rezon/directives/style-map'
@@ -26,7 +26,7 @@ interface SwitchProps extends Omit<PrimitiveButtonProps, 'onChange'> {
   onChange?(checked: boolean): void
 }
 
-const Switch = virtual<SwitchProps>((props) => {
+const Switch = c<SwitchProps>((props) => {
   const {
     name,
     checked: checkedProp,
@@ -75,19 +75,19 @@ const Switch = virtual<SwitchProps>((props) => {
     })}
     >
     </button>`,
-      isFormControl ? BubbleInput({
-        control: button,
-        bubbles: !hasConsumerStoppedPropagationRef.current,
-        name,
-        value,
-        checked,
-        required,
-        disabled,
-        // We transform because the input is absolutely positioned but we have
-        // rendered it **after** the button. This pulls it back to sit on top
-        // of the button.
-        style: { transform: 'translateX(-100%)' }
-      }) : null
+    isFormControl ? BubbleInput({
+      control: button,
+      bubbles: !hasConsumerStoppedPropagationRef.current,
+      name,
+      value,
+      checked,
+      required,
+      disabled,
+      // We transform because the input is absolutely positioned but we have
+      // rendered it **after** the button. This pulls it back to sit on top
+      // of the button.
+      style: { transform: 'translateX(-100%)' }
+    }) : null
     ]
   })
 })
@@ -99,12 +99,12 @@ const Switch = virtual<SwitchProps>((props) => {
 
 type SwitchThumbElement = HTMLSpanElement
 type PrimitiveSpanProps = HTMLAttributes<SwitchThumbElement>
-interface SwitchThumbProps extends PrimitiveSpanProps {}
+interface SwitchThumbProps extends PrimitiveSpanProps { }
 
-const SwitchThumb = virtual<SwitchThumbProps>((props) => {
-    const context = useSwitchContext()
+const SwitchThumb = c<SwitchThumbProps>((props) => {
+  const context = useSwitchContext()
   return html`<span data-state="${getState(context.checked)}" data-disabled=${context.disabled ? '' : undefined} ${spread(props)}></span>`;
-  },
+},
 )
 
 
@@ -117,7 +117,7 @@ interface BubbleInputProps extends Omit<InputProps, 'checked'> {
   bubbles: boolean
 }
 
-const BubbleInput = virtual<BubbleInputProps>((props) => {
+const BubbleInput = c<BubbleInputProps>((props) => {
   const { control, checked, bubbles = true, ...inputProps } = props
   const _ref = useRef<HTMLInputElement>(null)
   const prevChecked = usePrevious(checked)
@@ -137,12 +137,12 @@ const BubbleInput = virtual<BubbleInputProps>((props) => {
   }, [prevChecked, checked, bubbles])
 
   return html`<input type="checkbox" aria-hidden ?checked="${checked}" ${spread(inputProps)} tabindex="-1" ref=${ref(_ref)} style=${styleMap({
-      ...props.style,
-      ...controlSize,
-      position: 'absolute',
-      pointerEvents: 'none',
-      opacity: 0,
-      margin: 0,
+    ...props.style,
+    ...controlSize,
+    position: 'absolute',
+    pointerEvents: 'none',
+    opacity: 0,
+    margin: 0,
   })} />`
 })
 

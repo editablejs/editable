@@ -8,7 +8,7 @@ import { Portal, PortalProps } from './portal'
 import { Presence } from './presence'
 import { DismissableLayer, DismissableLayerProps } from './dismissable-layer'
 import { PointerOpenOptions, usePointerOpen } from '@/hooks/use-pointer-open'
-import { MutableRefObject, createContext, useContext, useState, useRef, useCallback, useEffect, virtual, html, ButtonHTMLAttributes } from 'rezon'
+import { MutableRefObject, createContext, useContext, useState, useRef, useCallback, useEffect, c, html, ButtonHTMLAttributes } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import tw, { css } from 'twin.macro'
 import { spread } from 'rezon/directives/spread'
@@ -38,7 +38,7 @@ interface PopoverProps extends Omit<PointerOpenOptions, 'triggerEl' | 'contentEl
   children?: unknown
 }
 
-const Popover = virtual<PopoverProps>((props) => {
+const Popover = c<PopoverProps>((props) => {
   const { children, open: openProp, ...options } = props
   const [trigger, setTrigger] = useState<HTMLButtonElement | null>(null)
   const [content, setContent] = useState<HTMLDivElement | null>(null)
@@ -96,7 +96,7 @@ const Popover = virtual<PopoverProps>((props) => {
 
 interface PopoverAnchorProps extends PopperAnchorProps { }
 
-const PopoverAnchor = virtual<PopoverAnchorProps>(
+const PopoverAnchor = c<PopoverAnchorProps>(
   (props) => {
     const context = usePopoverContext()
     const { onCustomAnchorAdd, onCustomAnchorRemove } = context
@@ -118,7 +118,7 @@ interface PopoverTriggerProps extends PrimitiveButtonProps {
   asChild?: boolean
 }
 
-const PopoverTrigger = virtual<PopoverTriggerProps>(
+const PopoverTrigger = c<PopoverTriggerProps>(
   (props) => {
     const { ref: forwardedRef, asChild, ...triggerProps } = props
     const context = usePopoverContext()
@@ -148,7 +148,7 @@ interface PopoverPortalProps extends PortalProps {
   forceMount?: true
 }
 
-const PopoverPortal = virtual<PopoverPortalProps>((props: PopoverPortalProps) => {
+const PopoverPortal = c<PopoverPortalProps>((props: PopoverPortalProps) => {
   const { forceMount, children, container } = props
   const context = usePopoverContext()
   return PortalContext.Provider({
@@ -172,7 +172,7 @@ interface PopoverContentProps extends PopoverContentTypeProps {
   forceMount?: true
 }
 
-const PopoverContent = virtual<PopoverContentProps>(
+const PopoverContent = c<PopoverContentProps>(
   (props) => {
     const portalContext = usePortalContext()
     const { forceMount = portalContext.forceMount, ...contentProps } = props
@@ -189,7 +189,7 @@ const PopoverContent = virtual<PopoverContentProps>(
 interface PopoverContentTypeProps
   extends Omit<PopoverContentImplProps, 'trapFocus' | 'disableOutsidePointerEvents'> { }
 
-const PopoverContentNonModal = virtual<PopoverContentTypeProps>(
+const PopoverContentNonModal = c<PopoverContentTypeProps>(
   (props) => {
     const context = usePopoverContext()
     const hasInteractedOutsideRef = useRef(false)
@@ -223,7 +223,7 @@ interface PopoverContentImplProps
   extends PopperContentProps,
   Omit<DismissableLayerProps, 'onDismiss'> { }
 
-const PopoverContentImpl = virtual<PopoverContentImplProps>(
+const PopoverContentImpl = c<PopoverContentImplProps>(
   (props) => {
     const {
       disableOutsidePointerEvents,
@@ -266,7 +266,7 @@ const PopoverContentImpl = virtual<PopoverContentImplProps>(
 
 interface PopoverCloseProps extends PrimitiveButtonProps { }
 
-const PopoverClose = virtual<PopoverCloseProps>(
+const PopoverClose = c<PopoverCloseProps>(
   (props) => {
     const { onClick, ...closeProps } = props
     const context = usePopoverContext()
@@ -281,7 +281,7 @@ const PopoverClose = virtual<PopoverCloseProps>(
 
 interface PopoverArrowProps extends PopperArrowProps { }
 
-const PopoverArrow = virtual<PopoverArrowProps>(
+const PopoverArrow = c<PopoverArrowProps>(
   (props) => {
     return html`${PopperArrow(props)}`
   },

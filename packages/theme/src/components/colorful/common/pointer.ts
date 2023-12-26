@@ -1,4 +1,4 @@
-import { html, virtual } from "rezon";
+import { html, c } from "rezon";
 import { css } from "twin.macro";
 import { styleMap } from "rezon/directives/style-map";
 import { fillWithGradientClassName, pointerClassName } from "../styles";
@@ -10,7 +10,7 @@ interface Props {
   color: string;
 }
 
-export const Pointer = virtual<Props>(({ className, color, left, top = 0.5 }) => {
+export const Pointer = c<Props>(({ className, color, left, top = 0.5 }) => {
 
   const style = {
     top: `${top * 100}%`,

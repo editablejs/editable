@@ -12,7 +12,7 @@ import {
   MenuItem,
   MenuProps,
 } from './menu'
-import { HTMLAttributes, HTMLInputTypeAttribute, Ref, html, nothing, useEffect, useMemo, useRef, useState, virtual } from 'rezon'
+import { HTMLAttributes, HTMLInputTypeAttribute, Ref, html, nothing, useEffect, useMemo, useRef, useState, c } from 'rezon'
 import { repeat } from 'rezon/directives/repeat'
 import { spread } from 'rezon/directives/spread'
 
@@ -54,7 +54,7 @@ interface StyledInputProps extends HTMLAttributes<HTMLInputElement> {
   ref: Ref<HTMLInputElement>
 }
 
-const StyledInput = virtual<StyledInputProps>(({ size }) => {
+const StyledInput = c<StyledInputProps>(({ size }) => {
 
   return html`<input class=${css([
     tw`px-1.5 bg-transparent text-base outline-0 absolute top-0 bottom-0 w-full`,
@@ -63,7 +63,7 @@ const StyledInput = virtual<StyledInputProps>(({ size }) => {
   ])}></input>`
 })
 
-export const Select = virtual<SelectProps>(
+export const Select = c<SelectProps>(
   (
     {
       disabled,

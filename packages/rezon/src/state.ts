@@ -17,7 +17,6 @@ export type StateUpdate = (options?: StateUpdateOptions) => void
 export interface State<H = unknown> {
   update: StateUpdate
   host: H
-  virtual?: boolean
   [hookSymbol]: Map<number, Hook>
   [effectsSymbol]: Callable[]
   [layoutEffectsSymbol]: Callable[]

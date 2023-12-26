@@ -2,7 +2,7 @@
 import { useStateMachine } from '@/hooks/use-state-machine'
 import { useIsomorphicLayoutEffect } from '@/hooks/use-isomorphic-layout-effect'
 import { mergeChildrenProps } from '@/utils'
-import { useState, useRef, useEffect, useCallback, flushSync, nothing, virtual } from 'rezon'
+import { useState, useRef, useEffect, useCallback, flushSync, nothing, c } from 'rezon'
 import { when } from 'rezon/directives/when'
 
 interface PresenceProps {
@@ -10,7 +10,7 @@ interface PresenceProps {
   present: boolean
 }
 
-const Presence = virtual<PresenceProps>(props => {
+const Presence = c<PresenceProps>(props => {
   const { present, children } = props
   const presence = usePresence(present)
 

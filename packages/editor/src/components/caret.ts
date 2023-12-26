@@ -12,13 +12,13 @@ import {
 import { isTouchDevice } from '../utils/environment'
 import { useReadOnly } from '../hooks/use-read-only'
 import { ShadowBlock } from './shadow'
-import { useCallback, useMemo, useRef, virtual } from 'rezon'
+import { useCallback, useMemo, useRef, c } from 'rezon'
 
 interface CaretProps {
   timeout?: number | false
 }
 
-const CaretComponent = virtual<CaretProps>(({ timeout = 530 }) => {
+const CaretComponent = c<CaretProps>(({ timeout = 530 }) => {
   const editor = useEditableStatic()
 
   const [focused] = useFocused()

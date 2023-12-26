@@ -4,7 +4,7 @@ import { usePointerOpen } from '@/hooks/use-pointer-open'
 import { PopperAnchor, PopperArrow, PopperContent, Popper, PopperContentProps } from './popper'
 import { Portal } from './portal'
 import { Presence } from './presence'
-import { useState, virtual } from 'rezon'
+import { useState, c } from 'rezon'
 
 export interface TooltipProps extends PopperContentProps {
   content: unknown
@@ -15,7 +15,7 @@ export interface TooltipProps extends PopperContentProps {
   arrowFill?: string
 }
 
-export const Tooltip = virtual<TooltipProps>(({
+export const Tooltip = c<TooltipProps>(({
   children,
   side = 'bottom',
   align = 'center',

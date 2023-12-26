@@ -11,15 +11,13 @@ import {
   render,
   html,
   useState,
-  define,
   flushSync,
   useRef,
   useEffect,
-  virtual,
+  c,
   HTMLAttributes,
   createContext,
   useContext,
-  custom,
   useLayoutEffect,
 } from 'rezon'
 import { spread } from 'rezon/directives/spread'
@@ -41,7 +39,7 @@ import { use } from 'i18next'
 interface TestProps extends HTMLAttributes<HTMLDivElement> {
   value?: string
 }
-const TestVirtual = virtual<TestProps>(props => {
+const TestVirtual = c<TestProps>(props => {
   console.log('TestVirtual', props)
   if (props.value) return html`<div>value: ${props.value}</div>`
   return html`<div ${spread(props)}></div>`
@@ -51,7 +49,7 @@ const PortalContext = createContext<{ count: number }>({ count: 0 })
 
 const CountContext = createContext<{ count: number; setCount: (value: number) => void }>({} as any)
 
-const TestPortalContent = virtual(() => {
+const TestPortalContent = c(() => {
   const { count } = useContext(PortalContext)
   useLayoutEffect(() => {
     console.log('TestPortalContent LayoutEffect')
@@ -60,7 +58,7 @@ const TestPortalContent = virtual(() => {
   return html`<div>Portal${count}</div>`
 })
 
-const TestPortal = virtual(() => {
+const TestPortal = c(() => {
   useLayoutEffect(() => {
     console.log('TestPortal LayoutEffect')
     return () => console.log('TestPortal LayoutEffect unmounted')
@@ -72,22 +70,13 @@ const TestPortal = virtual(() => {
   </div>`
 })
 
-const TestCount = virtual(() => {
+const TestCount = c(() => {
   const { count, setCount } = useContext(CountContext)
   return html`<div @click=${() => setCount(count + 1)}>TestCount: ${count}</div>`
 })
 
-const MyContainer = custom(
-  el => {
-    return html`<div>MyContainer</div>`
-  },
-  {
-    useShadowDOM: false,
-  },
-)
-
 let t: any = null
-const TestContainer = virtual(function ({ children }: { children: unknown }) {
+const TestContainer = c(function ({ children }: { children: unknown }) {
   const el = this as any
   if (!t) {
     t = el
@@ -101,8 +90,6 @@ const TestContainer = virtual(function ({ children }: { children: unknown }) {
   return children
 })
 
-define(MyContainer, 'my-container')
-
 /**
  *
 ${PortalContext.Provider({
@@ -111,19 +98,19 @@ ${PortalContext.Provider({
 })}
  */
 
-const _PopoverAnchor = virtual(props => {
+const _PopoverAnchor = c(props => {
   return html`<div ${spread(props)}>PopoverAnchor</div>`
 })
 
-const _PopoverContent = virtual(props => {
+const _PopoverContent = c(props => {
   return html`<div ${spread(props)}>PopoverContent</div>`
 })
 
-const _TestValue = virtual(() => {
+const _TestValue = c(() => {
   return 123
 })
 
-const TestChild = virtual(() => {
+const TestChild = c(() => {
   const [count, setCount] = useState(0)
 
   useLayoutEffect(() => {
@@ -137,7 +124,7 @@ const TestChild = virtual(() => {
   return html`<div>TestChild: <button @click=${() => setCount(count + 1)}>${count}</button></div>`
 })
 
-const TestMemo = virtual(() => {
+const TestMemo = c(() => {
   const [count, setCount] = useState(0)
 
   useLayoutEffect(() => {
@@ -151,7 +138,7 @@ const TestMemo = virtual(() => {
   return TestChild()
 })
 
-const TestChild1 = virtual(() => {
+const TestChild1 = c(() => {
   const [count, setCount] = useState(0)
 
   useLayoutEffect(() => {
@@ -165,7 +152,7 @@ const TestChild1 = virtual(() => {
   return html`<div>TestChild1</div>`
 })
 
-const MyApp = virtual(() => {
+const MyApp = c(() => {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLButtonElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)

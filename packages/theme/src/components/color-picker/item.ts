@@ -1,7 +1,7 @@
 import { AnyColor, Colord, colord, HslaColor, HsvaColor, RgbaColor } from 'colord'
 import tw, { css } from 'twin.macro'
 import { Palette } from './palette'
-import { html, virtual } from 'rezon'
+import { html, c } from 'rezon'
 import { StyleInfo, styleMap } from 'rezon/directives/style-map'
 
 export type ColorPickerItemProps = {
@@ -11,7 +11,7 @@ export type ColorPickerItemProps = {
   onSelect?: (color: string, event: MouseEvent) => void
 }
 
-export const ColorPickerItem = virtual<ColorPickerItemProps>(({
+export const ColorPickerItem = c<ColorPickerItemProps>(({
   palette,
   color,
   activeColors,
@@ -85,10 +85,10 @@ export const ColorPickerItem = virtual<ColorPickerItemProps>(({
 
   return html`<span
   class="${css([
-        tw`w-6 h-6 p-0.5 inline-block rounded-[3px] border border-transparent cursor-pointer bg-transparent hover:border hover:bg-white hover:border-zinc-200 hover:shadow`,
-        isTransparent && tw`relative`,
-        isTransparent &&
-          css`
+    tw`w-6 h-6 p-0.5 inline-block rounded-[3px] border border-transparent cursor-pointer bg-transparent hover:border hover:bg-white hover:border-zinc-200 hover:shadow`,
+    isTransparent && tw`relative`,
+    isTransparent &&
+    css`
             :after {
               content: '';
               display: block;
@@ -106,9 +106,9 @@ export const ColorPickerItem = virtual<ColorPickerItemProps>(({
   title="${palette.getTitle(color)}"
   >
     <span class="${css([
-          tw`relative w-[18px] h-[18px] block rounded-sm border border-transparent`,
-          needBorder && tw`border border-zinc-200`,
-    ])}" style="${styleMap(styles.block)}">
+    tw`relative w-[18px] h-[18px] block rounded-sm border border-transparent`,
+    needBorder && tw`border border-zinc-200`,
+  ])}" style="${styleMap(styles.block)}">
         <svg tw="absolute -top-[1px] left-[1px] w-3 h-3" style={styles.check} viewBox="0 0 18 18">
           <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
         </svg>

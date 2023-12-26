@@ -1,5 +1,5 @@
 
-import { HTMLAttributes, html, nothing, useRef, useState, virtual } from 'rezon'
+import { HTMLAttributes, html, nothing, useRef, useState, c } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 import { when } from 'rezon/directives/when'
 import tw, { TwStyle, css } from 'twin.macro'
@@ -22,7 +22,7 @@ interface StyledHolderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'classN
   className?: string | TwStyle
 }
 
-const StyledHolder = virtual<StyledHolderProps>(({ className, ...props }) => {
+const StyledHolder = c<StyledHolderProps>(({ className, ...props }) => {
 
   return html`<div class=${css([
     tw`absolute w-3 h-3 border-2 border-white rounded-full cursor-nwse-resize bg-primary pointer-events-auto z-[1]`,
@@ -30,7 +30,7 @@ const StyledHolder = virtual<StyledHolderProps>(({ className, ...props }) => {
   ])} ${spread(props)}></div>`
 })
 
-export const Resizer = virtual<ResizerProps>(({
+export const Resizer = c<ResizerProps>(({
   onResize,
   onChange,
   maxHeight,

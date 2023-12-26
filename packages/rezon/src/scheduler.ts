@@ -8,8 +8,7 @@ import {
   layoutEffectsSymbol,
   EffectsSymbols,
 } from './symbols'
-import { CustomComponentOrVirtualComponent } from './core'
-import { ChildPart, Disconnectable, noChange } from './lit-html/html'
+import { ChildPart, noChange } from './lit-html/html'
 import {
   BatchId,
   RootStateMap,
@@ -57,8 +56,8 @@ export interface SchedulerUpdateOptions extends StateUpdateOptions {
 
 export interface Scheduler<
   P = {},
-  T = HTMLElement | ChildPart,
-  H = CustomComponentOrVirtualComponent<P, T>,
+  T = ChildPart,
+  H = ChildPart,
 > {
   state: State<H>
   [phaseSymbol]: Phase | null
@@ -290,7 +289,7 @@ const finishStateMap = (batchId: BatchId, effectsSymbols: EffectsSymbols, state:
 export const createScheduler = <
   P = {},
   T = HTMLElement | ChildPart,
-  H = CustomComponentOrVirtualComponent<P, T>,
+  H = ChildPart,
 >(
   host: H,
 ) => {
@@ -299,20 +298,11 @@ export const createScheduler = <
     switch (phase) {
       case commitSymbol:
         scheduler.commit(arg, options)
-        if (state.virtual) {
-          handleEffects(options.batchId!, state, layoutEffectsSymbol, runEffects, arg === noChange)
-        } else {
-          runEffects(layoutEffectsSymbol)
-        }
-        return
+        return handleEffects(options.batchId!, state, layoutEffectsSymbol, runEffects, arg === noChange)
       case updateSymbol:
         return scheduler.render(options)
       case effectsSymbol:
-        if (state.virtual) {
-          handleEffects(options.batchId!, state, effectsSymbol, runEffects, arg === noChange)
-        } else {
-          runEffects(effectsSymbol)
-        }
+        return handleEffects(options.batchId!, state, effectsSymbol, runEffects, arg === noChange)
     }
   }
   let _updateQueued = false
@@ -326,19 +316,19 @@ export const createScheduler = <
       batchId = createBatchId()
       BATCHID_TO_ROOTSTATE_WEAKMAP.set(batchId, createRootStateMap(state))
     }
-    if (state.virtual) {
-      const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
-      if (rootStateMap && rootStateMap.has(state)) {
-        const rootState = rootStateMap.get(state)!
-        if (rootState.started) return
-        rootState.started = true
-      }
 
-      if (parentState) {
-        addChildrenToStateMap(batchId, layoutEffectsSymbol, parentState, state)
-        addChildrenToStateMap(batchId, effectsSymbol, parentState, state)
-      }
+    const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
+    if (rootStateMap && rootStateMap.has(state)) {
+      const rootState = rootStateMap.get(state)!
+      if (rootState.started) return
+      rootState.started = true
     }
+
+    if (parentState) {
+      addChildrenToStateMap(batchId, layoutEffectsSymbol, parentState, state)
+      addChildrenToStateMap(batchId, effectsSymbol, parentState, state)
+    }
+
 
     if (isFlushing) {
       _updateQueued = true

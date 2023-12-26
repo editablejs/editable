@@ -3,7 +3,7 @@ import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editable } from '../plugin/editable'
 import { EditableStore, EditableStoreContext } from '../hooks/use-editable'
 import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
-import { useMemo, virtual } from 'rezon'
+import { useMemo, c } from 'rezon'
 
 const EDITABLE_TO_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<EditableStore>>>()
 
@@ -14,7 +14,7 @@ interface EditableProviderProps {
   onChange?: (value: Descendant[]) => void
 }
 
-export const EditableProvider = virtual<EditableProviderProps>(props => {
+export const EditableProvider = c<EditableProviderProps>(props => {
   const {
     editor,
     children,
@@ -31,7 +31,7 @@ export const EditableProvider = virtual<EditableProviderProps>(props => {
     if (!Node.isNodeList(value)) {
       throw new Error(
         `[Editable] value is invalid! Expected a list of elements` +
-          `but got: ${Scrubber.stringify(value)}`,
+        `but got: ${Scrubber.stringify(value)}`,
       )
     }
     if (!Editor.isEditor(editor)) {

@@ -1,5 +1,5 @@
 
-import { virtual } from "rezon";
+import { c } from "rezon";
 import { ColorPicker } from "./common/color-picker";
 import { ColorModel, ColorPickerBaseProps } from "./types";
 import { equalHex } from "./utils/compare";
@@ -12,6 +12,6 @@ const colorModel: ColorModel<string> = {
   equal: equalHex,
 };
 
-export const HexColorPicker = virtual<Partial<ColorPickerBaseProps<string>>>((props) => (
+export const HexColorPicker = c<Partial<ColorPickerBaseProps<string>>>((props) => (
   ColorPicker({ ...props, colorModel })
 ));

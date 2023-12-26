@@ -1,4 +1,4 @@
-import { html, virtual, RefObject, ButtonHTMLAttributes } from 'rezon'
+import { html, c, RefObject, ButtonHTMLAttributes } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { spread } from 'rezon/directives/spread'
 import { createStyles } from '../styles'
@@ -44,7 +44,7 @@ const useButtonStyles = createStyles<ButtonStylesProps>(({ type, disabled, shape
   ]
 })
 
-export const Button = virtual<ButtonProps>((props) => {
+export const Button = c<ButtonProps>((props) => {
   const { type, shape, htmlType, className, children, icon, ...rest } = props
   const styles = useButtonStyles({
     type: type,

@@ -1,13 +1,13 @@
 import { nothing, render } from './lit-html/html'
 import { useMemo } from './use-memo'
-import { virtual } from './virtual'
+import { c } from './component'
 
 export interface CreatePortal {
   container: HTMLElement | DocumentFragment
   children: unknown
 }
 
-const createPortal = virtual<CreatePortal>(function (props) {
+const createPortal = c<CreatePortal>(function (props) {
   const { container, children } = props
   const rootPart = useMemo(
     () => render(children, container, this.currentOptions),

@@ -1,7 +1,7 @@
 
 import { useCallbackRef } from '@/hooks/use-callback-ref'
 import { useIsomorphicLayoutEffect } from '@/hooks/use-isomorphic-layout-effect'
-import { HTMLAttributes, ImgHTMLAttributes, createContext, html, nothing, useContext, useEffect, useState, virtual } from 'rezon'
+import { HTMLAttributes, ImgHTMLAttributes, createContext, html, nothing, useContext, useEffect, useState, c } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 
 /* -------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ const useAvatarContext = () => useContext(AvatarContext)
 interface AvatarProps extends HTMLAttributes<HTMLSpanElement> { }
 
 
-const Avatar = virtual<AvatarProps>((props) => {
+const Avatar = c<AvatarProps>((props) => {
   const [imageLoadingStatus, setImageLoadingStatus] = useState<ImageLoadingStatus>('idle')
   return AvatarContext.Provider({
     value: {
@@ -43,7 +43,7 @@ interface AvatarImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   onLoadingStatusChange?: (status: ImageLoadingStatus) => void
 }
 
-const AvatarImage = virtual<AvatarImageProps>((props) => {
+const AvatarImage = c<AvatarImageProps>((props) => {
   const { src, onLoadingStatusChange = () => { }, ...imageProps } = props
   const context = useAvatarContext()
   const imageLoadingStatus = useImageLoadingStatus(src)
@@ -71,7 +71,7 @@ interface AvatarFallbackProps extends HTMLAttributes<HTMLSpanElement> {
   delayMs?: number
 }
 
-const AvatarFallback = virtual<AvatarFallbackProps>(
+const AvatarFallback = c<AvatarFallbackProps>(
   (props: AvatarFallbackProps) => {
     const { delayMs, ...fallbackProps } = props
     const context = useAvatarContext()

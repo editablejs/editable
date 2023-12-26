@@ -5,7 +5,7 @@ import {
   html,
   useRef,
   useState,
-  virtual,
+  c,
   useImperativeHandle,
   createPortal,
 } from 'rezon'
@@ -27,23 +27,23 @@ type ShadowBlockProps = {
   rect: ShadowRect
 } & HTMLAttributes<HTMLDivElement>
 
-export const ShadowBlock = virtual<ShadowBlockProps>(
+export const ShadowBlock = c<ShadowBlockProps>(
   ({ children, rect, style, ref: _ref, ...props }) =>
     html`<div
       ref=${ref(_ref)}
       style=${styleMap({
-        position: 'absolute',
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-        // 数值为单数的情况下，两组重合位置会有阴影
-        // transform: `translateX(${rect.left || 0}px) translateY(${rect.top || 0}px)`,
-        opacity: 1,
-        backgroundColor: `${rect.color || 'transparent'}`,
-        zIndex: 1,
-        ...style,
-      })}
+      position: 'absolute',
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+      // 数值为单数的情况下，两组重合位置会有阴影
+      // transform: `translateX(${rect.left || 0}px) translateY(${rect.top || 0}px)`,
+      opacity: 1,
+      backgroundColor: `${rect.color || 'transparent'}`,
+      zIndex: 1,
+      ...style,
+    })}
       ${spread(props)}
     >
       ${children}
@@ -65,7 +65,7 @@ interface ShadowContainerProps {
   children?: unknown
 }
 
-const ShadowContainer = virtual<ShadowContainerProps>(({ children, ref: refProp }) => {
+const ShadowContainer = c<ShadowContainerProps>(({ children, ref: refProp }) => {
   const [root, setRoot] = useState<ShadowRoot>()
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -83,9 +83,9 @@ const ShadowContainer = virtual<ShadowContainerProps>(({ children, ref: refProp 
   >
     ${root
       ? createPortal({
-          container: root,
-          children: html`<div style=${styleMap({ pointerEvents: 'none' })}>${children}</div>`,
-        })
+        container: root,
+        children: html`<div style=${styleMap({ pointerEvents: 'none' })}>${children}</div>`,
+      })
       : ''}
   </div>`
 })

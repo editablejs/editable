@@ -3,7 +3,7 @@ import { useEscapeKeydown } from '@/hooks/use-escape-keydown'
 import { useCallbackRef } from '@/hooks/use-callback-ref'
 import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@/utils'
 import { Slot } from './slot'
-import { createContext, useContext, useState, useEffect, useRef, HTMLAttributes, virtual, html } from 'rezon'
+import { createContext, useContext, useState, useEffect, useRef, HTMLAttributes, c, html } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 import { ref } from 'rezon/directives/ref'
 
@@ -58,7 +58,7 @@ export interface DismissableLayerProps extends HTMLAttributes<DismissableLayerEl
   onDismiss?: () => void
 }
 
-const DismissableLayer = virtual<DismissableLayerProps>(
+const DismissableLayer = c<DismissableLayerProps>(
   (props) => {
     const {
       disableOutsidePointerEvents = false,
@@ -180,7 +180,7 @@ const DismissableLayer = virtual<DismissableLayerProps>(
 type DismissableLayerBranchElement = HTMLDivElement
 interface DismissableLayerBranchProps extends HTMLAttributes<DismissableLayerElement> { }
 
-const DismissableLayerBranch = virtual<
+const DismissableLayerBranch = c<
   DismissableLayerBranchProps
 >(({ ref: forwardedRef, ...props }) => {
   const context = useContext(DismissableLayerContext)

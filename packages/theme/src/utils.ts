@@ -1,4 +1,4 @@
-import { HTMLAttributes, Ref, flushSync, getVaildVirtualFromTemplateResult, getVirtualResultProps, isTemplateStringsResult, isVaildVirtual, useEffect, useLayoutEffect } from "rezon"
+import { HTMLAttributes, Ref, flushSync, getVaildComponentFromTemplateValue, getPropsFromComponentValue, isTemplateStringsValue, isVaildComponent, useEffect, useLayoutEffect } from "rezon"
 
 import { composeRefs } from "./compose-refs"
 
@@ -37,14 +37,14 @@ export interface MergeChildrenPropsOptions {
 
 export const mergeChildrenProps = (children: unknown, options: MergeChildrenPropsOptions) => {
   const { props, ref, merge = mergeProps } = options
-  if (isVaildVirtual<HTMLAttributes>(children)) {
-    const childProps = getVirtualResultProps(children)
+  if (isVaildComponent<HTMLAttributes>(children)) {
+    const childProps = getPropsFromComponentValue(children)
     children.values = [{ ...(props ? merge(props, childProps) : childProps), ref: composeRefs(ref, childProps?.ref as Ref<HTMLElement>) }]
-  } else if (isTemplateStringsResult(children)) {
-    const virtuals = getVaildVirtualFromTemplateResult<HTMLAttributes>(children)
-    for (const virtual of virtuals) {
-      const childProps = getVirtualResultProps(virtual)
-      virtual.values = [{ ...(props ? merge(props, childProps) : childProps), ref: composeRefs(ref, childProps?.ref as Ref<HTMLElement>) }]
+  } else if (isTemplateStringsValue(children)) {
+    const virtuals = getVaildComponentFromTemplateValue<HTMLAttributes>(children)
+    for (const c of virtuals) {
+      const childProps = getPropsFromComponentValue(c)
+      c.values = [{ ...(props ? merge(props, childProps) : childProps), ref: composeRefs(ref, childProps?.ref as Ref<HTMLElement>) }]
     }
   } else if (Array.isArray(children)) {
     for (const child of children) {

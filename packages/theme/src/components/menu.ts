@@ -7,7 +7,7 @@ import { composeRefs, useComposedRefs } from './compose-refs'
 import { composeEventHandlers, dispatchDiscreteCustomEvent } from '@/utils'
 import { useDirection } from './direction'
 import { useId } from '@/hooks/use-id'
-import { createContext, useContext, RefObject, useState, useRef, useEffect, useCallback, MutableRefObject, PointerEventHandler, virtual, HTMLAttributes, html } from 'rezon'
+import { createContext, useContext, RefObject, useState, useRef, useEffect, useCallback, MutableRefObject, PointerEventHandler, c, HTMLAttributes, html } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { spread } from 'rezon/directives/spread'
 
@@ -63,7 +63,7 @@ export interface MenuProps {
   dir?: Direction
 }
 
-const Menu = virtual<MenuProps>(props => {
+const Menu = c<MenuProps>(props => {
   const { open = false, children, dir, onOpenChange } = props
   const [content, setContent] = useState<MenuContentElement | null>(null)
   const isUsingKeyboardRef = useRef(false)
@@ -141,7 +141,7 @@ type MenuContentElement = MenuRootContentTypeElement
  */
 interface MenuContentProps extends MenuRootContentTypeProps { }
 
-const MenuContent = virtual<MenuContentProps>((props) => {
+const MenuContent = c<MenuContentProps>((props) => {
   const context = useMenuContext()
 
   return Collection.Provider({
@@ -161,7 +161,7 @@ type MenuRootContentTypeElement = MenuContentImplElement
 interface MenuRootContentTypeProps
   extends Omit<MenuContentImplProps, keyof MenuContentImplPrivateProps> { }
 
-const MenuRootContent = virtual<MenuRootContentTypeProps>((props) => {
+const MenuRootContent = c<MenuRootContentTypeProps>((props) => {
   const context = useMenuContext()
   return MenuContentImpl({
     ...props,
@@ -185,7 +185,7 @@ interface MenuContentImplProps
   onInteractOutside?: DismissableLayerProps['onInteractOutside']
 }
 
-const MenuContentImpl = virtual<MenuContentImplProps>(
+const MenuContentImpl = c<MenuContentImplProps>(
   (props) => {
     const {
       disableOutsidePointerEvents,
@@ -323,13 +323,13 @@ interface MenuGroupProps extends PrimitiveDivProps {
   children?: unknown
 }
 
-const MenuGroup = virtual<MenuGroupProps>((props) => {
+const MenuGroup = c<MenuGroupProps>((props) => {
   return html`<div role="group" ${spread(props)} ></div>`
 })
 
 interface MenuLabel extends PrimitiveDivProps { }
 
-const MenuLabel = virtual<MenuLabel>((props) => {
+const MenuLabel = c<MenuLabel>((props) => {
   return html`<div role="group" ${spread(props)} ></div>`
 })
 
@@ -345,7 +345,7 @@ interface MenuItem extends Omit<MenuItemImplProps, 'onSelect'> {
   "data-state"?: string
 }
 
-const MenuItem = virtual<MenuItem>((props) => {
+const MenuItem = c<MenuItem>((props) => {
   const { disabled = false, onSelect, ref: forwardedRef, ...itemProps } = props
   const ref = useRef<HTMLDivElement>(null)
   const rootContext = useMenuRootContext()
@@ -410,7 +410,7 @@ interface MenuItemImplProps extends PrimitiveDivProps {
   'data-state'?: string
 }
 
-const MenuItemImpl = virtual<MenuItemImplProps>((props) => {
+const MenuItemImpl = c<MenuItemImplProps>((props) => {
   const { disabled = false, ref: forwardedRef, textValue, ...itemProps } = props
   const contentContext = useMenuContentContext()
   const _ref = useRef<HTMLDivElement>(null)
@@ -473,7 +473,7 @@ interface MenuRadioGroup extends MenuGroupProps {
   onValueChange?: (value: string) => void
 }
 
-const MenuRadioGroup = virtual<MenuRadioGroup>((props) => {
+const MenuRadioGroup = c<MenuRadioGroup>((props) => {
   const { value, onValueChange } = props
   const handleValueChange = useCallbackRef(onValueChange)
   return RadioGroupContext.Provider({
@@ -493,7 +493,7 @@ interface MenuRadioItem extends MenuItem {
   value: string
 }
 
-const MenuRadioItem = virtual<MenuRadioItem>(({ value, ...radioItemProps }) => {
+const MenuRadioItem = c<MenuRadioItem>(({ value, ...radioItemProps }) => {
   const context = useRadioGroupContext()
   const checked = value === context.value
   return ItemIndicatorContext.Provider({
@@ -529,7 +529,7 @@ interface MenuItemIndicator extends PrimitiveSpanProps {
   forceMount?: true
 }
 
-const MenuItemIndicator = virtual<MenuItemIndicator>(({ forceMount, ...props }) => {
+const MenuItemIndicator = c<MenuItemIndicator>(({ forceMount, ...props }) => {
   const indicatorContext = useItemIndicatorContext()
   return Presence({
     present: forceMount || indicatorContext.checked,
@@ -547,7 +547,7 @@ const MenuItemIndicator = virtual<MenuItemIndicator>(({ forceMount, ...props }) 
 
 interface MenuSeparator extends PrimitiveDivProps { }
 
-const MenuSeparator = virtual<MenuSeparator>((props) => {
+const MenuSeparator = c<MenuSeparator>((props) => {
   return html`<div role="separator" data-orientation="horizontal" ${spread(props)}></div>`
 })
 
@@ -580,7 +580,7 @@ interface MenuSubProps {
   onOpenChange?(open: boolean): void
 }
 
-const MenuSub = virtual<MenuSubProps>(props => {
+const MenuSub = c<MenuSubProps>(props => {
   const { children, open = false, onOpenChange } = props
   const parentMenuContext = useMenuContext()
   const [trigger, setTrigger] = useState<MenuSubTriggerElement | null>(null)
@@ -621,7 +621,7 @@ const MenuSub = virtual<MenuSubProps>(props => {
 type MenuSubTriggerElement = MenuItemImplElement
 interface MenuSubTrigger extends MenuItemImplProps { }
 
-const MenuSubTrigger = virtual<MenuSubTrigger>(
+const MenuSubTrigger = c<MenuSubTrigger>(
   (props) => {
     const context = useMenuContext()
     const rootContext = useMenuRootContext()
@@ -746,7 +746,7 @@ interface MenuSubContent
   forceMount?: true
 }
 
-const MenuSubContent = virtual<MenuSubContent>(({ ref: forwardedRef, ...props }) => {
+const MenuSubContent = c<MenuSubContent>(({ ref: forwardedRef, ...props }) => {
   const context = useMenuContext()
   const rootContext = useMenuRootContext()
   const subContext = useMenuSubContext()

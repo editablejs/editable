@@ -56,13 +56,13 @@ import {
   useMemo,
   useCallback,
   html,
-  virtual,
+  c,
 } from 'rezon'
 import { styleMap } from 'rezon/directives/style-map'
 import { spread } from 'rezon/directives/spread'
 import { ref } from 'rezon/directives/ref'
 
-const Children = virtual<Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>>(props => {
+const Children = c<Omit<Parameters<typeof useChildren>[0], 'node' | 'selection'>>(props => {
   const editor = useEditable()
   return useChildren({ ...props, node: editor, selection: editor.selection })
 })
@@ -83,7 +83,7 @@ export type EditableProps = {
 /**
  * ContentEditable.
  */
-export const ContentEditable = virtual<EditableProps>(props => {
+export const ContentEditable = c<EditableProps>(props => {
   const {
     autoFocus = true,
     placeholder,
@@ -624,28 +624,28 @@ export const ContentEditable = virtual<EditableProps>(props => {
   return html`
     <div
       style=${styleMap({
-        ...style,
-        position: 'relative',
-      })}
+    ...style,
+    position: 'relative',
+  })}
     >
       <div
         role=${readOnly ? undefined : 'textbox'}
         ${spread({ ...attributes, [DATA_EDITABLE_NODE]: 'editor' })}
         ${ref(containerRef)}
         style=${styleMap({
-          // Prevent the default outline styles.
-          outline: 'none',
-          // Preserve adjacent whitespace and new lines.
-          whiteSpace: 'nowrap',
-          // Allow words to break if they are too long.
-          wordBreak: 'break-word',
-          // Disable the default user-select behavior.
-          userSelect: 'none',
-          // Set cursor to text.
-          cursor,
-          //
-          overflowWrap: 'break-word',
-        })}
+    // Prevent the default outline styles.
+    outline: 'none',
+    // Preserve adjacent whitespace and new lines.
+    whiteSpace: 'nowrap',
+    // Allow words to break if they are too long.
+    wordBreak: 'break-word',
+    // Disable the default user-select behavior.
+    userSelect: 'none',
+    // Set cursor to text.
+    cursor,
+    //
+    overflowWrap: 'break-word',
+  })}
         @touchstart=${isTouchDevice ? handleRootTouchStart : undefined}
         @mousedown=${isTouchDevice ? undefined : handleRootMouseDown}
         @mouseup=${handleRootMouseUp}
@@ -657,14 +657,14 @@ export const ContentEditable = virtual<EditableProps>(props => {
         ${Children({ renderPlaceholder })}
       </div>
       ${ShadowContainer({
-        ref: current => EDITOR_TO_SHADOW.set(editor, current),
-        children: [
-          CaretComponent({}),
-          DragCaretComponent(),
-          SelectionComponent(),
-          InputComponent({ autoFocus }),
-        ],
-      })}
+    ref: current => EDITOR_TO_SHADOW.set(editor, current),
+    children: [
+      CaretComponent({}),
+      DragCaretComponent(),
+      SelectionComponent(),
+      InputComponent({ autoFocus }),
+    ],
+  })}
     </div>
   `
 })

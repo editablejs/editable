@@ -1,98 +1,8 @@
-import { ChildPart, html } from './lit-html/html'
+import { ChildPart } from './lit-html/html'
 import { useContext } from './use-context'
 import { useEffect } from './use-effect'
 import { useLayoutEffect } from './use-layout-effect'
-import { useMemo } from './use-memo'
-import { VirtualDirectiveComponent, virtual } from './virtual'
-
-// interface ConsumerProps<T> {
-//   render: (value: T) => unknown
-// }
-
-// interface Creator {
-//   <T>(defaultValue: T): Context<T>
-// }
-
-// interface Context<T> {
-//   Provider: CustomConstructor<{}>
-//   Consumer: CustomConstructor<ConsumerProps<T>>
-//   defaultValue: T
-// }
-
-// interface ContextDetail<T> {
-//   Context: Context<T>
-//   callback: (value: T) => void
-
-//   // These properties will not exist if a context consumer lacks a provider
-//   value: T
-//   unsubscribe?: (this: Context<T>) => void
-// }
-
-// const makeContext = (component: CustomCreator): Creator => {
-//   return <T>(defaultValue: T): Context<T> => {
-//     const Context: Context<T> = {
-//       Provider: class extends BaseElement {
-//         listeners: Set<(value: T) => void>
-//         _value!: T
-
-//         constructor() {
-//           super()
-//           this.listeners = new Set()
-
-//           this.addEventListener(contextEvent, this)
-//         }
-
-//         disconnectedCallback(): void {
-//           this.removeEventListener(contextEvent, this)
-//         }
-
-//         handleEvent(event: CustomEvent<ContextDetail<T>>): void {
-//           const { detail } = event
-
-//           if (detail.Context === Context) {
-//             detail.value = this.value
-//             detail.unsubscribe = this.unsubscribe.bind(this, detail.callback)
-
-//             this.listeners.add(detail.callback)
-
-//             event.stopPropagation()
-//           }
-//         }
-
-//         unsubscribe(callback: (value: T) => void): void {
-//           this.listeners.delete(callback)
-//         }
-
-//         set value(value: T) {
-//           this._value = value
-//           for (let callback of this.listeners) {
-//             callback(value)
-//           }
-//         }
-
-//         get value(): T {
-//           return this._value
-//         }
-//       },
-
-//       Consumer: component<ConsumerProps<T>>(
-//         ({ render }: ConsumerProps<T>): unknown => {
-//           const context = useContext(Context)
-
-//           return render(context)
-//         },
-//         {
-//           useShadowDOM: false,
-//         },
-//       ),
-
-//       defaultValue,
-//     }
-
-//     return Context
-//   }
-// }
-
+import { ComponentDirective, c } from './component'
 export interface ContextProviderProps<T = {}> {
   value: T
   children: unknown
@@ -103,7 +13,7 @@ export interface ContextConsumerProps<T = {}> {
 }
 
 export interface Context<T = {}> {
-  Provider: VirtualDirectiveComponent<ContextProviderProps<T>>
+  Provider: ComponentDirective<ContextProviderProps<T>>
   Consumer: (render: (value: T) => unknown) => unknown
   defaultValue: T
 }
@@ -137,7 +47,7 @@ export const createContext = <T = {}>(defaultValue: T) => {
     },
   }
   const Context: Context<T> = {
-    Provider: virtual<ContextProviderProps<T>>(function (props) {
+    Provider: c<ContextProviderProps<T>>(function (props) {
       const { children, value } = props
       currentValue = value
       const isInitialRender = !hasContextListener(this)
@@ -162,7 +72,7 @@ export const createContext = <T = {}>(defaultValue: T) => {
       return children
     }),
     Consumer: (render: (value: T) => unknown) => {
-      return virtual(function () {
+      return c(function () {
         // eslint-disable-next-line
         const context = useContext(Context)
         return render(context)

@@ -8,12 +8,12 @@ import {
 } from '../hooks/use-selection-drawing'
 import { ShadowBlock } from './shadow'
 import { isTouchDevice } from '../utils/environment'
-import { virtual } from 'rezon'
+import { c } from 'rezon'
 import { repeat } from 'rezon/directives/repeat'
 
-interface SelectionProps {}
+interface SelectionProps { }
 
-const SelectionComponent = virtual<SelectionProps>(() => {
+const SelectionComponent = c<SelectionProps>(() => {
   const selection = useSelectionDrawingSelection()
   const rects = useSelectionDrawingRects()
   const enabled = useSelectionDrawingEnabled()

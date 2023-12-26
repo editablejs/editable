@@ -9,7 +9,7 @@ import { ColorPickerGroup } from './group'
 import { ColorPickerItem } from './item'
 import { Colors, createPalette, Palette } from './palette'
 import { useLocalStore } from './use-local-store'
-import { Ref, html, useEffect, useMemo, useState, virtual } from 'rezon'
+import { Ref, html, useEffect, useMemo, useState, c } from 'rezon'
 import { ref } from 'rezon/directives/ref'
 import { when } from 'rezon/directives/when'
 import { repeat } from 'rezon/directives/repeat'
@@ -47,7 +47,7 @@ export interface ColorPickerProps {
   children?: unknown
 }
 
-export const ColorPicker = virtual<ColorPickerProps & { className?: string }>(
+export const ColorPicker = c<ColorPickerProps & { className?: string }>(
   (
     {
       size,
