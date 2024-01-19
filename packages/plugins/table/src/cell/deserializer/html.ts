@@ -9,7 +9,7 @@ export const withTableCellHTMLDeserializerTransform: HTMLDeserializerWithTransfo
 ) => {
   return (node, options = {}) => {
     const { text } = options
-    if (isDOMHTMLElement(node) && node.nodeName === 'TD') {
+    if (isDOMHTMLElement(node) && ['TD', 'TH'].includes(node.nodeName)) {
       const children: Descendant[] = []
       for (const child of node.childNodes) {
         const content = serializer.transform(child, {
