@@ -1,7 +1,7 @@
 import { Editable } from '@editablejs/editor'
 import { GridCell, Node } from '@editablejs/models'
-import { setOptions, TableCellOptions } from '../options'
 import { CellInnerStyles, CellStyles } from '../../components/styles'
+import { TableCellOptions, setOptions } from '../options'
 import { TableCellEditor } from './table-cell-editor'
 
 export const withTableCell = <T extends Editable>(editor: T, options: TableCellOptions = {}) => {
@@ -22,7 +22,7 @@ export const withTableCell = <T extends Editable>(editor: T, options: TableCellO
         <CellStyles
           rowSpan={element.rowspan ?? 1}
           colSpan={element.colspan ?? 1}
-          style={{ ...style, display: element.span ? 'none' : '' }}
+          style={{ ...style, display: element.span || element.children[0]?.text?.toString().indexOf('displaynone||||||') > -1 ? 'none' : '' }}
           {...rest}
         >
           <CellInnerStyles>{children}</CellInnerStyles>

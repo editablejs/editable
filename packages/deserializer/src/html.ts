@@ -1,4 +1,4 @@
-import { Editor, Descendant, Element, Text, DOMNode, isDOMText } from '@editablejs/models'
+import { DOMNode, Descendant, Editor, Element, Text, isDOMText } from '@editablejs/models'
 
 export interface HTMLDeserializerOptions {
   element?: Omit<Element, 'children'>
@@ -78,6 +78,77 @@ export const HTMLDeserializer = {
 
     for (const { transform, options } of transforms) {
       HTMLDeserializerEditor.with(transform, options)
+    }
+    
+    
+    // handle table cell merging
+    // 对node的children进行遍历，寻找里面的children,判断children里是否有table，并对table做处理
+    // 如果有table，那么就对table里的cell进行遍历，判断cell的colspan和rowspan是否为1
+    // 如果不为1，那么就对cell的colspan和rowspan进行处理，使其都为1
+    // 如果为1，那么就不做处理
+    // 如果cell的colspan和rowspan都为1，那么就不做处理
+    const children = node.children;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      if (child.nodeName === 'TABLE') {
+        for (let rowIndex = 0; rowIndex < child.rows.length; rowIndex++) {
+          const row = child.rows[rowIndex];
+          
+          for (let cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+            const cell = row.cells[cellIndex];
+            if (rowIndex === 0 && cell.nodeName === 'TH') {
+              cell.style.fontWeight = '700';
+            }
+            const colspan = cell.getAttribute('colspan') ?? 1
+            const rowspan = cell.getAttribute('rowspan') ?? 1
+            if (colspan > 1) {
+              for (let i = 1; i < colspan; i++) {
+                const newCell = document.createElement('TD')
+                // 设置当前newCell的colspan和rowspan都为1
+                newCell.setAttribute('colspan', '1')
+                newCell.setAttribute('rowspan', '1')
+                // 设置当前newCell的文本为displaynone
+                newCell.textContent = 'displaynone||||||' + rowIndex + '||||||' + cellIndex
+                row.insertBefore(newCell, cell.nextSibling)
+              }
+            }
+            if (rowspan > 1) {
+              for (let i = 1; i < rowspan; i++) {
+                // 获取当前行的下i行
+                const nextRow = child.rows[rowIndex + i]
+                // 获取当前行的下i行的第cellIndex个cell
+                for (let i = 0; i < colspan; i++) {
+                  const newCell = nextRow.insertCell(cellIndex);
+                  // 设置当前newCell的colspan和rowspan都为1
+                  newCell.setAttribute('colspan', '1')
+                  newCell.setAttribute('rowspan', '1')
+                  // 设置当前newCell的文本为displaynone
+                  newCell.textContent = 'displaynone||||||' + rowIndex + '||||||' + cellIndex
+                }
+              }
+            }
+          }
+        }
+      }
+      // 解析child的innerHTML，并循环遍历内部的所有strike，并增加style：text-decoration:line-through;
+      if (child.innerHTML.indexOf('<strike') !== -1) {
+        const strikes = child.getElementsByTagName('strike');
+        for (let strike of strikes) {
+          // 将当前的strike元素替换为span元素
+          const span = document.createElement('span');
+          span.innerHTML = strike.innerHTML;
+          // 将 strike 元素的所有样式复制到 span 元素
+          for (let property of strike.style) {
+            span.style.setProperty(property, strike.style.getPropertyValue(property));
+          }
+          span.style.textDecoration = 'line-through';
+          // 将当前元素作为兄弟元素插入到strike后面，并把strike隐藏掉
+          strike.insertAdjacentElement('afterend', span);
+        }
+        while (strikes.length > 0) {
+          strikes[0].remove();
+        }
+      }
     }
 
     return HTMLDeserializerEditor.transform(node, options)

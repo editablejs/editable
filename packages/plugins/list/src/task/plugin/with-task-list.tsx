@@ -1,7 +1,7 @@
-import { RenderElementProps, ElementAttributes, Editable, Hotkey } from '@editablejs/editor'
-import { Transforms, List } from '@editablejs/models'
-import tw, { styled, css, theme } from 'twin.macro'
-import { ListStyles, ListLabelStyles, renderList } from '../../styles'
+import { Editable, ElementAttributes, Hotkey, RenderElementProps } from '@editablejs/editor'
+import { List, Transforms } from '@editablejs/models'
+import tw, { css, styled, theme } from 'twin.macro'
+import { ListLabelStyles, ListStyles, renderList } from '../../styles'
 import { DATA_TASK_CHECKED_KEY, TASK_LIST_KEY } from '../constants'
 import { TaskList } from '../interfaces/task-list'
 import { TaskListHotkey, TaskListOptions } from '../options'
@@ -70,9 +70,9 @@ const TaskElement = ({ checked, onChange }: TaskProps) => {
   )
 }
 
+// 不期望任务列表选中后出现下划线，去掉 &[data-task-checked='true'] {下面的 ${tw`line-through`}
 const StyledTask = styled(ListStyles)`
   &[data-task-checked='true'] {
-      ${tw`line-through`}
 
       ${TaskCheckboxInnerStyles} {
         background-color: ${theme('colors.primary')};
