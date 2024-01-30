@@ -91,8 +91,18 @@ export const HTMLDeserializer = {
     for (let i = 0; i < children.length; i++) {
       const child = children[i];
       if (child.nodeName === 'TABLE') {
+        let colCount = 0;
         for (let rowIndex = 0; rowIndex < child.rows.length; rowIndex++) {
           const row = child.rows[rowIndex];
+          // 计算第一行的列数，用colspan累加
+          if (rowIndex === 0) {
+            for (let cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+              const cell = row.cells[cellIndex];
+              const colspan = cell.getAttribute('colspan') ?? 1
+              colCount += colspan - 0;
+            }
+          }
+          
           
           for (let cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
             const cell = row.cells[cellIndex];
@@ -128,6 +138,17 @@ export const HTMLDeserializer = {
               }
             }
           }
+          let cellsLength = row.cells.length;
+          if (cellsLength < colCount) {
+            for (let i = 0; i < colCount - cellsLength; i++) {
+              const newCell = row.insertCell();
+              // 设置当前newCell的colspan和rowspan都为1
+              newCell.setAttribute('colspan', '1')
+              newCell.setAttribute('rowspan', '1')
+              // 设置当前newCell的文本为displaynone
+              newCell.textContent = '';
+            }
+          }
         }
       }
       // 解析child的innerHTML，并循环遍历内部的所有strike，并增加style：text-decoration:line-through;
@@ -142,7 +163,7 @@ export const HTMLDeserializer = {
             span.style.setProperty(property, strike.style.getPropertyValue(property));
           }
           span.style.textDecoration = 'line-through';
-          // 将当前元素作为兄弟元素插入到strike后面，并把strike隐藏掉
+          // 将当前元素作为兄弟元素插入到strike后面
           strike.insertAdjacentElement('afterend', span);
         }
         while (strikes.length > 0) {
