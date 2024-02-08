@@ -125,13 +125,13 @@ export interface ToolbarProps extends HTMLAttributes<HTMLDivElement> {
   side?: TooltipProps['side']
 }
 
-const StyledToolbar = c<ToolbarProps>(({ mode }) => {
+const StyledToolbar = c<ToolbarProps>(({ mode, ...props }) => {
 
   return html`<div class="${css([
     tw`text-gray-600 z-10 flex items-center gap-1 cursor-default`,
     mode === 'inline' &&
     tw`bg-white shadow-md z-50 px-2 py-1 rounded border-zinc-200 border-solid border`,
-  ])}">`
+  ])}" ${spread(props)}></div>`
 })
 
 export interface ToolbarContext {

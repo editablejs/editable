@@ -1,5 +1,5 @@
 import { Locale } from '@editablejs/editor'
-import { ColorPickerLocale } from '@editablejs/ui'
+import { ColorPickerLocale } from '@editablejs/theme'
 
 export interface InlineToolbarLocale extends Locale {
   inlineToolbar: {

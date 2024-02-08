@@ -20,6 +20,7 @@ import {
   isDOMSelection,
   isDOMNode,
   isDOMText,
+  Descendant,
 } from '@editablejs/models'
 
 import {
@@ -110,6 +111,10 @@ export interface RenderPlaceholderProps<T extends Node = Node> {
   node: T
 }
 
+export interface RenderOptions {
+  defaultValue?: Descendant[]
+}
+
 export interface SerializeHtmlOptions {
   node: Node
   attributes?: Record<string, any>
@@ -169,6 +174,7 @@ export interface Editable extends Editor {
   renderElement: (props: RenderElementProps) => unknown
   renderLeaf: (props: RenderLeafProps) => unknown
   renderPlaceholder: (props: RenderPlaceholderProps) => unknown
+  render(editor: Editable, container: HTMLElement, options: RenderOptions): void
   toDataTransfer: (range?: Range) => DataTransfer | null
 }
 
@@ -1063,9 +1069,9 @@ export const Editable = {
     const focus = isCollapsed
       ? anchor
       : Editable.toEditorPoint(editor, [focusNode, focusOffset], {
-          exactMatch,
-          suppressThrow,
-        })
+        exactMatch,
+        suppressThrow,
+      })
     if (!focus) {
       return null as T extends true ? Range | null : Range
     }

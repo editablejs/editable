@@ -44,7 +44,12 @@
   ],
   "babelMacros": {
     "twin": {
-      "preset": "styled-components"
+      "css": "@emotion/css",
+      "styled": "@emotion/css",
+      "global": {
+        "import": "injectGlobal",
+        "from": "@emotion/css"
+      }
     }
   },
   "scripts": {
@@ -56,18 +61,13 @@
     "clean": "rimraf .turbo && rimraf dist && rimraf node_modules "
   },
   "devDependencies": {
+    "@types/lodash.debounce": "4.0.7",
     "@editablejs/editor": "workspace:*",
     "@editablejs/models": "workspace:*",
-    "@types/lodash.debounce": "4.0.7",
-    "@types/react": "^18.x",
-    "@types/react-dom": "^18.x",
-    "@types/styled-components": "5.1.26",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^18.x",
-    "react-dom": "^18.x",
     "tailwind-config": "workspace:*",
     "tailwindcss": "^3.2.4",
     "tsconfig": "workspace:*",
@@ -81,10 +81,11 @@
     "@editablejs/models": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/ui": "workspace:*",
+    "@editablejs/theme": "workspace:*",
+    "@emotion/css": "11.11.2",
     "lodash.debounce": "^4.0.8",
-    "styled-components": "5.3.6",
-    "zustand": "4.1.4"
+    "rezon": "workspace:*",
+    "rezon-store": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

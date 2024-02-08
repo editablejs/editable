@@ -1,9 +1,9 @@
 import { Editor } from '@editablejs/models'
-import { useStore } from 'zustand'
-import shallow from 'zustand/shallow'
+import { shallow } from 'rezon-store/shallow'
+import { useStoreWithEqualityFn } from 'rezon-store/use-store-with-equality-fn'
 import { useSlashToolbarStore } from './use-slash-toolbar-store'
 
 export const useSlashToolbarItems = (editor: Editor) => {
   const store = useSlashToolbarStore(editor)
-  return useStore(store, state => state.items, shallow)
+  return useStoreWithEqualityFn(store, state => state.items, shallow)
 }

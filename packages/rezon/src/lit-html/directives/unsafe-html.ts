@@ -20,8 +20,7 @@ export class UnsafeHTMLDirective extends Directive {
     super(partInfo)
     if (partInfo.type !== PartType.CHILD) {
       throw new Error(
-        `${
-          (this.constructor as typeof UnsafeHTMLDirective).directiveName
+        `${(this.constructor as typeof UnsafeHTMLDirective).directiveName
         }() can only be used in child bindings`,
       )
     }
@@ -37,8 +36,7 @@ export class UnsafeHTMLDirective extends Directive {
     }
     if (typeof value != 'string') {
       throw new Error(
-        `${
-          (this.constructor as typeof UnsafeHTMLDirective).directiveName
+        `${(this.constructor as typeof UnsafeHTMLDirective).directiveName
         }() called with a non-string value`,
       )
     }
@@ -47,15 +45,15 @@ export class UnsafeHTMLDirective extends Directive {
     }
     this._value = value
     const strings = [value] as unknown as TemplateStringsArray
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(strings as any).raw = strings
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ; (strings as any).raw = strings
     // WARNING: impersonating a TemplateResult like this is extremely
     // dangerous. Third-party directives should not do this.
     return (this._templateResult = {
       // Cast to a known set of integers that satisfy ResultType so that we
       // don't have to export ResultType and possibly encourage this pattern.
       // This property needs to remain unminified.
-      ['_$litType$']: (this.constructor as typeof UnsafeHTMLDirective).resultType as 1 | 2,
+      [TYPE_KEY]: (this.constructor as typeof UnsafeHTMLDirective).resultType as 1 | 2,
       strings,
       values: [],
     })

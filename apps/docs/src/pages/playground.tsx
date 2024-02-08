@@ -85,6 +85,9 @@ import { faker } from '@faker-js/faker'
 //   defaultBackgroundColor,
 //   defaultFontColor,
 // } from '../configs/toolbar-items'
+import {
+  createToolbarItems,
+} from '../configs/toolbar-items'
 // import { createSideToolbarItems } from '../configs/side-toolbar-items'
 // import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
 // import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
@@ -93,6 +96,7 @@ import { faker } from '@faker-js/faker'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 import { useIsomorphicLayoutEffect } from 'hooks/useIsomorphicLayoutEffect'
+import { Toolbar, withToolbar } from '@editablejs/plugin-toolbar'
 
 const CustomStyles = createGlobalStyle({
   body: {
@@ -102,9 +106,7 @@ const CustomStyles = createGlobalStyle({
 
 const StyledHeader = tw.div`bg-white text-base`
 
-// const StyledToolbar = styled(ToolbarComponent)`
-//   ${tw`flex justify-start overscroll-contain md:justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-2 md:px-6 overflow-auto`}
-// `
+const StyledToolbar = tw.div`flex justify-start overscroll-contain md:justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-2 md:px-6 overflow-auto`
 
 const StyledContainer = styled.div`
   ${tw`mt-2 md:mt-5 min-h-[80vh] bg-white shadow w-full md:w-[800px] m-auto px-4 py-4 md:px-10 md:py-16 text-sm`}
@@ -170,6 +172,7 @@ export default function Playground() {
   //   return provider
   // }, [document])
   const containerRef = React.useRef<HTMLDivElement>(null)
+  const toolbarRef = React.useRef<HTMLDivElement>(null)
   const editor = React.useMemo(() => {
     const { name } = faker
     // const cursorData: CursorData = {
@@ -184,6 +187,7 @@ export default function Playground() {
 
     // const sharedType = document.get('content', Y.XmlText) as Y.XmlText
     let editor = withEditable(createEditor())
+    editor = withToolbar(editor)
     // let editor = withYjs(withEditable(createEditor()), sharedType, { autoConnect: false })
     // if (provider) {
     //   editor = withYCursors(editor, provider.awareness, {
@@ -258,9 +262,17 @@ export default function Playground() {
     // }, [document, provider])
   }, [])
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!containerRef.current) return
     renderEditor(editor, containerRef.current)
+  }, [editor])
+
+  React.useLayoutEffect(() => {
+    if (!toolbarRef.current) return
+    return Toolbar.render({
+      editor,
+      items: createToolbarItems(editor)
+    }, toolbarRef.current)
   }, [editor])
 
   useIsomorphicLayoutEffect(() => {
@@ -417,7 +429,7 @@ export default function Playground() {
               </div>
             </div> */}
         </div>
-        {/* <StyledToolbar editor={editor} disabled={readOnly} /> */}
+        <StyledToolbar ref={toolbarRef} />
       </StyledHeader>
       <StyledContainer ref={containerRef}>
         {/* <ContentEditable

@@ -31,6 +31,7 @@
     "@editablejs/editor": "workspace:*",
     "@editablejs/models": "workspace:*",
     "@editablejs/theme": "workspace:*",
+    "@editablejs/plugin-toolbar": "workspace:*",
     "@faker-js/faker": "7.5.0",
     "@headlessui/react": "1.7.4",
     "@mdx-js/react": "2.1.5",

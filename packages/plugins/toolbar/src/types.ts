@@ -1,24 +1,23 @@
-import * as React from 'react'
 import {
-  ToolbarButton as UIToolbarButton,
-  ToolbarDropdown as UIToolbarDropdown,
-  ToolbarColorPicker as UIToolbarColorPicker,
-} from '@editablejs/ui'
+  ToolbarButtonProps,
+  ToolbarDropdownProps,
+  ColorPickerProps,
+} from '@editablejs/theme'
 
-export interface ToolbarButtonItem extends UIToolbarButton {
+export interface ToolbarButtonItem extends ToolbarButtonProps {
   type: 'button'
 }
 
-export interface ToolbarDropdownItem extends UIToolbarDropdown {
+export interface ToolbarDropdownItem extends ToolbarDropdownProps {
   type: 'dropdown'
 }
 
-export interface ToolbarColorPickerItem extends Omit<UIToolbarColorPicker, 'side' | 'locale'> {
+export interface ToolbarColorPickerItem extends Omit<ColorPickerProps, 'side' | 'locale'> {
   type: 'color-picker'
 }
 
 export interface ToolbarCustomItem {
-  content: React.ReactElement
+  content: unknown
 }
 
 export type ToolbarItem =

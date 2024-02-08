@@ -1,10 +1,5 @@
-import { State, Callable } from './state'
 import { effectsSymbol } from './symbols'
 import { createEffect } from './create-effect'
-
-const setEffects = (state: State, cb: Callable) => {
-  state[effectsSymbol].push(cb)
-}
 
 /**
  * @function
@@ -12,6 +7,6 @@ const setEffects = (state: State, cb: Callable) => {
  * @param {unknown[]} [dependencies] - list of dependencies to the effect
  * @return {void}
  */
-const useEffect = createEffect(setEffects)
+const useEffect = createEffect(effectsSymbol)
 
-export { setEffects, useEffect }
+export { useEffect }

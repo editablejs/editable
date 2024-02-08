@@ -53,13 +53,13 @@ interface PopperProps {
 const Popper = c<PopperProps>((props) => {
   const { children } = props
   const [anchor, setAnchor] = useState<Measurable | null>(null)
-  return html`${PopperContenxt.Provider({
+  return PopperContenxt.Provider({
     value: {
       anchor,
       onAnchorChange: setAnchor,
     },
     children
-  })}`
+  })
 })
 
 /* -------------------------------------------------------------------------------------------------

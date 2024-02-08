@@ -1,9 +1,11 @@
-import * as React from 'react'
-import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
-import shallow from 'zustand/shallow'
+
+import { create, StoreApi, UseBoundStore, useStore } from 'rezon-store'
+import { createWithEqualityFn } from 'rezon-store/use-store-with-equality-fn'
+import { shallow } from 'rezon-store/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 
 import { ToolbarItem } from '../types'
+import { useMemo } from 'rezon'
 
 interface ToolbarState {
   items: ToolbarItem[]
@@ -15,22 +17,22 @@ const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<Too
 const getStore = (editor: Editable) => {
   let store = EDITOR_TO_TOOLBAR_STORE.get(editor)
   if (!store) {
-    store = create<ToolbarState>(() => ({
+    store = createWithEqualityFn<ToolbarState>(() => ({
       items: [],
       open: false,
-    }))
+    }), shallow)
     EDITOR_TO_TOOLBAR_STORE.set(editor, store)
   }
   return store
 }
 
 export const useInlineToolbarStore = (editor: Editable) => {
-  return React.useMemo(() => getStore(editor), [editor])
+  return useMemo(() => getStore(editor), [editor])
 }
 
 export const useInlineToolbarItems = (editor: Editable) => {
   const store = useInlineToolbarStore(editor)
-  return useStore(store, state => state.items, shallow)
+  return useStore(store, state => state.items)
 }
 
 export const useInlineToolbarOpen = (
@@ -38,7 +40,7 @@ export const useInlineToolbarOpen = (
 ): [boolean, (open: boolean | ((value: boolean) => boolean)) => void] => {
   const store = useInlineToolbarStore(editor)
   const open = useStore(store, state => state.open)
-  return React.useMemo(
+  return useMemo(
     () => [
       open,
       (open: boolean | ((value: boolean) => boolean)) => {

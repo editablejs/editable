@@ -3,6 +3,7 @@ import { useContext } from './use-context'
 import { useEffect } from './use-effect'
 import { useLayoutEffect } from './use-layout-effect'
 import { ComponentDirective, c } from './component'
+import { deepEqual } from '@editablejs/utils'
 export interface ContextProviderProps<T = {}> {
   value: T
   children: unknown
@@ -56,12 +57,12 @@ export const createContext = <T = {}>(defaultValue: T) => {
         setContextListener(this, contextListener)
       }
 
-      useLayoutEffect(() => {
-        if (isInitialRender) return
-        for (const callback of listeners) {
-          callback(value)
-        }
-      }, [value])
+      // useLayoutEffect(() => {
+      //   if (isInitialRender) return
+      //   for (const callback of listeners) {
+      //     callback(value)
+      //   }
+      // }, [value])
 
       useEffect(() => {
         return () => {
@@ -70,6 +71,8 @@ export const createContext = <T = {}>(defaultValue: T) => {
       }, [])
 
       return children
+    }, (props, nextProps) => {
+      return deepEqual(props.value, nextProps.value) && props.children === nextProps.children
     }),
     Consumer: (render: (value: T) => unknown) => {
       return c(function () {

@@ -41,12 +41,12 @@ if (DEV_MODE) {
 
 const wrap =
   ENABLE_SHADYDOM_NOPATCH &&
-  //@ts-ignore
-  global.ShadyDOM?.inUse &&
-  //@ts-ignore
-  global.ShadyDOM?.noPatch === true
+    //@ts-ignore
+    global.ShadyDOM?.inUse &&
+    //@ts-ignore
+    global.ShadyDOM?.noPatch === true
     ? //@ts-ignore
-      (global.ShadyDOM!.wrap as <T extends Node>(node: T) => T)
+    (global.ShadyDOM!.wrap as <T extends Node>(node: T) => T)
     : <T extends Node>(node: T) => node
 
 const trustedTypes = (global as unknown as Window).trustedTypes
@@ -61,8 +61,8 @@ const trustedTypes = (global as unknown as Window).trustedTypes
  */
 const policy = trustedTypes
   ? trustedTypes.createPolicy('lit-html', {
-      createHTML: s => s,
-    })
+    createHTML: s => s,
+  })
   : undefined
 
 /**
@@ -120,7 +120,7 @@ const setSanitizer = (newSanitizer: SanitizerFactory) => {
   if (sanitizerFactoryInternal !== noopSanitizer) {
     throw new Error(
       `Attempted to overwrite existing lit-html security policy.` +
-        ` setSanitizeDOMValueFactory should be called at most once.`,
+      ` setSanitizeDOMValueFactory should be called at most once.`,
     )
   }
   sanitizerFactoryInternal = newSanitizer
@@ -157,10 +157,10 @@ const nodeMarker = `<${markerMatch}>`
 const d =
   NODE_MODE || global.document === undefined
     ? ({
-        createTreeWalker() {
-          return {}
-        },
-      } as unknown as Document)
+      createTreeWalker() {
+        return {}
+      },
+    } as unknown as Document)
     : document
 
 // https://tc39.github.io/ecma262/#sec-typeof-operator
@@ -172,6 +172,59 @@ const isIterable = (value: unknown): value is Iterable<unknown> =>
   isArray(value) ||
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   typeof (value as any)?.[Symbol.iterator] === 'function'
+
+export interface VNodeElement {
+  type: Function
+  props: Record<string, unknown>
+  children: unknown[]
+}
+
+export interface VNodeFragment {
+  children: unknown[]
+}
+
+export type VNode = VNodeElement | VNodeFragment
+
+const elementTypeof = Symbol.for('element')
+const fragmentTypeof = Symbol.for('fragment')
+type VType = typeof elementTypeof | typeof fragmentTypeof
+
+const _isVNode = (value: unknown, type?: VType): value is VNode => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    '$$typeof' in value &&
+    (!type || value['$$typeof'] === type)
+  )
+}
+
+export const isVNodeElement = (value: unknown): value is VNodeElement => {
+  return _isVNode(value, elementTypeof)
+}
+
+export const isVNodeFragment = (value: unknown): value is VNodeFragment => {
+  return _isVNode(value, fragmentTypeof)
+}
+
+export const isVNode = (value: unknown): value is VNode => {
+  return _isVNode(value)
+}
+
+export const createElement = (type: Function, props?: Record<string, unknown>, children: unknown[] = []) => {
+  return {
+    $$typeof: elementTypeof,
+    type,
+    props,
+    children
+  }
+}
+
+export const createFragment = (children: unknown[]) => {
+  return {
+    $$typeof: fragmentTypeof,
+    children,
+  }
+}
 
 const SPACE_CHAR = `[ \t\n\f\r]`
 const ATTR_VALUE_CHAR = `[^ \t\n\f\r"'\`<>=]`
@@ -274,7 +327,7 @@ const COMMENT_PART = 7
  */
 export type UncompiledTemplateResult<T extends ResultType = ResultType> = {
   // This property needs to remain unminified.
-  ['_$litType$']: T
+  [TYPE_KEY]: T
   strings: TemplateStringsArray
   values: unknown[]
 }
@@ -316,6 +369,7 @@ export type HTMLTemplateResult = TemplateResult<typeof HTML_RESULT>
 
 export type SVGTemplateResult = TemplateResult<typeof SVG_RESULT>
 
+export const TYPE_KEY = '$type$'
 /**
  * A TemplateResult that has been compiled by @lit-labs/compiler, skipping the
  * prepare step.
@@ -324,7 +378,7 @@ export interface CompiledTemplateResult {
   // This is a factory in order to make template initialization lazy
   // and allow ShadyRenderOptions scope to be passed in.
   // This property needs to remain unminified.
-  ['_$litType$']: CompiledTemplate
+  [TYPE_KEY]: CompiledTemplate
   values: unknown[]
 }
 
@@ -344,35 +398,14 @@ export interface CompiledTemplate extends Omit<Template, 'el'> {
  */
 const tag =
   <T extends ResultType>(type: T) =>
-  (strings: TemplateStringsArray, ...values: unknown[]): TemplateResult<T> => {
-    // Warn against templates octal escape sequences
-    // We do this here rather than in render so that the warning is closer to the
-    // template definition.
-    if (DEV_MODE && strings.some(s => s === undefined)) {
-      console.warn(
-        'Some template strings are undefined.\n' +
-          'This is probably caused by illegal octal escape sequences.',
-      )
-    }
-    if (DEV_MODE) {
-      // Import static-html.js results in a circular dependency which g3 doesn't
-      // handle. Instead we know that static values must have the field
-      // `_$litStatic$`.
-      if (values.some(val => (val as { _$litStatic$: unknown })?.['_$litStatic$'])) {
-        issueWarning(
-          '',
-          `Static values 'literal' or 'unsafeStatic' cannot be used as values to non-static templates.\n` +
-            `Please use the static 'html' tag function. See https://lit.dev/docs/templates/expressions/#static-expressions`,
-        )
+    (strings: TemplateStringsArray, ...values: unknown[]): TemplateResult<T> => {
+      return {
+        // This property needs to remain unminified.
+        [TYPE_KEY]: type,
+        strings,
+        values,
       }
     }
-    return {
-      // This property needs to remain unminified.
-      ['_$litType$']: type,
-      strings,
-      values,
-    }
-  }
 
 /**
  * Interprets a template literal as an HTML template that can efficiently
@@ -388,6 +421,16 @@ const tag =
  * it's efficiently updated instead of replaced.
  */
 export const html = tag(HTML_RESULT)
+
+// export function h(type: TemplateStringsArray, ...values: unknown[]): VNode
+export function h(type: string, props?: Record<string, unknown>, ...children: unknown[]): VNode
+export function h(type: string | Function | TemplateStringsArray, props?: Record<string, unknown> | unknown[], ...children: unknown[]) {
+  return {
+    type,
+    props,
+    children
+  }
+}
 
 /**
  * Interprets a template literal as an SVG fragment that can efficiently
@@ -483,6 +526,7 @@ export interface RenderOptions extends Record<string, unknown> {
    * render to change the connected state of the part.
    */
   isConnected?: boolean
+  parent?: ChildPart
 }
 
 const walker = d.createTreeWalker(d, 129 /* NodeFilter.SHOW_{ELEMENT|COMMENT} */)
@@ -612,7 +656,7 @@ const getTemplateHtml = (
           if (DEV_MODE) {
             throw new Error(
               'Bindings in tag names are not supported. Please use static templates instead. ' +
-                'See https://lit.dev/docs/templates/expressions/#static-expressions',
+              'See https://lit.dev/docs/templates/expressions/#static-expressions',
             )
           }
           regex = tagEndRegex
@@ -635,8 +679,8 @@ const getTemplateHtml = (
             match[QUOTE_CHAR] === undefined
               ? tagEndRegex
               : match[QUOTE_CHAR] === '"'
-              ? doubleQuoteAttrEndRegex
-              : singleQuoteAttrEndRegex
+                ? doubleQuoteAttrEndRegex
+                : singleQuoteAttrEndRegex
         }
       } else if (regex === doubleQuoteAttrEndRegex || regex === singleQuoteAttrEndRegex) {
         regex = tagEndRegex
@@ -656,9 +700,9 @@ const getTemplateHtml = (
       // position - either in a tag, or a quoted attribute value.
       console.assert(
         attrNameEndIndex === -1 ||
-          regex === tagEndRegex ||
-          regex === singleQuoteAttrEndRegex ||
-          regex === doubleQuoteAttrEndRegex,
+        regex === tagEndRegex ||
+        regex === singleQuoteAttrEndRegex ||
+        regex === doubleQuoteAttrEndRegex,
         'unexpected parse state B',
       )
     }
@@ -681,11 +725,11 @@ const getTemplateHtml = (
       regex === textEndRegex
         ? s + nodeMarker
         : attrNameEndIndex >= 0
-        ? (attrNames.push(attrName!),
-          s.slice(0, attrNameEndIndex) + boundAttributeSuffix + s.slice(attrNameEndIndex)) +
+          ? (attrNames.push(attrName!),
+            s.slice(0, attrNameEndIndex) + boundAttributeSuffix + s.slice(attrNameEndIndex)) +
           marker +
           end
-        : s + marker + (attrNameEndIndex === -2 ? i : end)
+          : s + marker + (attrNameEndIndex === -2 ? i : end)
   }
 
   const htmlResult: string | TrustedHTML = html + strings[l] + (type === SVG_RESULT ? '</svg>' : '')
@@ -704,7 +748,7 @@ class Template {
 
   constructor(
     // This property needs to remain unminified.
-    { strings, ['_$litType$']: type }: UncompiledTemplateResult,
+    { strings, [TYPE_KEY]: type }: UncompiledTemplateResult,
     options?: RenderOptions,
   ) {
     let node: Node | null
@@ -766,18 +810,18 @@ class Template {
                   m[1] === '.'
                     ? PropertyPart
                     : m[1] === '?'
-                    ? BooleanAttributePart
-                    : m[1] === '@'
-                    ? EventPart
-                    : AttributePart,
+                      ? BooleanAttributePart
+                      : m[1] === '@'
+                        ? EventPart
+                        : AttributePart,
               })
-              ;(node as Element).removeAttribute(name)
+                ; (node as Element).removeAttribute(name)
             } else if (name.startsWith(marker)) {
               parts.push({
                 type: ELEMENT_PART,
                 index: nodeIndex,
               })
-              ;(node as Element).removeAttribute(name)
+                ; (node as Element).removeAttribute(name)
             }
           }
         }
@@ -790,7 +834,7 @@ class Template {
           const strings = (node as Element).textContent!.split(marker)
           const lastIndex = strings.length - 1
           if (lastIndex > 0) {
-            ;(node as Element).textContent = trustedTypes
+            ; (node as Element).textContent = trustedTypes
               ? (trustedTypes.emptyScript as unknown as '')
               : ''
             // Generate a new text node for each literal section
@@ -799,7 +843,7 @@ class Template {
             // normalized when cloning in IE (could simplify when
             // IE is no longer supported)
             for (let i = 0; i < lastIndex; i++) {
-              ;(node as Element).append(strings[i])
+              ; (node as Element).append(strings[i])
               // Walk past the marker node we just added
               walker.nextNode()
               parts.push({ type: CHILD_PART, index: ++nodeIndex })
@@ -807,7 +851,7 @@ class Template {
             // Note because this marker is added after the walker's current
             // node, it will be walked to in the outer loop (and ignored), so
             // we don't need to adjust nodeIndex here
-            ;(node as Element).append(strings[lastIndex])
+            ; (node as Element).append(strings[lastIndex])
           }
         }
       } else if (node.nodeType === 8) {
@@ -874,7 +918,7 @@ function resolveDirective(
   const nextDirectiveConstructor = isPrimitive(value)
     ? undefined
     : // This property needs to remain unminified.
-      (value as DirectiveResult)['_$litDirective$']
+    (value as DirectiveResult)['_$litDirective$']
   if (currentDirective?.constructor !== nextDirectiveConstructor) {
     // This property needs to remain unminified.
     currentDirective?.['_$notifyDirectiveConnectionChanged']?.(false)
@@ -885,9 +929,9 @@ function resolveDirective(
       currentDirective._$initialize(part, parent, attributeIndex)
     }
     if (attributeIndex !== undefined) {
-      ;((parent as AttributePart).__directives ??= [])[attributeIndex] = currentDirective
+      ((parent as AttributePart).__directives ??= [])[attributeIndex] = currentDirective
     } else {
-      ;(parent as ChildPart | Directive).__directive = currentDirective
+      (parent as ChildPart | Directive).__directive = currentDirective
     }
   }
   if (currentDirective !== undefined) {
@@ -1014,7 +1058,7 @@ class TemplateInstance implements Disconnectable {
     for (const part of this._$parts) {
       if (part !== undefined) {
         if ((part as AttributePart).strings !== undefined) {
-          ;(part as AttributePart)._$setValue(values, options, part as AttributePart, i)
+          ; (part as AttributePart)._$setValue(values, options, part as AttributePart, i)
           // The number of values the part consumes is part.strings.length - 1
           // since values are in between template spans. We increment i by 1
           // later in the loop, so increment it by part.strings.length - 2 here
@@ -1099,9 +1143,20 @@ const partToNode = (
   }
   return null
 }
+
+const DISCONNECTABLE_TO_OPTIONS_WEAKMAP = new WeakMap<Disconnectable, RenderOptions>()
+
+export const getOptions = (disconnectable: Disconnectable) => {
+  return DISCONNECTABLE_TO_OPTIONS_WEAKMAP.get(disconnectable)
+}
+
+const setOptions = (disconnectable: Disconnectable, options?: RenderOptions) => {
+  if (options) DISCONNECTABLE_TO_OPTIONS_WEAKMAP.set(disconnectable, options)
+  else DISCONNECTABLE_TO_OPTIONS_WEAKMAP.delete(disconnectable)
+}
+
 class ChildPart implements Disconnectable {
   readonly type = CHILD_PART
-  readonly options: RenderOptions | undefined
   _$committedValue: unknown = nothing
   /** @internal */
   __directive?: Directive
@@ -1115,6 +1170,7 @@ class ChildPart implements Disconnectable {
   private _textSanitizer: ValueSanitizer | undefined
   /** @internal */
   _$parent: Disconnectable | undefined
+  _$portal: boolean = false
   /**
    * Connection state for RootParts only (i.e. ChildPart without _$parent
    * returned from top-level `render`). This field is unsed otherwise. The
@@ -1153,7 +1209,7 @@ class ChildPart implements Disconnectable {
     this._$endNode = endNode
     this._$parentNode = parentNode
     this._$parent = parent
-    this.options = options
+    setOptions(this, options)
     // Note __isConnected is only ever accessed on RootParts (i.e. when there is
     // no _$parent); the value on a non-root-part is "don't care", but checking
     // for parent would be more code
@@ -1259,13 +1315,13 @@ class ChildPart implements Disconnectable {
         this._commitText(value)
       }
       // This property needs to remain unminified.
-    } else if ((value as TemplateResult)['_$litType$'] !== undefined) {
+    } else if ((value as TemplateResult)[TYPE_KEY] !== undefined) {
       this._commitTemplateResult(value as TemplateResult, options)
     } else if ((value as Node).nodeType !== undefined) {
-      if (DEV_MODE && this.options?.host === value) {
+      if (DEV_MODE && getOptions(this)?.host === value) {
         this._commitText(
           `[probable mistake: rendered a template's host in itself ` +
-            `(commonly caused by writing \${this} in a template]`,
+          `(commonly caused by writing \${this} in a template]`,
         )
         console.warn(
           `Attempted to render the template host`,
@@ -1280,6 +1336,11 @@ class ChildPart implements Disconnectable {
       this._commitNode(value as Node)
     } else if (isIterable(value)) {
       this._commitIterable(value, options)
+    } else if (isVNodeFragment(value)) {
+      this._commitIterable(value.children, options)
+    } else if (isVNodeElement(value)) {
+      const _value = value.type({ ...value.props, children: value.children })
+      this._$setValue(_value, options, directiveParent)
     } else {
       // Fallback, will render the string representation
       this._commitText(value)
@@ -1301,7 +1362,6 @@ class ChildPart implements Disconnectable {
       return parentNode.insertBefore(node, endNode)
     } catch (error) {
       console.error(error)
-      debugger
     }
   }
 
@@ -1350,7 +1410,7 @@ class ChildPart implements Disconnectable {
         }
         value = this._textSanitizer(value)
       }
-      ;(node as Text).data = value as string
+      ; (node as Text).data = value as string
     } else {
       if (ENABLE_EXTRA_SECURITY_HOOKS) {
         const textNode = d.createTextNode('')
@@ -1376,7 +1436,7 @@ class ChildPart implements Disconnectable {
     options?: Record<string, unknown>,
   ): void {
     // This property needs to remain unminified.
-    const { values, ['_$litType$']: type } = result
+    const { values, [TYPE_KEY]: type } = result
     // If $litType$ is a number, result is a plain TemplateResult and we get
     // the template from the template cache. If not, result is a
     // CompiledTemplateResult and _$litType$ is a CompiledTemplate and we need
@@ -1385,17 +1445,17 @@ class ChildPart implements Disconnectable {
       typeof type === 'number'
         ? this._$getTemplate(result as UncompiledTemplateResult)
         : (type.el === undefined &&
-            (type.el = Template.createElement(
-              trustFromTemplateString(type.h, type.h[0]),
-              this.options,
-            )),
+          (type.el = Template.createElement(
+            trustFromTemplateString(type.h, type.h[0]),
+            getOptions(this),
+          )),
           type)
 
     if ((this._$committedValue as TemplateInstance)?._$template === template) {
-      ;(this._$committedValue as TemplateInstance)._update(values, options)
+      (this._$committedValue as TemplateInstance)._update(values, options)
     } else {
       const instance = new TemplateInstance(template as Template, this)
-      const fragment = instance._clone(this.options)
+      const fragment = instance._clone(getOptions(this))
 
       instance._update(values, options)
 
@@ -1476,7 +1536,7 @@ class ChildPart implements Disconnectable {
           this._$endNode,
           this._$parentNode,
           this,
-          this.options,
+          getOptions(this),
         )
         itemParts.push(itemPart)
       } else {
@@ -1525,8 +1585,8 @@ class ChildPart implements Disconnectable {
     }
 
     while (start && start !== this.endNode) {
-      const n: ChildNode | null = wrap(start!).nextSibling
-      ;(wrap(start!) as Element).remove()
+      const n: ChildNode | null = wrap(start!).nextSibling;
+      (wrap(start!) as Element).remove()
       start = n
     }
   }
@@ -1693,7 +1753,7 @@ class AttributePart implements Disconnectable {
         }
         // We always record each value, even if one is `nothing`, for future
         // change detection.
-        ;(this._$committedValue as Array<unknown>)[i] = v
+        ; (this._$committedValue as Array<unknown>)[i] = v
       }
     }
     if (change && !noCommit) {
@@ -1704,7 +1764,7 @@ class AttributePart implements Disconnectable {
   /** @internal */
   _commitValue(value: unknown) {
     if (value === nothing) {
-      ;(wrap(this.element) as Element).removeAttribute(this.name)
+      ; (wrap(this.element) as Element).removeAttribute(this.name)
     } else {
       if (ENABLE_EXTRA_SECURITY_HOOKS) {
         if (this._sanitizer === undefined) {
@@ -1712,7 +1772,7 @@ class AttributePart implements Disconnectable {
         }
         value = this._sanitizer(value ?? '')
       }
-      ;(wrap(this.element) as Element).setAttribute(this.name, (value ?? '') as string)
+      ; (wrap(this.element) as Element).setAttribute(this.name, (value ?? '') as string)
     }
   }
 }
@@ -1730,7 +1790,7 @@ class PropertyPart extends AttributePart {
       value = this._sanitizer(value)
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(this.element as any)[this.name] = value === nothing ? undefined : value
+    ; (this.element as any)[this.name] = value === nothing ? undefined : value
   }
 }
 
@@ -1740,7 +1800,7 @@ class BooleanAttributePart extends AttributePart {
 
   /** @internal */
   override _commitValue(value: unknown) {
-    ;(wrap(this.element) as Element).toggleAttribute(this.name, !!value && value !== nothing)
+    ; (wrap(this.element) as Element).toggleAttribute(this.name, !!value && value !== nothing)
   }
 }
 
@@ -1774,8 +1834,8 @@ class EventPart extends AttributePart {
     if (DEV_MODE && this.strings !== undefined) {
       throw new Error(
         `A \`<${element.localName}>\` has a \`@${name}=...\` listener with ` +
-          'invalid content. Event listeners in templates must have exactly ' +
-          'one expression and no surrounding text.',
+        'invalid content. Event listeners in templates must have exactly ' +
+        'one expression and no surrounding text.',
       )
     }
   }
@@ -1799,11 +1859,11 @@ class EventPart extends AttributePart {
     const shouldRemoveListener =
       (newListener === nothing && oldListener !== nothing) ||
       (newListener as EventListenerWithOptions).capture !==
-        (oldListener as EventListenerWithOptions).capture ||
+      (oldListener as EventListenerWithOptions).capture ||
       (newListener as EventListenerWithOptions).once !==
-        (oldListener as EventListenerWithOptions).once ||
+      (oldListener as EventListenerWithOptions).once ||
       (newListener as EventListenerWithOptions).passive !==
-        (oldListener as EventListenerWithOptions).passive
+      (oldListener as EventListenerWithOptions).passive
 
     // If the new value is not nothing and we removed the listener, we have
     // to add the part as a listener.
@@ -1826,7 +1886,7 @@ class EventPart extends AttributePart {
     if (typeof this._$committedValue === 'function') {
       this._$committedValue.call(this.options?.host ?? this.element, event)
     } else {
-      ;(this._$committedValue as EventListenerObject).handleEvent(event)
+      ; (this._$committedValue as EventListenerObject).handleEvent(event)
     }
   }
 }
@@ -1847,11 +1907,10 @@ class ElementPart implements Disconnectable {
   /** @internal */
   _$disconnectableChildren?: Set<Disconnectable> = undefined
 
-  options: RenderOptions | undefined
 
   constructor(public element: Element, parent: Disconnectable, options: RenderOptions | undefined) {
     this._$parent = parent
-    this.options = options
+    setOptions(this, options)
   }
 
   // See comment in Disconnectable interface for why this is a getter
@@ -1904,15 +1963,15 @@ export const _$LH = {
 // Apply polyfills if available
 const polyfillSupport = DEV_MODE
   ? //@ts-ignore
-    global.litHtmlPolyfillSupportDevMode
+  global.litHtmlPolyfillSupportDevMode
   : //@ts-ignore
-    global.litHtmlPolyfillSupport
+  global.litHtmlPolyfillSupport
 polyfillSupport?.(Template, ChildPart)
 
-// IMPORTANT: do not change the property name or the assignment expression.
-// This line will be used in regexes to search for lit-html usage.
-//@ts-ignore
-;(global.litHtmlVersions ??= []).push('3.1.0')
+  // IMPORTANT: do not change the property name or the assignment expression.
+  // This line will be used in regexes to search for lit-html usage.
+  //@ts-ignore
+  ; (global.litHtmlVersions ??= []).push('3.1.0')
 //@ts-ignore
 if (DEV_MODE && global.litHtmlVersions.length > 1) {
   issueWarning!(
@@ -1958,22 +2017,27 @@ export const render = (
     // which reads like an internal Lit error.
     throw new TypeError(`The container to render into may not be ${container}`)
   }
-  const { host, renderBefore, creationScope, isConnected, ...rest } = options
+  const { host, renderBefore, creationScope, isConnected, parent, ...rest } = options
   const partOwnerNode = renderBefore ?? container
   // This property needs to remain unminified.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let part: ChildPart = (partOwnerNode as any)['_$litPart$']
   if (part === undefined) {
     const endNode = renderBefore ?? null
-    // This property needs to remain unminified.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(partOwnerNode as any)['_$litPart$'] = part = new ChildPart(
-      endNode ? endNode?.previousSibling ?? null : container.lastChild,
-      endNode,
-      container,
-      undefined,
-      options,
-    )
+      // This property needs to remain unminified.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ; (partOwnerNode as any)['_$litPart$'] = part = new ChildPart(
+        endNode ? endNode?.previousSibling ?? null : container.lastChild,
+        endNode,
+        container,
+        parent,
+        options,
+      )
+    if (parent) {
+      parent._$startNode = part._$startNode
+      parent._$endNode = part._$endNode
+      parent._$parentNode = part._$parentNode
+    }
   }
   part._$setValue(value, rest)
   return part as RootPart

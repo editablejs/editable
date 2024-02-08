@@ -14,11 +14,10 @@ import {
   RootStateMap,
   createBatchId,
   createRootStateMap,
+  createTaskQueue,
   isFlushing,
   setFlushing,
 } from './interface'
-
-const defer = Promise.resolve().then.bind(Promise.resolve())
 
 export const flushSync = (cb: VoidFunction) => {
   setFlushing(true)
@@ -26,41 +25,17 @@ export const flushSync = (cb: VoidFunction) => {
   setFlushing(false)
 }
 
-const runner = () => {
-  let tasks: VoidFunction[] = []
-  let id: Promise<void> | null
-
-  const runTasks = () => {
-    id = null
-    let t = tasks
-    tasks = []
-    for (var i = 0, len = t.length; i < len; i++) {
-      t[i]()
-    }
-  }
-
-  return (task: VoidFunction) => {
-    tasks.push(task)
-    if (id == null) {
-      id = defer(runTasks)
-    }
-  }
-}
-
-const read = runner()
-const write = runner()
+const read = createTaskQueue()
+const write = createTaskQueue()
 
 export interface SchedulerUpdateOptions extends StateUpdateOptions {
   state?: State<unknown>
 }
 
 export interface Scheduler<
-  P = {},
-  T = ChildPart,
   H = ChildPart,
 > {
   state: State<H>
-  [phaseSymbol]: Phase | null
   update(options?: SchedulerUpdateOptions): void
   render(options?: SchedulerUpdateOptions): unknown
   commit(result: unknown, options?: SchedulerUpdateOptions): void
@@ -257,6 +232,15 @@ const finishStateMap = (batchId: BatchId, effectsSymbols: EffectsSymbols, state:
         }
         deleteStateMapFromBatchId(batchId, effectsSymbols)
         deleteStateParentMapFromBatchId(batchId, effectsSymbols)
+        BATCHID_TO_ROOTSTATE_WEAKMAP.delete(batchId)
+      } else {
+        for (const [_, value] of rootStateMap) {
+          if (!value.started) {
+            value.started = true
+            value.run()
+            break
+          }
+        }
       }
     }
     return
@@ -286,15 +270,15 @@ const finishStateMap = (batchId: BatchId, effectsSymbols: EffectsSymbols, state:
   }
 }
 
+const BATCH_TO_RUNNING_WEAK_MAP = new WeakMap<BatchId, boolean>()
+const BATCH_UPDATED_STATES_WEAK_MAP = new WeakMap<BatchId, Set<State>>()
 export const createScheduler = <
-  P = {},
-  T = HTMLElement | ChildPart,
   H = ChildPart,
+  T extends Scheduler<H> = Scheduler<H>,
 >(
   host: H,
-) => {
+): T => {
   const handlePhase = (phase: Phase, arg?: unknown, options: SchedulerUpdateOptions = {}) => {
-    scheduler[phaseSymbol] = phase
     switch (phase) {
       case commitSymbol:
         scheduler.commit(arg, options)
@@ -312,23 +296,42 @@ export const createScheduler = <
 
     if (force) _updateForce = true
     if (_updateQueued) return
+
     if (!batchId) {
       batchId = createBatchId()
-      BATCHID_TO_ROOTSTATE_WEAKMAP.set(batchId, createRootStateMap(state))
-    }
+      BATCHID_TO_ROOTSTATE_WEAKMAP.set(batchId, createRootStateMap(state, () => update({
+        force,
+        batchId,
+      })))
+    } else {
+      let states = BATCH_UPDATED_STATES_WEAK_MAP.get(batchId)
+      if (!states) {
+        states = new Set()
+        BATCH_UPDATED_STATES_WEAK_MAP.set(batchId, states)
+      } else if (states.has(state)) {
+        return
+      }
 
-    const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
-    if (rootStateMap && rootStateMap.has(state)) {
-      const rootState = rootStateMap.get(state)!
-      if (rootState.started) return
-      rootState.started = true
+      states.add(state)
     }
 
     if (parentState) {
       addChildrenToStateMap(batchId, layoutEffectsSymbol, parentState, state)
       addChildrenToStateMap(batchId, effectsSymbol, parentState, state)
-    }
+    } else {
 
+      const rootStateMap = BATCHID_TO_ROOTSTATE_WEAKMAP.get(batchId)
+      const rootState = rootStateMap?.get(state)
+      if (!BATCH_TO_RUNNING_WEAK_MAP.get(batchId)) {
+        BATCH_TO_RUNNING_WEAK_MAP.set(batchId, true)
+
+        if (rootState) {
+          rootState.started = true
+        }
+      } else if (!rootState?.started) {
+        return
+      }
+    }
 
     if (isFlushing) {
       _updateQueued = true
@@ -366,13 +369,12 @@ export const createScheduler = <
   const state = createState(update, host)
 
   const runEffects = (phase: EffectsSymbols, noChange = false): void => {
-    if (!noChange) state._runEffects(phase)
+    if (!noChange && (state.host as any)._$isConnected) state.runEffects(phase)
   }
 
-  const scheduler: Scheduler<P, T, H> = {
+  const scheduler: Scheduler<H> = {
     state,
     update,
-    [phaseSymbol]: null,
     render(): unknown {
       throw new Error('Method not implemented.')
     },
@@ -384,5 +386,5 @@ export const createScheduler = <
     },
   }
 
-  return scheduler
+  return scheduler as T
 }

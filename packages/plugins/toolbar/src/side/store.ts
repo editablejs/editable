@@ -1,14 +1,15 @@
-import * as React from 'react'
-import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
-import shallow from 'zustand/shallow'
+import { StoreApi, UseBoundStore, useStore } from 'rezon-store'
+import { createWithEqualityFn } from 'rezon-store/use-store-with-equality-fn'
+import { shallow } from 'rezon-store/shallow'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { Range, Element } from '@editablejs/models'
-import { ContextMenuItem as UIContextMenuItem } from '@editablejs/ui'
+import { ContextMenuItemProps } from '@editablejs/theme'
 import { getCapturedData } from './weak-map'
+import { Component, useMemo } from 'rezon'
 
-interface BaseSideToolbarItem extends Omit<UIContextMenuItem, 'children'> {
+interface BaseSideToolbarItem extends Omit<ContextMenuItemProps, 'children'> {
   key: string
-  title: React.ReactElement | string
+  title: unknown
   children?: SideToolbarItem[]
 }
 
@@ -21,37 +22,35 @@ interface ToolbarState {
 export type SideToolbarItem =
   | BaseSideToolbarItem
   | {
-      type: 'separator'
-    }
+    type: 'separator'
+  }
   | {
-      content:
-        | React.ReactElement
-        | string
-        | React.FC<Record<'onSelect', (event: React.MouseEvent) => void>>
-    }
+    content: unknown
+    | Component<Record<'onSelect', (event: MouseEvent) => void>>
+  }
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<ToolbarState>>>()
 
 const getStore = (editor: Editable) => {
   let store = EDITOR_TO_TOOLBAR_STORE.get(editor)
   if (!store) {
-    store = create<ToolbarState>(() => ({
+    store = createWithEqualityFn<ToolbarState>(() => ({
       items: [],
       menuOpen: false,
       decorateOpen: false,
-    }))
+    }), shallow)
     EDITOR_TO_TOOLBAR_STORE.set(editor, store)
   }
   return store
 }
 
 export const useSideToolbarStore = (editor: Editable) => {
-  return React.useMemo(() => getStore(editor), [editor])
+  return useMemo(() => getStore(editor), [editor])
 }
 
 export const useSideToolbarItems = (editor: Editable) => {
   const store = useSideToolbarStore(editor)
-  return useStore(store, state => state.items, shallow)
+  return useStore(store, state => state.items)
 }
 
 export const useSideToolbarDecorateOpen = (editor: Editable) => {
@@ -64,7 +63,7 @@ export const useSideToolbarDecorateOpen = (editor: Editable) => {
 export const useSideToolbarMenuOpen = (editor: Editable): [boolean, (open: boolean) => void] => {
   const store = useSideToolbarStore(editor)
   const open = useStore(store, state => state.menuOpen)
-  return React.useMemo(
+  return useMemo(
     () => [
       open,
       (open: boolean) => {

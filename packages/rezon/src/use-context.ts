@@ -1,12 +1,12 @@
 import { ChildPart, Disconnectable, TemplateInstance } from './lit-html/html'
 import { Context, getContextListener } from './create-context'
 import { CreateHook, hook, Hook } from './hook'
-import { Callable } from './state'
-import { setEffects } from './use-effect'
+import { Callable, pushEffects } from './state'
+import { effectsSymbol } from './symbols'
 
-type CreateContextHook<T = unknown> = CreateHook<[Context<T>], T, Element | ChildPart>
+type CreateContextHook<T = unknown> = CreateHook<[Context<T>], T, ChildPart>
 
-interface ContextHook<T> extends Hook<[Context<T>], T, Element | ChildPart>, Callable {
+interface ContextHook<T> extends Hook<[Context<T>], T, ChildPart>, Callable {
   update(Context: Context<T>): T
   teardown(): void
 }
@@ -33,9 +33,11 @@ const create = <T>() => {
 
     const _updater = (_value: T): void => {
       value = _value
-      state.update({
-        force: true,
-      })
+      if ((state.host.__directive as any)?.isConnected === true) {
+        state.update({
+          force: true,
+        })
+      }
     }
 
     const _subscribe = (Context: Context<T>): void => {
@@ -77,8 +79,6 @@ const create = <T>() => {
         _unsubscribe?.()
       },
     }
-
-    setEffects(state, hook)
 
     return hook
   }

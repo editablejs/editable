@@ -3,6 +3,7 @@ import { Editable } from '../plugin/editable'
 import { Locale, LocaleComponentName } from '../plugin/locale'
 import { useEditableStatic } from './use-editable'
 import { useMemo } from 'rezon'
+import { Editor } from '@editablejs/models'
 
 export const useLocaleStore = (editor: Editable) => {
   return useMemo(() => {
@@ -19,10 +20,10 @@ export const useLocale = <
   L extends Locale,
   T extends LocaleComponentName<L> = LocaleComponentName<L>,
 >(
+  editor: Editable,
   componentName: T,
   defaultLocale?: L[T] | (() => L[T]),
 ): L[T] => {
-  const editor = useEditableStatic()
   const lang = useLang(editor)
   const localeContext = useLocales<L>(editor, lang)
   const componentLocaleContext = localeContext[componentName]
@@ -48,9 +49,10 @@ export const useLocaleFormat = <
   L extends Locale,
   T extends LocaleComponentName<L> = LocaleComponentName<L>,
 >(
+  editor: Editable,
   componentName: T,
 ) => {
-  const locale = useLocale<L>(componentName)
+  const locale = useLocale<L>(editor, componentName)
   return {
     format: (key: keyof typeof locale, options?: Record<string, string | number>) => {
       const value = locale[key]

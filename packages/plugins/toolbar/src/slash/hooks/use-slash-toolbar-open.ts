@@ -1,13 +1,13 @@
 import { Editor } from '@editablejs/models'
-import React from 'react'
-import { useStore } from 'zustand'
+import { useStore } from 'rezon-store'
 import { SlashToolbar } from '../store'
 import { useSlashToolbarStore } from './use-slash-toolbar-store'
+import { useMemo } from 'rezon'
 
 export const useSlashToolbarOpen = (editor: Editor): [boolean, (open: boolean) => void] => {
   const store = useSlashToolbarStore(editor)
   const open = useStore(store, state => state.open)
-  return React.useMemo(
+  return useMemo(
     () => [
       open,
       (open: boolean) => {

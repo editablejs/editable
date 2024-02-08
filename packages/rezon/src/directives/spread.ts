@@ -1,8 +1,8 @@
-import { nothing, Part, ElementPart, render } from '../lit-html/html'
+import { nothing, Part, ElementPart, render, getOptions, RootPart } from '../lit-html/html'
 import { AsyncDirective } from '../lit-html/async-directive'
 import { directive } from '../lit-html/directive'
 import { Ref } from '../use-ref'
-import { toStyleString, updateStyle } from './utils/style'
+import { updateStyle } from './utils/style'
 
 type EventListenerWithOptions = EventListenerOrEventListenerObject &
   Partial<AddEventListenerOptions>
@@ -40,7 +40,7 @@ export class SpreadPropsDirective extends AsyncDirective {
   host!: EventTarget | object | Element
   element!: Element
   prevData: Record<string, unknown> = {}
-
+  prevRootPart: RootPart | undefined
   render(_spreadData: object) {
     return nothing
   }
@@ -69,9 +69,9 @@ export class SpreadPropsDirective extends AsyncDirective {
         continue
       }
       if (name === 'children') {
-        const rootPart = render(value, this.element as unknown as HTMLElement, options)
+        this.prevRootPart = render(value, this.element as unknown as HTMLElement, options)
         // @ts-ignore
-        rootPart._$parent = part
+        this.prevRootPart._$parent = part
         continue
       }
       if (name === 'className' && value) {
@@ -120,7 +120,7 @@ export class SpreadPropsDirective extends AsyncDirective {
       }
       data[name] = value
     }
-    this.host = part.options?.host || this.element
+    this.host = getOptions(part)?.host || this.element
     this.apply(data)
     this.groom(data)
     this.prevData = { ...data }
@@ -148,6 +148,16 @@ export class SpreadPropsDirective extends AsyncDirective {
         // @ts-ignore
         element[key] = undefined
       }
+    }
+  }
+
+  protected disconnected(): void {
+    if (this.prevRootPart) {
+      const parent = this.prevRootPart._$parent
+      delete this.prevRootPart._$parent
+      this.prevRootPart.setConnected(false)
+      this.prevRootPart._$clear()
+      this.prevRootPart._$parent = parent
     }
   }
 }
@@ -220,13 +230,14 @@ export class SpreadEventsDirective extends SpreadPropsDirective {
       | Function
       | EventListenerObject
     if (typeof value === 'function') {
-      ;(value as Function).call(this.host, event)
+      ; (value as Function).call(this.host, event)
     } else {
-      ;(value as EventListenerObject).handleEvent(event)
+      ; (value as EventListenerObject).handleEvent(event)
     }
   }
 
   disconnected() {
+    super.disconnected()
     const { eventData, element } = this
     for (const key in eventData) {
       // event listener
@@ -237,6 +248,7 @@ export class SpreadEventsDirective extends SpreadPropsDirective {
   }
 
   reconnected() {
+    super.reconnected()
     const { eventData, element } = this
     for (const key in eventData) {
       // event listener

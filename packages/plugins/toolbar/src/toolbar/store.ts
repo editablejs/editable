@@ -1,8 +1,9 @@
-import * as React from 'react'
-import create, { StoreApi, UseBoundStore, useStore } from 'zustand'
-import shallow from 'zustand/shallow'
+import { StoreApi, UseBoundStore, useStore } from 'rezon-store'
+import { shallow } from 'rezon-store/shallow'
+import { createWithEqualityFn } from 'rezon-store/use-store-with-equality-fn'
 import { Editable, useIsomorphicLayoutEffect } from '@editablejs/editor'
 import { ToolbarItem } from '../types'
+import { useMemo, useRef } from 'rezon'
 
 interface ToolbarState {
   items: ToolbarItem[]
@@ -10,30 +11,30 @@ interface ToolbarState {
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editable, UseBoundStore<StoreApi<ToolbarState>>>()
 
-const getStore = (editor: Editable) => {
+export const getStore = (editor: Editable) => {
   let store = EDITOR_TO_TOOLBAR_STORE.get(editor)
   if (!store) {
-    store = create<ToolbarState>(() => ({
+    store = createWithEqualityFn<ToolbarState>(() => ({
       items: [],
-    }))
+    }), shallow)
     EDITOR_TO_TOOLBAR_STORE.set(editor, store)
   }
   return store
 }
 
 export const useToolbarStore = (editor: Editable) => {
-  return React.useMemo(() => getStore(editor), [editor])
+  return useMemo(() => getStore(editor), [editor])
 }
 
 export const useToolbarItems = (editor: Editable) => {
   const store = useToolbarStore(editor)
-  return useStore(store, state => state.items, shallow)
+  return useStore(store, state => state.items)
 }
 
 type ToolbarEffectCallback = () => (() => void) | void
 
 export const useToolbarEffect = (aciton: ToolbarEffectCallback, editor: Editable) => {
-  const editorRef = React.useRef<Editable | null>(null)
+  const editorRef = useRef<Editable | null>(null)
   useIsomorphicLayoutEffect(() => {
     let destroy: (() => void) | void
 
@@ -51,11 +52,4 @@ export const useToolbarEffect = (aciton: ToolbarEffectCallback, editor: Editable
       if (destroy) destroy()
     }
   }, [editor, aciton])
-}
-
-export const Toolbar = {
-  setItems(editor: Editable, items: ToolbarItem[]) {
-    const store = getStore(editor)
-    store.setState({ items })
-  },
 }

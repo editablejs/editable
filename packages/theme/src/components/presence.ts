@@ -26,7 +26,8 @@ const Presence = c<PresenceProps>(props => {
   })
 
   const forceMount = typeof children === 'function'
-  return when(forceMount || presence.isPresent, () => child, () => nothing)
+  console.log('forceMount', forceMount || presence.isPresent)
+  return when(forceMount || presence.isPresent, () => child, () => null)
 })
 
 /* -------------------------------------------------------------------------------------------------

@@ -51,6 +51,7 @@ importers:
       '@editablejs/deserializer': workspace:*
       '@editablejs/editor': workspace:*
       '@editablejs/models': workspace:*
+      '@editablejs/plugin-toolbar': workspace:*
       '@editablejs/theme': workspace:*
       '@faker-js/faker': 7.5.0
       '@headlessui/react': 1.7.4
@@ -106,7 +107,7 @@ importers:
     dependencies:
       '@codemirror/highlight': 0.19.8
       '@codemirror/lang-css': 0.19.3
-      '@codemirror/lang-css-next': /@codemirror/lang-css/6.0.1_fo2pkk3akkmyduvyjqjpck57me
+      '@codemirror/lang-css-next': /@codemirror/lang-css/6.0.1_zs5qdabn3j3qmvxmgug4pf75bi
       '@codemirror/lang-html': 0.19.4
       '@codemirror/lang-html-next': /@codemirror/lang-html/6.4.1
       '@codemirror/lang-javascript': 0.19.7
@@ -118,6 +119,7 @@ importers:
       '@editablejs/deserializer': link:../../packages/deserializer
       '@editablejs/editor': link:../../packages/editor
       '@editablejs/models': link:../../packages/models
+      '@editablejs/plugin-toolbar': link:../../packages/plugins/toolbar
       '@editablejs/theme': link:../../packages/theme
       '@faker-js/faker': 7.5.0
       '@headlessui/react': 1.7.4_biqbaboplfbrettd7655fr4n2y
@@ -415,6 +417,49 @@ importers:
       tsconfig: link:../config/tsconfig
       tsup: 7.2.0_typescript@5.3.2
       tsup-config: link:../config/tsup-config
+      typescript: 5.3.2
+
+  packages/plugins/toolbar:
+    specifiers:
+      '@editablejs/editor': workspace:*
+      '@editablejs/models': workspace:*
+      '@editablejs/theme': workspace:*
+      '@emotion/css': 11.11.2
+      '@types/lodash.debounce': 4.0.7
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lodash.debounce: ^4.0.8
+      prettier-config: workspace:*
+      rezon: workspace:*
+      rezon-store: workspace:*
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^7.x
+      tsup-config: workspace:*
+      twin.macro: 3.1.0
+      typescript: ^5.x
+    dependencies:
+      '@editablejs/theme': link:../../theme
+      '@emotion/css': 11.11.2
+      lodash.debounce: 4.0.8
+      rezon: link:../../rezon
+      rezon-store: link:../../rezon-store
+    devDependencies:
+      '@editablejs/editor': link:../../editor
+      '@editablejs/models': link:../../models
+      '@types/lodash.debounce': 4.0.7
+      eslint-config-editable: link:../../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../../config/jest-presets
+      prettier-config: link:../../config/prettier-config
+      tailwind-config: link:../../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../../config/tsconfig
+      tsup: 7.2.0_35zap6nhbki7y7dmj2wx5ortyq
+      tsup-config: link:../../config/tsup-config
+      twin.macro: 3.1.0_tailwindcss@3.2.4
       typescript: 5.3.2
 
   packages/protocols:
@@ -926,7 +971,7 @@ packages:
       '@babel/core': 7.19.1
       '@babel/helper-validator-option': 7.18.6
       browserslist: 4.21.3
-      semver: 6.3.0
+      semver: 6.3.1
 
   /@babel/helper-create-class-features-plugin/7.19.0_@babel+core@7.19.1:
     resolution: {integrity: sha512-NRz8DwF4jT3UfrmUoZjd0Uph9HQnP30t7Ash+weACcyNkiYTywpIjDBgReJMKgr+n86sn2nPVVmJ28Dm053Kqw==}
@@ -1599,7 +1644,7 @@ packages:
       '@lezer/common': 0.15.12
     dev: false
 
-  /@codemirror/autocomplete/6.4.0_5yxegqrfknkzyiwv7serjpw3o4:
+  /@codemirror/autocomplete/6.4.0_wwnbh5tspvs2pqf7afow6irb5e:
     resolution: {integrity: sha512-HLF2PnZAm1s4kGs30EiqKMgD7XsYaQ0XJnMR0rofEWQ5t5D60SfqpDIkIh1ze5tiEbyUWm8+VJ6W1/erVvBMIA==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
@@ -1610,7 +1655,7 @@ packages:
       '@codemirror/language': 6.4.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
     dev: false
 
   /@codemirror/closebrackets/0.19.2:
@@ -1683,10 +1728,10 @@ packages:
       '@lezer/css': 0.15.2
     dev: false
 
-  /@codemirror/lang-css/6.0.1_fo2pkk3akkmyduvyjqjpck57me:
+  /@codemirror/lang-css/6.0.1_zs5qdabn3j3qmvxmgug4pf75bi:
     resolution: {integrity: sha512-rlLq1Dt0WJl+2epLQeAsfqIsx3lGu4HStHCJu95nGGuz2P2fNugbU3dQYafr2VRjM4eMC9HviI6jvS98CNtG5w==}
     dependencies:
-      '@codemirror/autocomplete': 6.4.0_5yxegqrfknkzyiwv7serjpw3o4
+      '@codemirror/autocomplete': 6.4.0_wwnbh5tspvs2pqf7afow6irb5e
       '@codemirror/language': 6.4.0
       '@codemirror/state': 6.2.0
       '@lezer/css': 1.1.1
@@ -1711,13 +1756,13 @@ packages:
   /@codemirror/lang-html/6.4.1:
     resolution: {integrity: sha512-9NzhWKAkWEwjXC04DKM6yrHnxIPFTqZNLDhWfZiKLMxUiU++XoHz9n6D5EPp1igBmX0vXcpFb5Kud6XzIJhZ4A==}
     dependencies:
-      '@codemirror/autocomplete': 6.4.0_5yxegqrfknkzyiwv7serjpw3o4
-      '@codemirror/lang-css': 6.0.1_fo2pkk3akkmyduvyjqjpck57me
+      '@codemirror/autocomplete': 6.4.0_wwnbh5tspvs2pqf7afow6irb5e
+      '@codemirror/lang-css': 6.0.1_zs5qdabn3j3qmvxmgug4pf75bi
       '@codemirror/lang-javascript': 6.1.2
       '@codemirror/language': 6.4.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
       '@lezer/css': 1.1.1
       '@lezer/html': 1.3.0
     dev: false
@@ -1737,12 +1782,12 @@ packages:
   /@codemirror/lang-javascript/6.1.2:
     resolution: {integrity: sha512-OcwLfZXdQ1OHrLiIcKCn7MqZ7nx205CMKlhe+vL88pe2ymhT9+2P+QhwkYGxMICj8TDHyp8HFKVwpiisUT7iEQ==}
     dependencies:
-      '@codemirror/autocomplete': 6.4.0_5yxegqrfknkzyiwv7serjpw3o4
+      '@codemirror/autocomplete': 6.4.0_wwnbh5tspvs2pqf7afow6irb5e
       '@codemirror/language': 6.4.0
       '@codemirror/lint': 6.1.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
       '@lezer/javascript': 1.4.1
     dev: false
 
@@ -1761,7 +1806,7 @@ packages:
     dependencies:
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.7.2
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
       '@lezer/highlight': 1.1.3
       '@lezer/lr': 1.3.0
       style-mod: 4.0.0
@@ -2518,7 +2563,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       chalk: 4.1.2
       jest-message-util: 27.5.1
       jest-util: 27.5.1
@@ -2574,7 +2619,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
 
   /@jest/fake-timers/27.5.1:
@@ -2740,8 +2785,8 @@ packages:
     resolution: {integrity: sha512-edfwCxNLnzq5pBA/yaIhwJ3U3Kz8VAUOTRg0hhxaizaI1N+qxV7EXDv/kLCkLeq2RzSFvxexlaj5Mzfn2kY0Ig==}
     dev: false
 
-  /@lezer/common/1.0.2:
-    resolution: {integrity: sha512-SVgiGtMnMnW3ActR8SXgsDhw7a0w0ChHSYAyAUxxrOiJ1OqYWEKk/xJd84tTSPo1mo6DXLObAJALNnd0Hrv7Ng==}
+  /@lezer/common/1.1.2:
+    resolution: {integrity: sha512-V+GqBsga5+cQJMfM0GdnHmg4DgWvLzgMWjbldBg0+jC3k9Gu6nJNZDLJxXEBT1Xj8KhRN4jmbC5CY7SIL++sVw==}
     dev: false
 
   /@lezer/css/0.15.2:
@@ -2760,7 +2805,7 @@ packages:
   /@lezer/highlight/1.1.3:
     resolution: {integrity: sha512-3vLKLPThO4td43lYRBygmMY18JN3CPh9w+XS2j8WC30vR4yZeFG4z1iFe4jXE43NtGqe//zHW5q8ENLlHvz9gw==}
     dependencies:
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
     dev: false
 
   /@lezer/html/0.15.1:
@@ -2772,7 +2817,7 @@ packages:
   /@lezer/html/1.3.0:
     resolution: {integrity: sha512-jU/ah8DEoiECLTMouU/X/ujIg6k9WQMIOFMaCLebzaXfrguyGaR3DpTgmk0tbljiuIJ7hlmVJPcJcxGzmCd0Mg==}
     dependencies:
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
       '@lezer/highlight': 1.1.3
       '@lezer/lr': 1.3.0
     dev: false
@@ -2799,7 +2844,7 @@ packages:
   /@lezer/lr/1.3.0:
     resolution: {integrity: sha512-rpvS+WPS/PlbJCiW+bzXPbIFIRXmzRiTEDzMvrvgpED05w5ZQO59AzH3BJen2AnHuJIlP3DcJRjsKLTrkknUNA==}
     dependencies:
-      '@lezer/common': 1.0.2
+      '@lezer/common': 1.1.2
     dev: false
 
   /@lit-labs/ssr-dom-shim/1.1.2:
@@ -3257,6 +3302,7 @@ packages:
 
   /@types/node/17.0.23:
     resolution: {integrity: sha512-UxDxWn7dl97rKVeVS61vErvw086aCYhDLyvRQZ5Rk65rZKepaFdm53GeqXaKBuOhED4e9uWq34IC3TdSdJJ2Gw==}
+    dev: true
 
   /@types/node/18.0.0:
     resolution: {integrity: sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==}
@@ -3340,7 +3386,7 @@ packages:
   /@types/whatwg-url/8.2.2:
     resolution: {integrity: sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA==}
     dependencies:
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       '@types/webidl-conversions': 7.0.0
 
   /@types/ws/8.5.3:
@@ -6905,7 +6951,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
 
   /jest-pnp-resolver/1.2.2_jest-resolve@27.5.1:
     resolution: {integrity: sha512-olV41bKSMm8BdnuMsewT4jqlZ8+3TCARAXjZGT9jcoSnrfUnRCqnMoF9XEeoWjbzObpqF9dRhHQj0Xb9QdF6/w==}
@@ -7071,7 +7117,7 @@ packages:
     dependencies:
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       jest-util: 27.5.1
@@ -7081,7 +7127,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -7646,8 +7692,8 @@ packages:
       micromark-extension-frontmatter: 1.0.0
     dev: false
 
-  /mdast-util-gfm-autolink-literal/1.0.2:
-    resolution: {integrity: sha512-FzopkOd4xTTBeGXhXSBU0OCDDh5lUj2rd+HQqG92Ld+jL4lpUfgX2AT2OHAVP9aEeDKp7G92fuooSZcYJA3cRg==}
+  /mdast-util-gfm-autolink-literal/1.0.3:
+    resolution: {integrity: sha512-My8KJ57FYEy2W2LyNom4n3E7hKTuQk/0SES0u16tjA9Z3oFkF4RrC/hPAPgjlSpezsOvI8ObcXcElo92wn5IGA==}
     dependencies:
       '@types/mdast': 3.0.10
       ccount: 2.0.1
@@ -7659,44 +7705,44 @@ packages:
     resolution: {integrity: sha512-p+PrYlkw9DeCRkTVw1duWqPRHX6Ywh2BNKJQcZbCwAuP/59B0Lk9kakuAd7KbQprVO4GzdW8eS5++A9PUSqIyw==}
     dependencies:
       '@types/mdast': 3.0.10
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
       micromark-util-normalize-identifier: 1.0.0
     dev: false
 
-  /mdast-util-gfm-strikethrough/1.0.2:
-    resolution: {integrity: sha512-T/4DVHXcujH6jx1yqpcAYYwd+z5lAYMw4Ls6yhTfbMMtCt0PHY4gEfhW9+lKsLBtyhUGKRIzcUA2FATVqnvPDA==}
+  /mdast-util-gfm-strikethrough/1.0.3:
+    resolution: {integrity: sha512-DAPhYzTYrRcXdMjUtUjKvW9z/FNAMTdU0ORyMcbmkwYNbKocDpdk+PX1L1dQgOID/+vVs1uBQ7ElrBQfZ0cuiQ==}
     dependencies:
       '@types/mdast': 3.0.10
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     dev: false
 
-  /mdast-util-gfm-table/1.0.6:
-    resolution: {integrity: sha512-uHR+fqFq3IvB3Rd4+kzXW8dmpxUhvgCQZep6KdjsLK4O6meK5dYZEayLtIxNus1XO3gfjfcIFe8a7L0HZRGgag==}
+  /mdast-util-gfm-table/1.0.7:
+    resolution: {integrity: sha512-jjcpmNnQvrmN5Vx7y7lEc2iIOEytYv7rTvu+MeyAsSHTASGCCRA79Igg2uKssgOs1i1po8s3plW0sTu1wkkLGg==}
     dependencies:
       '@types/mdast': 3.0.10
       markdown-table: 3.0.3
       mdast-util-from-markdown: 1.3.0
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /mdast-util-gfm-task-list-item/1.0.1:
-    resolution: {integrity: sha512-KZ4KLmPdABXOsfnM6JHUIjxEvcx2ulk656Z/4Balw071/5qgnhz+H1uGtf2zIGnrnvDC8xR4Fj9uKbjAFGNIeA==}
+  /mdast-util-gfm-task-list-item/1.0.2:
+    resolution: {integrity: sha512-PFTA1gzfp1B1UaiJVyhJZA1rm0+Tzn690frc/L8vNX1Jop4STZgOE6bxUhnzdVSB+vm2GU1tIsuQcA9bxTQpMQ==}
     dependencies:
       '@types/mdast': 3.0.10
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     dev: false
 
   /mdast-util-gfm/2.0.1:
     resolution: {integrity: sha512-42yHBbfWIFisaAfV1eixlabbsa6q7vHeSPY+cg+BBjX51M8xhgMacqH9g6TftB/9+YkcI0ooV4ncfrJslzm/RQ==}
     dependencies:
       mdast-util-from-markdown: 1.3.0
-      mdast-util-gfm-autolink-literal: 1.0.2
+      mdast-util-gfm-autolink-literal: 1.0.3
       mdast-util-gfm-footnote: 1.0.1
-      mdast-util-gfm-strikethrough: 1.0.2
-      mdast-util-gfm-table: 1.0.6
-      mdast-util-gfm-task-list-item: 1.0.1
+      mdast-util-gfm-strikethrough: 1.0.3
+      mdast-util-gfm-table: 1.0.7
+      mdast-util-gfm-task-list-item: 1.0.2
       mdast-util-to-markdown: 1.3.0
     transitivePeerDependencies:
       - supports-color
@@ -7709,7 +7755,7 @@ packages:
       '@types/hast': 2.3.4
       '@types/mdast': 3.0.10
       mdast-util-from-markdown: 1.3.0
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7721,7 +7767,7 @@ packages:
       '@types/hast': 2.3.4
       '@types/mdast': 3.0.10
       ccount: 2.0.1
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
       parse-entities: 4.0.0
       stringify-entities: 4.0.3
       unist-util-remove-position: 4.0.1
@@ -7746,7 +7792,7 @@ packages:
       '@types/hast': 2.3.4
       '@types/mdast': 3.0.10
       mdast-util-from-markdown: 1.3.0
-      mdast-util-to-markdown: 1.3.0
+      mdast-util-to-markdown: 1.5.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7756,7 +7802,6 @@ packages:
     dependencies:
       '@types/mdast': 3.0.10
       unist-util-is: 5.1.1
-    dev: false
 
   /mdast-util-to-hast/12.2.4:
     resolution: {integrity: sha512-a21xoxSef1l8VhHxS1Dnyioz6grrJkoaCUgGzMD/7dWHvboYX3VW53esRUfB5tgTyz4Yos1n25SPcj35dJqmAg==}
@@ -7795,6 +7840,7 @@ packages:
       micromark-util-decode-string: 1.0.2
       unist-util-visit: 4.1.1
       zwitch: 2.0.4
+    dev: false
 
   /mdast-util-to-markdown/1.5.0:
     resolution: {integrity: sha512-bbv7TPv/WC49thZPg3jXuqzuvI45IL2EVAr/KxF0BSdHsU0ceFHOmwQn6evxAh1GaoK/6GQ1wp4R4oW2+LFL/A==}
@@ -7807,7 +7853,6 @@ packages:
       micromark-util-decode-string: 1.0.2
       unist-util-visit: 4.1.1
       zwitch: 2.0.4
-    dev: false
 
   /mdast-util-to-string/1.1.0:
     resolution: {integrity: sha512-jVU0Nr2B9X3MU4tSK7JP1CMkSvOj7X5l/GboG1tKRw52lLF1x2Ju92Ms9tNetCcbfX3hzlM73zYo2NKkWSfF/A==}

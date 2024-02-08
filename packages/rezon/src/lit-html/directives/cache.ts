@@ -30,7 +30,7 @@ import {
 const getStringsFromTemplateResult = (
   result: TemplateResult | CompiledTemplateResult,
 ): TemplateStringsArray =>
-  isCompiledTemplateResult(result) ? result['_$litType$'].h : result.strings
+  isCompiledTemplateResult(result) ? result[TYPE_KEY].h : result.strings
 
 class CacheDirective extends Directive {
   private _templateCache = new WeakMap<TemplateStringsArray, RootPart>()

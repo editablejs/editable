@@ -28,9 +28,10 @@ import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { ReadOnly } from '../hooks/use-read-only'
-import { html } from 'rezon'
+import { html, render } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 import { styleMap } from 'rezon/directives/style-map'
+import { ContentEditable } from '../components/content'
 
 /**
  * `withEditable` adds React and DOM specific behaviors to the editor.
@@ -361,6 +362,12 @@ export const withEditable = <T extends Editor>(editor: T) => {
         >${children}</span
       >
     </span>`
+  }
+
+  e.render = (editor, container, options) => {
+    render(ContentEditable({
+      placeholder: 'Enter some text...',
+    }), container)
   }
 
   const { insertBreak } = e

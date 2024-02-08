@@ -1,5 +1,5 @@
 import { Editor } from '@editablejs/models'
-import { useStore } from 'zustand'
+import { useStore } from 'rezon-store'
 import { useSlashToolbarStore } from './use-slash-toolbar-store'
 
 export const useSlashToolbarSearchValue = (editor: Editor) => {

@@ -1,4 +1,4 @@
-import { html, render, svg, nothing } from './lit-html/html'
+import { html, render, svg, nothing, createElement, createFragment, isVNode, isVNodeElement, isVNodeFragment } from './lit-html/html'
 import {
   c,
   component,
@@ -26,4 +26,9 @@ export {
   isTemplateStringsValue,
   getVaildComponentFromTemplateValue,
   getPropsFromComponentValue,
+  createElement,
+  createFragment,
+  isVNode,
+  isVNodeElement,
+  isVNodeFragment,
 }

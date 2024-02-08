@@ -19,8 +19,11 @@ import {
   createContext,
   useContext,
   useLayoutEffect,
+  createPortal,
+  createElement
 } from 'rezon'
 import { spread } from 'rezon/directives/spread'
+import { ref } from 'rezon/directives/ref'
 import {
   Button,
   Icon,
@@ -32,6 +35,7 @@ import {
   PopoverAnchor,
   PopoverPortal,
   PopoverContent,
+  Tooltip,
 } from '@editablejs/theme'
 import ReactDOM from 'react-dom'
 import { use } from 'i18next'
@@ -152,10 +156,30 @@ const TestChild1 = c(() => {
   return html`<div>TestChild1</div>`
 })
 
+const TestContext = c(() => {
+  const { count, setCount } = useContext(CountContext)
+  console.log("TestContext", count)
+  useLayoutEffect(() => {
+    console.log('TestContext LayoutEffect')
+    return () => console.log('TestContext LayoutEffect unmounted')
+  })
+  return count % 2 === 0 ? createElement(TestContext1) : null
+})
+
+const TestContext1 = c(() => {
+  const { count, setCount } = useContext(CountContext)
+  console.log("TestContext1", count)
+  useLayoutEffect(() => {
+    console.log('TestContext1 LayoutEffect')
+    return () => console.log('TestContext1 LayoutEffect unmounted')
+  })
+  return html`TestContext1: ${count}`
+})
+
 const MyApp = c(() => {
   const [count, setCount] = useState(0)
-  const ref = useRef<HTMLButtonElement>(null)
-  const slotRef = useRef<HTMLDivElement>(null)
+  // const ref = useRef<HTMLButtonElement>(null)
+  // const slotRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     console.log('MyApp LayoutEffect')
@@ -168,13 +192,26 @@ const MyApp = c(() => {
   //   return () => console.log('MyApp Effect unmounted')
   // })
 
-  return html`<div>
-    ${PortalContext.Provider({
-      value: { count },
-      children: TestPortal(),
-    })}<button @click=${() => setCount(count + 1)}>Count Button: ${count}</button>
-  </div>`
+  return html`${CountContext.Provider({
+    value: { count, setCount },
+    children: createElement(TestContext),
+  })}<button @click=${() => setCount(count + 1)}>${count}</button>`
 })
+/**
+ Tooltip({
+    content: 'Tooltip',
+    children: ({ ref: _ref }: any) => {
+      return html`<button ${ref(_ref)} @click=${() => setCount(count + 1)}>${count}</button>`
+    },
+  })
+ */
+/**
+
+ [count % 2 === 0 ? createPortal({
+        container: document.body,
+        children: TestChild1(),
+      }) : null, html`<button @click=${() => setCount(count + 1)}>${count}</button>`]
+ */
 /**
  * ${Popover({
     open: true,
@@ -245,6 +282,16 @@ Test.displayName = 'Test'
 
 const ReactTestContext = createReactContext(0)
 
+const ReactMemo1 = () => {
+  const value = useReactContext(ReactTestContext)
+  console.log('ReactMemo1', value)
+  useReactLayoutEffect(() => {
+    console.log('ReactMemo1 LayoutEffect')
+    return () => console.log('ReactMemo1 LayoutEffect unmounted')
+  })
+  return <span>ReactMemo1 render {value}</span>
+}
+
 const ReactMemo = () => {
   const value = useReactContext(ReactTestContext)
   console.log('ReactMemo', value)
@@ -252,7 +299,7 @@ const ReactMemo = () => {
     console.log('ReactMemo LayoutEffect')
     return () => console.log('ReactMemo LayoutEffect unmounted')
   })
-  return <span>{value}</span>
+  return <span>ReactMemo render { value % 2 === 0 && <ReactMemo1 />}</span>
 }
 
 ReactMemo.displayName = 'ReactMemo'
@@ -274,14 +321,9 @@ const ReactButton = () => {
   return (
     <div>
       <button
-        onClick={() => {
-          ReactDOM.flushSync(() => {})
-          setCount(2)
-          setCount(1)
-        }}
+        onClick={() => setCount(count + 1)}
       >
         {count}
-        {count1}
       </button>
       <ReactTestContext.Provider value={count}>
         <ReactMemo />

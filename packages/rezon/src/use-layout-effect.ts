@@ -1,10 +1,5 @@
-import { State, Callable } from './state'
 import { layoutEffectsSymbol } from './symbols'
 import { createEffect } from './create-effect'
-
-const setLayoutEffects = (state: State, cb: Callable) => {
-  state[layoutEffectsSymbol].push(cb)
-}
 
 /**
  * @function
@@ -12,6 +7,6 @@ const setLayoutEffects = (state: State, cb: Callable) => {
  * @param  {unknown[]} [values] dependencies to the effect
  * @return {void}
  */
-const useLayoutEffect = createEffect(setLayoutEffects)
+const useLayoutEffect = createEffect(layoutEffectsSymbol)
 
 export { useLayoutEffect }

@@ -12,7 +12,7 @@ import { Component } from './core'
 
 type PropsAreEqual<P> = ((prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) | true
 
-interface ComponentScheduler<P = {}> extends Scheduler<P, ChildPart, ChildPart> {
+interface ComponentScheduler<P = {}> extends Scheduler<ChildPart> {
   props: P
   shouldReturnCachedResult?: boolean
 }
@@ -31,7 +31,7 @@ const createComponentScheduler = <P = {}, C extends Component<P> = Component<P>>
   part: ChildPart,
   setValue: AsyncDirective['setValue'],
 ) => {
-  const scheduler = createScheduler<P, ChildPart, ChildPart>(part) as ComponentScheduler<P>
+  const scheduler = createScheduler<ChildPart, ComponentScheduler<P>>(part)
 
   scheduler.render = (options = {}): unknown => {
     if (!options.force && scheduler.shouldReturnCachedResult) {
@@ -40,7 +40,9 @@ const createComponentScheduler = <P = {}, C extends Component<P> = Component<P>>
     return scheduler.state.run(() => {
       const rendererThis = part as ChildPart & { currentOptions?: Record<string, unknown> }
       rendererThis.currentOptions = options as Record<string, unknown>
-      return renderer.apply(rendererThis, [scheduler.props])
+      const result = renderer.apply(rendererThis, [scheduler.props])
+      delete rendererThis.currentOptions
+      return result
     })
   }
   scheduler.commit = (result: unknown, options): void => {

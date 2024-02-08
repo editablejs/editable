@@ -11,6 +11,7 @@ import {
   CompiledTemplateResult,
   MaybeCompiledTemplateResult,
   UncompiledTemplateResult,
+  getOptions,
 } from './html'
 import { DirectiveResult, DirectiveClass, PartInfo, AttributePartInfo } from './directive'
 import { isServer } from '../utils'
@@ -62,14 +63,14 @@ export const isTemplateResult: IsTemplateResult = (
 ): value is UncompiledTemplateResult =>
   type === undefined
     ? // This property needs to remain unminified.
-    (value as UncompiledTemplateResult)?.['_$litType$'] !== undefined
-    : (value as UncompiledTemplateResult)?.['_$litType$'] === type
+    (value as UncompiledTemplateResult)?.[TYPE_KEY] !== undefined
+    : (value as UncompiledTemplateResult)?.[TYPE_KEY] === type
 
 /**
  * Tests if a value is a CompiledTemplateResult.
  */
 export const isCompiledTemplateResult = (value: unknown): value is CompiledTemplateResult => {
-  return (value as CompiledTemplateResult)?.['_$litType$']?.h != null
+  return (value as CompiledTemplateResult)?.[TYPE_KEY]?.h != null
 }
 
 /**
@@ -121,7 +122,7 @@ export const insertPart = (
   if (part === undefined) {
     const startNode = refNode?.previousSibling ?? null
     const endNode = refNode as ChildNode | null
-    part = new ChildPart(startNode, endNode, container, containerPart, containerPart.options)
+    part = new ChildPart(startNode, endNode, container, containerPart, getOptions(containerPart))
   } else {
     const endNode = wrap(part.endNode!).nextSibling
     const oldParent = part._$parent

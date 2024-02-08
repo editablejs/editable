@@ -22,3 +22,4 @@ function useRect(measurable: Measurable | null) {
 }
 
 export { useRect }
+export type { Measurable }

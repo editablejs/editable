@@ -1,6 +1,5 @@
 const prefix = 'component'
 const phaseSymbol = Symbol(`${prefix}.phase`)
-const hookSymbol = Symbol(`${prefix}.hook`)
 
 const updateSymbol = Symbol(`${prefix}.update`)
 const commitSymbol = Symbol(`${prefix}.commit`)
@@ -14,7 +13,6 @@ const contextEvent = `${prefix}.context`
 
 export {
   phaseSymbol,
-  hookSymbol,
   updateSymbol,
   commitSymbol,
   effectsSymbol,

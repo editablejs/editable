@@ -1,6 +1,7 @@
 import { nothing, render } from './lit-html/html'
 import { useMemo } from './use-memo'
 import { c } from './component'
+import { useLayoutEffect } from './use-layout-effect'
 
 export interface CreatePortal {
   container: HTMLElement | DocumentFragment
@@ -9,12 +10,24 @@ export interface CreatePortal {
 
 const createPortal = c<CreatePortal>(function (props) {
   const { container, children } = props
-  const rootPart = useMemo(
-    () => render(children, container, this.currentOptions),
+  this._$portal = true
+  const root = useMemo(
+    () => render(children, container, {
+      ...this.currentOptions,
+      parent: this,
+    }),
     [children, container],
   )
-  // @ts-ignore
-  rootPart._$parent = this
+
+  useLayoutEffect(() => {
+    return () => {
+      delete (container as any)['_$litPart$']
+      delete root._$parent
+      root.setConnected(false)
+      root._$clear()
+    }
+  }, [root, container])
+
   return nothing
 })
 

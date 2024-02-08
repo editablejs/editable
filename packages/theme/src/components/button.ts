@@ -1,5 +1,4 @@
-import { html, c, RefObject, ButtonHTMLAttributes } from 'rezon'
-import { ref } from 'rezon/directives/ref'
+import { html, c, ButtonHTMLAttributes } from 'rezon'
 import { spread } from 'rezon/directives/spread'
 import { createStyles } from '../styles'
 import tw, { TwStyle, css } from 'twin.macro'

@@ -1,5 +1,5 @@
 
-import { RefObject, createContext, useContext, c, useRef, useEffect, useCallback, define, html } from 'rezon'
+import { RefObject, createContext, useContext, c, useRef, useEffect, useCallback, html } from 'rezon'
 import { useComposedRefs } from './compose-refs'
 import { Slot, SlotProps } from './slot'
 
@@ -25,9 +25,6 @@ function createCollection<ItemElement extends HTMLElement, ItemData = {}>(name: 
     collectionRef: { current: null },
     itemMap: new Map(),
   })
-
-  define(CollectionContext.Provider, "collection-context-provider")
-  define(CollectionContext.Consumer, "collection-context-consumer")
 
   const useCollectionContext = () => useContext(CollectionContext)
 

@@ -1,6 +1,7 @@
 import { Editable } from '@editablejs/editor'
 import { Path, Node } from '@editablejs/models'
 import { SlashToolbarItem } from './store'
+import { Component } from 'rezon'
 
 export type SlashHotkey = string | string[] | ((e: KeyboardEvent) => boolean)
 
@@ -8,11 +9,11 @@ export interface SlashToolbarOptions {
   hotkey?: SlashHotkey
   debounceWait?: number
   debounceMaxWait?: number
-  placeholder?: React.ReactNode | ((children: React.ReactElement) => React.ReactElement)
+  placeholder?: unknown | (Component<{ children: unknown }>)
   onSearch?: (value: string) => Promise<SlashToolbarItem[]>
-  onSearchRender?: (items: SlashToolbarItem[]) => React.ReactElement
-  onSearchRenderItem?: (item: SlashToolbarItem) => React.ReactNode
-  onSearchRenderEmpty?: () => React.ReactNode
+  onSearchRender?: (items: SlashToolbarItem[]) => unknown
+  onSearchRenderItem?: (item: SlashToolbarItem) => unknown
+  onSearchRenderEmpty?: () => unknown
 
   match?: (node: Node, path: Path) => boolean
 }

@@ -3,7 +3,7 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { nothing, ElementPart } from '../html'
+import { nothing, ElementPart, getOptions } from '../html'
 import { directive, AsyncDirective } from '../async-directive'
 
 /**
@@ -60,7 +60,7 @@ class RefDirective extends AsyncDirective {
       // We either got a new ref or this is the first render;
       // store the ref/element & update the ref value
       this._ref = ref
-      this._context = part.options?.host
+      this._context = getOptions(part)?.host
       this._updateRefValue((this._element = part.element))
     }
     return nothing
@@ -92,7 +92,7 @@ class RefDirective extends AsyncDirective {
         this._ref.call(this._context, element)
       }
     } else {
-      ;(this._ref as RefInternal)!.value = element
+      ; (this._ref as RefInternal)!.value = element
     }
   }
 

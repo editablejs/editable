@@ -1,11 +1,11 @@
-import * as React from 'react'
-import create, { StoreApi, UseBoundStore } from 'zustand'
+import { create, StoreApi, UseBoundStore } from 'rezon-store'
 import { Editor } from '@editablejs/models'
+import { Component } from 'rezon'
 
 interface BaseSlashToolbarItem {
-  icon?: JSX.Element
+  icon?: unknown
   key: string
-  title: React.ReactElement | string
+  title: unknown
   disabled?: boolean
   onSelect?: () => void
 }
@@ -19,14 +19,13 @@ export interface SlashToolbarState {
 export type SlashToolbarItem =
   | BaseSlashToolbarItem
   | {
-      type: 'separator'
-    }
+    type: 'separator'
+  }
   | {
-      content:
-        | React.ReactElement
-        | string
-        | React.FC<Record<'onSelect', (event: React.MouseEvent) => void>>
-    }
+    content:
+    | unknown
+    | Component<Record<'onSelect', (event: MouseEvent) => void>>
+  }
 
 const EDITOR_TO_TOOLBAR_STORE = new WeakMap<Editor, UseBoundStore<StoreApi<SlashToolbarState>>>()
 

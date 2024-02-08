@@ -146,7 +146,7 @@ const notifyChildrenConnectedChanged = (parent: Disconnectable, isConnected: boo
     // this list
     // Disconnect Directive (and any nested directives contained within)
     // This property needs to remain unminified.
-    ;(obj as AsyncDirective)['_$notifyDirectiveConnectionChanged']?.(isConnected, false)
+    ; (obj as AsyncDirective)['_$notifyDirectiveConnectionChanged']?.(isConnected, false)
     // Disconnect Part/TemplateInstance
     notifyChildrenConnectedChanged(obj, isConnected)
   }
@@ -263,8 +263,8 @@ function notifyChildPartConnectedChanged(
  */
 const installDisconnectAPI = (obj: Disconnectable) => {
   if ((obj as ChildPart).type == PartType.CHILD) {
-    ;(obj as ChildPart)._$notifyConnectionChanged ??= notifyChildPartConnectedChanged
-    ;(obj as ChildPart)._$reparentDisconnectables ??= reparentDisconnectables
+    ; (obj as ChildPart)._$notifyConnectionChanged ??= notifyChildPartConnectedChanged
+      ; (obj as ChildPart)._$reparentDisconnectables ??= reparentDisconnectables
   }
 }
 
@@ -322,7 +322,7 @@ export abstract class AsyncDirective extends Directive {
    *     removed; false when the tree is being disconnected
    * @internal
    */
-  override ['_$notifyDirectiveConnectionChanged'](
+  override['_$notifyDirectiveConnectionChanged'](
     isConnected: boolean,
     isClearingDirective = true,
   ) {
@@ -361,7 +361,7 @@ export abstract class AsyncDirective extends Directive {
       }
       const newValues = [...(this.__part._$committedValue as Array<unknown>)]
       newValues[this.__attributeIndex!] = value
-      ;(this.__part as AttributePart)._$setValue(newValues, options, this, 0)
+        ; (this.__part as AttributePart)._$setValue(newValues, options, this, 0)
     }
   }
 
@@ -371,6 +371,6 @@ export abstract class AsyncDirective extends Directive {
    * re-connected, `reconnected` should also be implemented to restore the
    * working state of the directive prior to the next render.
    */
-  protected disconnected() {}
-  protected reconnected() {}
+  protected disconnected() { }
+  protected reconnected() { }
 }
