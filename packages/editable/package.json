@@ -32,6 +32,7 @@
     "@editablejs/dom-utils": "workspace:*",
     "@editablejs/deserializer": "workspace:*",
     "@editablejs/serializer": "workspace:*",
+    "@editablejs/store": "workspace:*",
     "direction": "^2.0.0",
     "is-hotkey": "^0.1.6",
     "lodash.merge": "^4.6.2",
@@ -48,9 +49,9 @@
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
-    "tsup": "^6.5.0",
+    "tsup": "^7.x",
     "tsup-config": "workspace:*",
-    "typescript": "^4.x"
+    "typescript": "^5.x"
   },
   "peerDependencies": {
     "@editablejs/models": "workspace:*"

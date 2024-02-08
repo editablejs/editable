@@ -27,7 +27,7 @@ import { withNormalizeNode } from './with-normalize-node'
 import { withDataTransfer } from './with-data-transfer'
 import { getWordRange } from '../utils/text'
 import { Focused } from './focused'
-import { append, element as createDOMElement, setAttributes, setStyle } from '@editablejs/dom-utils'
+import { append, createElement as createDOMElement, setAttributes, setStyle } from '@editablejs/dom-utils'
 import { cacheBeforeOperationNodes } from '../utils/transforms'
 
 /**

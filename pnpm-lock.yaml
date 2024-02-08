@@ -12,7 +12,7 @@ importers:
       eslint-config-editable: workspace:*
       husky: 8.0.1
       lint-staged: 13.0.3
-      prettier: latest
+      prettier: 2.8.8
       prettier-config: workspace:*
       tailwind-config: workspace:*
       turbo: latest
@@ -25,7 +25,7 @@ importers:
       eslint-config-editable: link:packages/config/eslint-config-editable
       husky: 8.0.1
       lint-staged: 13.0.3
-      prettier: 3.0.3
+      prettier: 2.8.8
       prettier-config: link:packages/config/prettier-config
       tailwind-config: link:packages/config/tailwind-config
       turbo: 1.10.16
@@ -107,7 +107,7 @@ importers:
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       unist-util-visit: ^2.0.3
       yjs: ^13.5.46
     dependencies:
@@ -188,7 +188,7 @@ importers:
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../packages/config/tsconfig
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
       unist-util-visit: 2.0.3
 
   apps/server:
@@ -199,7 +199,7 @@ importers:
       prettier-config: workspace:*
       ts-node: 10.9.1
       tsconfig: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
       yjs: ^13.5.46
     dependencies:
       '@editablejs/yjs-websocket': link:../../packages/yjs-websocket
@@ -207,9 +207,9 @@ importers:
       eslint-config-editable: link:../../packages/config/eslint-config-editable
       nodemon: 2.0.20
       prettier-config: link:../../packages/config/prettier-config
-      ts-node: 10.9.1_bdgp3l2zgaopogaavxusmetvge
+      ts-node: 10.9.1_7f2qetuip7jtrdjk4fzgtka2r4
       tsconfig: link:../../packages/config/tsconfig
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
   packages/breaker:
@@ -224,8 +224,8 @@ importers:
       prettier-config: workspace:*
       tiny-inflate: ^1.0.3
       tsconfig: workspace:*
-      tsup: ^6.5.0
-      typescript: ^4.x
+      tsup: ^7.x
+      typescript: ^5.x
       unicode-trie: ^2.0.0
     dependencies:
       tiny-inflate: 1.0.3
@@ -240,20 +240,18 @@ importers:
       node-fetch: 2.6.7
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
-      typescript: 4.9.5
+      tsup: 7.3.0_typescript@5.2.2
+      typescript: 5.2.2
 
   packages/config/esbuild-plugin-emotion:
     specifiers:
       '@babel/core': 7.19.1
       '@babel/preset-typescript': 7.18.6
-      '@emotion/babel-plugin': 11.11.0
       babel-plugin-macros: 3.1.0
       babel-plugin-twin: 1.0.2
     devDependencies:
       '@babel/core': 7.19.1
       '@babel/preset-typescript': 7.18.6_@babel+core@7.19.1
-      '@emotion/babel-plugin': 11.11.0
       babel-plugin-macros: 3.1.0
       babel-plugin-twin: 1.0.2
 
@@ -280,7 +278,7 @@ importers:
       eslint-plugin-react: 7.31.0
     devDependencies:
       eslint: 7.32.0
-      eslint-config-next: 12.2.2_jofidmxrjzhj7l6vknpw5ecvfe
+      eslint-config-next: 12.2.2_fpfu7yh6q2wfuzfvg5n4si24jy
       eslint-config-prettier: 8.5.0_eslint@7.32.0
       eslint-config-turbo: 1.10.16_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
@@ -335,9 +333,9 @@ importers:
       micromark-util-types: 1.0.2
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       escape-html: 1.0.3
       lodash.merge: 4.6.2
@@ -355,21 +353,24 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/dom-utils:
     specifiers:
+      '@editablejs/store': workspace:*
       '@types/jest': ^26.0.22
       eslint-config-editable: workspace:*
       jest: ^27.5.1
       jest-presets: workspace:*
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
+    dependencies:
+      '@editablejs/store': link:../store
     devDependencies:
       '@types/jest': 26.0.24
       eslint-config-editable: link:../config/eslint-config-editable
@@ -377,9 +378,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/editable:
     specifiers:
@@ -388,6 +389,7 @@ importers:
       '@editablejs/dom-utils': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/serializer': workspace:*
+      '@editablejs/store': workspace:*
       '@types/direction': 2.0.0
       '@types/is-hotkey': ^0.1.7
       '@types/jest': ^26.0.22
@@ -401,14 +403,15 @@ importers:
       prettier-config: workspace:*
       scroll-into-view-if-needed: 2.2.29
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/breaker': link:../breaker
       '@editablejs/deserializer': link:../deserializer
       '@editablejs/dom-utils': link:../dom-utils
       '@editablejs/serializer': link:../serializer
+      '@editablejs/store': link:../store
       direction: 2.0.1
       is-hotkey: 0.1.8
       lodash.merge: 4.6.2
@@ -424,9 +427,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/editor:
     specifiers:
@@ -450,9 +453,9 @@ importers:
       react-dom: ^18.x
       scroll-into-view-if-needed: 2.2.29
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/breaker': link:../breaker
@@ -477,9 +480,9 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/models:
     specifiers:
@@ -490,9 +493,9 @@ importers:
       prettier-config: workspace:*
       slate: ^0.88.1
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       slate: 0.88.1
     devDependencies:
@@ -502,9 +505,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/alignment:
     specifiers:
@@ -519,10 +522,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -536,10 +539,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/blockquote:
     specifiers:
@@ -561,10 +564,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -585,10 +588,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/codeblock:
     specifiers:
@@ -620,10 +623,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       yjs: ^13.5.46
     dependencies:
       '@codemirror/commands': 6.1.3
@@ -655,10 +658,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
   packages/plugins/context-menu:
@@ -682,10 +685,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
@@ -709,10 +712,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/font:
     specifiers:
@@ -726,9 +729,9 @@ importers:
       jest-presets: workspace:*
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -741,9 +744,9 @@ importers:
       jest-presets: link:../../config/jest-presets
       prettier-config: link:../../config/prettier-config
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/heading:
     specifiers:
@@ -765,10 +768,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -789,10 +792,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/history:
     specifiers:
@@ -809,9 +812,9 @@ importers:
       react: ^18.x
       react-dom: ^18.x
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/protocols': link:../../protocols
       is-plain-object: 5.0.0
@@ -827,9 +830,9 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/hr:
     specifiers:
@@ -851,10 +854,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -875,10 +878,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/image:
     specifiers:
@@ -902,10 +905,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
@@ -930,10 +933,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/indent:
     specifiers:
@@ -954,10 +957,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -977,10 +980,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/leading:
     specifiers:
@@ -995,10 +998,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -1012,10 +1015,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/link:
     specifiers:
@@ -1040,10 +1043,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
@@ -1069,10 +1072,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/list:
     specifiers:
@@ -1096,10 +1099,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -1122,15 +1125,15 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/mark:
     specifiers:
       '@editablejs/deserializer': workspace:*
-      '@editablejs/dom-utils': workspace:1.0.0
+      '@editablejs/dom-utils': workspace:*
       '@editablejs/editable': workspace:*
       '@editablejs/models': workspace:*
       '@editablejs/serializer': workspace:*
@@ -1145,10 +1148,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/dom-utils': link:../../dom-utils
@@ -1167,10 +1170,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/mention:
     specifiers:
@@ -1193,10 +1196,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
@@ -1220,10 +1223,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/plugins:
     specifiers:
@@ -1254,9 +1257,9 @@ importers:
       react: ^18.x
       react-dom: ^18.x
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/plugin-alignment': link:../alignment
@@ -1286,9 +1289,9 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/table:
     specifiers:
@@ -1313,10 +1316,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
@@ -1342,10 +1345,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/title:
     specifiers:
@@ -1367,10 +1370,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@editablejs/deserializer': link:../../deserializer
       '@editablejs/serializer': link:../../serializer
@@ -1391,10 +1394,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/toolbar:
     specifiers:
@@ -1416,10 +1419,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       zustand: 4.1.4
     dependencies:
       '@editablejs/ui': link:../../ui
@@ -1442,10 +1445,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/plugins/yjs:
     specifiers:
@@ -1469,10 +1472,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
       yjs: ^13.5.46
       zustand: 4.1.4
     dependencies:
@@ -1498,10 +1501,10 @@ importers:
       tailwind-config: link:../../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
   packages/protocols:
@@ -1514,9 +1517,9 @@ importers:
       lib0: ^0.2.52
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       lib0: 0.2.52
     devDependencies:
@@ -1527,9 +1530,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
 
   packages/serializer:
     specifiers:
@@ -1547,9 +1550,9 @@ importers:
       mdast-util-to-markdown: 1.5.0
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       escape-html: 1.0.3
       lodash.merge: 4.6.2
@@ -1566,9 +1569,68 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
+
+  packages/store:
+    specifiers:
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^7.x
+      tsup-config: workspace:*
+      typescript: ^5.x
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 7.3.0_typescript@5.2.2
+      tsup-config: link:../config/tsup-config
+      typescript: 5.2.2
+
+  packages/theme:
+    specifiers:
+      '@editablejs/dom-utils': workspace:*
+      '@editablejs/store': workspace:*
+      '@emotion/css': 11.11.2
+      '@floating-ui/dom': 1.5.3
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      prettier-config: workspace:*
+      tailwind-config: workspace:*
+      tailwindcss: ^3.2.4
+      tsconfig: workspace:*
+      tsup: ^7.x
+      tsup-config: workspace:*
+      twin.macro: 3.1.0
+      typescript: ^5.x
+    dependencies:
+      '@editablejs/dom-utils': link:../dom-utils
+      '@editablejs/store': link:../store
+      '@emotion/css': 11.11.2
+      '@floating-ui/dom': 1.5.3
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tailwind-config: link:../config/tailwind-config
+      tailwindcss: 3.2.4_postcss@8.4.16
+      tsconfig: link:../config/tsconfig
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
+      tsup-config: link:../config/tsup-config
+      twin.macro: 3.1.0_tailwindcss@3.2.4
+      typescript: 5.2.2
 
   packages/ui:
     specifiers:
@@ -1588,10 +1650,10 @@ importers:
       tailwind-config: workspace:*
       tailwindcss: ^3.2.4
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
       twin.macro: 3.1.0
-      typescript: ^4.x
+      typescript: ^5.x
     dependencies:
       '@floating-ui/react-dom': 1.0.0_biqbaboplfbrettd7655fr4n2y
       colord: 2.9.0
@@ -1610,10 +1672,37 @@ importers:
       tailwind-config: link:../config/tailwind-config
       tailwindcss: 3.2.4_postcss@8.4.16
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_pr4r723stfqz5eidoh2flacvd4
+      tsup: 7.3.0_stu5ou6gqtrcue4spr373q73vq
       tsup-config: link:../config/tsup-config
       twin.macro: 3.1.0_tailwindcss@3.2.4
-      typescript: 4.9.5
+      typescript: 5.2.2
+
+  packages/web-hooks:
+    specifiers:
+      '@lit/reactive-element': ^2.0.2
+      '@types/jest': ^26.0.22
+      eslint-config-editable: workspace:*
+      jest: ^27.5.1
+      jest-presets: workspace:*
+      lit-html: ^3.1.0
+      prettier-config: workspace:*
+      tsconfig: workspace:*
+      tsup: ^7.x
+      tsup-config: workspace:*
+      typescript: ^5.x
+    dependencies:
+      '@lit/reactive-element': 2.0.2
+      lit-html: 3.1.0
+    devDependencies:
+      '@types/jest': 26.0.24
+      eslint-config-editable: link:../config/eslint-config-editable
+      jest: 27.5.1
+      jest-presets: link:../config/jest-presets
+      prettier-config: link:../config/prettier-config
+      tsconfig: link:../config/tsconfig
+      tsup: 7.3.0_typescript@5.2.2
+      tsup-config: link:../config/tsup-config
+      typescript: 5.2.2
 
   packages/yjs-protocols:
     specifiers:
@@ -1624,9 +1713,9 @@ importers:
       lib0: ^0.2.52
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
       yjs: ^13.5.46
     dependencies:
       lib0: 0.2.52
@@ -1637,9 +1726,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
   packages/yjs-transform:
@@ -1651,9 +1740,9 @@ importers:
       jest-presets: workspace:*
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
       yjs: ^13.5.46
     devDependencies:
       '@editablejs/models': link:../models
@@ -1663,9 +1752,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
   packages/yjs-websocket:
@@ -1685,9 +1774,9 @@ importers:
       mongodb: 5.0.1
       prettier-config: workspace:*
       tsconfig: workspace:*
-      tsup: ^6.5.0
+      tsup: ^7.x
       tsup-config: workspace:*
-      typescript: ^4.x
+      typescript: ^5.x
       ws: ^6.2.1
       y-leveldb: ^0.1.2
       yjs: ^13.5.46
@@ -1711,9 +1800,9 @@ importers:
       jest-presets: link:../config/jest-presets
       prettier-config: link:../config/prettier-config
       tsconfig: link:../config/tsconfig
-      tsup: 6.5.0_typescript@4.9.5
+      tsup: 7.3.0_typescript@5.2.2
       tsup-config: link:../config/tsup-config
-      typescript: 4.9.5
+      typescript: 5.2.2
       yjs: 13.5.46
 
 packages:
@@ -3073,6 +3162,7 @@ packages:
       find-root: 1.1.0
       source-map: 0.5.7
       stylis: 4.2.0
+    dev: false
 
   /@emotion/cache/11.11.0:
     resolution: {integrity: sha512-P34z9ssTCBi3e9EI1ZsWpNHcfY1r09ZO0rZbRO2ob3ZQMnFI35jB536qoXbkdesr5EUhYi22anuEJuyxifaqAQ==}
@@ -3096,6 +3186,7 @@ packages:
 
   /@emotion/hash/0.9.1:
     resolution: {integrity: sha512-gJB6HLm5rYwSLI6PQa+X1t5CFGrv1J1TWG+sOyMCeKz2ojaj6Fnl/rZEspogG+cvqbt4AE/2eIyD2QfLKTBNlQ==}
+    dev: false
 
   /@emotion/is-prop-valid/1.2.0:
     resolution: {integrity: sha512-3aDpDprjM0AwaxGE09bOPkNxHpBd+kA6jty3RnaEXdweX1DF1U3VQpPYb0g1IStAuK7SVQ1cy+bNBBKp4W3Fjg==}
@@ -3107,6 +3198,7 @@ packages:
 
   /@emotion/memoize/0.8.1:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
+    dev: false
 
   /@emotion/serialize/1.1.2:
     resolution: {integrity: sha512-zR6a/fkFP4EAcCMQtLOhIgpprZOwNmCldtpaISpvz348+DP4Mz8ZoKaGGCQpbzepNIUWbq4w6hNZkwDyKoS+HA==}
@@ -3116,6 +3208,7 @@ packages:
       '@emotion/unitless': 0.8.1
       '@emotion/utils': 1.2.1
       csstype: 3.0.11
+    dev: false
 
   /@emotion/sheet/1.2.2:
     resolution: {integrity: sha512-0QBtGvaqtWi+nx6doRwDdBIzhNdZrXUppvTM4dtZZWEGTXL/XE/yJxLMGlDT1Gt+UHH5IX1n+jkXyytE/av7OA==}
@@ -3129,16 +3222,18 @@ packages:
 
   /@emotion/unitless/0.8.1:
     resolution: {integrity: sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==}
+    dev: false
 
   /@emotion/utils/1.2.1:
     resolution: {integrity: sha512-Y2tGf3I+XVnajdItskUCn6LX+VUDmP6lTL4fcqsXAv43dnlbZiuW4MWQW38rW/BVWSE7Q/7+XQocmpnRYILUmg==}
+    dev: false
 
   /@emotion/weak-memoize/0.3.1:
     resolution: {integrity: sha512-EsBwpc7hBUJWAsNPBmJy4hxWx12v6bshQsldrVmjxJoc3isbxhOrF2IcCpaXxfvq03NwkI7sbsOLXbYuqF/8Ww==}
     dev: false
 
-  /@esbuild/android-arm/0.15.18:
-    resolution: {integrity: sha512-5GT+kcs2WVGjVs7+boataCkO5Fg0y4kCjzkB5bAip7H4jfnOS3dA6KPiww9W1OEKTKeAcUVhdZGvgI65OXmUnw==}
+  /@esbuild/android-arm/0.19.5:
+    resolution: {integrity: sha512-bhvbzWFF3CwMs5tbjf3ObfGqbl/17ict2/uwOSfr3wmxDE6VdS2GqY/FuzIPe0q0bdhj65zQsvqfArI9MY6+AA==}
     engines: {node: '>=12'}
     cpu: [arm]
     os: [android]
@@ -3146,11 +3241,191 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-loong64/0.15.18:
-    resolution: {integrity: sha512-L4jVKS82XVhw2nvzLg/19ClLWg0y27ulRwuP7lcyL6AbUWB5aPglXY3M21mauDQMDfRLs8cQmeT03r/+X3cZYQ==}
+  /@esbuild/android-arm64/0.19.5:
+    resolution: {integrity: sha512-5d1OkoJxnYQfmC+Zd8NBFjkhyCNYwM4n9ODrycTFY6Jk1IGiZ+tjVJDDSwDt77nK+tfpGP4T50iMtVi4dEGzhQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/android-x64/0.19.5:
+    resolution: {integrity: sha512-9t+28jHGL7uBdkBjL90QFxe7DVA+KGqWlHCF8ChTKyaKO//VLuoBricQCgwhOjA1/qOczsw843Fy4cbs4H3DVA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/darwin-arm64/0.19.5:
+    resolution: {integrity: sha512-mvXGcKqqIqyKoxq26qEDPHJuBYUA5KizJncKOAf9eJQez+L9O+KfvNFu6nl7SCZ/gFb2QPaRqqmG0doSWlgkqw==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/darwin-x64/0.19.5:
+    resolution: {integrity: sha512-Ly8cn6fGLNet19s0X4unjcniX24I0RqjPv+kurpXabZYSXGM4Pwpmf85WHJN3lAgB8GSth7s5A0r856S+4DyiA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/freebsd-arm64/0.19.5:
+    resolution: {integrity: sha512-GGDNnPWTmWE+DMchq1W8Sd0mUkL+APvJg3b11klSGUDvRXh70JqLAO56tubmq1s2cgpVCSKYywEiKBfju8JztQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/freebsd-x64/0.19.5:
+    resolution: {integrity: sha512-1CCwDHnSSoA0HNwdfoNY0jLfJpd7ygaLAp5EHFos3VWJCRX9DMwWODf96s9TSse39Br7oOTLryRVmBoFwXbuuQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-arm/0.19.5:
+    resolution: {integrity: sha512-lrWXLY/vJBzCPC51QN0HM71uWgIEpGSjSZZADQhq7DKhPcI6NH1IdzjfHkDQws2oNpJKpR13kv7/pFHBbDQDwQ==}
+    engines: {node: '>=12'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-arm64/0.19.5:
+    resolution: {integrity: sha512-o3vYippBmSrjjQUCEEiTZ2l+4yC0pVJD/Dl57WfPwwlvFkrxoSO7rmBZFii6kQB3Wrn/6GwJUPLU5t52eq2meA==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-ia32/0.19.5:
+    resolution: {integrity: sha512-MkjHXS03AXAkNp1KKkhSKPOCYztRtK+KXDNkBa6P78F8Bw0ynknCSClO/ztGszILZtyO/lVKpa7MolbBZ6oJtQ==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-loong64/0.19.5:
+    resolution: {integrity: sha512-42GwZMm5oYOD/JHqHska3Jg0r+XFb/fdZRX+WjADm3nLWLcIsN27YKtqxzQmGNJgu0AyXg4HtcSK9HuOk3v1Dw==}
     engines: {node: '>=12'}
     cpu: [loong64]
     os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-mips64el/0.19.5:
+    resolution: {integrity: sha512-kcjndCSMitUuPJobWCnwQ9lLjiLZUR3QLQmlgaBfMX23UEa7ZOrtufnRds+6WZtIS9HdTXqND4yH8NLoVVIkcg==}
+    engines: {node: '>=12'}
+    cpu: [mips64el]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-ppc64/0.19.5:
+    resolution: {integrity: sha512-yJAxJfHVm0ZbsiljbtFFP1BQKLc8kUF6+17tjQ78QjqjAQDnhULWiTA6u0FCDmYT1oOKS9PzZ2z0aBI+Mcyj7Q==}
+    engines: {node: '>=12'}
+    cpu: [ppc64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-riscv64/0.19.5:
+    resolution: {integrity: sha512-5u8cIR/t3gaD6ad3wNt1MNRstAZO+aNyBxu2We8X31bA8XUNyamTVQwLDA1SLoPCUehNCymhBhK3Qim1433Zag==}
+    engines: {node: '>=12'}
+    cpu: [riscv64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-s390x/0.19.5:
+    resolution: {integrity: sha512-Z6JrMyEw/EmZBD/OFEFpb+gao9xJ59ATsoTNlj39jVBbXqoZm4Xntu6wVmGPB/OATi1uk/DB+yeDPv2E8PqZGw==}
+    engines: {node: '>=12'}
+    cpu: [s390x]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/linux-x64/0.19.5:
+    resolution: {integrity: sha512-psagl+2RlK1z8zWZOmVdImisMtrUxvwereIdyJTmtmHahJTKb64pAcqoPlx6CewPdvGvUKe2Jw+0Z/0qhSbG1A==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/netbsd-x64/0.19.5:
+    resolution: {integrity: sha512-kL2l+xScnAy/E/3119OggX8SrWyBEcqAh8aOY1gr4gPvw76la2GlD4Ymf832UCVbmuWeTf2adkZDK+h0Z/fB4g==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [netbsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/openbsd-x64/0.19.5:
+    resolution: {integrity: sha512-sPOfhtzFufQfTBgRnE1DIJjzsXukKSvZxloZbkJDG383q0awVAq600pc1nfqBcl0ice/WN9p4qLc39WhBShRTA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [openbsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/sunos-x64/0.19.5:
+    resolution: {integrity: sha512-dGZkBXaafuKLpDSjKcB0ax0FL36YXCvJNnztjKV+6CO82tTYVDSH2lifitJ29jxRMoUhgkg9a+VA/B03WK5lcg==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [sunos]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/win32-arm64/0.19.5:
+    resolution: {integrity: sha512-dWVjD9y03ilhdRQ6Xig1NWNgfLtf2o/STKTS+eZuF90fI2BhbwD6WlaiCGKptlqXlURVB5AUOxUj09LuwKGDTg==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/win32-ia32/0.19.5:
+    resolution: {integrity: sha512-4liggWIA4oDgUxqpZwrDhmEfAH4d0iljanDOK7AnVU89T6CzHon/ony8C5LeOdfgx60x5cnQJFZwEydVlYx4iw==}
+    engines: {node: '>=12'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@esbuild/win32-x64/0.19.5:
+    resolution: {integrity: sha512-czTrygUsB/jlM8qEW5MD8bgYU2Xg14lo6kBDXW6HdxKjh8M5PzETGiSHaz9MtbXBYDloHNUAUW2tMiKW4KM9Mw==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [win32]
     requiresBuild: true
     dev: true
     optional: true
@@ -3181,10 +3456,23 @@ packages:
     resolution: {integrity: sha512-bO37brCPfteXQfFY0DyNDGB3+IMe4j150KFQcgJ5aBP295p9nBGeHEs/p0czrRbtlHq4Px/yoPXO/+dOCcF4uA==}
     dev: false
 
+  /@floating-ui/core/1.5.0:
+    resolution: {integrity: sha512-kK1h4m36DQ0UHGj5Ah4db7R0rHemTqqO0QLvUqi1/mUUp3LuAWbWxdxSIf/XsnH9VS6rRVPLJCncjRzUvyCLXg==}
+    dependencies:
+      '@floating-ui/utils': 0.1.6
+    dev: false
+
   /@floating-ui/dom/1.0.2:
     resolution: {integrity: sha512-5X9WSvZ8/fjy3gDu8yx9HAA4KG1lazUN2P4/VnaXLxTO9Dz53HI1oYoh1OlhqFNlHgGDiwFX5WhFCc2ljbW3yA==}
     dependencies:
       '@floating-ui/core': 1.0.1
+    dev: false
+
+  /@floating-ui/dom/1.5.3:
+    resolution: {integrity: sha512-ClAbQnEqJAKCJOEbbLo5IUlZHkNszqhuxS4fHAVxRPXPya6Ysf2G8KypnYcOTpx6I8xcgF9bbHb6g/2KpbV8qA==}
+    dependencies:
+      '@floating-ui/core': 1.5.0
+      '@floating-ui/utils': 0.1.6
     dev: false
 
   /@floating-ui/react-dom/1.0.0_biqbaboplfbrettd7655fr4n2y:
@@ -3196,6 +3484,10 @@ packages:
       '@floating-ui/dom': 1.0.2
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@floating-ui/utils/0.1.6:
+    resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
   /@gaearon/react-collapsed/3.1.0-forked.1_biqbaboplfbrettd7655fr4n2y:
@@ -3256,7 +3548,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       chalk: 4.1.2
       jest-message-util: 27.5.1
       jest-util: 27.5.1
@@ -3312,7 +3604,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
 
   /@jest/fake-timers/27.5.1:
@@ -3321,7 +3613,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@sinonjs/fake-timers': 8.1.0
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       jest-message-util: 27.5.1
       jest-mock: 27.5.1
       jest-util: 27.5.1
@@ -3538,6 +3830,16 @@ packages:
     resolution: {integrity: sha512-rpvS+WPS/PlbJCiW+bzXPbIFIRXmzRiTEDzMvrvgpED05w5ZQO59AzH3BJen2AnHuJIlP3DcJRjsKLTrkknUNA==}
     dependencies:
       '@lezer/common': 1.0.2
+    dev: false
+
+  /@lit-labs/ssr-dom-shim/1.1.2:
+    resolution: {integrity: sha512-jnOD+/+dSrfTWYfSXBXlo5l5f0q1UuJo3tkbMDCYA2lKUYq79jaxqtGEvnRoh049nt1vdo1+45RinipU6FGY2g==}
+    dev: false
+
+  /@lit/reactive-element/2.0.2:
+    resolution: {integrity: sha512-SVOwLAWUQg3Ji1egtOt1UiFe4zdDpnWHyc5qctSceJ5XIu0Uc76YmGpIjZgx9YJ0XtdW0Jm507sDvjOu+HnB8w==}
+    dependencies:
+      '@lit-labs/ssr-dom-shim': 1.1.2
     dev: false
 
   /@manypkg/find-root/1.1.0:
@@ -3757,6 +4059,102 @@ packages:
       react: 18.2.0
     dev: false
 
+  /@rollup/rollup-android-arm-eabi/4.4.1:
+    resolution: {integrity: sha512-Ss4suS/sd+6xLRu+MLCkED2mUrAyqHmmvZB+zpzZ9Znn9S8wCkTQCJaQ8P8aHofnvG5L16u9MVnJjCqioPErwQ==}
+    cpu: [arm]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-android-arm64/4.4.1:
+    resolution: {integrity: sha512-sRSkGTvGsARwWd7TzC8LKRf8FiPn7257vd/edzmvG4RIr9x68KBN0/Ek48CkuUJ5Pj/Dp9vKWv6PEupjKWjTYA==}
+    cpu: [arm64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-darwin-arm64/4.4.1:
+    resolution: {integrity: sha512-nz0AiGrrXyaWpsmBXUGOBiRDU0wyfSXbFuF98pPvIO8O6auQsPG6riWsfQqmCCC5FNd8zKQ4JhgugRNAkBJ8mQ==}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-darwin-x64/4.4.1:
+    resolution: {integrity: sha512-Ogqvf4/Ve/faMaiPRvzsJEqajbqs00LO+8vtrPBVvLgdw4wBg6ZDXdkDAZO+4MLnrc8mhGV6VJAzYScZdPLtJg==}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-linux-arm-gnueabihf/4.4.1:
+    resolution: {integrity: sha512-9zc2tqlr6HfO+hx9+wktUlWTRdje7Ub15iJqKcqg5uJZ+iKqmd2CMxlgPpXi7+bU7bjfDIuvCvnGk7wewFEhCg==}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-linux-arm64-gnu/4.4.1:
+    resolution: {integrity: sha512-phLb1fN3rq2o1j1v+nKxXUTSJnAhzhU0hLrl7Qzb0fLpwkGMHDem+o6d+ZI8+/BlTXfMU4kVWGvy6g9k/B8L6Q==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-linux-arm64-musl/4.4.1:
+    resolution: {integrity: sha512-M2sDtw4tf57VPSjbTAN/lz1doWUqO2CbQuX3L9K6GWIR5uw9j+ROKCvvUNBY8WUbMxwaoc8mH9HmmBKsLht7+w==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-linux-x64-gnu/4.4.1:
+    resolution: {integrity: sha512-mHIlRLX+hx+30cD6c4BaBOsSqdnCE4ok7/KDvjHYAHoSuveoMMxIisZFvcLhUnyZcPBXDGZTuBoalcuh43UfQQ==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-linux-x64-musl/4.4.1:
+    resolution: {integrity: sha512-tB+RZuDi3zxFx7vDrjTNGVLu2KNyzYv+UY8jz7e4TMEoAj7iEt8Qk6xVu6mo3pgjnsHj6jnq3uuRsHp97DLwOA==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-win32-arm64-msvc/4.4.1:
+    resolution: {integrity: sha512-Hdn39PzOQowK/HZzYpCuZdJC91PE6EaGbTe2VCA9oq2u18evkisQfws0Smh9QQGNNRa/T7MOuGNQoLeXhhE3PQ==}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-win32-ia32-msvc/4.4.1:
+    resolution: {integrity: sha512-tLpKb1Elm9fM8c5w3nl4N1eLTP4bCqTYw9tqUBxX8/hsxqHO3dxc2qPbZ9PNkdK4tg4iLEYn0pOUnVByRd2CbA==}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@rollup/rollup-win32-x64-msvc/4.4.1:
+    resolution: {integrity: sha512-eAhItDX9yQtZVM3yvXS/VR3qPqcnXvnLyx1pLXl4JzyNMBNO3KC986t/iAg2zcMzpAp9JSvxB5VZGnBiNoA98w==}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /@rushstack/eslint-patch/1.1.4:
     resolution: {integrity: sha512-LwzQKA4vzIct1zNZzBmRKI9QuNpLgTQMEjsQLf3BXuGYb3QPTP4Yjf6mkdX+X1mYttZ808QpOwAzZjv28kq7DA==}
     dev: true
@@ -3869,7 +4267,7 @@ packages:
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
 
   /@types/hast/2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
@@ -4037,6 +4435,10 @@ packages:
       csstype: 3.0.11
     dev: true
 
+  /@types/trusted-types/2.0.7:
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+    dev: false
+
   /@types/unicode-trie/2.0.0:
     resolution: {integrity: sha512-gTmYFWe9oQgL9/r1t2DU+skY+PGlR+7sWzPud4bC74Hr2rmr9K5QRAodwiQMMBHM8cWUr3edrhLkkmhYvYo4GQ==}
     dependencies:
@@ -4075,7 +4477,7 @@ packages:
     dependencies:
       '@types/yargs-parser': 21.0.0
 
-  /@typescript-eslint/parser/5.30.5_jofidmxrjzhj7l6vknpw5ecvfe:
+  /@typescript-eslint/parser/5.30.5_fpfu7yh6q2wfuzfvg5n4si24jy:
     resolution: {integrity: sha512-zj251pcPXI8GO9NDKWWmygP6+UjwWmrdf9qMW/L/uQJBM/0XbU2inxe5io/234y/RCvwpKEYjZ6c1YrXERkK4Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -4087,10 +4489,10 @@ packages:
     dependencies:
       '@typescript-eslint/scope-manager': 5.30.5
       '@typescript-eslint/types': 5.30.5
-      '@typescript-eslint/typescript-estree': 5.30.5_typescript@4.9.5
+      '@typescript-eslint/typescript-estree': 5.30.5_typescript@5.2.2
       debug: 4.3.4
       eslint: 7.32.0
-      typescript: 4.9.5
+      typescript: 5.2.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4108,7 +4510,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@typescript-eslint/typescript-estree/5.30.5_typescript@4.9.5:
+  /@typescript-eslint/typescript-estree/5.30.5_typescript@5.2.2:
     resolution: {integrity: sha512-qGTc7QZC801kbYjAr4AgdOfnokpwStqyhSbiQvqGBLixniAKyH+ib2qXIVo4P9NgGzwyfD9I0nlJN7D91E1VpQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -4123,8 +4525,8 @@ packages:
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.3.7
-      tsutils: 3.21.0_typescript@4.9.5
-      typescript: 4.9.5
+      tsutils: 3.21.0_typescript@5.2.2
+      typescript: 5.2.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4691,13 +5093,13 @@ packages:
     dev: false
     optional: true
 
-  /bundle-require/3.1.2_esbuild@0.15.18:
-    resolution: {integrity: sha512-Of6l6JBAxiyQ5axFxUM6dYeP/W7X2Sozeo/4EYB9sJhL+dqL7TKjg+shwxp6jlu/6ZSERfsYtIpSJ1/x3XkAEA==}
+  /bundle-require/4.0.2_esbuild@0.19.5:
+    resolution: {integrity: sha512-jwzPOChofl67PSTW2SGubV9HBQAhhR2i6nskiOThauo9dzwDUgOWQScFVaJkjEfYX+UXiD+LEx8EblQMc2wIag==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     peerDependencies:
-      esbuild: '>=0.13'
+      esbuild: '>=0.17'
     dependencies:
-      esbuild: 0.15.18
+      esbuild: 0.19.5
       load-tsconfig: 0.2.3
     dev: true
 
@@ -5550,214 +5952,34 @@ packages:
       ext: 1.7.0
     dev: false
 
-  /esbuild-android-64/0.15.18:
-    resolution: {integrity: sha512-wnpt3OXRhcjfIDSZu9bnzT4/TNTDsOUvip0foZOUBG7QbSt//w3QV4FInVJxNhKc/ErhUxc5z4QjHtMi7/TbgA==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [android]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-android-arm64/0.15.18:
-    resolution: {integrity: sha512-G4xu89B8FCzav9XU8EjsXacCKSG2FT7wW9J6hOc18soEHJdtWu03L3TQDGf0geNxfLTtxENKBzMSq9LlbjS8OQ==}
-    engines: {node: '>=12'}
-    cpu: [arm64]
-    os: [android]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-darwin-64/0.15.18:
-    resolution: {integrity: sha512-2WAvs95uPnVJPuYKP0Eqx+Dl/jaYseZEUUT1sjg97TJa4oBtbAKnPnl3b5M9l51/nbx7+QAEtuummJZW0sBEmg==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-darwin-arm64/0.15.18:
-    resolution: {integrity: sha512-tKPSxcTJ5OmNb1btVikATJ8NftlyNlc8BVNtyT/UAr62JFOhwHlnoPrhYWz09akBLHI9nElFVfWSTSRsrZiDUA==}
-    engines: {node: '>=12'}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-freebsd-64/0.15.18:
-    resolution: {integrity: sha512-TT3uBUxkteAjR1QbsmvSsjpKjOX6UkCstr8nMr+q7zi3NuZ1oIpa8U41Y8I8dJH2fJgdC3Dj3CXO5biLQpfdZA==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [freebsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-freebsd-arm64/0.15.18:
-    resolution: {integrity: sha512-R/oVr+X3Tkh+S0+tL41wRMbdWtpWB8hEAMsOXDumSSa6qJR89U0S/PpLXrGF7Wk/JykfpWNokERUpCeHDl47wA==}
-    engines: {node: '>=12'}
-    cpu: [arm64]
-    os: [freebsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-32/0.15.18:
-    resolution: {integrity: sha512-lphF3HiCSYtaa9p1DtXndiQEeQDKPl9eN/XNoBf2amEghugNuqXNZA/ZovthNE2aa4EN43WroO0B85xVSjYkbg==}
-    engines: {node: '>=12'}
-    cpu: [ia32]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-64/0.15.18:
-    resolution: {integrity: sha512-hNSeP97IviD7oxLKFuii5sDPJ+QHeiFTFLoLm7NZQligur8poNOWGIgpQ7Qf8Balb69hptMZzyOBIPtY09GZYw==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-arm/0.15.18:
-    resolution: {integrity: sha512-UH779gstRblS4aoS2qpMl3wjg7U0j+ygu3GjIeTonCcN79ZvpPee12Qun3vcdxX+37O5LFxz39XeW2I9bybMVA==}
-    engines: {node: '>=12'}
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-arm64/0.15.18:
-    resolution: {integrity: sha512-54qr8kg/6ilcxd+0V3h9rjT4qmjc0CccMVWrjOEM/pEcUzt8X62HfBSeZfT2ECpM7104mk4yfQXkosY8Quptug==}
-    engines: {node: '>=12'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-mips64le/0.15.18:
-    resolution: {integrity: sha512-Mk6Ppwzzz3YbMl/ZZL2P0q1tnYqh/trYZ1VfNP47C31yT0K8t9s7Z077QrDA/guU60tGNp2GOwCQnp+DYv7bxQ==}
-    engines: {node: '>=12'}
-    cpu: [mips64el]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-ppc64le/0.15.18:
-    resolution: {integrity: sha512-b0XkN4pL9WUulPTa/VKHx2wLCgvIAbgwABGnKMY19WhKZPT+8BxhZdqz6EgkqCLld7X5qiCY2F/bfpUUlnFZ9w==}
-    engines: {node: '>=12'}
-    cpu: [ppc64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-riscv64/0.15.18:
-    resolution: {integrity: sha512-ba2COaoF5wL6VLZWn04k+ACZjZ6NYniMSQStodFKH/Pu6RxzQqzsmjR1t9QC89VYJxBeyVPTaHuBMCejl3O/xg==}
-    engines: {node: '>=12'}
-    cpu: [riscv64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-linux-s390x/0.15.18:
-    resolution: {integrity: sha512-VbpGuXEl5FCs1wDVp93O8UIzl3ZrglgnSQ+Hu79g7hZu6te6/YHgVJxCM2SqfIila0J3k0csfnf8VD2W7u2kzQ==}
-    engines: {node: '>=12'}
-    cpu: [s390x]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-netbsd-64/0.15.18:
-    resolution: {integrity: sha512-98ukeCdvdX7wr1vUYQzKo4kQ0N2p27H7I11maINv73fVEXt2kyh4K4m9f35U1K43Xc2QGXlzAw0K9yoU7JUjOg==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [netbsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-openbsd-64/0.15.18:
-    resolution: {integrity: sha512-yK5NCcH31Uae076AyQAXeJzt/vxIo9+omZRKj1pauhk3ITuADzuOx5N2fdHrAKPxN+zH3w96uFKlY7yIn490xQ==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [openbsd]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-sunos-64/0.15.18:
-    resolution: {integrity: sha512-On22LLFlBeLNj/YF3FT+cXcyKPEI263nflYlAhz5crxtp3yRG1Ugfr7ITyxmCmjm4vbN/dGrb/B7w7U8yJR9yw==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [sunos]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-windows-32/0.15.18:
-    resolution: {integrity: sha512-o+eyLu2MjVny/nt+E0uPnBxYuJHBvho8vWsC2lV61A7wwTWC3jkN2w36jtA+yv1UgYkHRihPuQsL23hsCYGcOQ==}
-    engines: {node: '>=12'}
-    cpu: [ia32]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-windows-64/0.15.18:
-    resolution: {integrity: sha512-qinug1iTTaIIrCorAUjR0fcBk24fjzEedFYhhispP8Oc7SFvs+XeW3YpAKiKp8dRpizl4YYAhxMjlftAMJiaUw==}
-    engines: {node: '>=12'}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild-windows-arm64/0.15.18:
-    resolution: {integrity: sha512-q9bsYzegpZcLziq0zgUi5KqGVtfhjxGbnksaBFYmWLxeV/S1fK4OLdq2DFYnXcLMjlZw2L0jLsk1eGoB522WXQ==}
-    engines: {node: '>=12'}
-    cpu: [arm64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /esbuild/0.15.18:
-    resolution: {integrity: sha512-x/R72SmW3sSFRm5zrrIjAhCeQSAWoni3CmHEqfQrZIQTM3lVCdehdwuIqaOtfC2slvpdlLa62GYoN8SxT23m6Q==}
+  /esbuild/0.19.5:
+    resolution: {integrity: sha512-bUxalY7b1g8vNhQKdB24QDmHeY4V4tw/s6Ak5z+jJX9laP5MoQseTOMemAr0gxssjNcH0MCViG8ONI2kksvfFQ==}
     engines: {node: '>=12'}
     hasBin: true
     requiresBuild: true
     optionalDependencies:
-      '@esbuild/android-arm': 0.15.18
-      '@esbuild/linux-loong64': 0.15.18
-      esbuild-android-64: 0.15.18
-      esbuild-android-arm64: 0.15.18
-      esbuild-darwin-64: 0.15.18
-      esbuild-darwin-arm64: 0.15.18
-      esbuild-freebsd-64: 0.15.18
-      esbuild-freebsd-arm64: 0.15.18
-      esbuild-linux-32: 0.15.18
-      esbuild-linux-64: 0.15.18
-      esbuild-linux-arm: 0.15.18
-      esbuild-linux-arm64: 0.15.18
-      esbuild-linux-mips64le: 0.15.18
-      esbuild-linux-ppc64le: 0.15.18
-      esbuild-linux-riscv64: 0.15.18
-      esbuild-linux-s390x: 0.15.18
-      esbuild-netbsd-64: 0.15.18
-      esbuild-openbsd-64: 0.15.18
-      esbuild-sunos-64: 0.15.18
-      esbuild-windows-32: 0.15.18
-      esbuild-windows-64: 0.15.18
-      esbuild-windows-arm64: 0.15.18
+      '@esbuild/android-arm': 0.19.5
+      '@esbuild/android-arm64': 0.19.5
+      '@esbuild/android-x64': 0.19.5
+      '@esbuild/darwin-arm64': 0.19.5
+      '@esbuild/darwin-x64': 0.19.5
+      '@esbuild/freebsd-arm64': 0.19.5
+      '@esbuild/freebsd-x64': 0.19.5
+      '@esbuild/linux-arm': 0.19.5
+      '@esbuild/linux-arm64': 0.19.5
+      '@esbuild/linux-ia32': 0.19.5
+      '@esbuild/linux-loong64': 0.19.5
+      '@esbuild/linux-mips64el': 0.19.5
+      '@esbuild/linux-ppc64': 0.19.5
+      '@esbuild/linux-riscv64': 0.19.5
+      '@esbuild/linux-s390x': 0.19.5
+      '@esbuild/linux-x64': 0.19.5
+      '@esbuild/netbsd-x64': 0.19.5
+      '@esbuild/openbsd-x64': 0.19.5
+      '@esbuild/sunos-x64': 0.19.5
+      '@esbuild/win32-arm64': 0.19.5
+      '@esbuild/win32-ia32': 0.19.5
+      '@esbuild/win32-x64': 0.19.5
     dev: true
 
   /escalade/3.1.1:
@@ -5797,7 +6019,7 @@ packages:
     optionalDependencies:
       source-map: 0.6.1
 
-  /eslint-config-next/12.2.2_jofidmxrjzhj7l6vknpw5ecvfe:
+  /eslint-config-next/12.2.2_fpfu7yh6q2wfuzfvg5n4si24jy:
     resolution: {integrity: sha512-oJhWBLC4wDYYUFv/5APbjHUFd0QRFCojMdj/QnMoOEktmeTvwnnoA8F8uaXs0fQgsaTK0tbUxBRv9/Y4/rpxOA==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0
@@ -5808,7 +6030,7 @@ packages:
     dependencies:
       '@next/eslint-plugin-next': 12.2.2
       '@rushstack/eslint-patch': 1.1.4
-      '@typescript-eslint/parser': 5.30.5_jofidmxrjzhj7l6vknpw5ecvfe
+      '@typescript-eslint/parser': 5.30.5_fpfu7yh6q2wfuzfvg5n4si24jy
       eslint: 7.32.0
       eslint-import-resolver-node: 0.3.6
       eslint-import-resolver-typescript: 2.7.1_hpmu7kn6tcn2vnxpfzvv33bxmy
@@ -5816,7 +6038,7 @@ packages:
       eslint-plugin-jsx-a11y: 6.6.0_eslint@7.32.0
       eslint-plugin-react: 7.31.0_eslint@7.32.0
       eslint-plugin-react-hooks: 4.6.0_eslint@7.32.0
-      typescript: 4.9.5
+      typescript: 5.2.2
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
       - supports-color
@@ -6330,6 +6552,7 @@ packages:
 
   /find-root/1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
+    dev: false
 
   /find-up/2.1.0:
     resolution: {integrity: sha512-NWzkk0jSJtTt08+FBFMvXoeZnOJD+jTtsRmBYbAIzJdX6l7dLgR7CTubCM5/eDdPUBvLCeVasP1brfVR/9/EZQ==}
@@ -7218,7 +7441,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       chalk: 4.1.2
       co: 4.6.0
       dedent: 0.7.0
@@ -7347,7 +7570,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -7364,7 +7587,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       jest-mock: 27.5.1
       jest-util: 27.5.1
 
@@ -7404,7 +7627,7 @@ packages:
       '@jest/source-map': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       chalk: 4.1.2
       co: 4.6.0
       expect: 27.5.1
@@ -7455,7 +7678,7 @@ packages:
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
 
   /jest-pnp-resolver/1.2.2_jest-resolve@27.5.1:
     resolution: {integrity: sha512-olV41bKSMm8BdnuMsewT4jqlZ8+3TCARAXjZGT9jcoSnrfUnRCqnMoF9XEeoWjbzObpqF9dRhHQj0Xb9QdF6/w==}
@@ -7561,7 +7784,7 @@ packages:
     resolution: {integrity: sha512-jZCyo6iIxO1aqUxpuBlwTDMkzOAJS4a3eYz3YzgxxVQFwLeSA7Jfq5cbqCY+JLvTDrWirgusI/0KwxKMgrdf7w==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       graceful-fs: 4.2.9
 
   /jest-snapshot/27.5.1:
@@ -7621,7 +7844,7 @@ packages:
     dependencies:
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       jest-util: 27.5.1
@@ -7631,7 +7854,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 17.0.23
+      '@types/node': 18.11.18
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -7972,6 +8195,12 @@ packages:
       through: 2.3.8
       wrap-ansi: 7.0.0
     dev: true
+
+  /lit-html/3.1.0:
+    resolution: {integrity: sha512-FwAjq3iNsaO6SOZXEIpeROlJLUlrbyMkn4iuv4f4u1H40Jw8wkeR/OUXZUHUoiYabGk8Y4Y0F/rgq+R4MrOLmA==}
+    dependencies:
+      '@types/trusted-types': 2.0.7
+    dev: false
 
   /load-tsconfig/0.2.3:
     resolution: {integrity: sha512-iyT2MXws+dc2Wi6o3grCFtGXpeMvHmJqS27sMPGtV2eUu4PeFnG+33I8BlFK1t1NWMjOpcx9bridn5yxLDX2gQ==}
@@ -9435,22 +9664,6 @@ packages:
       camelcase-css: 2.0.1
       postcss: 8.4.16
 
-  /postcss-load-config/3.1.4:
-    resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
-    engines: {node: '>= 10'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.0.6
-      yaml: 1.10.2
-    dev: true
-
   /postcss-load-config/3.1.4_postcss@8.4.16:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
@@ -9466,6 +9679,39 @@ packages:
       lilconfig: 2.0.6
       postcss: 8.4.16
       yaml: 1.10.2
+
+  /postcss-load-config/4.0.1:
+    resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
+    engines: {node: '>= 14'}
+    peerDependencies:
+      postcss: '>=8.0.9'
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      postcss:
+        optional: true
+      ts-node:
+        optional: true
+    dependencies:
+      lilconfig: 2.0.6
+      yaml: 2.1.1
+    dev: true
+
+  /postcss-load-config/4.0.1_postcss@8.4.16:
+    resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
+    engines: {node: '>= 14'}
+    peerDependencies:
+      postcss: '>=8.0.9'
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      postcss:
+        optional: true
+      ts-node:
+        optional: true
+    dependencies:
+      lilconfig: 2.0.6
+      postcss: 8.4.16
+      yaml: 2.1.1
+    dev: true
 
   /postcss-nested/6.0.0_postcss@8.4.16:
     resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
@@ -9540,12 +9786,6 @@ packages:
   /prettier/2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
-    hasBin: true
-    dev: true
-
-  /prettier/3.0.3:
-    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
-    engines: {node: '>=14'}
     hasBin: true
     dev: true
 
@@ -10072,11 +10312,23 @@ packages:
     dependencies:
       glob: 7.2.0
 
-  /rollup/3.9.1:
-    resolution: {integrity: sha512-GswCYHXftN8ZKGVgQhTFUJB/NBXxrRGgO2NCy6E8s1rwEJ4Q9/VttNqcYfEvx4dTo4j58YqdC3OVztPzlKSX8w==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+  /rollup/4.4.1:
+    resolution: {integrity: sha512-idZzrUpWSblPJX66i+GzrpjKE3vbYrlWirUHteoAbjKReZwa0cohAErOYA5efoMmNCdvG9yrJS+w9Kl6csaH4w==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
+      '@rollup/rollup-android-arm-eabi': 4.4.1
+      '@rollup/rollup-android-arm64': 4.4.1
+      '@rollup/rollup-darwin-arm64': 4.4.1
+      '@rollup/rollup-darwin-x64': 4.4.1
+      '@rollup/rollup-linux-arm-gnueabihf': 4.4.1
+      '@rollup/rollup-linux-arm64-gnu': 4.4.1
+      '@rollup/rollup-linux-arm64-musl': 4.4.1
+      '@rollup/rollup-linux-x64-gnu': 4.4.1
+      '@rollup/rollup-linux-x64-musl': 4.4.1
+      '@rollup/rollup-win32-arm64-msvc': 4.4.1
+      '@rollup/rollup-win32-ia32-msvc': 4.4.1
+      '@rollup/rollup-win32-x64-msvc': 4.4.1
       fsevents: 2.3.2
     dev: true
 
@@ -10332,6 +10584,7 @@ packages:
   /source-map/0.5.7:
     resolution: {integrity: sha512-LbrmJOMUSdEVxIKvdcJzQC+nQhe8FUZQTXQy6+I75skNgn3OoQ0DZA8YnFa7gp8tqtL3KPf1kmo0R5DoApeSGQ==}
     engines: {node: '>=0.10.0'}
+    dev: false
 
   /source-map/0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
@@ -10624,6 +10877,7 @@ packages:
 
   /stylis/4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
+    dev: false
 
   /sucrase/3.20.3:
     resolution: {integrity: sha512-azqwq0/Bs6RzLAdb4dXxsCgMtAaD2hzmUr4UhSfsxO46JFPAwMnnb441B/qsudZiS6Ylea3JXZe3Q497lsgXzQ==}
@@ -10911,7 +11165,7 @@ packages:
       yargs-parser: 20.2.9
     dev: false
 
-  /ts-node/10.9.1_bdgp3l2zgaopogaavxusmetvge:
+  /ts-node/10.9.1_7f2qetuip7jtrdjk4fzgtka2r4:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -10937,7 +11191,7 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 4.9.5
+      typescript: 5.2.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
@@ -10989,14 +11243,15 @@ packages:
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
 
-  /tsup/6.5.0_pr4r723stfqz5eidoh2flacvd4:
-    resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
-    engines: {node: '>=14'}
+  /tsup/7.3.0_stu5ou6gqtrcue4spr373q73vq:
+    resolution: {integrity: sha512-Ja1eaSRrE+QarmATlNO5fse2aOACYMBX+IZRKy1T+gpyH+jXgRrl5l4nHIQJQ1DoDgEjHDTw8cpE085UdBZuWQ==}
+    engines: {node: '>=18'}
+    deprecated: Breaking node 16
     hasBin: true
     peerDependencies:
       '@swc/core': ^1
       postcss: ^8.4.12
-      typescript: ^4.1.0
+      typescript: '>=4.5.0'
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -11005,35 +11260,36 @@ packages:
       typescript:
         optional: true
     dependencies:
-      bundle-require: 3.1.2_esbuild@0.15.18
+      bundle-require: 4.0.2_esbuild@0.19.5
       cac: 6.7.12
       chokidar: 3.5.3
       debug: 4.3.4
-      esbuild: 0.15.18
+      esbuild: 0.19.5
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       postcss: 8.4.16
-      postcss-load-config: 3.1.4_postcss@8.4.16
+      postcss-load-config: 4.0.1_postcss@8.4.16
       resolve-from: 5.0.0
-      rollup: 3.9.1
+      rollup: 4.4.1
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
-      typescript: 4.9.5
+      typescript: 5.2.2
     transitivePeerDependencies:
       - supports-color
       - ts-node
     dev: true
 
-  /tsup/6.5.0_typescript@4.9.5:
-    resolution: {integrity: sha512-36u82r7rYqRHFkD15R20Cd4ercPkbYmuvRkz3Q1LCm5BsiFNUgpo36zbjVhCOgvjyxNBWNKHsaD5Rl8SykfzNA==}
-    engines: {node: '>=14'}
+  /tsup/7.3.0_typescript@5.2.2:
+    resolution: {integrity: sha512-Ja1eaSRrE+QarmATlNO5fse2aOACYMBX+IZRKy1T+gpyH+jXgRrl5l4nHIQJQ1DoDgEjHDTw8cpE085UdBZuWQ==}
+    engines: {node: '>=18'}
+    deprecated: Breaking node 16
     hasBin: true
     peerDependencies:
       '@swc/core': ^1
       postcss: ^8.4.12
-      typescript: ^4.1.0
+      typescript: '>=4.5.0'
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -11042,34 +11298,34 @@ packages:
       typescript:
         optional: true
     dependencies:
-      bundle-require: 3.1.2_esbuild@0.15.18
+      bundle-require: 4.0.2_esbuild@0.19.5
       cac: 6.7.12
       chokidar: 3.5.3
       debug: 4.3.4
-      esbuild: 0.15.18
+      esbuild: 0.19.5
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 3.1.4
+      postcss-load-config: 4.0.1
       resolve-from: 5.0.0
-      rollup: 3.9.1
+      rollup: 4.4.1
       source-map: 0.8.0-beta.0
       sucrase: 3.20.3
       tree-kill: 1.2.2
-      typescript: 4.9.5
+      typescript: 5.2.2
     transitivePeerDependencies:
       - supports-color
       - ts-node
     dev: true
 
-  /tsutils/3.21.0_typescript@4.9.5:
+  /tsutils/3.21.0_typescript@5.2.2:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
     peerDependencies:
       typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
     dependencies:
       tslib: 1.14.1
-      typescript: 4.9.5
+      typescript: 5.2.2
     dev: true
 
   /tty-table/2.8.13:
@@ -11231,6 +11487,12 @@ packages:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+
+  /typescript/5.2.2:
+    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
 
   /unbox-primitive/1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}

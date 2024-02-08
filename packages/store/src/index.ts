@@ -93,3 +93,4 @@ export const createStore = ((createState) =>
   createState ? createStoreImpl(createState) : createStoreImpl) as CreateStore
 
 export { shallow } from './shallow'
+export { deepEqual } from './deep-equal'

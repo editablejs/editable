@@ -9,7 +9,7 @@ type EventEndingKey<
   Key extends keyof Set = keyof Set,
 > = Key extends `${Needle}${infer _X}` ? (_X extends `` ? never : _X) : never
 
-type EndingKey = EventEndingKey<Editable, 'on'>
+type EndingKey = EventEndingKey<Omit<Editable, "on" | "once">, 'on'>
 
 export type EventType = Lowercase<EndingKey>
 

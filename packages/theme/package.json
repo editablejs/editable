@@ -1,0 +1,69 @@
+{
+  "name": "@editablejs/theme",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist/**"
+  ],
+  "babelMacros": {
+    "twin": {
+      "css": "@emotion/css",
+      "styled": "@emotion/css",
+      "global": {
+        "import": "injectGlobal",
+        "from": "@emotion/css"
+      }
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{json,ts,tsx,js,jsx}\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@editablejs/dom-utils": "workspace:*",
+    "@editablejs/store": "workspace:*",
+    "@emotion/css": "11.11.2",
+    "@floating-ui/dom": "1.5.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "eslint-config-editable": "workspace:*",
+    "jest": "^27.5.1",
+    "jest-presets": "workspace:*",
+    "prettier-config": "workspace:*",
+    "tailwind-config": "workspace:*",
+    "tailwindcss": "^3.2.4",
+    "tsconfig": "workspace:*",
+    "tsup": "^7.x",
+    "tsup-config": "workspace:*",
+    "twin.macro": "3.1.0",
+    "typescript": "^5.x"
+  },
+  "lint-staged": {
+    "src/**/*.{json,ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "jest-presets/jest/node"
+  }
+}

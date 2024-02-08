@@ -1,6 +1,6 @@
 import merge from 'lodash.merge'
 import { Editor } from '@editablejs/models'
-import { StoreApi, createStore } from '../store'
+import { StoreApi, createStore } from '@editablejs/store'
 export interface Locale {
   locale: string
 }

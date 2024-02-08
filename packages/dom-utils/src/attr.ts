@@ -1,10 +1,10 @@
-type AttrValue = string | boolean | number
+type AttrValue = string | boolean | number | null | undefined
 
-export function attr(node: Element & { setAttribute: Function }, attribute: string, value?: AttrValue) {
+export function setAttr(node: Element & { setAttribute: Function }, attribute: string, value?: AttrValue | object, force: boolean = false) {
   const value_string = String(value);
   if (value == null) {
     node.removeAttribute(attribute);
-  } else if (node.getAttribute(attribute) !== value_string) {
+  } else if (force || node.getAttribute(attribute) !== value_string) {
     node.setAttribute(attribute, value_string);
   }
 }
@@ -39,7 +39,7 @@ export function setAttributes(node: HTMLElement & ElementCSSInlineStyle, attribu
       // @ts-ignore
 			node[key] = String(value);
 		} else {
-			attr(node, key, String(value));
+			setAttr(node, key, String(value));
 		}
 	}
 }

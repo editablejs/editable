@@ -1,3 +1,4 @@
+export type HTMLElementTagName = keyof HTMLElementTagNameMap
 export function append(target: Node, node: Node) {
 	target.appendChild(node);
 }
@@ -12,26 +13,32 @@ export function detach(node: Node) {
 	}
 }
 
-export function element<T extends keyof HTMLElementTagNameMap>(name: T, options: ElementCreationOptions = {} ): HTMLElementTagNameMap[T] {
+function element<T extends HTMLElementTagName>(name: T, options?: ElementCreationOptions): HTMLElementTagNameMap[T]
+function element<T = HTMLElement>(name: string, options?: ElementCreationOptions): T
+function element<T extends HTMLElementTagName>(name: T | string, options: ElementCreationOptions = {} ): HTMLElementTagNameMap[T] | HTMLElement {
 	return document.createElement(name, options);
 }
 
-export function fragment() {
+export {
+   element as createElement
+ }
+
+export function createFragment() {
   return document.createDocumentFragment();
 }
 
-export function svg(name: keyof SVGElementTagNameMap) {
+export function createSvg(name: keyof SVGElementTagNameMap) {
 	return document.createElementNS('http://www.w3.org/2000/svg', name);
 }
 
-export function text(data: string) {
+export function createText(data: string) {
 	return document.createTextNode(data);
 }
 
-export function space() {
-	return text(' ');
+export function createSpace() {
+	return createText(' ');
 }
 
-export function empty() {
-	return text('');
+export function createEmpty() {
+	return createText('');
 }

@@ -1,16 +1,28 @@
-import { attr, element } from "@editablejs/dom-utils";
+import { ComponentState, CreateFunctionComponent, createComponent } from "@editablejs/dom-utils";
+import { EDITOR_TO_SHADOW } from "../utils/weak-maps";
+import { Editor } from "@editablejs/models";
 
-export const createShadow = () => {
-  const container = element('div')
-  attr(container, 'style', "position:absolute;top:0;left:0;z-index:2;")
-  container.attachShadow({ mode: 'open' })
-  return {
-    shadowContainer: container,
-    shadowRoot: container.shadowRoot as ShadowRoot
-  }
+export interface ShadowProps extends ComponentState {
+  editor: Editor
 }
 
-export interface CreateShadowBlockOptions {
+export const createShadow: CreateFunctionComponent<ShadowProps> = (props, ref) => {
+  const container = createComponent('div', {
+    state: props,
+    ref,
+    mount() {
+      this.setAttribute("style", "position:absolute;top:0;left:0;z-index:1;")
+      this.attachShadow({ mode: 'open' })
+
+      this.subscribe((state) => {
+        EDITOR_TO_SHADOW.set(state.editor, this.shadowRoot)
+      }, ['editor'])
+    },
+  })
+  return container
+}
+
+export interface ShadowBlockProps extends ComponentState {
   position: {
     top: number
     left: number
@@ -20,14 +32,44 @@ export interface CreateShadowBlockOptions {
     height: number
   }
   bgColor?: string
-  style?: string
+  opacity?: number
 }
 
-export const createShadowBlock = (options: CreateShadowBlockOptions) => {
-  const container = element('div')
-  const { position, size, bgColor, style } = options
-  const { top, left } = position
-  const { width, height } = size
-  attr(container, 'style', `position:absolute;top:${top}px;left:${left}px;width:${width}px;height:${height}px;background-color:${bgColor ?? 'transparent'};z-index:1;${style ?? ''}`)
-  return container
+export const createShadowBlock: CreateFunctionComponent<ShadowBlockProps> = (props, ref) => {
+  return createComponent("div", {
+    ref,
+    state: props,
+    mount() {
+      this.setAttribute("style", "position:absolute;top:0;left:0;z-index:1;")
+      this.createAttributes((state) => {
+        const { bgColor } = state
+        return {
+          style: {
+            backgroundColor: bgColor ?? 'transparent',
+            opacity: state.opacity ?? '',
+          }
+        }
+      }, ['bgColor', 'opacity'])
+
+      this.createAttributes((state) => {
+        const { position } = state
+        return {
+          style: {
+            left: `${position.left}px`,
+            top: `${position.top}px`,
+          }
+        }
+      }, ['position'])
+
+      this.createAttributes((state) => {
+        const { size } = state
+        return {
+          style: {
+            width: `${size.width}px`,
+            height: `${size.height}px`
+          }
+        }
+      }, ['size'])
+    },
+  })
 }

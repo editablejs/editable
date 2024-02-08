@@ -1,5 +1,5 @@
 import merge from 'lodash.merge'
-import { StoreApi, createStore } from '../store'
+import { StoreApi, createStore } from '@editablejs/store'
 import { DOMNode, Editor } from '@editablejs/models'
 
 export interface SlotComponentProps {

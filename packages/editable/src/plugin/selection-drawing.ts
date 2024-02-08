@@ -1,7 +1,7 @@
 import { Selection, Range, Editor } from '@editablejs/models'
 import { getLineRectsByRange } from '../utils/selection'
 import { Editable } from './editable'
-import { StoreApi, createStore } from '../store'
+import { StoreApi, createStore } from '@editablejs/store'
 
 export interface SelectionDrawingStyle {
   /**

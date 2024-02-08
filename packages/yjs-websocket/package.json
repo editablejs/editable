@@ -55,9 +55,9 @@
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
-    "tsup": "^6.5.0",
+    "tsup": "^7.x",
     "tsup-config": "workspace:*",
-    "typescript": "^4.x",
+    "typescript": "^5.x",
     "yjs": "^13.5.46"
   },
   "dependencies": {

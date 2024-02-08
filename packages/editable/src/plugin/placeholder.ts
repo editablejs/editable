@@ -2,7 +2,7 @@
 
 import { DOMNode, Editor, Node, NodeEntry, Range } from '@editablejs/models';
 import { Editable } from './editable';
-import { StoreApi, createStore } from '../store';
+import { StoreApi, createStore } from '@editablejs/store';
 import { Readonly } from './readonly';
 
 export interface RenderPlaceholderProps {

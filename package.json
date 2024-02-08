@@ -27,7 +27,7 @@
     "eslint-config-editable": "workspace:*",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
-    "prettier": "latest",
+    "prettier": "2.8.8",
     "prettier-config": "workspace:*",
     "tailwind-config": "workspace:*",
     "turbo": "latest"

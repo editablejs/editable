@@ -1,56 +1,18 @@
 import { BaseSelection, Range } from "@editablejs/models";
 import { Editable } from "../plugin/editable";
-import { Focused } from "../plugin/focused";
+import { Focused, FocusedStore } from "../plugin/focused";
 import { Readonly } from "../plugin/readonly";
-import { SelectionDrawing } from "../plugin/selection-drawing";
-import { createShadowBlock } from "./shadow";
-import { append, detach, element, listen, setAttributes } from "@editablejs/dom-utils";
+import { SelectionDrawing, SelectionDrawingStore } from "../plugin/selection-drawing";
+import { ShadowBlockProps, createShadowBlock } from "./shadow";
+import { ComponentState, CreateFunctionComponent, append, createComponent, createComponentRef, detach, setAttr, setAttributes, withComponentStore } from "@editablejs/dom-utils";
 import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT, IS_TOUCHING } from "../utils/weak-maps";
 import { composeEventHandlers } from "../utils/event";
 
-export interface CreateInputOptions {
-  container: HTMLElement | ShadowRoot
-}
-
-export const createInput = (editor: Editable, options: CreateInputOptions) => {
-
-  const readonlyStore = Readonly.getStore(editor)
-  const focusedStore = Focused.getStore(editor)
-  const selectionStore = SelectionDrawing.getStore(editor)
-
-  const getState = () => {
-    return {
-      readonly: Readonly.getState(editor),
-      focused: Focused.getState(editor),
-      selection: selectionStore.getState().selection
-    }
-  }
-
-  const readonlyUnsubscribe = readonlyStore.subscribe(() => {
-    updateInputState(editor, getState())
-  })
-
-  const focusedUnsubscribe = focusedStore.subscribe(() => {
-    updateInputState(editor, getState())
-  })
-
-  createInputComponent(editor, options)
-  updateInputState(editor, getState())
-
-  return () => {
-    readonlyUnsubscribe()
-    focusedUnsubscribe()
-    detachInputComponent(editor)
-  }
-}
 
 type UpdateInputState = {
-  readonly: boolean,
   focused: boolean
   selection: BaseSelection
 }
-
-const EDITOR_TO_BLOCK_WEAK_MAP = new WeakMap<Editable, HTMLElement>()
 
 const getSelectionRect = (editor: Editable, state: UpdateInputState) => {
   const { focused, selection } = state
@@ -66,33 +28,11 @@ const getSelectionRect = (editor: Editable, state: UpdateInputState) => {
   }
   return rect
 }
-
-const updateInputState = (editor: Editable, state: UpdateInputState) => {
-  const rect = getSelectionRect(editor, state)
-  const textarea = EDITOR_TO_INPUT.get(editor)
-  const block = EDITOR_TO_BLOCK_WEAK_MAP.get(editor)
-  if(!textarea || !block) return
-  textarea.readOnly = state.readonly
-  block.style.top = rect ? `${rect.top}px` : '0px'
-  block.style.left = rect ? `${rect.left}px` : '0px'
-  block.style.height = rect ? `${rect.height}px` : '0px'
+export interface CreateInputOptions extends ComponentState {
+  editor: Editable
 }
 
-const detachInputComponent = (editor: Editable) => {
-  const textarea = EDITOR_TO_INPUT.get(editor)
-  if(textarea) {
-    detach(textarea)
-  }
-
-  const block = EDITOR_TO_BLOCK_WEAK_MAP.get(editor)
-  if(block) {
-    detach(block)
-  }
-}
-
-const createInputComponent = (editor: Editable, options: CreateInputOptions) => {
-
-  detachInputComponent(editor)
+export const createInput: CreateFunctionComponent<CreateInputOptions> = ({ editor }) => {
 
   const handleKeydown = (event: KeyboardEvent) => {
     if (Editable.isComposing(editor) && event.isComposing === false) {
@@ -163,6 +103,35 @@ const createInputComponent = (editor: Editable, options: CreateInputOptions) => 
     )(event)
   }
 
+  const textarea = createComponent('textarea', {
+    mount() {
+
+      EDITOR_TO_INPUT.set(editor, this)
+
+      setAttributes(this, {
+        rows: 1,
+        style: 'font-size:inherit;line-height:1px;padding:0;white-space:nowrap;width:1em;overflow:auto;resize:vertical;',
+      })
+
+      const unsubscribe = Readonly.subscribe(editor, (readonly) => {
+        this.readOnly = readonly
+      })
+
+      this.createEvent('keydown', () => handleKeydown, [])
+      this.createEvent('keyup', () => handleKeyup, [])
+      this.createEvent('beforeinput', () => handleBeforeInput, [])
+      this.createEvent('input', () => handleInput, [])
+      this.createEvent('compositionstart', () => handleCompositionStart, [])
+      this.createEvent('compositionend', () => handleCompositionEnd, [])
+      this.createEvent('blur', () => handleBlur, [])
+      this.createEvent('focus', () => handleFocus, [])
+      this.createEvent('paste', () => handlePaste, [])
+
+      return () => {
+        unsubscribe()
+      }
+    },
+  })
 
   const block = createShadowBlock({
     position: {
@@ -173,27 +142,27 @@ const createInputComponent = (editor: Editable, options: CreateInputOptions) => 
       width: 1,
       height: 0,
     },
-    style: `opacity:0;outline:none;caret-color:transparent;overflow:hidden;`
+    children: textarea,
   })
-  const textarea = element('textarea')
-  setAttributes(textarea, {
-    rows: 1,
-    style: 'font-size:inherit;line-height:1px;padding:0;white-space:nowrap;width:1em;overflow:auto;resize:vertical;',
-  })
-  listen(textarea, 'keydown', handleKeydown)
-  listen(textarea, 'keyup', handleKeyup)
-  listen(textarea, 'beforeinput', handleBeforeInput)
-  listen(textarea, 'input', handleInput)
-  listen(textarea, 'compositionstart', handleCompositionStart)
-  listen(textarea, 'compositionend', handleCompositionEnd)
-  listen(textarea, 'blur', handleBlur)
-  listen(textarea, 'focus', handleFocus)
-  listen(textarea, 'paste', handlePaste)
 
-  append(block, textarea)
+  setAttr(block, 'style', `opacity:0;outline:none;caret-color:transparent;overflow:hidden;`)
 
-  EDITOR_TO_INPUT.set(editor, textarea)
-  EDITOR_TO_BLOCK_WEAK_MAP.set(editor, block)
+  withComponentStore<ShadowBlockProps, FocusedStore & SelectionDrawingStore>(block, ({ focused, selection }) => {
+    const rect = getSelectionRect(editor, {
+      focused,
+      selection
+    })
+    return {
+      position: {
+        top: rect ? rect.top : 0,
+        left: rect ? rect.left : 0,
+      },
+      size: {
+        width: rect ? rect.width : 1,
+        height: rect ? rect.height : 0,
+      }
+    }
+  }, [Focused.getStore(editor), SelectionDrawing.getStore(editor)])
 
-  append(options.container, block)
+  return block
 }

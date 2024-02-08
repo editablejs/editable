@@ -44,9 +44,9 @@
     "react": "^18.x",
     "react-dom": "^18.x",
     "tsconfig": "workspace:*",
-    "tsup": "^6.5.0",
+    "tsup": "^7.x",
     "tsup-config": "workspace:*",
-    "typescript": "^4.x"
+    "typescript": "^5.x"
   },
   "peerDependencies": {
     "@editablejs/editor": "workspace:*",

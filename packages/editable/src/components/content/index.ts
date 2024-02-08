@@ -1,5 +1,5 @@
 import { Descendant, getDefaultView } from "@editablejs/models";
-import { append, attr, detach, element } from "@editablejs/dom-utils";
+import { append, setAttr, detach, createElement, createComponent } from "@editablejs/dom-utils";
 import { Editable } from "../../plugin/editable";
 import { EDITOR_TO_WINDOW, EDITOR_TO_ELEMENT, EDITOR_TO_SHADOW, NODE_TO_ELEMENT, ELEMENT_TO_NODE } from "../../utils/weak-maps";
 import { createContainerEvent, createGlobalEvent, detachEventListeners } from "./event";
@@ -27,17 +27,17 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
     throw new Error('window is undefined')
   }
 
-  const container = element('div')
+  const container = createElement('div')
 
   const focusedStore = Readonly.getStore(editor)
 
   const updateReadonly = () => {
-    attr(container, 'role', Readonly.getState(editor) ? undefined : 'textbox')
+    setAttr(container, 'role', Readonly.getState(editor) ? undefined : 'textbox')
   }
   updateReadonly()
   const unsubscribeFocused = focusedStore.subscribe(updateReadonly)
 
-  attr(container, 'style', 'outline:none;white-space:pre-wrap;word-break:break-word;user-select:none;cursor:text;overflow-wrap:break-word')
+  setAttr(container, 'style', 'outline:none;white-space:pre-wrap;word-break:break-word;user-select:none;cursor:text;overflow-wrap:break-word')
 
   append(root, container)
 
@@ -58,16 +58,30 @@ export const createContent = (editor: Editable, root: HTMLElement, options: Crea
   const {children, destroy: destroyChildren } = createChildren(editor, {})
   append(container, children)
 
-  const { shadowContainer, shadowRoot} = createShadow()
+  const shadowSelectionRoot = createComponent('div', {
+    state: {
+      children: [
+        createInput({ editor })
+      ]
+    },
+    mount() {
+      this.setAttribute('style', 'pointer-events:none;')
+    }
+  })
+
+  const shadowContainer = createShadow({
+    editor,
+    children() {
+      return shadowSelectionRoot
+    },
+  })
   root.style.position = 'relative'
-  EDITOR_TO_SHADOW.set(editor, shadowRoot)
   append(root, shadowContainer)
-  const shadowSelectionRoot = element('div')
-  attr(shadowSelectionRoot, 'style', 'pointer-events:none;')
-  append(shadowRoot, shadowSelectionRoot)
+
   const unsubscribeSelectionDrawing = createSelectionDrawing(editor, { container: shadowSelectionRoot })
   const unsubscribeSelectionCaret = createSelectionCaret(editor, { container: shadowSelectionRoot })
-  const unsubscribeInput = createInput(editor, { container: shadowSelectionRoot })
+  const input = createInput({ editor })
+
   const unsubscribeDragCaret = createDragCaret(editor, { container: shadowSelectionRoot })
   return () => {
     editor.off('rendercomplete', handleRenderComplete)

@@ -25,7 +25,7 @@
     "prettier-config": "workspace:*",
     "ts-node": "10.9.1",
     "tsconfig": "workspace:*",
-    "typescript": "^4.x",
+    "typescript": "^5.x",
     "yjs": "^13.5.46"
   },
   "dependencies": {

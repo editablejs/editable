@@ -8,7 +8,7 @@ import {
   Range,
   Text,
 } from '@editablejs/models';
-import { StoreApi, createStore } from '../store';
+import { StoreApi, createStore } from '@editablejs/store';
 
 // Define interface for properties passed to the render function of a text decoration
 export interface DecorateRenderProps<T = Node> {

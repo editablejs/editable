@@ -3,7 +3,7 @@ import { direction } from 'direction'
 import { Editor, Node, Path, Range, Element as SlateElement } from '@editablejs/models'
 import { Placeholder, PlaceholderRender } from "../plugin/placeholder";
 import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "../utils/constants";
-import { append, attr, element as createDOMElement, createRef } from '@editablejs/dom-utils'
+import { append, setAttr, createElement as createDOMElement, createRef } from '@editablejs/dom-utils'
 import { createText } from "./text";
 import { Decorate } from "../plugin/decorate";
 import { createNode } from "./node";
@@ -53,7 +53,7 @@ export const createElement = (editor: Editable, options: CreateElementOptions) =
     attributes[DATA_EDITABLE_VOID] = true
 
     const node = createDOMElement(isInline ? 'span' : 'div')
-    attr(node, 'style', 'height: 0; outline: none; color: transparent;')
+    setAttr(node, 'style', 'height: 0; outline: none; color: transparent;')
 
     const [[text]] = Node.texts(element)
 

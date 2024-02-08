@@ -3,9 +3,9 @@ import { PlaceholderRender } from '../plugin/placeholder'
 import { Editable } from '../plugin/editable'
 import { Decorate, TextDecorate } from '../plugin/decorate'
 import { createLeaf } from './leaf'
-import { append, attr, detach, element, insert } from '@editablejs/dom-utils'
+import { append, setAttr, detach, createElement, insert } from '@editablejs/dom-utils'
 import { DATA_EDITABLE_NODE } from '../utils/constants'
-import { shallow } from '../store'
+import { shallow } from '@editablejs/store'
 import { associateNodeAndDOM, updateNodeAndDOM } from '../utils/associate'
 
 export interface CreateTextOptions {
@@ -77,9 +77,9 @@ const createLeafWithDecorate = (editor: Editable, options: CreateLeafWithDecorat
 export const createText = (editor: Editable, options: CreateTextOptions) => {
   const { isLast, parent, text, renderPlaceholder, path } = options
 
-  const textSpan = element('span')
+  const textSpan = createElement('span')
 
-  attr(textSpan, DATA_EDITABLE_NODE, 'text')
+  setAttr(textSpan, DATA_EDITABLE_NODE, 'text')
 
   associateNodeAndDOM(editor, text, textSpan)
 

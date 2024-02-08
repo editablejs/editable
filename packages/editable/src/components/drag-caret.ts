@@ -4,7 +4,7 @@ import { Editable } from "../plugin/editable"
 import { SelectionDrawing, SelectionDrawingStore } from "../plugin/selection-drawing"
 import { createShadowBlock } from "./shadow"
 import { append, detach } from "@editablejs/dom-utils"
-import { shallow } from "../store"
+import { shallow } from "@editablejs/store"
 
 export interface CreateDragCaretOptions {
   container: HTMLElement | ShadowRoot

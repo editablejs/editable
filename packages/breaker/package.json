@@ -41,8 +41,8 @@
     "eslint-config-editable": "workspace:*",
     "prettier-config": "workspace:*",
     "tsconfig": "workspace:*",
-    "tsup": "^6.5.0",
-    "typescript": "^4.x"
+    "tsup": "^7.x",
+    "typescript": "^5.x"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [
