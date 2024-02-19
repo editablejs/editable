@@ -145,7 +145,7 @@ export const HTMLDeserializer = {
               // 设置当前newCell的colspan和rowspan都为1
               newCell.setAttribute('colspan', '1')
               newCell.setAttribute('rowspan', '1')
-              // 设置当前newCell的文本为displaynone
+              // 设置当前newCell的文本为空
               newCell.textContent = '';
             }
           }
