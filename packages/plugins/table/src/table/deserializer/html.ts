@@ -44,7 +44,7 @@ export const withTableHTMLDeserializerTransform: HTMLDeserializerWithTransform<
           let colspan = cell.colSpan;
           for (let j = 0; j < colspan; j++) {
             let col = document.createElement('col');
-            let width = colspan > 1 ? 90 : cell.offsetWidth;
+            let width = cell.offsetWidth;
             col.style.width = `${width}px`;
             colgroup.appendChild(col);
           }
