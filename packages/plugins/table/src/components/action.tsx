@@ -199,23 +199,6 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
         }
         newColsWidth[start] = width
         Transforms.setNodes<Grid>(editor, { colsWidth: newColsWidth }, { at: path })
-        // // 这里需要循环遍历每一列的高度RowStore.getContentHeight(row)，并重新更新列高度 RowStore.setContentHeight(row, contentHeight) 和Transforms.setNodes<TableRow>(editor, { height: h }, { at: path.concat(start) })
-        // const newGrid = Grid.above(editor, path)
-        // if (!newGrid) return
-        // const { children: rows } = newGrid[0]
-        // let contentHeight = 0
-        // for (let i = 0; i < rows.length; i++) {
-        //   const row = rows[i]
-        //   const ch = RowStore.getContentHeight(row)
-        //   const child = Editable.toDOMNode(editor, row).firstElementChild
-        //   if (!child) continue
-        //   const rect = child.getBoundingClientRect()
-        //   contentHeight = Math.max(contentHeight, rect.height + 2, minRowHeight)
-        //   if (ch !== contentHeight) {
-        //     RowStore.setContentHeight(row, contentHeight)
-        //     Transforms.setNodes<TableRow>(editor, { height: contentHeight }, { at: path.concat(i) })
-        //   }
-        // }
       } else if (type === TYPE_ROW) {
         const row = table.children[start]
         const { height, children: cells } = row
@@ -316,7 +299,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
           borderHeightArray.push(height);
         }
       });
-      // 2024/01/19 10:42:47 @guoxiaona/GW00234847：检测heightArray和borderHeightArray对应下标的数值相差是否在5以内，如果是，则不做任何处理，否则更新当前行对应的高度
+      // 2024/01/19 10:42:47 @guoxiaona/GW00234847：检测heightArray和borderHeightArray对应下标的数值相差是否在10(行高大于10)以内，如果是，则不做任何处理，否则更新当前行对应的高度
       let ifRowHeightUpdated = false;
       heightArray.forEach((item, index) => {
         const borderHeight = borderHeightArray[index];
@@ -357,7 +340,7 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
           const nextNextSibling = item.nextElementSibling.nextElementSibling;
           const nextNextSiblingStyle = nextNextSibling.style;
           nextNextSiblingStyle.height = `${
-            heightArrayMapAllPrev[heightArrayMapAllPrev.length - 1] + 16
+            heightArrayMapAllPrev[heightArrayMapAllPrev.length - 1] + 9
           }px`;
         });
       }
