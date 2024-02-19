@@ -70,9 +70,11 @@ const TaskElement = ({ checked, onChange }: TaskProps) => {
   )
 }
 
-// 不期望任务列表选中后出现下划线，去掉 &[data-task-checked='true'] {下面的 ${tw`line-through`}
+// 如果不期望任务列表选中后出现下划线，去掉 &[data-task-checked='true'] {下面的 ${tw`line-through`}，
+// 本次revert，保留原项目设计，后期通过脚本实现调整
 const StyledTask = styled(ListStyles)`
   &[data-task-checked='true'] {
+      ${tw`line-through`}
 
       ${TaskCheckboxInnerStyles} {
         background-color: ${theme('colors.primary')};
