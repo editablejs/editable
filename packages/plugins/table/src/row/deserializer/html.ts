@@ -5,8 +5,8 @@ import {
 import { Editor, isDOMHTMLElement } from '@editablejs/models'
 import { TableCell } from '../../cell'
 import { TABLE_ROW_KEY } from '../constants'
-import { getOptions } from '../options'
 import { TableRow } from '../interfaces/table-row'
+import { getOptions } from '../options'
 
 export interface TableRowHTMLDeserializerOptions extends HTMLDeserializerOptions {
   editor: Editor
@@ -17,7 +17,7 @@ export const withTableRowHTMLDeserializerTransform: HTMLDeserializerWithTransfor
 > = (next, serializer, { editor }) => {
   return (node, options = {}) => {
     const { text } = options
-    if (isDOMHTMLElement(node) && ['TR', 'TH'].includes(node.tagName)) {
+    if (isDOMHTMLElement(node) && ['TR'].includes(node.tagName)) {
       const options = getOptions(editor)
       const h = (node as HTMLElement).style.height
       const height = parseInt(!h ? '0' : h, 10)

@@ -1,7 +1,16 @@
-import { cancellablePromise, Editable, useCancellablePromises, Slot } from '@editablejs/editor'
-import { Transforms, Grid, Editor } from '@editablejs/models'
-import * as React from 'react'
+import { Editable, Slot, cancellablePromise, useCancellablePromises } from '@editablejs/editor'
+import { Editor, Grid, Transforms } from '@editablejs/models'
 import { Icon } from '@editablejs/ui'
+import * as React from 'react'
+import { TABLE_CELL_KEY } from '../cell/constants'
+import { defaultTableMinColWidth } from '../cell/options'
+import { TableDrag, useTableDragTo, useTableDragging } from '../hooks/use-drag'
+import { TableRow } from '../row'
+import { TABLE_ROW_KEY } from '../row/constants'
+import { defaultTableMinRowHeight } from '../row/options'
+import { RowStore } from '../row/store'
+import { useTableOptions } from '../table/options'
+import { adaptiveExpandColumnWidthInContainer } from '../table/utils'
 import {
   ColsInsertIconStyles,
   ColsInsertLineStyles,
@@ -16,15 +25,6 @@ import {
   RowsSplitLineStyles,
   RowsSplitStyles,
 } from './styles'
-import { TableDrag, useTableDragging, useTableDragTo } from '../hooks/use-drag'
-import { TABLE_CELL_KEY } from '../cell/constants'
-import { TableRow } from '../row'
-import { TABLE_ROW_KEY } from '../row/constants'
-import { useTableOptions } from '../table/options'
-import { defaultTableMinColWidth } from '../cell/options'
-import { defaultTableMinRowHeight } from '../row/options'
-import { adaptiveExpandColumnWidthInContainer } from '../table/utils'
-import { RowStore } from '../row/store'
 
 const TYPE_COL = 'col'
 const TYPE_ROW = 'row'
@@ -229,13 +229,126 @@ const SplitActionDefault: React.FC<TableActionProps> = ({
   const cancellablePromisesApi = useCancellablePromises()
 
   const handleDragSplitUp = React.useCallback(() => {
+    if (!dragRef.current) return
+    const { type: type2 } = dragRef.current
+    const path = Editable.findPath(editor, table)
+
+    if (type2 === TYPE_COL) {
+      const newGrid = Grid.above(editor, path)
+      if (!newGrid) return
+      const { children: rows } = newGrid[0]
+      let contentHeight = 0
+      const heightArray: number[] = []
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        const trRow = Editable.toDOMNode(editor, row)
+        // 2024/01/19 10:40:43 @guoxiaona/GW00234847：遍历trRow,判断所有子元素中rowSpan为1且colSpan为1，且style中的display不为none的子元素
+        const trRowChildrenArray = Array.from(trRow.children)
+        let child: any = null
+        trRowChildrenArray.forEach((item: any) => {
+          const rowspan = item.rowSpan
+          const colspan = item.colSpan
+          const style = item.style
+          const display = style.display
+          if (rowspan === 1 && colspan === 1 && display !== 'none') {
+            child = item
+          }
+        })
+        if (!child) continue
+        const rect = child.getBoundingClientRect()
+        contentHeight = Math.max(rect.height, minRowHeight)
+        heightArray.push(contentHeight)
+      }
+      // 2024/01/19 10:41:10 @guoxiaona/GW00234847：heightArray中当前数之前所有数值的和
+      const heightArrayMapOnlyPrev = heightArray.map((item, index) => {
+        let sum = 0
+        for (let i = 0; i < index; i++) {
+          sum += heightArray[i]
+        }
+        return sum
+      })
+      // 2024/01/19 10:41:27 @guoxiaona/GW00234847：heightArray中当前数和之前所有数值的和
+      const heightArrayMapAllPrev = heightArray.map((item, index) => {
+        let sum = 0
+        for (let i = 0; i <= index; i++) {
+          sum += heightArray[i]
+        }
+        return sum
+      })
+
+      const cld = Editable.toDOMNode(editor, rows[0]).firstElementChild
+
+      // 2024/01/19 10:41:43 @guoxiaona/GW00234847：获取child的祖先节点table所在的节点的父节点的第二个子节点
+      const t = cld?.closest('table')
+      const tableParent = t?.parentElement
+      const tableParentChildrenArray = Array.from(tableParent!.children)
+      const tableTopBorder = tableParentChildrenArray?.[0]
+      const tableLeftBorder = tableParentChildrenArray?.[1]
+      // 2024/01/19 10:42:07 @guoxiaona/GW00234847：获取tableLeftBorder中所有子元素带有属性data-table-row的，并按照该属性值放到一个数组中borderHeightArray
+      const borderHeightArray: number[] = []
+      const tableLeftBorderChildrenArray = Array.from(tableLeftBorder?.children)
+      const tableLeftBorderPerRowArray: any[] = []
+      tableLeftBorderChildrenArray.forEach((item: any) => {
+        if (item.dataset.tableRow) {
+          tableLeftBorderPerRowArray.push(item)
+          // 2024/01/19 10:42:28 @guoxiaona/GW00234847：需要从item中获取当前style中的height值，并放入borderHeightArray中
+          const style = item.style
+          const height = Number(style.height.replace('px', ''))
+          borderHeightArray.push(height)
+        }
+      })
+      // 2024/01/19 10:42:47 @guoxiaona/GW00234847：检测heightArray和borderHeightArray对应下标的数值相差是否在10(行高大于10)以内，如果是，则不做任何处理，否则更新当前行对应的高度
+      let ifRowHeightUpdated = false
+      heightArray.forEach((item, index) => {
+        const borderHeight = borderHeightArray[index]
+        const itemNumber = Number(item)
+        const diff = Math.abs(borderHeight - itemNumber)
+        // 2024/01/19 10:43:20 @guoxiaona/GW00234847：在这里更新当前行及后面行的高度及top值
+        if (diff > 10 || ifRowHeightUpdated) {
+          ifRowHeightUpdated = true
+          // 2024/01/19 10:43:33 @guoxiaona/GW00234847：调整当前tableLeftBorderPerRowArray[index]的高度为heightArray[index] + 1,top为heightArrayMapOnlyPrev[index]
+          const currentRow = tableLeftBorderPerRowArray[index]
+          const currentRowStyle = currentRow.style
+          currentRowStyle.height = `${itemNumber + 1}px`
+          currentRowStyle.top = `${heightArrayMapOnlyPrev[index]}px`
+          // 2024/01/19 10:43:47 @guoxiaona/GW00234847：调整当前tableLeftBorderPerRowArray[index]后面两个兄弟元素的top值为heightArrayMapAllPrev[index] - 1
+          // 2024/01/19 10:44:00 @guoxiaona/GW00234847：需要重新获取后面两个兄弟元素，这两个兄弟元素没在tableLeftBorderPerRowArray[index]里
+          const nextSibling = currentRow.nextElementSibling
+          const nextSiblingStyle = nextSibling.style
+          nextSiblingStyle.top = `${heightArrayMapAllPrev[index] - 1}px`
+          const nextNextSibling = nextSibling.nextElementSibling
+          const nextNextSiblingStyle = nextNextSibling.style
+          nextNextSiblingStyle.top = `${heightArrayMapAllPrev[index] - 1}px`
+        }
+      })
+      // 2024/01/19 10:44:13 @guoxiaona/GW00234847：如果行高调整过，则需要对应调整列的高度为heightArrayMapAllPrev的最后一个元素的值 + 9
+      if (ifRowHeightUpdated) {
+        // 2024/01/19 10:44:25 @guoxiaona/GW00234847：获取tableTopBorder中所有子元素带有属性data-table-col的子元素，并放到一个数组中tableTopBorderPerColArray
+        const tableTopBorderChildrenArray = Array.from(tableTopBorder?.children)
+        const tableTopBorderPerColArray: any[] = []
+        tableTopBorderChildrenArray.forEach((item: any) => {
+          if (item.dataset.tableCol) {
+            tableTopBorderPerColArray.push(item)
+          }
+        })
+        // 2024/01/19 10:44:46 @guoxiaona/GW00234847：遍历tableTopBorderPerColArray中每一个元素的兄弟节点的兄弟节点，找到后，将高度调整为heightArrayMapAllPrev的最后一个元素的值 + 9
+        tableTopBorderPerColArray.forEach(item => {
+          const nextNextSibling = item.nextElementSibling.nextElementSibling
+          const nextNextSiblingStyle = nextNextSibling.style
+          nextNextSiblingStyle.height = `${
+            heightArrayMapAllPrev[heightArrayMapAllPrev.length - 1] + 9
+          }px`
+        })
+      }
+    }
+
     dragRef.current = null
     isDrag.current = false
     setHover(false)
     cancellablePromisesApi.clearPendingPromises()
     window.removeEventListener('mousemove', handleDragSplitMove)
     window.removeEventListener('mouseup', handleDragSplitUp)
-  }, [cancellablePromisesApi, dragRef, handleDragSplitMove])
+  }, [cancellablePromisesApi, dragRef, handleDragSplitMove, editor, minRowHeight, table])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
