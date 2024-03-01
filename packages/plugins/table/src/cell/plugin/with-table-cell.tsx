@@ -22,7 +22,7 @@ export const withTableCell = <T extends Editable>(editor: T, options: TableCellO
         <CellStyles
           rowSpan={element.rowspan ?? 1}
           colSpan={element.colspan ?? 1}
-          style={{ ...style, display: element.span || element.children[0]?.text?.toString().indexOf('displaynone||||||') > -1 ? 'none' : '' }}
+          style={{ ...style, display: element.span ? 'none' : '' }}
           {...rest}
         >
           <CellInnerStyles>{children}</CellInnerStyles>
