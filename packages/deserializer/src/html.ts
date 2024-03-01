@@ -1,4 +1,4 @@
-import { Editor, Descendant, Element, Text, DOMNode, isDOMText } from '@editablejs/models'
+import { DOMNode, Descendant, Editor, Element, Text, isDOMText } from '@editablejs/models'
 
 export interface HTMLDeserializerOptions {
   element?: Omit<Element, 'children'>

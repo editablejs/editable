@@ -1,7 +1,7 @@
 import { Editable } from '@editablejs/editor'
 import { GridCell, Node } from '@editablejs/models'
-import { setOptions, TableCellOptions } from '../options'
 import { CellInnerStyles, CellStyles } from '../../components/styles'
+import { TableCellOptions, setOptions } from '../options'
 import { TableCellEditor } from './table-cell-editor'
 
 export const withTableCell = <T extends Editable>(editor: T, options: TableCellOptions = {}) => {
