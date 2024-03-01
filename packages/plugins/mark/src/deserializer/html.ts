@@ -29,7 +29,11 @@ export const withMarkHTMLDeserializerTransform: HTMLDeserializerWithTransform = 
       ) {
         mark.underline = true
       }
-      if (node.nodeName === 'S' || style.textDecoration === 'line-through') {
+      if (
+        node.nodeName === 'S' ||
+        node.nodeName === 'STRIKE' ||
+        style.textDecoration === 'line-through'
+      ) {
         mark.strikethrough = true
       }
       if (node.nodeName === 'CODE' || style.fontFamily === 'monospace') {
