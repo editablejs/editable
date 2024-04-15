@@ -1,4 +1,4 @@
-import { Text } from '@editablejs/models'
+import { Text } from '@editablejs/editor'
 
 export type MarkFormat = 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'sub' | 'sup'
 

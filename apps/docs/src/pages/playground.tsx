@@ -8,87 +8,9 @@ import Image from 'next/image'
 import { IconLogo } from 'components/icon/logo'
 import tw, { css, styled } from 'twin.macro'
 import {
-  EditableProvider,
-  ContentEditable,
-  useIsomorphicLayoutEffect,
-  Placeholder,
-  isTouchDevice,
-  Editable,
-  withEditable,
-  parseDataTransfer,
+  Editor, createEditor, Range, Transforms, Text, createRoot
 } from '@editablejs/editor'
-import { Editor, createEditor, Range, Transforms } from '@editablejs/models'
-import { MarkdownDeserializer } from '@editablejs/deserializer/markdown'
-import { withPlugins, useContextMenuEffect, ContextMenu, MentionUser } from '@editablejs/plugins'
-import {
-  withYHistory,
-  withYjs,
-  YjsEditor,
-  withYCursors,
-  CursorData,
-  useRemoteStates,
-} from '@editablejs/plugin-yjs'
 
-import randomColor from 'randomcolor'
-import { faker } from '@faker-js/faker'
-import { WebsocketProvider } from '@editablejs/yjs-websocket'
-import * as Y from 'yjs'
-import { withHTMLSerializerTransform } from '@editablejs/plugins/serializer/html'
-import { withTextSerializerTransform } from '@editablejs/plugins/serializer/text'
-import {
-  withMarkdownSerializerTransform,
-  withMarkdownSerializerPlugin,
-} from '@editablejs/plugins/serializer/markdown'
-import { withHTMLDeserializerTransform } from '@editablejs/plugins/deserializer/html'
-import {
-  withMarkdownDeserializerTransform,
-  withMarkdownDeserializerPlugin,
-} from '@editablejs/plugins/deserializer/markdown'
-
-import { withTitleHTMLSerializerTransform } from '@editablejs/plugin-title/serializer/html'
-import { withTitleHTMLDeserializerTransform } from '@editablejs/plugin-title/deserializer/html'
-
-import { withHistory } from '@editablejs/plugin-history'
-import { javascript as codemirrorJavascript } from '@codemirror/lang-javascript-next'
-import { html as codemirrorHtml } from '@codemirror/lang-html-next'
-import { css as codemirrorCss } from '@codemirror/lang-css-next'
-import { withYCodeBlock } from '@editablejs/plugin-codeblock/yjs'
-import {
-  ToolbarComponent,
-  useToolbarEffect,
-  withToolbar,
-  Toolbar,
-} from '@editablejs/plugin-toolbar'
-import {
-  withInlineToolbar,
-  useInlineToolbarEffect,
-  InlineToolbar,
-} from '@editablejs/plugin-toolbar/inline'
-import {
-  withSideToolbar,
-  useSideToolbarMenuEffect,
-  SideToolbar,
-} from '@editablejs/plugin-toolbar/side'
-import {
-  withSlashToolbar,
-  useSlashToolbarEffect,
-  SlashToolbar,
-} from '@editablejs/plugin-toolbar/slash'
-import { Switch, SwitchThumb, Icon, Tooltip } from '@editablejs/ui'
-import { TitleEditor, withTitle } from '@editablejs/plugin-title'
-import { HTMLDeserializer } from '@editablejs/deserializer/html'
-import { HTMLSerializer } from '@editablejs/serializer/html'
-import { createContextMenuItems } from '../configs/context-menu-items'
-import {
-  createToolbarItems,
-  defaultBackgroundColor,
-  defaultFontColor,
-} from '../configs/toolbar-items'
-import { createSideToolbarItems } from '../configs/side-toolbar-items'
-import { createInlineToolbarItems } from 'configs/inline-toolbar-items'
-import { checkMarkdownSyntax } from 'configs/check-markdown-syntax'
-import { createSlashToolbarItems } from 'configs/slash-toolbar-items'
-import { initialValue } from 'configs/initial-value'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 
@@ -100,33 +22,11 @@ const CustomStyles = createGlobalStyle({
 
 const StyledHeader = tw.div`bg-white text-base`
 
-const StyledToolbar = styled(ToolbarComponent)`
-  ${tw`flex justify-start overscroll-contain md:justify-center border border-solid border-t-gray-200 border-b-gray-200 py-2 px-2 md:px-6 overflow-auto`}
-`
-
 const StyledContainer = styled.div`
   ${tw`mt-2 md:mt-5 min-h-[80vh] bg-white shadow w-full md:w-[800px] m-auto px-4 py-4 md:px-10 md:py-16 text-sm`}
   line-height: 1.7;
 `
 
-const StyledSwitch = styled(Switch)(({ checked }) => {
-  return [
-    tw`relative shadow w-10 rounded-full bg-link`,
-    css`
-      background: ${checked ? '#44b492 !important;' : '#e2e8f0 !important;'};
-    `,
-  ]
-})
-
-const StyledSwitchThumb = styled(SwitchThumb)`
-  ${tw`block w-5 h-5 rounded-full bg-white shadow`}
-  transform: translateX(2px);
-  will-change: transform;
-
-  &[data-state='checked'] {
-    transform: translateX(20px);
-  }
-`
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -139,226 +39,90 @@ export default function Playground() {
   const router = useRouter()
   const local = router.locale
   const { t } = useTranslation()
-  const [readOnly, setReadOnly] = React.useState(false)
-  const [connected, setConnected] = React.useState(false)
-  const [connecting, setConnection] = React.useState(false)
-  const [enableCollaborative, setEnableCollaborative] = React.useState(false)
-  const document = React.useMemo(() => new Y.Doc(), [])
-  const provider = React.useMemo(() => {
-    const provider =
-      typeof window === 'undefined'
-        ? null
-        : new WebsocketProvider(process.env.YJS_SERVER, 'editable', document, {
-            connect: false,
-          })
-
-    const handleStatus = (event: Record<'status', 'connecting' | 'connected' | 'disconnected'>) => {
-      const { status } = event
-      if (status === 'connected') {
-        setConnected(true)
-        setConnection(false)
-      } else if (status === 'connecting') {
-        setConnection(true)
-      } else if (status === 'disconnected') {
-        setConnected(false)
-        setConnection(false)
-      }
-    }
-    if (provider) provider.on('status', handleStatus)
-    return provider
-  }, [document])
+  const continaerRef = React.useRef<HTMLDivElement>(null)
 
   const editor = React.useMemo(() => {
-    const { name } = faker
-    const cursorData: CursorData = {
-      color: randomColor({
-        luminosity: 'dark',
-        alpha: 1,
-        format: 'hex',
-      }),
-      name: `${name.firstName()} ${name.lastName()}`,
-      avatar: faker.image.avatar(),
-    }
-
-    const sharedType = document.get('content', Y.XmlText) as Y.XmlText
-
-    let editor = withYjs(withEditable(createEditor()), sharedType, { autoConnect: false })
-    if (provider) {
-      editor = withYCursors(editor, provider.awareness, {
-        data: cursorData,
-      })
-    }
-
-    editor = withHistory(editor)
-
-    editor = withYHistory(editor)
-
-    editor = withPlugins(editor, {
-      fontSize: { defaultSize: '14px' },
-      fontColor: { defaultColor: defaultFontColor },
-      backgroundColor: { defaultColor: defaultBackgroundColor },
-      mention: {
-        onSearch: value => {
-          return new Promise<MentionUser[]>(resolve => {
-            const users: MentionUser[] = []
-            for (let i = 0; i < 20; i++) {
-              users.push({
-                id: i,
-                name: faker.name.fullName(),
-                avatar: faker.image.avatar(),
-              })
-            }
-            resolve(users)
-          })
-        },
-        match: () => !Editor.above(editor, { match: n => TitleEditor.isTitle(editor, n) }),
-      },
-      codeBlock: {
-        languages: [
-          {
-            value: 'plain',
-            content: 'Plain text',
-          },
-          {
-            value: 'javascript',
-            content: 'JavaScript',
-            plugin: codemirrorJavascript(),
-          },
-          {
-            value: 'html',
-            content: 'HTML',
-            plugin: codemirrorHtml(),
-          },
-          {
-            value: 'css',
-            content: 'CSS',
-            plugin: codemirrorCss(),
-          },
-        ],
-      },
-    })
-    if (provider) editor = withYCodeBlock(editor, document, provider.awareness)
-    editor = withInlineToolbar(withToolbar(editor))
-
-    if (!isTouchDevice) {
-      editor = withSideToolbar(editor, {
-        match: n => !TitleEditor.isTitle(editor, n),
-      })
-    }
-
-    editor = withSlashToolbar(editor, {
-      match: () => !Editor.above(editor, { match: n => TitleEditor.isTitle(editor, n) }),
-    })
-
-    editor = withTitle(editor)
+    let editor = createEditor()
 
     return editor
-  }, [document, provider])
+  }, [])
 
-  useIsomorphicLayoutEffect(() => {
-    const unsubscribe = Placeholder.subscribe(editor, ([node]) => {
-      if (
-        Editable.isFocused(editor) &&
-        Editor.isBlock(editor, node) &&
-        !TitleEditor.isTitle(editor, node)
-      )
-        return () => t('playground.editor.block-placeholder')
+  React.useEffect(() => {
+    if (!continaerRef.current) return
+    const ummount = createRoot(editor, continaerRef.current, {
+      initialValue: [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              text: 'Hello World',
+            },
+          ],
+        },
+        {
+          type: 'paragraph',
+          children: [
+            {
+              text: 'A line of text in a paragraph.',
+            },
+          ],
+        },
+      ],
     })
-    return () => unsubscribe()
-  }, [editor])
-
-  // Connect editor and provider in useEffect to comply with concurrent mode
-  // requirements.
-  React.useEffect(() => {
-    if (!provider) return
-    if (enableCollaborative) {
-      provider.connect()
-    }
-    return () => {
-      provider.disconnect()
-    }
-  }, [provider, enableCollaborative])
-
-  React.useEffect(() => {
-    window.__setPreferredTheme('light')
-    if (connected) {
-      YjsEditor.connect(editor)
-    }
-    return () => YjsEditor.disconnect(editor)
-  }, [editor, connected])
-
-  useIsomorphicLayoutEffect(() => {
-    withMarkdownDeserializerPlugin(editor) // Adds a markdown deserializer plugin to the editor
-    withMarkdownSerializerPlugin(editor) // Adds a markdown serializer plugin to the editor
-    withTextSerializerTransform(editor) // Adds a text serializer transform to the editor
-    withHTMLSerializerTransform(editor) // Adds an HTML serializer transform to the editor
-    withMarkdownSerializerTransform(editor) // Adds a markdown serializer transform to the editor
-    withHTMLDeserializerTransform(editor) // Adds an HTML deserializer transform to the editor
-    withMarkdownDeserializerTransform(editor) // Adds a markdown deserializer transform to the editor
-    HTMLDeserializer.withEditor(editor, withTitleHTMLDeserializerTransform, {})
-    HTMLSerializer.withEditor(editor, withTitleHTMLSerializerTransform, {})
-    const { onPaste } = editor
-
-    editor.onPaste = event => {
-      const { clipboardData, type } = event
-      if (!clipboardData || !editor.selection) return onPaste(event)
-      const { text, fragment, html, files } = parseDataTransfer(clipboardData)
-      const isPasteText = type === 'pasteText'
-      if (!isPasteText && (fragment.length > 0 || files.length > 0)) {
-        return onPaste(event)
-      }
-      if (Range.isExpanded(editor.selection)) {
-        Transforms.delete(editor)
-      }
-      const anchor = Range.start(editor.selection)
-      onPaste(event)
-      // check markdown syntax
-      if (checkMarkdownSyntax(text, html) && editor.selection) {
-        const focus = Range.end(editor.selection)
-        Promise.resolve().then(() => {
-          const madst = MarkdownDeserializer.toMdastWithEditor(editor, text)
-          const content = MarkdownDeserializer.transformWithEditor(editor, madst)
-          editor.selection = {
-            anchor,
-            focus,
-          }
-          editor.insertFragment(content)
-        })
-      }
-    }
+    // let i = 0
+    // const interval = setInterval(() => {
+    //   Editor.insertText(editor, i.toString())
+    //   i++
+    // }, 3000)
 
     return () => {
-      editor.onPaste = onPaste
+      // clearInterval(interval)
+      ummount()
     }
   }, [editor])
 
-  useContextMenuEffect(() => {
-    ContextMenu.setItems(editor, createContextMenuItems(editor))
-  }, editor)
+  const handleInsertNode = () => {
+    Transforms.insertNodes(editor, { text: '[0, 1]' }, {
+      at: [0, 1]
+    })
+    Transforms.insertNodes(editor, {
+      type: 'paragraph',
+      children: [{ text: 'New Paragraph[1]' }],
+    }, {
+      at: [1]
+    })
+    Transforms.insertNodes(editor, {
+      type: 'paragraph',
+      children: [],
+    }, {
+      at: [2]
+    })
+    Transforms.insertNodes(editor, { text: '[2, 0]' }, {
+      at: [2, 0]
+    })
+  }
 
-  useToolbarEffect(() => {
-    Toolbar.setItems(editor, createToolbarItems(editor))
-  }, editor)
+  const handleDeleteNode = () => {
+    Transforms.removeNodes(editor, {
+      at: [0]
+    })
+  }
 
-  useInlineToolbarEffect(() => {
-    InlineToolbar.setItems(editor, createInlineToolbarItems(editor))
-  }, editor)
+  const handleMoveNode = () => {
+    Transforms.moveNodes(editor, {
+      at: [0],
+      to: [1]
+    })
+  }
 
-  useSideToolbarMenuEffect((...a) => {
-    SideToolbar.setItems(editor, createSideToolbarItems(editor, ...a))
-  }, editor)
-
-  useSlashToolbarEffect(value => {
-    SlashToolbar.setItems(editor, createSlashToolbarItems(editor, value))
-  }, editor)
-
-  const remoteClients = useRemoteStates<CursorData>(editor)
+  // const handleBold = () => {
+  //   MarkEditor.toggle(editor, 'bold')
+  // }
 
   return (
     <>
       <CustomStyles />
       <Seo title={t('playground.title')} />
-      <EditableProvider editor={editor} value={initialValue}>
         <StyledHeader>
           <div tw="flex justify-between py-3 px-6 text-base">
             <div tw="flex text-2xl text-link flex-1 gap-3">
@@ -374,50 +138,31 @@ export default function Playground() {
                 <IconGitHub />
               </ExternalLink>
             </div>
-            <div tw="flex gap-1 items-center">
-              {Object.keys(remoteClients).map(id => {
-                const state = remoteClients[id]
-                if (!state.data) return
-                const { name, avatar } = state.data
-                return (
-                  <Tooltip key={id} content={name}>
-                    <div tw="rounded-full w-7 h-7 overflow-hidden">
-                      <Image alt={name} src={avatar ?? name} width={28} height={28} />
-                    </div>
-                  </Tooltip>
-                )
-              })}
-              <div tw="flex items-center text-xs ml-3">
-                <label htmlFor="collaboration-mode" tw="mr-2">
-                  {connecting
-                    ? t('playground.connecting')
-                    : connected
-                    ? t('playground.mode.collaboration')
-                    : t('playground.mode.local')}
-                </label>
-                {connecting && <Icon name="loading" />}
-                {!connecting && (
-                  <StyledSwitch
-                    checked={enableCollaborative}
-                    onChange={setEnableCollaborative}
-                    id="collaboration-mode"
-                  >
-                    <StyledSwitchThumb />
-                  </StyledSwitch>
-                )}
-              </div>
-            </div>
+        </div>
+        <div>
+          <p tw="text-gray-20">用户测试逻辑</p>
+          <div tw="flex gap-4">
+            <button onClick={handleInsertNode}>
+              插入节点
+            </button>
+            <button onClick={handleDeleteNode}>
+              删除节点
+            </button>
+            <button onClick={handleMoveNode}>
+              移动节点
+            </button>
+            {/* <button onClick={handleBold}>
+              加粗
+            </button> */}
           </div>
-          <StyledToolbar editor={editor} disabled={readOnly} />
+        </div>
         </StyledHeader>
         <StyledContainer>
-          <ContentEditable
+        <div
+          ref={continaerRef}
             lang={local ?? 'en-US'}
-            readOnly={readOnly}
-            placeholder={t('playground.editor.placeholder')}
           />
         </StyledContainer>
-      </EditableProvider>
     </>
   )
 }

@@ -1,8 +1,7 @@
-import { HTMLDeserializerWithTransform } from '@editablejs/deserializer/html'
-import { isDOMHTMLElement } from '@editablejs/models'
+import { HTMLDeserializerWithTransformer, isDOMHTMLElement } from '@editablejs/editor'
 import { Mark } from '../interfaces/mark'
 
-export const withMarkHTMLDeserializerTransform: HTMLDeserializerWithTransform = next => {
+export const withMarkHTMLDeserializerTransform: HTMLDeserializerWithTransformer = next => {
   return (node, options = {}) => {
     const { element, text } = options
     if (isDOMHTMLElement(node)) {

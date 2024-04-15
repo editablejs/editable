@@ -1,4 +1,4 @@
-import { Editor } from '@editablejs/models'
+import { Editor } from '@editablejs/editor'
 import { MarkFormat, Mark } from '../interfaces/mark'
 import { getOptions } from '../options'
 

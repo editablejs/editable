@@ -1,4 +1,4 @@
-import { Editor, Operation } from '@editablejs/models'
+import { Editor, Operation } from '@editablejs/editor'
 
 const HISTORY_PROTOCOL_WEAK_MAP = new WeakMap<Editor, HistoryProtocol>()
 

@@ -84,8 +84,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@editablejs/editable": "workspace:*",
-    "@editablejs/models": "workspace:*",
+    "@editablejs/editor": "workspace:*",
     "@types/mdast": "3.0.10",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
@@ -96,17 +95,13 @@
     "tsconfig": "workspace:*",
     "tsup": "^7.x",
     "tsup-config": "workspace:*",
-    "twin.macro": "3.1.0",
+    "twin.macro": "^3.4.0",
     "typescript": "^5.x"
   },
   "peerDependencies": {
-    "@editablejs/editable": "workspace:*",
-    "@editablejs/models": "workspace:*"
+    "@editablejs/editor": "workspace:*"
   },
   "dependencies": {
-    "@editablejs/deserializer": "workspace:*",
-    "@editablejs/dom-utils": "workspace:*",
-    "@editablejs/serializer": "workspace:*",
     "@emotion/css": "11.11.2",
     "mdast-util-gfm-strikethrough": "1.0.3",
     "micromark-extension-gfm-strikethrough": "1.0.4"

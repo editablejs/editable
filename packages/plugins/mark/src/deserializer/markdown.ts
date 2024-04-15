@@ -1,9 +1,9 @@
 import { gfmStrikethrough } from 'micromark-extension-gfm-strikethrough'
 import { gfmStrikethroughFromMarkdown } from 'mdast-util-gfm-strikethrough'
 import {
-  MarkdownDeserializerWithTransform,
+  MarkdownDeserializerWithTransformer,
   MarkdownDeserializerPlugin,
-} from '@editablejs/deserializer/markdown'
+} from '@editablejs/editor'
 import { Mark } from '../interfaces/mark'
 
 const htmlMarkMap: Record<string, Omit<Mark, 'text'>> = {
@@ -21,13 +21,14 @@ const htmlMarkMap: Record<string, Omit<Mark, 'text'>> = {
   '</sub>': { sub: undefined },
 }
 
-export const withMarkMarkdownDeserializerTransform: MarkdownDeserializerWithTransform = (
+export const withMarkMarkdownDeserializerTransform: MarkdownDeserializerWithTransformer = (
   next,
   self,
 ) => {
   return (node, options = {}) => {
     const mark: Omit<Mark, 'text'> = {}
     const { type } = node
+    let markOptions = options
     switch (type) {
       case 'strong':
         mark.bold = true

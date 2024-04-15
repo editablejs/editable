@@ -1,6 +1,4 @@
-import { Editable, RenderLeafProps, Hotkey } from '@editablejs/editable'
-import { Editor } from '@editablejs/models'
-import { append, attr, element } from '@editablejs/dom-utils'
+import { Editor, RenderLeafProps, Hotkey } from '@editablejs/editor'
 import tw, { css } from 'twin.macro'
 import { cx } from '@emotion/css'
 import { MarkFormat, Mark } from '../interfaces/mark'
@@ -40,7 +38,7 @@ font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospac
     line-height: inherit;
 `
 
-export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {}) => {
+export const withMark = <T extends Editor>(editor: T, options: MarkOptions = {}) => {
   const newEditor = editor as T & MarkEditor
 
   setOptions(newEditor, options)
@@ -91,23 +89,23 @@ export const withMark = <T extends Editable>(editor: T, options: MarkOptions = {
     let baseElement = null
     const enabledSub = text.sub && MarkEditor.isEnabled(editor, 'sub')
     const enabledSup = text.sup && MarkEditor.isEnabled(editor, 'sup')
+    const createElement = document.createElement
     if (enabledSub) {
-      baseElement = element('sub')
-      append(baseElement, children)
-      attr(baseElement, 'class', subClass)
+      baseElement = createElement('sub')
+      baseElement.appendChild(children)
+      baseElement.setAttribute('class', subClass)
       children = baseElement
     }
     if (enabledSup) {
-      baseElement = element('sup')
-      append(baseElement, children)
-
-      attr(baseElement, 'class', supClass)
+      baseElement = createElement('sup')
+      baseElement.appendChild(children)
+      baseElement.setAttribute('class', supClass)
       children = baseElement
     }
     if (text.code && MarkEditor.isEnabled(editor, 'code')) {
-      baseElement = element('code')
-      append(baseElement, children)
-      attr(baseElement, 'class', codeClass)
+      baseElement = createElement('code')
+      baseElement.appendChild(children)
+      baseElement.setAttribute('class', codeClass)
       children = baseElement
     }
     return renderLeaf({ attributes: Object.assign({}, attributes, { style }), children, text })

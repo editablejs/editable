@@ -1,5 +1,4 @@
-import { Editable, Hotkey } from '@editablejs/editable'
-import { Editor, Element, Text, Range, Path, Point, Transforms } from '@editablejs/models'
+import { Editor, Element, Text, Range, Path, Point, Transforms, Hotkey } from '@editablejs/editor'
 import { MarkFormat } from '../interfaces/mark'
 
 const findMatchedRange = (editor: Editor, at: Point, shortcuts: Record<string, MarkFormat>) => {
@@ -54,7 +53,7 @@ const findMatchedRange = (editor: Editor, at: Point, shortcuts: Record<string, M
   }
 }
 
-export const withShortcuts = (editor: Editable, shortcuts: Record<string, MarkFormat>) => {
+export const withShortcuts = (editor: Editor, shortcuts: Record<string, MarkFormat>) => {
   const { onKeydown } = editor
 
   editor.onKeydown = event => {
@@ -62,7 +61,7 @@ export const withShortcuts = (editor: Editable, shortcuts: Record<string, MarkFo
     if (
       selection &&
       Range.isCollapsed(selection) &&
-      !Editable.isComposing(editor) &&
+      !Editor.isComposing(editor) &&
       Hotkey.match('space', event)
     ) {
       const { anchor } = selection

@@ -1,6 +1,6 @@
 {
   "name": "@editablejs/editor",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "exports": {
     ".": {
@@ -28,37 +28,32 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@editablejs/deserializer": "workspace:*",
-    "@editablejs/serializer": "workspace:*",
-    "@editablejs/breaker": "workspace:*",
-    "direction": "^1.0.3",
+    "escape-html": "^1.0.3",
+    "direction": "^2.0.0",
+    "immer": "10.0.3",
     "is-hotkey": "^0.1.6",
-    "lodash.merge": "^4.6.2",
+    "is-plain-object": "^5.0.0",
     "scroll-into-view-if-needed": "2.2.29",
-    "zustand": "4.1.4"
+    "mdast-util-from-markdown": "^2.0.0",
+    "mdast-util-to-markdown": "^2.1.0",
+    "unicode-trie": "^2.0.0"
   },
   "devDependencies": {
-    "@editablejs/models": "workspace:*",
-    "@types/lodash.merge": "^4.6.7",
+    "@types/escape-html": "^1.0.2",
+    "@types/mdast": "^4.0.3",
+    "@types/direction": "2.0.0",
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^26.0.22",
-    "@types/react": "^18.x",
-    "@types/react-dom": "^18.x",
+    "@types/unicode-trie": "^2.0.0",
+    "micromark-util-types": "^2.0.0",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
     "jest-presets": "workspace:*",
     "prettier-config": "workspace:*",
-    "react": "^18.x",
-    "react-dom": "^18.x",
     "tsconfig": "workspace:*",
     "tsup": "^7.x",
     "tsup-config": "workspace:*",
     "typescript": "^5.x"
-  },
-  "peerDependencies": {
-    "@editablejs/models": "workspace:*",
-    "react": "^18.x",
-    "react-dom": "^18.x"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [

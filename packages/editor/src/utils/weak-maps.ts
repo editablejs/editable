@@ -1,5 +1,4 @@
-import { Ancestor, Editor, Node, Key } from '@editablejs/models'
-
+import { Editor, Path, PathRef, PointRef, RangeRef, Node, Ancestor, Key } from '@/interfaces'
 /**
  * Two weak maps that allow us rebuild a path given a node. They are populated
  * at render time such that after a render occurs we can always backtrack.
@@ -39,3 +38,11 @@ export const IS_TOUCH_HOLD: WeakMap<Editor, boolean> = new WeakMap()
 export const NODE_TO_RESTORE_DOM = new WeakMap<Node, () => void>()
 
 export const IS_PASTE_TEXT: WeakMap<Editor, boolean> = new WeakMap()
+
+export const DIRTY_PATHS: WeakMap<Editor, Path[]> = new WeakMap()
+export const DIRTY_PATH_KEYS: WeakMap<Editor, Set<string>> = new WeakMap()
+export const FLUSHING: WeakMap<Editor, boolean> = new WeakMap()
+export const NORMALIZING: WeakMap<Editor, boolean> = new WeakMap()
+export const PATH_REFS: WeakMap<Editor, Set<PathRef>> = new WeakMap()
+export const POINT_REFS: WeakMap<Editor, Set<PointRef>> = new WeakMap()
+export const RANGE_REFS: WeakMap<Editor, Set<RangeRef>> = new WeakMap()

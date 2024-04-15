@@ -48,7 +48,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@editablejs/models": "workspace:*",
+    "@editablejs/editor": "workspace:*",
     "@types/jest": "^26.0.22",
     "eslint-config-editable": "workspace:*",
     "jest": "^27.5.1",
@@ -60,7 +60,7 @@
     "typescript": "^5.x"
   },
   "peerDependencies": {
-    "@editablejs/models": "workspace:*"
+    "@editablejs/editor": "workspace:*"
   },
   "lint-staged": {
     "src/**/*.{json,ts,tsx,js,jsx}": [
