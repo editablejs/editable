@@ -11,19 +11,3 @@ export const DATA_EDITABLE_LENGTH = `data-ea-length`
 export const DATA_EDITABLE_VOID = `data-ea-void`
 export const DATA_EDITABLE_PLACEHOLDER = `data-ea-placeholder`
 export const DATA_EDITABLE_LEAF = `data-ea-leaf`
-
-export const Constants = {
-  applicationType: APPLICATION_FRAGMENT_TYPE,
-  htmlType: TEXT_HTML,
-  plainType: TEXT_PLAIN,
-  dataFragment: DATA_EDITABLE_FRAGMENT,
-  dataNode: DATA_EDITABLE_NODE,
-  dataInline: DATA_EDITABLE_INLINE,
-  dataString: DATA_EDITABLE_STRING,
-  dataComposition: DATA_EDITABLE_COMPOSITION,
-  dataZeroWidth: DATA_EDITABLE_ZERO_WIDTH,
-  dataLength: DATA_EDITABLE_LENGTH,
-  dataVoid: DATA_EDITABLE_VOID,
-  dataPlaceholder: DATA_EDITABLE_PLACEHOLDER,
-  dataLeaf: DATA_EDITABLE_LEAF,
-}

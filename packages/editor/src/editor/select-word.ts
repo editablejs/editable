@@ -1,7 +1,7 @@
-import { EditableInterface, Transforms, Range, Editor } from "@/interfaces";
+import { EditorInterface, Transforms, Range, Editor } from "@/interfaces";
 import { getWordRangeFromOffset } from "@/tokenizer";
 
-export const selectWord: EditableInterface['selectWord'] = (editor, at, edge = 'focus') => {
+export const selectWord: EditorInterface['selectWord'] = (editor, at, edge = 'focus') => {
   if (at) {
     Transforms.select(editor, at)
   }

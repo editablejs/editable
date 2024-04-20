@@ -1,7 +1,7 @@
 import { readClipboardData } from "@/dom-utils";
-import { EditableInterface, Transforms } from "@/interfaces";
+import { EditorInterface, Transforms } from "@/interfaces";
 
-export const insertFromClipboard: EditableInterface['insertFromClipboard'] = (editor, at) => {
+export const insertFromClipboard: EditorInterface['insertFromClipboard'] = (editor, at) => {
   if (at) {
     Transforms.select(editor, at)
   }

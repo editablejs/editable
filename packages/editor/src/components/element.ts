@@ -6,7 +6,7 @@ import { createText } from "./text";
 import { createNode } from "./node";
 import { NODE_TO_INDEX, NODE_TO_PARENT } from "@/utils/weak-maps";
 import { connectNodeWithDOM } from '@/layout';
-import { ElementAttributes } from '@/editable';
+import { ElementAttributes } from '@/editor';
 export interface CreateElementOptions {
   element: SlateElement
   path: Path

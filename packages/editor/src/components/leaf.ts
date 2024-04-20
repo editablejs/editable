@@ -2,7 +2,7 @@ import { Editor, Element, PlaceholderRender, Text } from "@/interfaces";
 import { createString } from "./string";
 import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from "../utils/constants";
 import { append, createFragment } from "@/dom-utils";
-import { TextAttributes } from "@/editable";
+import { TextAttributes } from "@/editor";
 
 export interface CreateLeafOptions {
   isLast: boolean

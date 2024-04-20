@@ -1,8 +1,8 @@
 import { readClipboardData } from "@/dom-utils";
-import { EditableInterface, Transforms } from "@/interfaces";
+import { EditorInterface, Transforms } from "@/interfaces";
 import { IS_PASTE_TEXT } from "@/utils";
 
-export const insertTextFromClipboard: EditableInterface['insertTextFromClipboard'] = (editor, at) => {
+export const insertTextFromClipboard: EditorInterface['insertTextFromClipboard'] = (editor, at) => {
   if (at) {
     Transforms.select(editor, at)
   }

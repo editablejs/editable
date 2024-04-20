@@ -1,6 +1,6 @@
-import { EditableInterface, Range, Node, Element, Editor, Transforms } from "@/interfaces";
+import { EditorInterface, Range, Node, Element, Editor, Transforms } from "@/interfaces";
 
-export const selectLine: EditableInterface['selectLine'] = (editor, at, edge = 'focus') => {
+export const selectLine: EditorInterface['selectLine'] = (editor, at, edge = 'focus') => {
   if (at) {
     Transforms.select(editor, at)
   }

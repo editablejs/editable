@@ -1,7 +1,7 @@
-import { EditableInterface, Editor, Focused, Transforms } from "@/interfaces";
+import { EditorInterface, Editor, Focused, Transforms } from "@/interfaces";
 import { EDITOR_TO_INPUT, EDITOR_TO_SHADOW } from "@/utils";
 
-export const focus: EditableInterface['focus'] = (editor, start) => {
+export const focus: EditorInterface['focus'] = (editor, start) => {
   if (Focused.isFocused(editor)) return
   const path = Editor.findPath(editor, editor)
   if (!editor.selection) {

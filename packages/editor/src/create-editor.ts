@@ -94,7 +94,7 @@ import {
   copy,
   cut,
   onChange
-} from './editable'
+} from './editor'
 import { deleteText } from './transforms/text'
 import {
   collapse,
@@ -215,7 +215,6 @@ export const createEditor = (): Editor => {
     void: (...args) => getVoid(editor, ...args),
     withoutNormalizing: (...args) => withoutNormalizing(editor, ...args),
     wrapNodes: (...args) => wrapNodes(editor, ...args),
-    // Editable interface
     focus: (...args) => focus(editor, ...args),
     blur: (...args) => blur(editor, ...args),
     copy: (...args) => copy(editor, ...args),
