@@ -9,7 +9,7 @@ import { createDragDropEvent, createDragOverEvent } from "./drag";
 
 
 const createDocumentShiftEvent = (editor: Editor, global: Window) => {
-  attachEvent(editor, listen(global, 'keydown', (event: KeyboardEvent) => {
+  attachEvent(editor, listen(global, 'keyup', (event: KeyboardEvent) => {
     if (event.key.toLowerCase() === 'shift') {
       IS_SHIFT_PRESSED.set(editor, false)
     }

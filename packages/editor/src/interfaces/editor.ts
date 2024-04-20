@@ -2102,18 +2102,12 @@ export const Editor: EditorInterface = {
       ranges.unshift(
         Editor.getDOMRange(editor, {
           anchor,
-          focus: Editor.end(editor, {
-            path: startPath,
-            offset: startBlock.children.length,
-          }),
+          focus: Editor.end(editor, startPath),
         }),
       )
       ranges.push(
         Editor.getDOMRange(editor, {
-          anchor: Editor.start(editor, {
-            path: endPath,
-            offset: 0,
-          }),
+          anchor: Editor.start(editor, endPath),
           focus,
         }),
       )
