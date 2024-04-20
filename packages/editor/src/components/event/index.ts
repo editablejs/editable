@@ -1,9 +1,9 @@
 import { getDefaultView, isMouseEvent, isMultiTouchEvent, isTouchDevice, listen } from "@/dom-utils";
-import { EDITOR_TO_ELEMENT, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
+import { EDITOR_TO_ELEMENT, IS_FOCUSED, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
 import { handleSelectionEnd, handleSelectionInProgress, handleSelectionStart, isContextMenuFromEditor, setSelectionStartPoint } from "./mouse";
 import { clearTouchHoldTimer, createDocumentTouchEndEvent, createTouchStartEvent } from "./touch";
 import { attachEvent } from "./editor";
-import { Drag, Editor, Focused } from "@/interfaces";
+import { Drag, Editor } from "@/interfaces";
 import { createMultipleClickEvent } from "./multiple-click";
 import { createDragDropEvent, createDragOverEvent } from "./drag";
 
@@ -20,7 +20,10 @@ const createDocumentMouseDownEvent = (editor: Editor, global: Window) => {
   attachEvent(editor, listen(global, 'mousedown', (event: MouseEvent | TouchEvent) => {
     const isMouseDown = IS_MOUSEDOWN.get(editor)
     const isTouching = IS_TOUCHING.get(editor)
-    if (!isMouseDown && !isTouching && !event.defaultPrevented) Focused.setFocused(editor, false)
+    if (editor.isFocused() && !isMouseDown && !isTouching && !event.defaultPrevented) {
+      IS_FOCUSED.delete(editor)
+      editor.onBlur()
+    }
   }))
 }
 

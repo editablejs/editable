@@ -5,17 +5,31 @@ import { append, detach, isTouchDevice } from "@/dom-utils";
 
 const EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP = new WeakMap<Editor, HTMLElement[]>()
 
+const destroy = (editor: Editor) => {
+  const blocks = EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.get(editor) ?? []
+  blocks.forEach(detach)
+  EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.delete(editor)
+}
+
+const getBlocks = (editor: Editor) => {
+  let blocks = EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.get(editor)
+  if (!blocks) {
+    blocks = []
+    EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.set(editor, blocks)
+  }
+  return blocks
+}
+
 export const createDrawingSelectionComponent = (editor: Editor, container: HTMLElement | ShadowRoot) => {
 
   const update = (drawingSelection: DrawingSelection | null) => {
-    let blocks = EDITOR_TO_SELECTION_BLOCKS_WEAK_MAP.get(editor) ?? []
-    blocks.forEach(detach)
+    destroy(editor)
     const { selection, enabled, style } = drawingSelection ?? {}
     if (!enabled || !selection || Range.isCollapsed(selection)) {
       return
     }
     const rects = selection ? Editor.getLineRectsFromRange(editor, selection) : []
-    blocks = []
+    const blocks = getBlocks(editor)
     for (const rect of rects) {
       const shadowComponent = createShadowBlockComponent({
         position: {
@@ -42,17 +56,21 @@ export const createDrawingSelectionComponent = (editor: Editor, container: HTMLE
     onDrawingSelectionChange(drawingSelection)
   }
 
+  const getDrawingSelection = () => DrawingSelection.getDrawingSelection(editor)
   editor.onFocus = () => {
-    update(DrawingSelection.getDrawingSelection(editor))
+    update(getDrawingSelection())
     onFocus()
   }
 
   editor.onBlur = () => {
-    update(DrawingSelection.getDrawingSelection(editor))
+    update(getDrawingSelection())
     onBlur()
   }
 
-  return {
-    update
+  return () => {
+    destroy(editor)
+    editor.onDrawingSelectionChange = onDrawingSelectionChange
+    editor.onFocus = onFocus
+    editor.onBlur = onBlur
   }
 }

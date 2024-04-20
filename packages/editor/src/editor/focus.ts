@@ -1,8 +1,7 @@
-import { EditorInterface, Editor, Focused, Transforms } from "@/interfaces";
-import { EDITOR_TO_INPUT, EDITOR_TO_SHADOW } from "@/utils";
+import { EditorInterface, Editor, Transforms } from "@/interfaces";
+import { focusEditorTextarea } from "@/layout";
 
 export const focus: EditorInterface['focus'] = (editor, start) => {
-  if (Focused.isFocused(editor)) return
   const path = Editor.findPath(editor, editor)
   if (!editor.selection) {
     const point = start ? Editor.start(editor, path) : Editor.end(editor, path)
@@ -12,10 +11,5 @@ export const focus: EditorInterface['focus'] = (editor, start) => {
   } else if (start === false) {
     Transforms.select(editor, Editor.end(editor, path))
   }
-
-  const shadow = EDITOR_TO_SHADOW.get(editor)
-  const textarea = EDITOR_TO_INPUT.get(editor)
-  if (textarea && shadow && shadow.activeElement !== textarea) {
-    textarea.focus({ preventScroll: true })
-  }
+  focusEditorTextarea(editor)
 }

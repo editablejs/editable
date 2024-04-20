@@ -1,9 +1,10 @@
-import { Range, Point, Transforms, Selection, Editor, Element, Path, Focused, Drag, BlockDrag } from "@/interfaces"
-import { EDITOR_TO_ELEMENT, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
+import { Range, Point, Transforms, Selection, Editor, Element, Path, Drag, BlockDrag } from "@/interfaces"
+import { EDITOR_TO_ELEMENT, IS_FOCUSED, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
 
 import { APPLICATION_FRAGMENT_TYPE } from "@/utils/constants";
 import { isActiveElementInContentEditable, isContentEditable, isContextMenuEvent, isDOMNode, isInPositionedElement, isMouseEvent, isTouchDevice, parseFragmentFromString, retrieveMainEvent, setDataToDataTransfer } from "@/dom-utils";
 import { isDoubleClick, isDoubleClickWithinThreshold, setDoubleClick } from "./multiple-click";
+import { focusEditorTextarea } from "@/layout";
 
 const EDITOR_TO_START_POINT = new WeakMap<Editor, Point | null>()
 export const getSelectionStartPoint = (editor: Editor) => {
@@ -66,7 +67,7 @@ export const handleSelectionStart = (editor: Editor, e: MouseEvent | TouchEvent)
     }
   }
 
-  Focused.setFocused(editor, true)
+  focusEditorTextarea(editor)
 
   const point = Editor.getEditorPointFromDOMEvent(editor, event)
   if (!point) {
@@ -83,7 +84,6 @@ export const handleSelectionStart = (editor: Editor, e: MouseEvent | TouchEvent)
     // Perform drag on existing selection while selected.
     else if (
       selection &&
-      Focused.isFocused(editor) &&
       isPointInSelection(editor, selection, point, isTouchDevice)
     ) {
       // Drag not performed on touch devices.
@@ -166,8 +166,8 @@ export const handleSelectionEnd = (editor: Editor, event: MouseEvent | TouchEven
     (isMouseDown &&
       (!event.defaultPrevented || (event instanceof MouseEvent && event.button === 2)))
   ) {
-    if (Focused.isFocused(editor) && !isContentEditable(event.target) && !isActiveElementInContentEditable()) {
-      editor.focus()
+    if (editor.isFocused() && !isContentEditable(event.target) && !isActiveElementInContentEditable()) {
+      focusEditorTextarea(editor)
     }
     const point = Editor.getEditorPointFromDOMEvent(editor, event)
     let isPointWithinSelection = false

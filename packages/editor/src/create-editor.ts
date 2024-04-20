@@ -13,8 +13,7 @@ import {
   removeMark,
   shouldNormalize,
   normalizeSelection,
-  Focused,
-  Readonly
+  Readonly,
 } from './'
 import { apply } from './core'
 import {
@@ -116,6 +115,7 @@ import {
   unwrapNodes,
   wrapNodes,
 } from './transforms/node'
+import { IS_FOCUSED } from './utils'
 
 /**
  * Create a new Slate `Editor` object.
@@ -222,8 +222,8 @@ export const createEditor = (): Editor => {
     selectWord: (...args) => selectWord(editor, ...args),
     selectLine: (...args) => selectLine(editor, ...args),
     isComposing: (...args) => isComposing(editor, ...args),
-    isFocused: (...args) => Focused.isFocused(editor, ...args),
-    isReadonly: (...args) => Readonly.isReadonly(editor, ...args),
+    isFocused: (...args) => IS_FOCUSED.get(editor) || false,
+    isReadonly: (...args) => Readonly.isReadonly(editor),
     insertFromClipboard: (...args) => insertFromClipboard(editor, ...args),
     insertTextFromClipboard: (...args) => insertTextFromClipboard(editor, ...args),
     insertFile: (...args) => insertFile(editor, ...args),

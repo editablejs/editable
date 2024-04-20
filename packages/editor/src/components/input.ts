@@ -1,7 +1,7 @@
-import { BaseSelection, Editor, Focused, Range, Readonly } from "@/interfaces";
+import { BaseSelection, Editor, Range, Readonly } from "@/interfaces";
 import { createShadowBlockComponent } from "./shadow";
-import { EDITOR_TO_INPUT, IS_COMPOSING, IS_MOUSEDOWN, IS_PASTE_TEXT, IS_TOUCHING } from "../utils/weak-maps";
-import { append, composeEventHandlers, createElement, listen, setAttribute, setAttributes } from "@/dom-utils";
+import { EDITOR_TO_INPUT, IS_COMPOSING, IS_FOCUSED, IS_MOUSEDOWN, IS_PASTE_TEXT, IS_TOUCHING } from "../utils/weak-maps";
+import { append, composeEventHandlers, createElement, detach, listen, setAttribute, setAttributes } from "@/dom-utils";
 import { attachEvent } from "./event";
 
 type UpdateInputState = {
@@ -42,11 +42,17 @@ export const createInputComponent = (editor: Editor, container: HTMLElement | Sh
   }
 
   const handleBlur = () => {
-    if (!IS_MOUSEDOWN.get(editor) && !IS_TOUCHING.get(editor)) Focused.setFocused(editor, false)
+    if (editor.isFocused() && !IS_MOUSEDOWN.get(editor) && !IS_TOUCHING.get(editor)) {
+      IS_FOCUSED.delete(editor)
+      editor.onBlur()
+    }
   }
 
   const handleFocus = () => {
-    Focused.setFocused(editor, true)
+    if (!editor.isFocused()) {
+      IS_FOCUSED.set(editor, true)
+      editor.onFocus()
+    }
   }
 
   const handleBeforeInput = (event: InputEvent) => {
@@ -144,7 +150,7 @@ export const createInputComponent = (editor: Editor, container: HTMLElement | Sh
   append(block.container, textarea)
   const update = () => {
     const rect = getSelectionRect(editor, {
-      focused: Focused.isFocused(editor),
+      focused: editor.isFocused(),
       selection: editor.selection
     })
     block.update({
@@ -174,7 +180,11 @@ export const createInputComponent = (editor: Editor, container: HTMLElement | Sh
     onBlur()
   }
 
-  return {
-    update,
+  return () => {
+    detach(blockElement)
+    editor.onReadonly = onReadonly
+    editor.onDrawingSelectionChange = onDrawingSelectionChange
+    editor.onFocus = onFocus
+    editor.onBlur = onBlur
   }
 }

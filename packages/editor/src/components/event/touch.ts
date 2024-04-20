@@ -1,10 +1,10 @@
-import { Editor, Focused, Range } from "@/interfaces";
+import { Editor, Range } from "@/interfaces";
 import { EDITOR_TO_ELEMENT, IS_MOUSEDOWN, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
 import { isContentEditable, isDOMNode, isInPositionedElement, listen } from "@/dom-utils";
 import { handleSelectionEnd, handleSelectionStart } from "./mouse";
 import { attachEvent } from "./editor";
 
-const EDITOR_TO_TOUCH_HOLD_TIMER = new WeakMap<Editor, number | null>();
+const EDITOR_TO_TOUCH_HOLD_TIMER = new WeakMap<Editor, number | NodeJS.Timeout | null>();
 
 export const startTouchHoldTimer = (editor: Editor, callback: () => void) => {
   clearTouchHoldTimer(editor);
@@ -41,7 +41,7 @@ export const createTouchStartEvent = (editor: Editor, contentEditable: HTMLEleme
     startTouchHoldTimer(editor, () => {
       IS_TOUCH_HOLD.set(editor, true)
 
-      if (Focused.isFocused(editor)) {
+      if (editor.isFocused()) {
         handleSelectionStart(editor, event)
       } else if (!selection || Range.isCollapsed(selection)) {
         IS_TOUCHING.set(editor, false)

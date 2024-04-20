@@ -1,7 +1,7 @@
 import { createShadowBlockComponent } from "./shadow";
 import { IS_MOUSEDOWN } from "../utils/weak-maps";
 import { DrawingSelection, Editor, Range } from "..";
-import { append, isTouchDevice, setStyle } from "@/dom-utils";
+import { append, detach, isTouchDevice, setStyle } from "@/dom-utils";
 
 export const createDrawingCaretComponent = (editor: Editor, container: HTMLElement | ShadowRoot, timeout = 530) => {
 
@@ -97,7 +97,13 @@ export const createDrawingCaretComponent = (editor: Editor, container: HTMLEleme
   }
 
   append(container, block.container)
-  return {
-    update
+
+  return () => {
+    clearCaretTimeout()
+    detach(block.container)
+    editor.onDrawingSelectionChange = onDrawingSelectionChange
+    editor.onFocus = onFocus
+    editor.onBlur = onBlur
+    editor.onReadonly = onReadonly
   }
 }

@@ -87,6 +87,7 @@ export const DrawingSelection: DrawingSelectionInterface = {
   setDrawingSelection: (ediotr, drawingSelection) => {
     const currentDrawingSelection = getOrCreateDrawingSelection(ediotr)
     const newDrawingSelection = { ...currentDrawingSelection, ...drawingSelection }
+    EDITOR_TO_DRAWING_SELECTION.set(ediotr, newDrawingSelection)
     ediotr.onDrawingSelectionChange(newDrawingSelection)
   }
 }

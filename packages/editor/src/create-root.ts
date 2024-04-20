@@ -43,8 +43,9 @@ export const createRoot = (editor: Editor, root: HTMLElement, options: CreateRoo
 
   editor.onRenderComplete = () => {
     const { selection } = editor
+    const drawingSelection = selection ? Object.assign({}, selection) : null
     DrawingSelection.setDrawingSelection(editor, {
-      selection: selection ? Object.assign({}, selection) : null
+      selection: drawingSelection
     })
     onRenderComplete()
   }
@@ -62,13 +63,20 @@ export const createRoot = (editor: Editor, root: HTMLElement, options: CreateRoo
   const selectionShadowRoot = createElement('div')
   setAttribute(selectionShadowRoot, 'style', 'pointer-events:none;')
   append(shadowRoot!, selectionShadowRoot)
-  createDrawingSelectionComponent(editor, selectionShadowRoot)
-  createDrawingCaretComponent(editor, selectionShadowRoot)
-  createInputComponent(editor, selectionShadowRoot)
-  createDrawingDragCaretComponent(editor, selectionShadowRoot)
+  const destoryDrawingSelectionComponent = createDrawingSelectionComponent(editor, selectionShadowRoot)
+  const destoryDrawingCaretComponent = createDrawingCaretComponent(editor, selectionShadowRoot)
+  const destoryInputComponent = createInputComponent(editor, selectionShadowRoot)
+  const destoryDrawingDragCaretComponent = createDrawingDragCaretComponent(editor, selectionShadowRoot)
 
   return () => {
     editor.onDestory()
+
+    destoryDrawingDragCaretComponent()
+    destoryInputComponent()
+    destoryDrawingCaretComponent()
+    destoryDrawingSelectionComponent()
+    editor.onRenderComplete = onRenderComplete
+    editor.onReadonly = onReadonly
 
     EDITOR_TO_WINDOW.delete(editor)
     EDITOR_TO_ELEMENT.delete(editor)

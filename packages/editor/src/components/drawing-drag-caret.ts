@@ -62,6 +62,13 @@ export const createDrawingDragCaretComponent = (editor: Editor, container: HTMLE
     update(Drag.getCurrentDrag(editor))
     onDrawingSelectionChange(drawingSelection)
   }
+
+  return () => {
+    const blockElement = EDITOR_TO_DRAG_BLOCK_WEAK_MAP.get(editor)
+    if (blockElement) detach(blockElement)
+    editor.onDragChange = onDragChange
+    editor.onDrawingSelectionChange = onDrawingSelectionChange
+  }
 }
 
 

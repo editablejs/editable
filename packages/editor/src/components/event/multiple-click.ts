@@ -138,7 +138,7 @@ export const setDoubleClick = (editor: Editor, value: boolean) => {
 
 export const createMultipleClickEvent = (editor: Editor, container: HTMLElement) => {
 
-  let doublueClickTimer: number | null = null
+  let doublueClickTimer: number | NodeJS.Timeout | null = null
 
   const { handleMultipleClick, isWithinThreshold } = createMultipleClickHandler({
     onClick: () => {
