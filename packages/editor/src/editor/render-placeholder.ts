@@ -1,10 +1,9 @@
 import { append, createElement, setAttributes, setStyle } from "@/dom-utils"
 import { Editor, Node } from "@/interfaces"
 import { AllHTMLAttributes } from "@/types"
-import { DATA_EDITABLE_PLACEHOLDER } from "@/utils/constants"
 
 export interface PlaceholderAttributes extends AllHTMLAttributes<HTMLElement> {
-  [DATA_EDITABLE_PLACEHOLDER]: true
+
 }
 
 export interface RenderPlaceholderProps<T extends Node = Node> {

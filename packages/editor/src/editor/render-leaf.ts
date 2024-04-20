@@ -1,10 +1,9 @@
-import { DOMNode, append, createElement, setAttributes } from "@/dom-utils";
+import { DOMElement, DOMNode, RefObject, append, createElement, setAttributes } from "@/dom-utils";
 import { Editor, Text } from "@/interfaces";
 import { AllHTMLAttributes } from "@/types";
-import { DATA_EDITABLE_LEAF } from "@/utils/constants";
 
-export interface TextAttributes extends AllHTMLAttributes<HTMLElement> {
-  [DATA_EDITABLE_LEAF]?: true
+export interface TextAttributes<T extends DOMElement = DOMElement> extends AllHTMLAttributes<HTMLElement> {
+  ref: RefObject<T | null>
 }
 
 export interface RenderLeafProps<T extends Text = Text> {
@@ -16,7 +15,9 @@ export interface RenderLeafProps<T extends Text = Text> {
 export const renderLeaf = (editor: Editor, props: RenderLeafProps) => {
   const { attributes, children } = props
   const node = createElement('span')
-  setAttributes(node, attributes)
+  const { ref, ...attr } = attributes
+  ref.current = node
+  setAttributes(node, attr)
   append(node, children)
   return node
 }

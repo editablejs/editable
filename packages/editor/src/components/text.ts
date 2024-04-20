@@ -1,9 +1,9 @@
 import { Editor, Element, NodeEntry, Path, Range, Text as SlateText, Decoration, TextDecoration, PlaceholderRender } from '@/interfaces'
 
 import { createLeaf } from './leaf'
-import { append, setAttribute, detach, createElement, insert, DOMNode } from '@/dom-utils'
-import { DATA_EDITABLE_NODE } from '@/utils/constants'
+import { append, detach, createElement, insert, DOMNode } from '@/dom-utils'
 import { connectNodeWithDOM, refreshNodeWithDOMConnection } from '@/layout'
+import { IS_TEXT_ELEMENT } from '@/utils'
 
 export interface CreateTextOptions {
   isLast: boolean
@@ -76,7 +76,7 @@ export const createText = (editor: Editor, options: CreateTextOptions) => {
 
   const textSpan = createElement('span')
 
-  setAttribute(textSpan, DATA_EDITABLE_NODE, 'text')
+  IS_TEXT_ELEMENT.set(textSpan, true)
   connectNodeWithDOM(editor, text, textSpan)
 
   const decorates = getDecorates(editor, [text, path])

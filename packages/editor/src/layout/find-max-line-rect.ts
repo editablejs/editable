@@ -1,7 +1,8 @@
 import { DOMElement, isDOMElement } from "@/dom-utils"
 import { Editor, Element } from "@/interfaces"
-import { DATA_EDITABLE_COMPOSITION, DATA_EDITABLE_NODE, DATA_EDITABLE_STRING, DATA_EDITABLE_ZERO_WIDTH } from "../utils/constants"
 import { isRectInLine } from "./is-rect-in-line"
+import { walkEditorElement } from "./walk-editor-element"
+import { IS_COMPOSING_ELEMENT, IS_STRING_ELEMENT, ZERO_WIDTH_ELEMENT } from "@/utils"
 
 
 /**
@@ -88,9 +89,8 @@ export const findMaxLineRect = (editor: Editor, element: DOMElement, top: number
   const findLineRectangles = (element: DOMElement) => {
     for (const child of element.childNodes) {
       if (isDOMElement(child)) {
-        const hasNodeAttribute = child.hasAttribute(DATA_EDITABLE_NODE)
-        const node = hasNodeAttribute ? Editor.getEditorNode(editor, child) : null
-        if (node) {
+        try {
+          const node = Editor.getEditorNode(editor, child)
           if (Element.isElement(node)) {
             if (editor.isVoid(node)) {
               const rect = resetElementRect(
@@ -109,9 +109,7 @@ export const findMaxLineRect = (editor: Editor, element: DOMElement, top: number
               findLineRectangles(child)
             }
           } else {
-            const nodes = child.querySelectorAll(
-              `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
-            )
+            const nodes = walkEditorElement(child, node => IS_COMPOSING_ELEMENT.has(node) || IS_STRING_ELEMENT.has(node) || ZERO_WIDTH_ELEMENT.has(node))
             nodes.forEach(node => {
               const height = calculateElementHeight(node)
               const rects = node.getClientRects()
@@ -121,7 +119,7 @@ export const findMaxLineRect = (editor: Editor, element: DOMElement, top: number
               }
             })
           }
-        } else {
+        } catch (error) {
           findLineRectangles(child)
         }
       }

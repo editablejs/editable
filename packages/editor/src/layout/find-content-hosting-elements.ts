@@ -1,11 +1,9 @@
 import { Editor, Node, Element } from "@/interfaces"
-import { DATA_EDITABLE_COMPOSITION, DATA_EDITABLE_STRING, DATA_EDITABLE_ZERO_WIDTH } from "@/utils/constants"
+import { walkEditorElement } from "./walk-editor-element"
+import { IS_COMPOSING_ELEMENT, IS_STRING_ELEMENT, ZERO_WIDTH_ELEMENT } from "@/utils"
 
 export const findContentHostingElements = (editor: Editor, node: Node) => {
   const domNode = Editor.getDOMNode(editor, node)
   if (Element.isElement(node) && Editor.isVoid(editor, node)) return [domNode]
-  const nodes = domNode.querySelectorAll(
-    `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`,
-  )
-  return Array.from(nodes)
+  return walkEditorElement(domNode, node => IS_COMPOSING_ELEMENT.has(node) || IS_STRING_ELEMENT.has(node) || ZERO_WIDTH_ELEMENT.has(node))
 }

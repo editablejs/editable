@@ -1,8 +1,8 @@
 import { Editor, Element, PlaceholderRender, Text } from "@/interfaces";
 import { createString } from "./string";
-import { DATA_EDITABLE_LEAF, DATA_EDITABLE_PLACEHOLDER } from "../utils/constants";
-import { append, createFragment } from "@/dom-utils";
+import { append, createFragment, createRef } from "@/dom-utils";
 import { TextAttributes } from "@/editor";
+import { IS_LEAF_ELEMENT } from "@/utils";
 
 export interface CreateLeafOptions {
   isLast: boolean
@@ -18,7 +18,7 @@ export const createLeaf = (editor: Editor, options: CreateLeafOptions) => {
 
   if (renderPlaceholder) {
     const placeholderComponent = editor.renderPlaceholder({
-      attributes: { [DATA_EDITABLE_PLACEHOLDER]: true },
+      attributes: {},
       node: text,
       children: renderPlaceholder(text),
     })
@@ -30,12 +30,15 @@ export const createLeaf = (editor: Editor, options: CreateLeafOptions) => {
     }
   }
 
-  // COMPAT: Having the `data-` attributes on these leaf elements ensures that
-  // in certain misbehaving browsers they aren't weirdly cloned/destroyed by
-  // contenteditable behaviors. (2019/05/08)
+  const ref = createRef<HTMLElement>(null)
   const attributes: TextAttributes = {
-    [DATA_EDITABLE_LEAF]: true,
+    ref
   }
   const newAttributes = editor.renderLeafAttributes({ attributes, text })
-  return editor.renderLeaf({ attributes: newAttributes, children, text })
+  const leafElement = editor.renderLeaf({ attributes: newAttributes, children, text })
+  if (!ref.current) {
+    ref.current = leafElement
+  }
+  IS_LEAF_ELEMENT.set(leafElement, true)
+  return leafElement
 }

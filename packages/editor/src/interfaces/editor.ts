@@ -25,13 +25,6 @@ import {
   RenderLeafProps,
   RenderPlaceholderProps,
   TextAttributes,
-  DATA_EDITABLE_COMPOSITION,
-  DATA_EDITABLE_LEAF,
-  DATA_EDITABLE_LENGTH,
-  DATA_EDITABLE_NODE,
-  DATA_EDITABLE_STRING,
-  DATA_EDITABLE_VOID,
-  DATA_EDITABLE_ZERO_WIDTH,
   GridCell,
   Key,
   Scrubber,
@@ -54,12 +47,12 @@ import {
 } from './transforms/text'
 import { NodeInsertNodesOptions } from './transforms/node'
 import { Grid } from './grid/grid'
-import { DOMElement, DOMHTMLElement, DOMNode, DOMRange, DOMSelection, DOMStaticRange, isActiveElementInShadowRoot, isDOMElement, isDOMNode, isDOMSelection, isDOMText, isSingleTouchEvent, normalizePoint, retrieveMainEvent, DOMPoint } from '@/dom-utils'
+import { DOMElement, DOMHTMLElement, DOMNode, DOMRange, DOMSelection, DOMStaticRange, isActiveElementInShadowRoot, isDOMElement, isDOMNode, isDOMSelection, isDOMText, isSingleTouchEvent, normalizePoint, retrieveMainEvent, DOMPoint, isDOMHTMLElement } from '@/dom-utils'
 import { isChrome } from '@/dom-utils/is-chrome'
 import { isFirefox } from '@/dom-utils/is_firefox'
-import { getEditorPosition, findContentHostingElements, findNearbyElements, isVerticallyAligned, splitRectsIntoLines, findMaxLineRect, isRectInLine } from '@/layout'
+import { getEditorPosition, findContentHostingElements, findNearbyElements, isVerticallyAligned, splitRectsIntoLines, findMaxLineRect, isRectInLine, closestEditorElement, walkEditorElement } from '@/layout'
 import { getCharacterOffsetFromPosition } from '@/tokenizer'
-import { NODE_TO_KEY, NODE_TO_PARENT, NODE_TO_INDEX, EDITOR_TO_KEY_TO_ELEMENT, EDITOR_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_WINDOW } from '@/utils'
+import { NODE_TO_KEY, NODE_TO_PARENT, NODE_TO_INDEX, EDITOR_TO_KEY_TO_ELEMENT, EDITOR_TO_ELEMENT, ELEMENT_TO_NODE, EDITOR_TO_WINDOW, IS_VOID_ELEMENT, IS_TEXT_ELEMENT, IS_COMPOSING_ELEMENT, IS_STRING_ELEMENT, ZERO_WIDTH_ELEMENT, ZERO_WIDTH_ELEMENT_LENGTH, IS_LEAF_ELEMENT } from '@/utils'
 
 /**
  * The `Editor` interface stores all the state of a Slate editor. It is extended
@@ -1401,8 +1394,7 @@ export const Editor: EditorInterface = {
     // For each leaf, we need to isolate its content, which means filtering
     // to its direct text and zero-width spans. (We have to filter out any
     // other siblings that may have been rendered alongside them.)
-    const selector = `[${DATA_EDITABLE_STRING}], [${DATA_EDITABLE_COMPOSITION}], [${DATA_EDITABLE_ZERO_WIDTH}]`
-    const texts = Array.from(el.querySelectorAll(selector))
+    const texts = walkEditorElement(el, node => IS_COMPOSING_ELEMENT.has(node) || IS_STRING_ELEMENT.has(node) || ZERO_WIDTH_ELEMENT.has(node))
     let start = 0
 
     for (const text of texts) {
@@ -1413,8 +1405,8 @@ export const Editor: EditorInterface = {
       }
 
       const { length } = offsetNode.textContent
-      const attr = text.getAttribute(DATA_EDITABLE_LENGTH)
-      const trueLength = attr == null ? length : parseInt(attr, 10)
+      const value = ZERO_WIDTH_ELEMENT_LENGTH.get(text)
+      const trueLength = value == null ? length : value
       const end = start + trueLength
 
       if (point.offset <= end) {
@@ -1448,9 +1440,9 @@ export const Editor: EditorInterface = {
     // zero-width node has an offset of 1 so we have to check if we are in a zero-width node and
     // adjust the offset accordingly.
     const startEl = (isDOMElement(startNode) ? startNode : startNode.parentElement) as HTMLElement
-    const isStartAtZeroWidth = !!startEl.getAttribute(DATA_EDITABLE_ZERO_WIDTH)
+    const isStartAtZeroWidth = ZERO_WIDTH_ELEMENT.has(startEl)
     const endEl = (isDOMElement(endNode) ? endNode : endNode.parentElement) as HTMLElement
-    const isEndAtZeroWidth = !!endEl.getAttribute(DATA_EDITABLE_ZERO_WIDTH)
+    const isEndAtZeroWidth = ZERO_WIDTH_ELEMENT.has(endEl)
 
     domRange.setStart(startNode, isStartAtZeroWidth ? 1 : startOffset)
     domRange.setEnd(endNode, isEndAtZeroWidth ? 1 : endOffset)
@@ -1460,8 +1452,8 @@ export const Editor: EditorInterface = {
   getEditorNode: (editor: Editor, element: DOMNode): Node => {
     let domEl = isDOMElement(element) ? element : element.parentElement
 
-    if (domEl && !domEl.hasAttribute(DATA_EDITABLE_NODE)) {
-      domEl = domEl.closest(`[${DATA_EDITABLE_NODE}]`)
+    if (domEl) {
+      domEl = closestEditorElement(domEl)
     }
 
     const node = domEl ? ELEMENT_TO_NODE.get(domEl as HTMLElement) : null
@@ -1489,20 +1481,20 @@ export const Editor: EditorInterface = {
 
     if (parentNode) {
       const editorEl = Editor.getDOMNode(editor, editor)
-      const potentialVoidNode = parentNode.closest(`[${DATA_EDITABLE_VOID}]`)
+      const potentialVoidNode = closestEditorElement(parentNode, node => isDOMHTMLElement(node) && IS_VOID_ELEMENT.has(node))
       // Need to ensure that the closest void node is actually a void node
       // within this editor, and not a void node within some parent editor. This can happen
       // if this editor is within a void node of another editor ("nested editors", like in
       // the "Layout Voids" example on the docs site).
       const voidNode =
         potentialVoidNode && editorEl.contains(potentialVoidNode) ? potentialVoidNode : null
-      let leafNode = parentNode.closest(`[${DATA_EDITABLE_LEAF}]`)
+      let leafNode = closestEditorElement(parentNode, IS_LEAF_ELEMENT.has)
       let offsetNode: DOMElement | null = null
 
       // Calculate how far into the text node the `nearestNode` is, so that we
       // can determine what the offset relative to the text node is.
       if (leafNode) {
-        textNode = leafNode.closest(`[${DATA_EDITABLE_NODE}="text"]`)
+        textNode = closestEditorElement(leafNode, node => isDOMHTMLElement(node) && IS_TEXT_ELEMENT.has(node))
 
         if (textNode) {
           const window = Editor.getWindow(editor)
@@ -1511,11 +1503,7 @@ export const Editor: EditorInterface = {
           range.setEnd(nearestNode, nearestOffset)
 
           const contents = range.cloneContents()
-          const removals = [
-            ...Array.prototype.slice.call(
-              contents.querySelectorAll(`[${DATA_EDITABLE_ZERO_WIDTH}]`),
-            ),
-          ]
+          const removals = walkEditorElement(contents, ZERO_WIDTH_ELEMENT.has)
 
           removals.forEach(el => {
             el!.parentNode!.removeChild(el)
@@ -1532,16 +1520,16 @@ export const Editor: EditorInterface = {
       } else if (voidNode) {
         // For void nodes, the element with the offset key will be a cousin, not an
         // ancestor, so find it by going down from the nearest void parent.
-        leafNode = voidNode.querySelector(`[${DATA_EDITABLE_LEAF}]`)!
+        leafNode = walkEditorElement(voidNode, IS_LEAF_ELEMENT.has)![0]
 
         // COMPAT: In read-only editors the leaf is not rendered.
         if (!leafNode) {
           offset = 1
         } else {
-          textNode = leafNode.closest(`[${DATA_EDITABLE_NODE}="text"]`)!
+          textNode = closestEditorElement(leafNode, node => isDOMHTMLElement(node) && IS_TEXT_ELEMENT.has(node))
           offsetNode = leafNode
           offset = offsetNode.textContent!.length
-          offsetNode.querySelectorAll(`[${DATA_EDITABLE_ZERO_WIDTH}]`).forEach(el => {
+          walkEditorElement(offsetNode, ZERO_WIDTH_ELEMENT.has).forEach(el => {
             offset -= el.textContent!.length
           })
         }
@@ -1555,7 +1543,7 @@ export const Editor: EditorInterface = {
         // composition the ASCII characters will be prepended to the zero-width
         // space, so subtract 1 from the offset to account for the zero-width
         // space character.
-        (parentNode.hasAttribute(DATA_EDITABLE_ZERO_WIDTH) ||
+        (ZERO_WIDTH_ELEMENT.has(parentNode) ||
           // COMPAT: In Firefox, `range.cloneContents()` returns an extra trailing '\n'
           // when the document ends with a new-line character. This results in the offset
           // length being off by one, so we need to subtract one to account for this.
@@ -1749,9 +1737,7 @@ export const Editor: EditorInterface = {
     if (!domEl) return null
     const { x, y } = position
     const elements: DOMElement[] = []
-    let element: DOMElement | null = domEl.hasAttribute(DATA_EDITABLE_NODE)
-      ? domEl
-      : domEl.closest(`[${DATA_EDITABLE_NODE}]`)
+    let element: DOMElement | null = closestEditorElement(domEl)
 
     const addToElements = (node: Node) => {
       const children = findContentHostingElements(editor, node)

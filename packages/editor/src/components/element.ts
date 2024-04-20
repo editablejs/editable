@@ -1,10 +1,9 @@
 import { direction } from 'direction'
 import { Decoration, Editor, Node, Path, PlaceholderRender, Range, Element as SlateElement } from '@/interfaces'
-import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "../utils/constants";
 import { append, setAttribute, createElement as createDOMElement, createRef } from '@/dom-utils'
 import { createText } from "./text";
 import { createNode } from "./node";
-import { NODE_TO_INDEX, NODE_TO_PARENT } from "@/utils/weak-maps";
+import { IS_ELEMENT, IS_INLINE_ELEMENT, IS_VOID_ELEMENT, NODE_TO_INDEX, NODE_TO_PARENT } from "@/utils/weak-maps";
 import { connectNodeWithDOM } from '@/layout';
 import { ElementAttributes } from '@/editor';
 export interface CreateElementOptions {
@@ -27,12 +26,7 @@ export const createElement = (editor: Editor, options: CreateElementOptions) => 
   })
   const ref = createRef<HTMLElement>(null)
   const attributes: ElementAttributes<HTMLElement> = {
-    [DATA_EDITABLE_NODE]: 'element',
     ref,
-  }
-
-  if (isInline) {
-    attributes[DATA_EDITABLE_INLINE] = true
   }
 
   // If it's a block node with inline children, add the proper `dir` attribute
@@ -47,9 +41,8 @@ export const createElement = (editor: Editor, options: CreateElementOptions) => 
   }
 
   // If it's a void node, wrap the children in extra void-specific elements.
-  if (Editor.isVoid(editor, element)) {
-    attributes[DATA_EDITABLE_VOID] = true
-
+  const isVoid = Editor.isVoid(editor, element)
+  if (isVoid) {
     const node = createDOMElement(isInline ? 'span' : 'div')
     setAttribute(node, 'style', 'height: 0; outline: none; color: transparent;')
 
@@ -75,6 +68,9 @@ export const createElement = (editor: Editor, options: CreateElementOptions) => 
   if (!ref.current) {
     ref.current = content
   }
+  IS_VOID_ELEMENT.set(ref.current, isVoid)
+  IS_INLINE_ELEMENT.set(ref.current, isInline)
+  IS_ELEMENT.set(ref.current, true)
 
   connectNodeWithDOM(editor, element, ref.current)
 

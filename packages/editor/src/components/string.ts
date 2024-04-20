@@ -1,6 +1,6 @@
 import { Text, Element, Path, Node, CompositionText, Editor } from "@/interfaces"
-import { append, createElement, createFragment, setAttributes, createText } from "@/dom-utils"
-import { DATA_EDITABLE_COMPOSITION, DATA_EDITABLE_LENGTH, DATA_EDITABLE_STRING, DATA_EDITABLE_ZERO_WIDTH } from "../utils/constants"
+import { append, createElement, createFragment, createText } from "@/dom-utils"
+import { ZERO_WIDTH_ELEMENT_LENGTH, IS_STRING_ELEMENT, ZERO_WIDTH_ELEMENT, IS_COMPOSING_ELEMENT } from "@/utils"
 
 export interface CreateZeroWidthStringOptions {
   length?: number
@@ -9,10 +9,8 @@ export interface CreateZeroWidthStringOptions {
 export const createZeroWidthString = (options: CreateZeroWidthStringOptions) => {
   const { length = 0, isLineBreak = false } = options
   const span = createElement('span')
-  setAttributes(span, {
-    [DATA_EDITABLE_ZERO_WIDTH]: isLineBreak ? 'n' : 'z',
-    [DATA_EDITABLE_LENGTH]: length
-  })
+  ZERO_WIDTH_ELEMENT.set(span, isLineBreak ? 'n' : 'z')
+  ZERO_WIDTH_ELEMENT_LENGTH.set(span, length)
   append(span, createText('\uFEFF'))
   if (isLineBreak) append(span, createElement('br'))
   return span
@@ -20,9 +18,7 @@ export const createZeroWidthString = (options: CreateZeroWidthStringOptions) => 
 
 export const createCompositionString = (value: string) => {
   const u = createElement('u')
-  setAttributes(u, {
-    [DATA_EDITABLE_COMPOSITION]: true
-  })
+  IS_COMPOSING_ELEMENT.set(u, true)
   append(u, createText(value))
   return u
 }
@@ -35,9 +31,7 @@ export interface CreateTextStringOptions {
 export const createTextString = (options: CreateTextStringOptions) => {
   const { text: _value = '', isTrailing = false } = options
   const span = createElement('span')
-  setAttributes(span, {
-    [DATA_EDITABLE_STRING]: true,
-  })
+  IS_STRING_ELEMENT.set(span, true)
   append(span, createText(`${_value}${isTrailing ? '\n' : ''}`))
   return span
 }

@@ -1,3 +1,4 @@
+import { DOMElement } from '@/dom-utils'
 import { Editor, Path, PathRef, PointRef, RangeRef, Node, Ancestor, Key } from '@/interfaces'
 /**
  * Two weak maps that allow us rebuild a path given a node. They are populated
@@ -46,3 +47,14 @@ export const NORMALIZING: WeakMap<Editor, boolean> = new WeakMap()
 export const PATH_REFS: WeakMap<Editor, Set<PathRef>> = new WeakMap()
 export const POINT_REFS: WeakMap<Editor, Set<PointRef>> = new WeakMap()
 export const RANGE_REFS: WeakMap<Editor, Set<RangeRef>> = new WeakMap()
+
+
+export const IS_VOID_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_INLINE_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_TEXT_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_LEAF_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_COMPOSING_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const IS_STRING_ELEMENT: WeakMap<DOMElement, boolean> = new WeakMap()
+export const ZERO_WIDTH_ELEMENT: WeakMap<DOMElement, 'n' | 'z'> = new WeakMap()
+export const ZERO_WIDTH_ELEMENT_LENGTH: WeakMap<DOMElement, number> = new WeakMap()

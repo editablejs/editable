@@ -1,12 +1,8 @@
-import { DOMHTMLElement, DOMNode, RefObject, append, createElement, setAttributes } from "@/dom-utils"
+import { DOMElement, DOMNode, RefObject, append, createElement, setAttributes } from "@/dom-utils"
 import { Editor, Element } from "@/interfaces"
 import { AllHTMLAttributes } from "@/types"
-import { DATA_EDITABLE_INLINE, DATA_EDITABLE_NODE, DATA_EDITABLE_VOID } from "@/utils/constants"
 
-export interface ElementAttributes<T extends DOMHTMLElement = DOMHTMLElement> extends AllHTMLAttributes<T> {
-  [DATA_EDITABLE_NODE]: 'element'
-  [DATA_EDITABLE_INLINE]?: true
-  [DATA_EDITABLE_VOID]?: true
+export interface ElementAttributes<T extends DOMElement = DOMElement> extends AllHTMLAttributes<T> {
   dir?: 'rtl'
   ref: RefObject<T | null>
 }
@@ -22,9 +18,7 @@ export const renderElement = (editor: Editor, props: RenderElementProps) => {
   const tag = editor.isInline(element) ? 'span' : 'div'
   const node = createElement(tag)
   const { ref, ...attr } = attributes
-  if (ref) {
-    ref.current = node
-  }
+  ref.current = node
   setAttributes(node, attr)
   append(node, children)
   return node
