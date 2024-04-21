@@ -863,7 +863,7 @@ export interface EditorInterface {
   /**
    * Find the native DOM element from a Editor node.
    */
-  getDOMNode: (editor: Editor, node: Node) => DOMHTMLElement
+  getDOMNode: <T extends boolean = false>(editor: Editor, node: Node, suppressThrow?: T) => T extends true ? DOMElement | null : DOMElement
 
   /**
    * Find a native DOM selection point from a Editor point.
@@ -1347,7 +1347,8 @@ export const Editor: EditorInterface = {
   },
 
   hasDOMNode: (editor: Editor, node: DOMNode): boolean => {
-    const editorEl = Editor.getDOMNode(editor, editor)
+    const editorEl = Editor.getDOMNode(editor, editor, true)
+    if (!editorEl) return false
     let targetEl
 
     // COMPAT: In Firefox, reading `target.nodeType` will throw an error if
@@ -1369,12 +1370,13 @@ export const Editor: EditorInterface = {
     return editorEl.contains(targetEl)
   },
 
-  getDOMNode: (editor: Editor, node: Node): DOMHTMLElement => {
+  getDOMNode: <T extends boolean = false>(editor: Editor, node: Node, suppressThrow?: T): T extends true ? DOMElement | null : DOMElement => {
     const KEY_TO_ELEMENT = EDITOR_TO_KEY_TO_ELEMENT.get(editor)
     const offsetNode = Editor.isEditor(node)
       ? EDITOR_TO_ELEMENT.get(editor)
       : KEY_TO_ELEMENT?.get(Editor.findKey(editor, node))
     if (!offsetNode) {
+      if (suppressThrow) return null as T extends true ? DOMElement | null : DOMElement
       throw new Error(`Cannot resolve a DOM node from Editor node: ${Scrubber.stringify(node)}`)
     }
     return offsetNode

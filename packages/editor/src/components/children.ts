@@ -1,9 +1,9 @@
 import { Editor, NodeEntry, Element, Node, Path, PlaceholderRender } from "@/interfaces"
-import { createNode, insertNode, removeNode, updateNode } from "./node"
+import { insertNode, removeNode, updateNode } from "./node"
 import { NODE_TO_INDEX, NODE_TO_PARENT } from "@/utils/weak-maps"
 import { transformsDOMOperations } from "@/utils/transforms"
 
-export const createChildren = (editor: Editor, renderPlaceholder?: PlaceholderRender) => {
+export const createDOMOperationTransformer = (editor: Editor) => {
 
   const handleChange = () => {
     const domOperations = transformsDOMOperations(editor)
@@ -45,7 +45,9 @@ export const createChildren = (editor: Editor, renderPlaceholder?: PlaceholderRe
     onChange()
   }
 
-  return createNode(editor, { node: editor, selection: editor.selection, renderPlaceholder })
+  return () => {
+    editor.onChange = onChange
+  }
 }
 
 const updateIndexByPath = (editor: Editor, path: Path) => {

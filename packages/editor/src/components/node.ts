@@ -14,7 +14,7 @@ import {
 import { createElement } from './element'
 import { createText, updateText } from './text'
 import { NODE_TO_INDEX, NODE_TO_PARENT } from '../utils/weak-maps'
-import { DOMNode, append, createFragment, detach } from '@/dom-utils'
+import { DOMElement, DOMNode, append, createFragment, detach } from '@/dom-utils'
 import { disconnectNodeWithDOM, refreshNodeWithDOMConnection } from '@/layout'
 
 export interface CreateChildrenOptions {
@@ -76,7 +76,7 @@ export const createNode = (editor: Editor, options: CreateChildrenOptions): DOMN
 }
 
 const hasDOMNode = (editor: Editor, node: Node) => {
-  return !!Editor.getDOMNode(editor, node)
+  return !!Editor.getDOMNode(editor, node, true)
 }
 
 export const updateNode = (editor: Editor, oldNode: NodeEntry, newNode: NodeEntry) => {
@@ -106,8 +106,8 @@ export const insertNode = (editor: Editor, beforeParent: NodeEntry, insertNode: 
 
   const parentEntry = Editor.parent(editor, path)
   const index = path[path.length - 1]
-  let nextDom: HTMLElement | undefined = undefined
-  let prevDom: HTMLElement | undefined = undefined
+  let nextDom: DOMElement | undefined = undefined
+  let prevDom: DOMElement | undefined = undefined
   if (index === 0) {
     let nextNode = Editor.next(editor, { at: path })
     while (nextNode) {

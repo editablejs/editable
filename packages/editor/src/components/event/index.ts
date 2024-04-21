@@ -1,4 +1,4 @@
-import { getDefaultView, isMouseEvent, isMultiTouchEvent, isTouchDevice, listen } from "@/dom-utils";
+import { DOMElement, getDefaultView, isMouseEvent, isMultiTouchEvent, isTouchDevice, listen } from "@/dom-utils";
 import { EDITOR_TO_ELEMENT, IS_FOCUSED, IS_MOUSEDOWN, IS_SHIFT_PRESSED, IS_TOUCHING, IS_TOUCHMOVING, IS_TOUCH_HOLD } from "@/utils/weak-maps";
 import { handleSelectionEnd, handleSelectionInProgress, handleSelectionStart, isContextMenuFromEditor, setSelectionStartPoint } from "./mouse";
 import { clearTouchHoldTimer, createDocumentTouchEndEvent, createTouchStartEvent } from "./touch";

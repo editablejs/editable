@@ -2,12 +2,13 @@ import { append, createElement, detach, getDefaultView, setAttribute } from "@/d
 import { Descendant, DrawingSelection, Editor } from "@/interfaces"
 import { createContainerEvent, createGlobalEvent, detachEvents } from "@/components/event"
 import { EDITOR_TO_ELEMENT, EDITOR_TO_KEY_TO_ELEMENT, EDITOR_TO_WINDOW, ELEMENT_TO_NODE, NODE_TO_ELEMENT } from "@/utils"
-import { createChildren } from "@/components/children"
 import { createShadowComponent } from "@/components/shadow"
 import { createDrawingSelectionComponent } from "@/components/drawing-selection"
 import { createDrawingCaretComponent } from "@/components/drawing-caret"
 import { createInputComponent } from "@/components/input"
 import { createDrawingDragCaretComponent } from "@/components/drawing-drag-caret"
+import { createNode } from "./components/node"
+import { createDOMOperationTransformer } from "./components/children"
 
 export interface CreateRootOptions {
   initialValue?: Descendant[]
@@ -52,8 +53,8 @@ export const createRoot = (editor: Editor, root: HTMLElement, options: CreateRoo
 
   createGlobalEvent(editor)
   createContainerEvent(editor)
-
-  const children = createChildren(editor)
+  const destoryDOMOperationTransformer = createDOMOperationTransformer(editor)
+  const children = createNode(editor, { node: editor, selection: editor.selection })
   append(container, children)
 
 
@@ -75,6 +76,7 @@ export const createRoot = (editor: Editor, root: HTMLElement, options: CreateRoo
     destoryInputComponent()
     destoryDrawingCaretComponent()
     destoryDrawingSelectionComponent()
+    destoryDOMOperationTransformer()
     editor.onRenderComplete = onRenderComplete
     editor.onReadonly = onReadonly
 
